@@ -1,7 +1,9 @@
 \documentclass{article}
 \usepackage[UTF8, fontset=fandol]{ctex} % 支持中文
 \usepackage{graphicx} % Required for inserting images
-\usepackage{svg} % SVG图片支持
+% SVG图片支持：在XeLaTeX下transparent包不兼容，使用svg时需设置inkscapelatex=false
+% 若需使用SVG图片，请取消下一行注释，并确保Inkscape已安装
+% \usepackage[inkscapelatex=false]{svg}
 \usepackage{amsmath} % 数学公式支持
 \usepackage{amssymb} % 数学符号支持(\mathbb等)
 \usepackage{algorithm} % 伪代码算法块

@@ -6,12 +6,12 @@
 
 本研究整体遵循"威胁建模、框架扩展、攻击适配、实验评估、结果分析"的研究路线，各环节逻辑自洽、紧密衔接。在威胁建模阶段，明确间接提示注入的攻击者能力边界与优化目标形式化；在框架扩展阶段，将AgentDojo与HuggingFace Transformers库集成，实现白盒梯度访问与标准化攻击接口；在攻击适配阶段，分别实现GCG和TAP在间接提示注入场景下的算法改造与优化策略；在实验评估阶段，在跨多域、多模型的80个任务对上进行全面实验；在结果分析阶段，通过消融实验和迁移性研究揭示攻击成功的关键影响因素。研究框架如图~\ref{fig:framework}所示。
 
-% \begin{figure}[htbp]
-%   \centering
-%   \includesvg[width=\textwidth]{figures/research_framework.svg}
-%   \caption{面向LLM智能体的自动化提示注入攻击研究框架}
-%   \label{fig:framework}
-% \end{figure}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{figures/research_framework.pdf}
+  \caption{面向LLM智能体的自动化提示注入攻击研究框架}
+  \label{fig:framework}
+\end{figure}
 
 \subsection{研究点一：基于GCG白盒梯度优化的间接提示注入攻击}
 
