@@ -1,0 +1,15 @@
+\section{可行性分析}
+
+\subsection{研究基础可行性分析}
+
+\subsubsection{研究点一的研究基础}
+在技术理论上，GCG算法已在越狱场景中被广泛验证，Zou等\cite{zou2023universal}实现了88\%白盒攻击成功率和显著的黑盒迁移性；Geisler等\cite{geisler2025attacking}的PGD改进和Yang等\cite{yang2025checkpoint}的Checkpoint-GCG验证了梯度优化方法在不同变体下的有效性，为本研究适配提供了坚实的算法基础。在框架基础上，AgentDojo\cite{debenedetti2024agentdojo}已提供跨4个域（工作区、银行、旅行、Slack）的有状态智能体执行环境、900+测试用例和确定性评估机制，HuggingFace Transformers库已完善支持Qwen3-4B、Gemma-3-4B等开源模型的梯度访问与工具调用格式，为框架扩展提供了成熟的基础设施。在数据支撑上，AgentDojo的80个任务对覆盖多种用户任务与攻击目标组合，可直接用于攻击优化的训练与评估。
+
+\subsubsection{研究点二的研究基础}
+在技术理论上，TAP算法\cite{mehrotra2024tree}在越狱场景中以平均29次查询在GPT-4上实现80--94\%成功率，其树搜索架构和分支剪枝机制已充分验证；Sitawarin等\cite{sitawarin2024pal}的PAL方法验证了代理模型引导的黑盒攻击可行性。在方法实现上，多模型协作（攻击者LLM+评估器LLM+目标LLM）的架构已在PAIR\cite{chao2023jailbreaking}和TAP中被成熟运用，可靠性测试和并行评估在工程实现上无原理性障碍。在数据支撑上，AgentDojo的确定性检查函数可替代LLM判断器用于攻击成功评估，减少评估噪声；同时，Greshake等\cite{greshake2023not}和Liu等\cite{liu2024prompt}的提示注入攻击分类学为设计变异策略提供了理论指导。
+
+\subsection{理论可行性分析}
+在理论可行性方面，本研究各环节技术路线理论完备、逻辑自洽。从原理上看，GCG的离散token梯度优化方法与TAP的树搜索优化方法分别代表白盒与黑盒两大攻击范式，其在越狱场景的成功为间接提示注入场景的迁移提供了理论依据；攻击目标的转换（从"生成肯定响应"到"触发工具调用"）可通过重新设计损失函数和评估标准实现形式化适配；通用攻击的跨场景泛化可通过联合优化多任务的攻击损失函数实现。AgentDojo的有状态环境和确定性评估机制确保了攻击评估的可靠性，HuggingFace Transformers库的梯度接口保障了白盒攻击的实现基础。整体方案无不可实现的理论创新，复杂度可控。
+
+\subsection{实验可行性分析}
+在实验环境方面，开源模型（Qwen3-4B、Gemma-3-4B）可在单张消费级GPU上部署运行，GCG优化所需的梯度计算可通过批处理前向传播高效完成，TAP的树搜索可通过并行API调用加速。在评估协议方面，AgentDojo提供确定性检查函数，无需依赖LLM判断器即可评估攻击成功率，评估结果可靠可复现。在计算资源方面，单次GCG优化约需数小时GPU时间，TAP优化可通过API调用并行化在合理时间内完成，总体实验开销在可接受范围内。在迁移性评估方面，GPT-5可通过API访问进行黑盒评估，开源模型上的攻击可直接迁移测试。
