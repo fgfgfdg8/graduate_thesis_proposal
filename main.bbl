@@ -1,0 +1,329 @@
+\begin{thebibliography}{43}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{#1}
+\expandafter\ifx\csname urlstyle\endcsname\relax\else
+  \urlstyle{same}\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \DeclareUrlCommand\doi{\urlstyle{rm}}
+  \def\eprint#1#2{#2}
+\else
+  \def\doi#1{\href{https://doi.org/#1}{\nolinkurl{#1}}}
+  \let\eprint\href
+\fi
+
+\bibitem[Schick et~al.(2023)Schick, Dwivedi-Yu, Dess\'{i}, Raileanu, Lomeli,
+  Hambro, Zettlemoyer, Cancedda, and Scialom]{schick2023toolformer}
+SCHICK T, DWIVEDI-YU J, DESS\'{i} R, et~al.
+\newblock {Toolformer}: language models can teach themselves to use
+  tools\allowbreak[C]//\allowbreak
+NIPS'23: Proceedings of the 37th International Conference on Neural Information
+  Processing Systems.
+\newblock Red Hook, NY, USA: Curran Associates Inc., 2023.
+
+\bibitem[Yao et~al.(2022)Yao, Zhao, Yu, Du, Shafran, Narasimhan, and
+  Cao]{yao2022react}
+YAO S, ZHAO J, YU D, et~al.
+\newblock {ReAct}: synergizing reasoning and acting in language
+  models\allowbreak[A].
+\newblock 2022.
+
+\bibitem[Xi et~al.(2024)Xi, Chen, Guo, et~al.]{xi2024rise}
+XI Z, CHEN W, GUO X, et~al.
+\newblock The rise and potential of large language model based agents: a
+  survey\allowbreak[J].
+\newblock Science China Information Sciences, 2024, 68: 121101.
+
+\bibitem[Greshake et~al.(2023)Greshake, Abdelnabi, Mishra, Endres, Holz, and
+  Fritz]{greshake2023not}
+GRESHAKE K, ABDELNABI S, MISHRA S, et~al.
+\newblock Not what you've signed up for: compromising real-world
+  {LLM}-integrated applications with indirect prompt
+  injection\allowbreak[C]//\allowbreak
+AISec'23: Proceedings of the 16th ACM Workshop on Artificial Intelligence and
+  Security.
+\newblock New York, NY, USA: Association for Computing Machinery, 2023: 79-90.
+
+\bibitem[Perez et~al.(2022)Perez and Ribeiro]{perez2022ignore}
+PEREZ F, RIBEIRO I.
+\newblock Ignore previous prompt: attack techniques for language
+  models\allowbreak[Z].
+\newblock 2022.
+
+\bibitem[Zou et~al.(2023)Zou, Wang, Carlini, Nasr, Kolter, and
+  Fredrikson]{zou2023universal}
+ZOU A, WANG Z, CARLINI N, et~al.
+\newblock Universal and transferable adversarial attacks on aligned language
+  models\allowbreak[Z].
+\newblock 2023.
+
+\bibitem[Liu et~al.(2024)Liu, Xu, Chen, and Xiao]{liu2024autodan}
+LIU X, XU N, CHEN M, et~al.
+\newblock {AutoDAN}: generating stealthy jailbreak prompts on aligned large
+  language models\allowbreak[C]//\allowbreak
+International Conference on Learning Representations (ICLR).
+\newblock 2024.
+
+\bibitem[Chao et~al.(2023)Chao, Robey, Dobriban, Hassani, Pappas, and
+  Wong]{chao2023jailbreaking}
+CHAO P, ROBEY A, DOBRIBAN E, et~al.
+\newblock Jailbreaking black box large language models in twenty
+  queries\allowbreak[Z].
+\newblock 2023.
+
+\bibitem[Mehrotra et~al.(2024)Mehrotra, Zampetakis, Kassianik, Nelson,
+  Anderson, Singer, and Karbasi]{mehrotra2024tree}
+MEHROTRA A, ZAMPETAKIS M, KASSIANIK P, et~al.
+\newblock Tree of attacks: jailbreaking black-box {LLMs}
+  automatically\allowbreak[C]//\allowbreak
+GLOBERSON A, MACKEY L, BELGRAVE D, et~al.
+\newblock Advances in Neural Information Processing Systems: Vol.~37.
+\newblock Curran Associates, Inc., 2024: 61065-61105.
+
+\bibitem[Liu et~al.(2024)Liu, Jia, Geng, Jia, and Gong]{liu2024formalizing}
+LIU Y, JIA Y, GENG R, et~al.
+\newblock Formalizing and benchmarking prompt injection attacks and
+  defenses\allowbreak[C]//\allowbreak
+33rd {USENIX} Security Symposium ({USENIX} Security 24).
+\newblock Philadelphia, PA: USENIX Association, 2024: 1831-1847.
+
+\bibitem[Yi et~al.(2025)Yi, Xie, Zhu, Kiciman, Sun, Xie, and
+  Wu]{yi2025benchmarking}
+YI J, XIE Y, ZHU B, et~al.
+\newblock Benchmarking and defending against indirect prompt injection attacks
+  on large language models\allowbreak[C]//\allowbreak
+Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data
+  Mining V.1 (KDD'25).
+\newblock 2025: 12.
+
+\bibitem[Debenedetti et~al.(2024)Debenedetti, Zhang, Balunovic, Beurer-Kellner,
+  Fischer, and Tram\`{e}r]{debenedetti2024agentdojo}
+DEBENEDETTI E, ZHANG J, BALUNOVIC M, et~al.
+\newblock {AgentDojo}: a dynamic environment to evaluate prompt injection
+  attacks and defenses for {LLM} agents\allowbreak[C]//\allowbreak
+38th Conference on Neural Information Processing Systems (NeurIPS 2024) Track
+  on Datasets and Benchmarks.
+\newblock 2024.
+
+\bibitem[Geisler et~al.(2025)Geisler, Wollschl\"{a}ger, Abdalla, Gasteiger, and
+  G\"{u}nnemann]{geisler2025attacking}
+GEISLER S, WOLLSCHL\"{a}GER T, ABDALLA M~H~I, et~al.
+\newblock Attacking large language models with projected gradient
+  descent\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Wen et~al.(2023)Wen, Jain, Kirchenbauer, Goldblum, Geiping, and
+  Goldstein]{wen2023hard}
+WEN Y, JAIN N, KIRCHENBAUER J, et~al.
+\newblock Hard prompts made easy: gradient-based discrete optimization for
+  prompt tuning and discovery\allowbreak[C]//\allowbreak
+Advances in Neural Information Processing Systems: Vol.~36.
+\newblock 2023.
+
+\bibitem[Andriushchenko et~al.(2025)Andriushchenko, Croce, and
+  Flammarion]{andriushchenko2025jailbreaking}
+ANDRIUSHCHENKO M, CROCE F, FLAMMARION N.
+\newblock Jailbreaking leading safety-aligned {LLMs} with simple adaptive
+  attacks\allowbreak[C]//\allowbreak
+International Conference on Learning Representations (ICLR).
+\newblock 2025.
+
+\bibitem[Sitawarin et~al.(2024)Sitawarin, Mu, Wagner, and
+  Araujo]{sitawarin2024pal}
+SITAWARIN C, MU N, WAGNER D, et~al.
+\newblock {PAL}: proxy-guided black-box attack on large language
+  models\allowbreak[Z].
+\newblock 2024.
+
+\bibitem[Chen et~al.(2024)Chen, Chen, Goldstein, Huang, and
+  Zhou]{chen2024instructzero}
+CHEN L, CHEN J, GOLDSTEIN T, et~al.
+\newblock {InstructZero}: efficient instruction optimization for black-box
+  large language models\allowbreak[C]//\allowbreak
+Proceedings of Machine Learning Research: Vol. 235\quad Proceedings of the 41st
+  International Conference on Machine Learning.
+\newblock PMLR, 2024.
+
+\bibitem[Pasquini et~al.(2024)Pasquini, Strohmeier, and
+  Troncoso]{pasquini2024neural}
+PASQUINI D, STROHMEIER M, TRONCOSO C.
+\newblock {Neural Exec}: learning (and learning from) execution triggers for
+  prompt injection attacks\allowbreak[Z].
+\newblock 2024.
+
+\bibitem[Fu et~al.(2024)Fu, Li, Wang, Liu, Gupta, Berg-Kirkpatrick, and
+  Fernandes]{fu2024imprompter}
+FU X, LI S, WANG Z, et~al.
+\newblock {Imprompter}: tricking {LLM} agents into improper tool
+  use\allowbreak[Z].
+\newblock 2024.
+
+\bibitem[Zhan et~al.(2025)Zhan, Fang, Panchal, and Kang]{zhan2025adaptive}
+ZHAN Q, FANG R, PANCHAL H~S, et~al.
+\newblock Adaptive attacks break defenses against indirect prompt injection
+  attacks on {LLM} agents\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Wu et~al.(2025)Wu, Shah, Koh, Salakhutdinov, Fried, and
+  Raghunathan]{wu2025dissecting}
+WU C~H, SHAH R, KOH J~Y, et~al.
+\newblock Dissecting adversarial robustness of multimodal {LM}
+  agents\allowbreak[C]//\allowbreak
+International Conference on Learning Representations (ICLR).
+\newblock 2025.
+
+\bibitem[Liu et~al.(2024)Liu, Deng, Li, Wang, Wang, Wang, Zhang, Liu, Wang,
+  Zheng, and Liu]{liu2024prompt}
+LIU Y, DENG G, LI Y, et~al.
+\newblock Prompt injection attack against {LLM}-integrated
+  applications\allowbreak[A].
+\newblock 2024.
+
+\bibitem[Zhang et~al.(2024)Zhang, Jin, Yu, Liu, Xue, and Jin]{zhang2024goal}
+ZHANG C, JIN M, YU Q, et~al.
+\newblock Goal-guided generative prompt injection attack on large language
+  models\allowbreak[Z].
+\newblock 2024.
+
+\bibitem[Wang et~al.(2025)Wang, Siu, Ye, Shi, Nie, Zhao, Wang, Guo, and
+  Song]{wang2025agentvigil}
+WANG Z, SIU V, YE Z, et~al.
+\newblock {AGENTVIGIL}: generic black-box red-teaming for indirect prompt
+  injection against {LLM} agents\allowbreak[A].
+\newblock 2025.
+
+\bibitem[Yu et~al.(2025)Yu, Shao, Miao, and Shi]{yu2025promptfuzz}
+YU J, SHAO Y, MIAO H, et~al.
+\newblock {PromptFuzz}: harnessing fuzzing techniques for robust testing of
+  prompt injection in {LLMs}\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Labunets et~al.(2025)Labunets, Pandya, Hooda, Fu, and
+  Fernandes]{labunets2025computing}
+LABUNETS A, PANDYA N~V, HOODA A, et~al.
+\newblock Computing optimization-based prompt injections against closed-weights
+  models by misusing a fine-tuning {API}\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Shi et~al.(2025)Shi, Yuan, Tie, Zhou, Gong, and Sun]{shi2025prompt}
+SHI J, YUAN Z, TIE G, et~al.
+\newblock Prompt injection attack to tool selection in {LLM}
+  agents\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Chen et~al.(2025)Chen, Piet, Sitawarin, and Wagner]{chen2025struq}
+CHEN S, PIET J, SITAWARIN C, et~al.
+\newblock {StruQ}: defending against prompt injection with structured
+  queries\allowbreak[C]//\allowbreak
+USENIX Security Symposium.
+\newblock 2025.
+
+\bibitem[Wallace et~al.(2024)Wallace, Weng, Xiao, Heidecke, Leike, and
+  Beutel]{wallace2024instruction}
+WALLACE E, WENG L, XIAO K, et~al.
+\newblock The instruction hierarchy: training {LLMs} to prioritize privileged
+  instructions\allowbreak[A].
+\newblock 2024.
+
+\bibitem[Chen et~al.(2025)Chen, Zharmagambetov, Mahloujifar, Chaudhuri, Wagner,
+  and Guo]{chen2025secalign}
+CHEN S, ZHARMAGAMBETOV A, MAHLOUJIFAR S, et~al.
+\newblock {SecAlign}: defending against prompt injection with preference
+  optimization\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Zhu et~al.(2025)Zhu, Yang, Wang, Guo, and Wang]{zhu2025melon}
+ZHU K, YANG X, WANG J, et~al.
+\newblock {Melon}: provable defense against indirect prompt injection attacks
+  in {AI} agents\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Hung et~al.(2025)Hung, Ko, Rawat, Chung, Hsu, and
+  Chen]{hung2025attention}
+HUNG K~H, KO C~Y, RAWAT A, et~al.
+\newblock {Attention Tracker}: detecting prompt injection attacks in
+  {LLMs}\allowbreak[C]//\allowbreak
+CHIRUZZO L, RITTER A, WANG L.
+\newblock Findings of the Association for Computational Linguistics: {NAACL}
+  2025.
+\newblock Albuquerque, New Mexico: Association for Computational Linguistics,
+  2025: 2309-2322.
+
+\bibitem[Jacob et~al.(2025)Jacob, Alzahrani, Hu, Alomair, and
+  Wagner]{jacob2025promptshield}
+JACOB D, ALZAHRANI H, HU Z, et~al.
+\newblock {PromptShield}: deployable detection for prompt injection
+  attacks\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Liu et~al.(2025)Liu, Jia, Jia, Song, and Gong]{liu2025datasentinel}
+LIU Y, JIA Y, JIA J, et~al.
+\newblock {DataSentinel}: a game-theoretic detection of prompt injection
+  attacks\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Hackett et~al.(2025)Hackett, Birch, Trawicki, Suri, and
+  Garraghan]{hackett2025bypassing}
+HACKETT W, BIRCH L, TRAWICKI S, et~al.
+\newblock Bypassing prompt injection and jailbreak detection in {LLM}
+  guardrails\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Wang et~al.(2025)Wang, Wu, Xia, Yu, Zhang, Rossi, Yao, and
+  McAuley]{wang2025cacheprune}
+WANG R, WU J, XIA Y, et~al.
+\newblock {CachePrune}: neural-based attribution defense against indirect
+  prompt injection attacks\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Zhong et~al.(2025)Zhong, Chen, Wang, McCall, Titzer, Miller, and
+  Gibbons]{zhong2025rtbas}
+ZHONG P~Y, CHEN S, WANG R, et~al.
+\newblock {RTBAS}: defending {LLM} agents against prompt injection and privacy
+  leakage\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Debenedetti et~al.(2025)Debenedetti, Shumailov, Fan, Hayes, Carlini,
+  Fabian, Kern, Shi, Terzis, and Tram\`{e}r]{debenedetti2025defeating}
+DEBENEDETTI E, SHUMAILOV I, FAN T, et~al.
+\newblock Defeating prompt injections by design\allowbreak[J].
+\newblock CoRR, 2025, abs/2503.18813.
+
+\bibitem[Zverev et~al.(2025)Zverev, Abdelnabi, Fritz, Tabesh, and
+  Lampert]{zverev2025can}
+ZVEREV E, ABDELNABI S, FRITZ M, et~al.
+\newblock Can {LLMs} separate instructions from data? and what do we even mean
+  by that?\allowbreak[C]//\allowbreak
+International Conference on Learning Representations (ICLR).
+\newblock 2025.
+
+\bibitem[Zverev et~al.(2025)Zverev, Kortukov, Panfilov, Volkova, Tabesh,
+  Lapuschkin, Samek, and Lampert]{zverev2025aside}
+ZVEREV E, KORTUKOV E, PANFILOV A, et~al.
+\newblock {ASIDE}: architectural separation of instructions and data in
+  language models\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Zhan et~al.(2024)Zhan, Liang, Ying, and Kang]{zhan2024injecagent}
+ZHAN Q, LIANG Z, YING Z, et~al.
+\newblock {InjecAgent}: benchmarking indirect prompt injections in
+  tool-integrated large language model agents\allowbreak[C]//\allowbreak
+KU L~W, MARTINS A, SRIKUMAR V.
+\newblock Findings of the Association for Computational Linguistics: {ACL}
+  2024.
+\newblock Bangkok, Thailand: Association for Computational Linguistics, 2024:
+  10471-10506.
+
+\bibitem[Fang et~al.(2025)Fang, Codas, Zhan, Zharmagambetov, Grinberg, Wang,
+  Kamar, and Kang]{fang2025securing}
+FANG R, CODAS A, ZHAN Q, et~al.
+\newblock Securing {AI} agents with information-flow control\allowbreak[Z].
+\newblock 2025.
+
+\bibitem[Yang et~al.(2025)Yang, Stevanoski, Meeus, and
+  de~Montjoye]{yang2025checkpoint}
+YANG X, STEVANOSKI B, MEEUS M, et~al.
+\newblock {Checkpoint-GCG}: auditing and attacking fine-tuning-based prompt
+  injection defenses\allowbreak[Z].
+\newblock 2025.
+
+\end{thebibliography}
