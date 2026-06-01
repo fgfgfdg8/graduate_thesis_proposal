@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 780" font-family="SimSun, serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+    <marker id="arrowhead-blue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+    </marker>
+    <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="550" y="35" text-anchor="middle" font-size="20" font-weight="bold">ProbeRL: 强化学习引导覆盖搜索的LLM智能体提示注入攻击自动化框架</text>
+
+  <!-- Top: Target Agent -->
+  <rect x="420" y="55" width="260" height="50" rx="8" fill="#f0f9ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="550" y="85" text-anchor="middle" font-size="14" font-weight="bold">目标LLM智能体 (AgentDojo)</text>
+
+  <!-- Left column: Attack pipeline -->
+  <rect x="30" y="150" width="320" height="50" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="190" y="175" text-anchor="middle" font-size="13" font-weight="bold">研究点一: RL引导覆盖搜索策略</text>
+  <text x="190" y="192" text-anchor="middle" font-size="11">GRPO策略优化 + MCTS树搜索 + 覆盖反馈</text>
+
+  <rect x="30" y="230" width="150" height="80" rx="6" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="105" y="255" text-anchor="middle" font-size="11" font-weight="bold">GRPO策略模型</text>
+  <text x="105" y="275" text-anchor="middle" font-size="10">π_φ 候选生成</text>
+  <text x="105" y="290" text-anchor="middle" font-size="10">覆盖加权更新</text>
+
+  <rect x="200" y="230" width="150" height="80" rx="6" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="275" y="255" text-anchor="middle" font-size="11" font-weight="bold">MCTS搜索树</text>
+  <text x="275" y="275" text-anchor="middle" font-size="10">覆盖引导展开</text>
+  <text x="275" y="290" text-anchor="middle" font-size="10">Score_sel选择</text>
+
+  <!-- Middle column: Reward & Coverage -->
+  <rect x="390" y="150" width="320" height="50" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="550" y="175" text-anchor="middle" font-size="13" font-weight="bold">研究点二: 步骤级密集奖励</text>
+  <text x="550" y="192" text-anchor="middle" font-size="11">R_tool + R_text + R_env 黑盒可观测信号</text>
+
+  <rect x="390" y="230" width="100" height="80" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="440" y="255" text-anchor="middle" font-size="11" font-weight="bold">R_tool</text>
+  <text x="440" y="275" text-anchor="middle" font-size="10">工具调用</text>
+  <text x="440" y="290" text-anchor="middle" font-size="10">偏差信号</text>
+
+  <rect x="500" y="230" width="100" height="80" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="550" y="255" text-anchor="middle" font-size="11" font-weight="bold">R_text</text>
+  <text x="550" y="275" text-anchor="middle" font-size="10">文本异常</text>
+  <text x="550" y="290" text-anchor="middle" font-size="10">信号</text>
+
+  <rect x="610" y="230" width="100" height="80" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="660" y="255" text-anchor="middle" font-size="11" font-weight="bold">R_env</text>
+  <text x="660" y="275" text-anchor="middle" font-size="10">环境变化</text>
+  <text x="660" y="290" text-anchor="middle" font-size="10">信号</text>
+
+  <!-- Right column: Coverage & Risk -->
+  <rect x="750" y="150" width="320" height="50" rx="8" fill="#faf5ff" stroke="#9333ea" stroke-width="2"/>
+  <text x="910" y="175" text-anchor="middle" font-size="13" font-weight="bold">研究点三: 覆盖调度与风险评分</text>
+  <text x="910" y="192" text-anchor="middle" font-size="11">双重覆盖度量 + RiskScore风险评分</text>
+
+  <rect x="750" y="230" width="150" height="80" rx="6" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5"/>
+  <text x="825" y="255" text-anchor="middle" font-size="11" font-weight="bold">双重覆盖</text>
+  <text x="825" y="275" text-anchor="middle" font-size="10">C_outcome</text>
+  <text x="825" y="290" text-anchor="middle" font-size="10">C_behavior</text>
+
+  <rect x="920" y="230" width="150" height="80" rx="6" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5"/>
+  <text x="995" y="255" text-anchor="middle" font-size="11" font-weight="bold">RiskScore</text>
+  <text x="995" y="275" text-anchor="middle" font-size="10">环境差异</text>
+  <text x="995" y="290" text-anchor="middle" font-size="10">加权评分</text>
+
+  <!-- Center: Execution Engine -->
+  <rect x="250" y="360" width="600" height="55" rx="10" fill="#1e3a5f" stroke="#0f172a" stroke-width="2"/>
+  <text x="550" y="385" text-anchor="middle" font-size="15" font-weight="bold" fill="white">ProbeRL 覆盖搜索主循环 (算法1)</text>
+  <text x="550" y="403" text-anchor="middle" font-size="11" fill="#e0e7ff">MCTS搜索阶段 ⟷ GRPO策略更新阶段 (交替执行)</text>
+
+  <!-- Bottom: AIAD Defense -->
+  <rect x="150" y="470" width="800" height="50" rx="8" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+  <text x="550" y="495" text-anchor="middle" font-size="13" font-weight="bold">研究点四: 攻击驱动自适应防御 (AIAD)</text>
+  <text x="550" y="512" text-anchor="middle" font-size="11">攻击发现 → 防御生成 → 验证闭环</text>
+
+  <!-- AIAD three layers -->
+  <rect x="120" y="545" width="250" height="65" rx="6" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="245" y="568" text-anchor="middle" font-size="12" font-weight="bold">指令隔离层</text>
+  <text x="245" y="585" text-anchor="middle" font-size="10">注入模式→隔离规则</text>
+  <text x="245" y="600" text-anchor="middle" font-size="10">指令优先级界定</text>
+
+  <rect x="425" y="545" width="250" height="65" rx="6" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="550" y="568" text-anchor="middle" font-size="12" font-weight="bold">参数校验层</text>
+  <text x="550" y="585" text-anchor="middle" font-size="10">参数篡改路径→范围约束</text>
+  <text x="550" y="600" text-anchor="middle" font-size="10">敏感参数确认机制</text>
+
+  <rect x="730" y="545" width="250" height="65" rx="6" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="855" y="568" text-anchor="middle" font-size="12" font-weight="bold">行为监控层</text>
+  <text x="855" y="585" text-anchor="middle" font-size="10">脆弱调用链→异常检测</text>
+  <text x="855" y="600" text-anchor="middle" font-size="10">运行时中断确认</text>
+
+  <!-- Closed loop arrow from AIAD back to ProbeRL -->
+  <path d="M 550 470 C 550 440, 100 440, 100 388 L 100 388 L 250 388" 
+        fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arrowhead-red)"/>
+  <text x="80" y="435" font-size="10" fill="#dc2626" transform="rotate(-90, 80, 435)">闭环验证</text>
+
+  <!-- Arrows from top modules to execution engine -->
+  <line x1="190" y1="310" x2="370" y2="360" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrowhead-red)"/>
+  <line x1="550" y1="310" x2="550" y2="360" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
+  <line x1="910" y1="310" x2="730" y2="360" stroke="#9333ea" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- Arrow from target agent down to attack pipeline -->
+  <line x1="450" y1="105" x2="190" y2="150" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrowhead-blue)"/>
+  <line x1="550" y1="105" x2="550" y2="150" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
+  <line x1="650" y1="105" x2="910" y2="150" stroke="#9333ea" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- Arrow from execution engine to AIAD -->
+  <line x1="550" y1="415" x2="550" y2="470" stroke="#ca8a04" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="565" y="445" font-size="10" fill="#ca8a04">攻击发现</text>
+
+  <!-- Bottom: Output -->
+  <rect x="250" y="650" width="250" height="45" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="375" y="672" text-anchor="middle" font-size="12" font-weight="bold">覆盖扩展的攻击轨迹集</text>
+  <text x="375" y="688" text-anchor="middle" font-size="10">风险排序的漏洞报告</text>
+
+  <rect x="600" y="650" width="250" height="45" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <text x="725" y="672" text-anchor="middle" font-size="12" font-weight="bold">验证通过的防御策略</text>
+  <text x="725" y="688" text-anchor="middle" font-size="10">三层防御架构部署</text>
+
+  <!-- Arrows from AIAD to outputs -->
+  <line x1="400" y1="610" x2="375" y2="650" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="700" y1="610" x2="725" y2="650" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- Feedback arrow from defense output back to target -->
+  <path d="M 850 673 L 950 673 L 950 80 L 680 80" 
+        fill="none" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowhead-blue)"/>
+  <text x="960" y="400" font-size="10" fill="#2563eb" transform="rotate(90, 960, 400)">防御部署→重新攻击验证</text>
+
+  <!-- Legend -->
+  <rect x="30" y="710" width="1040" height="55" rx="6" fill="#fafafa" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="50" y="730" font-size="11" font-weight="bold">图例:</text>
+  <rect x="100" y="718" width="14" height="14" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="120" y="730" font-size="10">覆盖搜索</text>
+  <rect x="200" y="718" width="14" height="14" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="220" y="730" font-size="10">密集奖励</text>
+  <rect x="300" y="718" width="14" height="14" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5"/>
+  <text x="320" y="730" font-size="10">覆盖调度</text>
+  <rect x="400" y="718" width="14" height="14" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="420" y="730" font-size="10">自适应防御</text>
+  <line x1="520" y1="725" x2="560" y2="725" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <text x="570" y="730" font-size="10">数据/控制流</text>
+  <line x1="670" y1="725" x2="710" y2="725" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowhead-red)"/>
+  <text x="720" y="730" font-size="10">反馈/验证环路</text>
+</svg>

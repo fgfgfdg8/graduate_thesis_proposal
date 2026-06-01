@@ -6,6 +6,10 @@
 % \usepackage[inkscapelatex=false]{svg}
 \usepackage{amsmath} % 数学公式支持
 \usepackage{amssymb} % 数学符号支持(\mathbb等)
+\usepackage{multirow} % 表格合并行
+\usepackage{booktabs} % 三线表
+\usepackage{tikz} % TikZ绘图
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc, backgrounds} % TikZ库
 \usepackage{algorithm} % 伪代码算法块
 \usepackage{algpseudocode} % 伪代码排版（支持\Comment）
 \usepackage{url} % gbt7714生成的.bbl需要\DeclareUrlCommand等命令
@@ -14,9 +18,9 @@
 \bibliographystyle{gbt7714-numerical} % GB/T 7714-2015数字编号样式
 
 
-\title{面向LLM智能体的自动化提示注入攻击研究}
+\title{面向LLM智能体的自动提示注入攻防技术研究}
 \author{吴丰艺}
-\date{2026年6月}
+\date{2026年5月}
 
 \begin{document}
 

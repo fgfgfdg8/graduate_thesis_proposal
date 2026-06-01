@@ -1,223 +1,250 @@
 \section{研究内容及方法}
 
-本研究围绕"如何将自动化对抗攻击方法从越狱场景迁移到LLM智能体间接提示注入场景"这一核心问题，以AgentDojo评估框架为基础平台，系统性地适配和评估GCG（白盒梯度优化）与TAP（黑盒迭代搜索）两大类攻击方法，并通过全面的消融实验与迁移性分析揭示影响攻击成功的关键因素。具体研究内容分为以下两个方面。
+本研究围绕“如何构建面向LLM智能体的自动化提示注入攻防框架”这一核心问题，提出ProbeRL（Prompt-injection REinforced cOverage-guided Search）框架，以AgentDojo评估框架为基础平台，采用GRPO（Group Relative Policy Optimization）\cite{shao2024deepseekmath}策略训练两个同源对称模型：攻击策略$\pi_\phi^{\text{atk}}$训练生成对抗性提示注入样本，防御策略$\pi_\psi^{\text{def}}$训练生成拒绝对抗样本的检测与拦截决策。攻击侧通过步骤级密集奖励和停滞感知搜索扩展实现高效的自动化攻击；防御侧通过语义注入检测模型和启发式规则防御实现分层过滤与拦截。两个策略共享相同的GRPO训练范式，但奖励函数与训练目标对称相反，从而实现攻击侧的发现持续反馈至防御侧驱动防御改进。具体研究内容分为以下两个方面。
 
 \subsection{研究框架}
 
-本研究整体遵循"威胁建模、框架扩展、攻击适配、实验评估、结果分析"的研究路线，各环节逻辑自洽、紧密衔接。在威胁建模阶段，明确间接提示注入的攻击者能力边界与优化目标形式化；在框架扩展阶段，将AgentDojo与HuggingFace Transformers库集成，实现白盒梯度访问与标准化攻击接口；在攻击适配阶段，分别实现GCG和TAP在间接提示注入场景下的算法改造与优化策略；在实验评估阶段，在跨多域、多模型的80个任务对上进行全面实验；在结果分析阶段，通过消融实验和迁移性研究揭示攻击成功的关键影响因素。研究框架如图~\ref{fig:framework}所示。
+本研究整体遵循“威胁建模、攻击策略+防御策略协同优化、攻防互补部署”的研究路线，各环节逻辑自洽、紧密衔接。在威胁建模阶段，明确LLM智能体间接提示注入的攻击面与优化目标的形式化定义；在攻击策略+防御策略协同优化阶段，采用GRPO策略同时训练攻击策略$\pi_\phi^{\text{atk}}$和防御策略$\pi_\psi^{\text{def}}$，两者共享训练范式但奖励函数对称相反；在攻击侧，设计步骤级密集奖励和停滞感知搜索扩展实现高效攻击搜索；在防御侧，设计语义注入检测模型和启发式规则防御实现分层拦截；在攻防互补部署阶段，语义检测模型做前期过滤，启发式规则做兜底保护，攻击侧的发现持续反馈驱动防御改进。研究框架如图~\ref{fig:framework}所示。
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{figures/research_framework.pdf}
-  \caption{面向LLM智能体的自动化提示注入攻击研究框架}
-  \label{fig:framework}
-\end{figure}
+\input{figures/research_framework_tikz}
 
-\subsection{研究点一：基于GCG白盒梯度优化的间接提示注入攻击}
+\subsection{威胁模型与优化问题定义}
+
+在阐述具体研究内容之前，本节对本文所研究的LLM智能体自动化提示注入攻击问题进行形式化定义，明确威胁模型、攻击面与优化目标，为后续研究点提供统一的问题定义基准。
+
+\subsubsection{威胁模型与攻击面}
+
+设目标LLM智能体为$\mathcal{A}$，其底层语言模型为$\mathcal{M}_\theta$，配备工具集$\mathcal{T} = \{t_1, t_2, \ldots, t_m\}$和系统提示$s_{\text{sys}}$。智能体接收用户指令$x_{\text{inst}}$，在执行过程中可能调用外部工具并获取外部数据上下文$x_{\text{ctx}}$（如邮件内容、网页文本、文档片段等）。
+
+本研究采用严格黑盒威胁模型\cite{yin2026pismith, wang2025agentvigil}：攻击者无法访问智能体内部状态（模型参数、注意力权重、推理链），仅能通过文本通道与智能体交互。攻击面锚定于两种提示注入方式：（1）间接提示注入（Indirect Prompt Injection, IPI），攻击者将恶意指令$p$嵌入智能体在运行过程中检索的外部数据上下文$x_{\text{ctx}}$，间接操纵智能体行为；（2）直接提示注入（Direct Prompt Injection, DPI），攻击者在用户输入中嵌入恶意指令。本研究聚焦于IPI，因其更贴近真实部署场景中的攻击模式\cite{greshake2023not}。
+
+设注入操作为$\oplus$，将注入提示$p$嵌入数据上下文$x_{\text{ctx}}$的特定位置。攻击后智能体接收的输入为$(x_{\text{inst}}, x_{\text{ctx}} \oplus p)$，输出为智能体响应$r$和工具调用序列$\tau = \langle a_1, a_2, \ldots, a_L \rangle$，其中每个动作$a_l$包含工具调用$f_l$及其参数$p_l$。
+
+\subsubsection{攻击策略的优化目标}
+
+设攻击者拥有一组训练样本$\mathcal{D} = \{(x_{\text{inst}}^{(i)}, x_{\text{ctx}}^{(i)}, g^{(i)})\}_{i=1}^{|\mathcal{D}|}$，其中每条样本由用户指令$x_{\text{inst}}$、数据上下文$x_{\text{ctx}}$和攻击者目标$g$（如指定智能体执行特定工具调用或产生特定环境状态变更）构成。攻击者训练攻击策略$\pi_\phi$（以LLM为策略网络），对给定输入生成注入提示$p$。
+
+本文沿用PISmith\cite{yin2026pismith}的形式化框架，将攻击策略训练建模为如下优化问题：
+\begin{equation}
+  \max_{\pi_\phi} \frac{1}{|\mathcal{D}|} \sum_{(x_{\text{inst}}, x_{\text{ctx}}, g) \in \mathcal{D}} \mathbb{E}_{p \sim \pi_\phi(\cdot \mid x_{\text{inst}}, x_{\text{ctx}}, g)} \left[ r\left(\mathcal{A}(x_{\text{inst}}, x_{\text{ctx}} \oplus p), g\right) \right]
+  \label{eq:attack_objective}
+\end{equation}
+其中$\mathcal{A}(x_{\text{inst}}, x_{\text{ctx}} \oplus p)$为智能体在受攻击输入下的响应，$r(\cdot, g) \in \{0, 1\}$为二元奖励函数：若智能体响应满足攻击者目标$g$则$r=1$，否则$r=0$。与PISmith针对无防御或单一防御的LLM不同，本研究的优化目标面向配备工具集的智能体$\mathcal{A}$，攻击成功不仅要求智能体输出包含目标内容，还要求智能体执行正确的工具调用并传递合法参数，且攻击效果通过实际环境状态变更验证。
+
+\subsubsection{基于强化学习的策略训练}
+
+采用GRPO训练攻击策略$\pi_\phi$。对每条训练样本$(x_{\text{inst}}, x_{\text{ctx}}, g)$，采样$K$个注入提示$\{p_i\}_{i=1}^K \sim \pi_\phi$，计算对应奖励$\{r_i\}_{i=1}^K$。每个样本的优势估计为组内标准化：
+\begin{equation}
+  A_i = \frac{r_i - \bar{r}}{\sigma_r + \epsilon}, \quad \bar{r} = \frac{1}{K}\sum_{j=1}^K r_j, \quad \sigma_r = \sqrt{\frac{1}{K}\sum_{j=1}^K (r_j - \bar{r})^2}
+  \label{eq:grpo_advantage}
+\end{equation}
+其中$\epsilon$为数值稳定常数。策略更新最小化裁剪代理损失与KL散度惩罚之和：
+\begin{equation}
+  \mathcal{L}_{\text{GRPO}} = -\frac{1}{K}\sum_{i=1}^K \min\left(\rho_i A_i, \, \text{clip}(\rho_i, 1-\epsilon_c, 1+\epsilon_c) A_i\right) + \beta_{\text{KL}} \cdot D_{\text{KL}}(\pi_\phi \| \pi_{\text{ref}})
+  \label{eq:grpo_loss}
+\end{equation}
+其中$\rho_i = \pi_\phi(p_i) / \pi_{\phi}^{\text{old}}(p_i)$为重要性采样比率，$\epsilon_c$为裁剪阈值，$\beta_{\text{KL}}$控制KL散度惩罚强度，$\pi_{\text{ref}}$为参考策略。
+
+\subsubsection{奖励信号稀疏背景下的策略优化}
+
+PISmith\cite{yin2026pismith}揭示了标准GRPO在强防御下遭遇的"奖励稀疏导致策略坍塌"（entropy collapse）问题：绝大多数采样注入提示被防御拦截，仅极少数成功样本提供正反馈，策略快速过拟合至少数成功模式导致探索终止。该工作引入自适应熵正则化和动态优势加权缓解此问题。然而，本研究的智能体攻击场景面临更严峻的稀疏性挑战：
+
+\textbf{（1）智能体攻击的成功条件更为严格。}攻击成功不仅要求智能体输出特定文本，还要求执行正确的工具调用$f_l$、传递合法参数$p_l$，并通过环境状态变更验证。这种多维度成功条件使攻击成功率进一步降低，奖励稀疏性更为严重。
+
+\textbf{（2）中间步骤的有效信号未被利用。}在智能体多步交互场景中，攻击可能在某一中间步骤已成功使智能体偏离预期行为（如调用了非预期工具、传递了异常参数），但最终未完成攻击目标。现有二元奖励$r \in \{0, 1\}$无法区分"完全无效"与"部分有效但最终未成功"的攻击步骤，导致信用分配困难。
+
+\textbf{（3）策略搜索缺乏停滞突破机制。}GRPO的策略梯度优化仅关注攻击成功率，当策略陷入局部最优（连续多步无法获得正反馈）时缺乏有效的突破机制，导致搜索停滞。
+
+上述分析表明，仅依赖策略梯度优化的RL方法无法有效解决智能体提示注入攻击中的搜索效率问题，需要引入步骤级密集奖励信号和停滞感知的搜索扩展机制。这正是本研究提出ProbeRL框架的出发点。
+
+\subsection{数据集的选取}
+
+本研究选取AgentDojo\cite{debenedetti2024agentdojo}作为训练与评估数据集。AgentDojo是一个于NIPS 2024上提出的Agent安全基准测试数据集，基于银行服务、日常工作、旅行、即时通信等四大真实的Agent应用场景，由于其有状态环境、确定性检查函数和跨域多样化任务的特性，成为研究LLM智能体提示注入攻击与防御的理想平台，是目前使用最广泛的Agent安全数据评估基准之一。AgentDojo具有如下特性：
+
+\textbf{（1）有状态环境支撑步骤级密集奖励计算。} AgentDojo提供4个域（工作区、银行、旅行、Slack）的有状态智能体执行环境，每个域包含可观测、可操作的环境状态（如银行余额、文件列表、邮件收件箱）。这种有状态特性使得本研究提出的步骤级密集奖励（特别是环境变化信号$\mathcal{R}_{\text{env}}$）和基于环境差异的风险评分RiskScore的计算成为可能。相比之下，InjecAgent\cite{zhan2024injecagent}等基准仅提供无状态的对话交互，无法获取攻击前后的环境状态差异。
+
+\textbf{（2）确定性检查函数提供精确的攻击成功判定。} AgentDojo采用确定性检查函数验证工具调用名称和参数是否匹配攻击者目标，而非简单的字符串匹配或LLM判断。这一特性对奖励计算至关重要：工具调用偏差信号需要精确判断攻击是否触发了与预期不同的工具调用，环境变化信号需要精确计算攻击前后的状态差异。仅依赖LLM-as-judge的评估方法（准确率约50\%）无法提供奖励计算所需的精确信号。
+
+\textbf{（3）跨域多样化攻击搜索空间。} AgentDojo包含97个UserTask和35个InjectionTask，构成949个UT-IT任务对，覆盖工作区管理（文件操作、日程管理）、银行服务（资金转账、账户查询）、旅行预订（航班搜索、酒店预订）和Slack通信（消息发送、频道管理）4个域，每个域包含5--10个不同的工具（详见表~\ref{tab:agentdojo_overview}、表~\ref{tab:agentdojo_it}和表~\ref{tab:agentdojo_ut}）。这种跨域多样性为攻击策略提供了丰富的搜索空间：不同域的工具调用模式、参数结构和环境状态类型差异显著，有效验证攻击策略的跨域泛化能力。
+
+\textbf{（4）丰富的攻击-防御评估基线。} AgentDojo已积累大量攻击与防御方法的评估结果，包括手工攻击（71\% ASR）、StruQ防御（2\% ASR）和CaMeL防御（0\% ASR）等基线数据，为ProbeRL攻击效果的对比分析提供了参考标准。
+
+\input{tables/agentdojo_tasks}
+
+\subsection{研究点一：基于强化学习的自动提示注入攻击策略}
 
 \subsubsection{研究内容}
 
-围绕白盒梯度优化方法从越狱到间接提示注入场景的迁移问题，研究GCG算法在智能体工具调用环境中的适配与优化。首先，扩展AgentDojo框架以支持HuggingFace Transformers库集成，实现对开源模型（Qwen3-4B、Gemma-3-4B）的白盒梯度访问，解决模型特定聊天模板、工具调用格式和消息格式处理等工程挑战；其次，设计适应间接提示注入的优化目标函数，将攻击目标从"生成初始肯定响应"转变为"触发特定工具调用并传递正确参数"的二元判定，并开发tokenization验证机制确保优化与部署环境间的编码一致性；然后，实现单任务攻击与通用攻击两种优化配置：单任务攻击针对每个具体测试用例单独优化注入字符串，通用攻击则在多任务、多场景上联合优化单一注入字符串以发现广泛适用的漏洞模式；在此基础上，设计前缀注入、后缀注入和前缀+后缀组合等多种注入结构策略，探索注入位置对攻击效果的影响；同时，实现梯度引导优化与随机搜索的消融对照，评估梯度信号相对于随机搜索的实际贡献。
-
-\subsubsection{关键问题与拟采用方案}
-
-\paragraph{关键问题1：优化目标与真实攻击目标之间的对齐差距}
-
-越狱场景中，攻击者仅需模型输出包含被禁止内容的文本片段，目标序列$y^*$可直接指定为有害文本（如炸弹制作步骤），优化成功即代表攻击成功。然而在间接提示注入场景中，攻击成功的判定发生了根本性变化，攻击者需要智能体\emph{执行特定的工具调用}（如调用\texttt{send\_email}向攻击者邮箱发送邮件、调用\texttt{transfer\_funds}向指定账户转账），而非仅仅生成有害文本。这一转变带来三重对齐挑战：第一，目标序列的构造难度显著增加，工具调用需要严格遵循JSON格式规范（包含正确的工具名称、参数键和参数值），任何格式偏差（如缺少引号、参数名拼写错误）都会导致调用失败，而JSON格式的结构化token（括号、引号、冒号）消耗大量目标长度，使优化更加困难；第二，最优目标形式不唯一，直接优化工具调用JSON可能过于刚硬（模型通常先以自然语言确认再调用工具），而优化自然语言肯定响应（如"I will send an email to attacker@example.com"）虽更符合模型输出分布，但无法保证后续必定执行正确工具调用，存在"口头承诺但不执行"的风险；第三，多步攻击存在延迟成功问题，部分攻击目标需要多轮工具调用才能完成（如先搜索文件再删除），而优化只能针对首轮输出，无法保证后续步骤的执行。
-
-设LLM参数为$\theta$，完整输入提示为token序列$\mathbf{x}=[x_1,\ldots,x_n]$，其中攻击者可控位置的子集为$I\subset\{1,\ldots,n\}$，可控部分记为$\mathbf{x}_{\text{adv}}$，固定部分记为$\mathbf{x}_{\text{fixed}}$。攻击者目标编码为目标输出序列$y^*=[y^*_1,\ldots,y^*_m]$，则单实例攻击优化问题形式化为：
-\begin{equation}
-  \mathbf{x}^*_{\text{adv}} = \arg\max_{\mathbf{x}_{\text{adv}}} P_\theta(y^* \mid \mathbf{x}_{\text{fixed}}, \mathbf{x}_{\text{adv}})
-\end{equation}
-其中概率按自回归方式计算：$P_\theta(y^* \mid \mathbf{x}) = \prod_{i=1}^{m} P_\theta(y^*_i \mid \mathbf{x}, y^*_{<i})$。在越狱场景中$y^*$为被禁止的文本片段，而在间接提示注入场景中$y^*$需要为包含正确工具名称和参数的JSON调用格式$\{\text{"name"}: f, \text{"parameters"}: \{\ldots\}\}$或自然语言肯定响应。拟通过设计目标字符串模板（包括工具调用JSON目标与LLM翻译的肯定响应目标），使用负对数似然损失$\mathcal{L} = -\sum_{i=1}^{m} \log P_\theta(y^*_i \mid \mathbf{x}, y^*_{<i})$进行优化。
-
-\paragraph{关键问题2：离散token优化的收敛不稳定性}
-
-GCG的核心优化过程在离散token空间上进行，而智能体场景的提示上下文远比越狱场景复杂：系统提示包含详细的工具schema定义、多轮对话历史和角色标记，使得输入序列$\mathbf{x}$的长度可达数千token，优化面临更为严重的非凸性和收敛不稳定性问题。具体而言，不同随机种子初始化的优化运行可能产生截然不同的结果：某些种子迅速收敛至高成功率注入，而另一些种子在数百步迭代后仍停留在高损失区域。实验观察到GCG在Qwen3-4B上不同随机初始化的攻击成功率标准差可达15\%以上，远高于越狱场景中的变异程度。这种不稳定性的根源在于三方面：第一，离散空间的梯度仅为连续松弛的近似，token embedding的one-hot表示使梯度只能指示"哪些token位置值得尝试替换"，但无法保证替换方向确实降低损失；第二，贪心替换存在耦合效应，替换位置$j$的token可能使其他位置的最优选择发生跳变，导致贪心策略在各位置间振荡而非协同收敛；第三，上下文相关分词（context-dependent tokenization）引入编码不一致，许多tokenizer在解码时执行上下文敏感的子词合并，导致token序列在优化上下文中解码为字符串$s$，但在实际部署上下文中（插入完整提示后）解码为不同字符串$s'$，使优化结果在实际环境中失效。
-
-具体而言，GCG在第$t$步迭代中对每个对抗位置$j\in I$，计算损失函数关于one-hot token表示的梯度$\nabla_{e_{x_j}} \mathcal{L}$，选取梯度幅度最大的$k$个候选token $\mathcal{C}_j = \text{TopK}(|\nabla_{e_{x_j}} \mathcal{L}|, k)$，然后对每个候选替换评估批量损失：
-\begin{equation}
-  x_j^{(t+1)} = \arg\min_{c \in \mathcal{C}_j} \mathcal{L}(\mathbf{x}^{(t)}[j \leftarrow c])
-\end{equation}
-但由于token空间的离散性，梯度仅为连续松弛的近似，且替换单个token可能使其他位置的最优解发生跳变，导致优化在局部极小值间振荡。拟通过多种初始化策略（随机初始化、语义模板初始化）、增大批量搜索规模$k$（典型值256--512）以及通用攻击的多场景联合优化来缓解收敛不稳定问题。同时，开发decode-reencode验证机制：对优化生成的token序列执行解码-重编码校验，若$\text{Encode}(\text{Decode}(\mathbf{x}_{\text{adv}})) \neq \mathbf{x}_{\text{adv}}$则将候选标记为无效（损失设为${+}\infty$），确保编码-解码往返一致性。
-
-\begin{algorithm}[htbp]
-\caption{面向LLM智能体的GCG攻击优化算法}
-\label{alg:gcg}
-\begin{algorithmic}[1]
-\Require 目标LLM $P_\theta$，固定提示 $\mathbf{x}_{\text{fixed}}$，目标输出 $y^*$，对抗位置集合 $I$，迭代步数 $T$，候选数 $k$，ASCII词表 $\mathcal{V}_{\text{ASCII}}$，连续成功阈值 $c_{\text{stop}}$
-\Ensure 优化后的对抗token序列 $\mathbf{x}^*_{\text{adv}}$
-\State 随机初始化 $\mathbf{x}_{\text{adv}}^{(0)} \leftarrow$ 随机采样 $|I|$ 个ASCII token
-\State $\text{consecutive\_success} \leftarrow 0$
-\For{$t = 0, 1, \ldots, T-1$}
-  \State 构造完整输入 $\mathbf{x}^{(t)} \leftarrow [\mathbf{x}_{\text{fixed}}; \mathbf{x}_{\text{adv}}^{(t)}]$
-  \State 计算损失 $\mathcal{L}^{(t)} \leftarrow -\sum_{i=1}^{m} \log P_\theta(y^*_i \mid \mathbf{x}^{(t)}, y^*_{<i})$
-  \For{每个对抗位置 $j \in I$}
-    \State 计算梯度 $\mathbf{g}_j \leftarrow \nabla_{e_{x_j}} \mathcal{L}^{(t)}$
-    \State 选取候选 $\mathcal{C}_j \leftarrow \text{TopK}(|\mathbf{g}_j|, k) \cap \mathcal{V}_{\text{ASCII}}$ \Comment{ASCII过滤}
-  \EndFor
-  \For{每个候选token $c \in \bigcup_{j \in I} \mathcal{C}_j$}
-    \State 构造替换序列 $\mathbf{x}' \leftarrow \mathbf{x}^{(t)}[j \leftarrow c]$
-    \If{$\text{Encode}(\text{Decode}(\mathbf{x}'_{\text{adv}})) \neq \mathbf{x}'_{\text{adv}}$} \Comment{Tokenization验证}
-      \State $\mathcal{L}(\mathbf{x}') \leftarrow {+}\infty$
-    \Else
-      \State 评估 $\mathcal{L}(\mathbf{x}') \leftarrow -\sum_{i=1}^{m} \log P_\theta(y^*_i \mid \mathbf{x}', y^*_{<i})$
-    \EndIf
-  \EndFor
-  \State $\mathbf{x}^{(t+1)} \leftarrow \arg\min_{\mathbf{x}'} \mathcal{L}(\mathbf{x}')$ \Comment{贪心选择最优替换}
-  \If{早停条件满足（$\text{starts\_with\_target}$ 或 $\text{equals\_target}$）}
-    \State $\text{consecutive\_success} \leftarrow \text{consecutive\_success} + 1$
-    \If{$\text{consecutive\_success} \geq c_{\text{stop}}$}
-      \State \Return $\mathbf{x}^{(t+1)}_{\text{adv}}$
-    \EndIf
-  \Else
-    \State $\text{consecutive\_success} \leftarrow 0$
-  \EndIf
-\EndFor
-\State \Return $\mathbf{x}^{(T)}_{\text{adv}}$
-\end{algorithmic}
-\end{algorithm}
-
-上述GCG优化流程如算法~\ref{alg:gcg}所示。其中，第7--8行实现ASCII候选过滤以缩减搜索空间并保证注入字符串的鲁棒性；第10--14行实现decode-reencode验证机制，排除分词不一致的无效候选；第17--23行实现连续成功早停策略，避免瞬态匹配导致的过早终止。
-
-\paragraph{关键问题3：通用攻击的跨场景泛化能力}
-
-在实际部署中，LLM智能体面临多样化的运行环境，同一银行助手可能处理不同用户的转账请求，同一邮件客户端可能对接不同的邮件服务商API。因此，攻击者嵌入在网页或文档中的注入字符串往往只有一次机会被检索到，且必须在一个此前未见过的智能体配置下生效。通用攻击的核心挑战在于：能否找到单一的对抗注入字符串，使其在用户任务、攻击目标、工具配置和系统提示各不相同的多个场景下均能有效触发目标行为？这本质上是一个多目标联合优化问题，不同场景的最优解可能存在冲突，提升在银行场景下转账劫持成功率的对抗token，可能反而降低在工作区场景下文件外泄的成功率，因为不同场景下的模型行为模式、工具schema格式和上下文语义差异显著。此外，通用性存在天然张力：优化范围越广（跨更多域和更多任务），对任意单一场景的攻击特异性越弱，可能面临"面面俱到但都不够强"的困境。但通用攻击也具有独特的实际价值：一旦发现广泛适用的注入模式，就揭示了智能体系统的结构性脆弱点，且攻击者无需针对每个目标单独优化即可实施攻击。
-
-设训练语料包含$k$个测试用例$\mathcal{D}=\{(\mathbf{x}^{(i)}_{\text{fixed}}, y^{*(i)})\}_{i=1}^{k}$，每个用例具有不同的固定提示组件和目标输出，通用攻击优化问题形式化为：
-\begin{equation}
-  \mathbf{x}^*_{\text{adv}} = \arg\max_{\mathbf{x}_{\text{adv}}} \sum_{i=1}^{k} P_\theta(y^{*(i)} \mid \mathbf{x}^{(i)}_{\text{fixed}}, \mathbf{x}_{\text{adv}})
-\end{equation}
-该公式要求同一$\mathbf{x}_{\text{adv}}$在$k$个不同场景下同时最大化目标概率，即对抗前缀/后缀token在各训练样本间取平均梯度和平均损失。拟设计跨3个任务域（工作区、银行、Slack）共18个任务对的训练集，以联合损失函数同时优化多个场景下的攻击成功率，并保留旅行域作为完全未见域评估泛化能力。
-
-\begin{algorithm}[htbp]
-\caption{通用GCG攻击的多样本联合优化}
-\label{alg:gcg-universal}
-\begin{algorithmic}[1]
-\Require 目标LLM $P_\theta$，训练用例集 $\mathcal{D}=\{(\mathbf{x}^{(i)}_{\text{fixed}}, y^{*(i)})\}_{i=1}^{k}$，对抗位置集合 $I$，迭代步数 $T$，候选数 $k_c$，早停比例阈值 $\rho_{\text{stop}}$
-\Ensure 通用对抗token序列 $\mathbf{x}^*_{\text{adv}}$，学习的前缀/后缀字符串
-\State 随机初始化 $\mathbf{x}_{\text{adv}}^{(0)} \leftarrow$ 随机采样 $|I|$ 个ASCII token
-\For{$t = 0, 1, \ldots, T-1$}
-  \State 计算平均损失 $\bar{\mathcal{L}}^{(t)} \leftarrow \frac{1}{k}\sum_{i=1}^{k} \mathcal{L}(\mathbf{x}^{(i)}_{\text{fixed}}, \mathbf{x}_{\text{adv}}^{(t)}, y^{*(i)})$
-  \For{每个对抗位置 $j \in I$}
-    \State 计算平均梯度 $\bar{\mathbf{g}}_j \leftarrow \frac{1}{k}\sum_{i=1}^{k} \nabla_{e_{x_j}} \mathcal{L}(\mathbf{x}^{(i)}_{\text{fixed}}, \mathbf{x}_{\text{adv}}^{(t)}, y^{*(i)})$
-    \State 选取候选 $\mathcal{C}_j \leftarrow \text{TopK}(|\bar{\mathbf{g}}_j|, k_c) \cap \mathcal{V}_{\text{ASCII}}$
-  \EndFor
-  \For{每个候选替换 $c$}
-    \If{Tokenization验证失败}
-      \State $\bar{\mathcal{L}}(\mathbf{x}'_{\text{adv}}) \leftarrow {+}\infty$
-    \Else
-      \State 评估平均损失 $\bar{\mathcal{L}}(\mathbf{x}'_{\text{adv}}) \leftarrow \frac{1}{k}\sum_{i=1}^{k} \mathcal{L}(\mathbf{x}^{(i)}_{\text{fixed}}, \mathbf{x}'_{\text{adv}}, y^{*(i)})$
-    \EndIf
-  \EndFor
-  \State $\mathbf{x}^{(t+1)}_{\text{adv}} \leftarrow \arg\min_{\mathbf{x}'_{\text{adv}}} \bar{\mathcal{L}}(\mathbf{x}'_{\text{adv}})$
-  \State $n_{\text{success}} \leftarrow |\{i : \text{Match}(P_\theta(\cdot \mid \mathbf{x}^{(i)}_{\text{fixed}}, \mathbf{x}^{(t+1)}_{\text{adv}}), y^{*(i)})\}|$
-  \If{$n_{\text{success}} / k \geq \rho_{\text{stop}}$}
-    \State 退出循环
-  \EndIf
-\EndFor
-\State 提取前缀/后缀字符串：$\text{prefix} \leftarrow \text{Decode}(\mathbf{x}^*_{\text{adv}}[\text{prefix positions}])$，$\text{suffix} \leftarrow \text{Decode}(\mathbf{x}^*_{\text{adv}}[\text{suffix positions}])$
-\State \Return $\mathbf{x}^{(t+1)}_{\text{adv}}$，$\text{prefix}$，$\text{suffix}$
-\end{algorithmic}
-\end{algorithm}
-
-通用GCG攻击的多样本联合优化流程如算法~\ref{alg:gcg-universal}所示。与算法~\ref{alg:gcg}的关键区别在于：第3行和第10行对所有训练样本取平均损失和平均梯度；第14行设计多样本早停条件，要求达到指定比例的样本同时成功匹配；第17行提取可复用的前缀/后缀字符串，部署时仅需拼接[学习前缀]+[新攻击者目标]+[学习后缀]。
+针对G1（搜索策略缺乏覆盖引导）和G2（奖励信号稀疏且延迟），研究基于强化学习策略优化的自动提示注入攻击方法。首先，设计步骤级密集奖励函数，从智能体执行轨迹中提取五个可观测信号作为奖励组分，仅依赖外部可观测信息，在黑盒设置下实现步骤级信用分配；其次，设计停滞感知的搜索扩展机制，当策略陷入奖励停滞时引入变异策略尝试触发新路径进行突破；然后，实现策略模型训练，以密集奖励信号引导策略更新，动态调整奖励权重以驱动策略探索未覆盖的攻击路径。
 
 \subsubsection{研究目标}
 
 \begin{enumerate}
-  \item 完成AgentDojo框架扩展，实现HuggingFace Transformers库集成，支持开源模型的白盒梯度访问与标准化攻击接口。
-  \item 实现GCG攻击在间接提示注入场景下的完整适配，包括目标函数设计、tokenization验证、多注入结构策略。
-  \item 在开源模型上实现显著攻击成功率，并通过消融实验量化梯度信号与随机搜索的贡献差异。
-  \item 评估通用GCG攻击的跨场景泛化能力，验证联合优化能否发现广泛适用的注入模式。
+  \item 设计步骤级密集奖励函数，包含工具调用偏差信号、文本生成偏差信号、环境变化信号、覆盖度量信号和风险评分信号，提供攻击步骤的有效性反馈，提升RL策略的搜索效率。
+  \item 设计停滞感知的搜索扩展机制，在策略陷入局部最优时引入变异策略尝试突破，并将搜索发现的有效候选反馈给RL策略更新，提升攻击策略的探索能力。
+  \item 在AgentDojo数据集上实现ProbeRL框架，评估其在提示注入攻击中的效果提升，并与现有方法进行对比分析。
 \end{enumerate}
-
-\subsection{研究点二：基于TAP黑盒迭代搜索的间接提示注入攻击}
-
-\subsubsection{研究内容}
-
-围绕黑盒迭代搜索方法在间接提示注入场景中的应用问题，研究TAP算法在智能体工具调用环境中的适配与优化。首先，改造TAP的树搜索算法以适应智能体场景，将攻击者LLM的生成目标从"越狱提示"调整为"紧凑的注入字符串"（嵌入工具输出中），并将评估器LLM的成功判定标准从"响应合规性"转变为"是否触发了正确工具调用"；其次，设计多模型架构，其中攻击者LLM负责生成多样化攻击候选（探索权威操纵、紧急性框架、工具定向、社会工程等多种策略），评估器LLM负责评分与剪枝，目标LLM作为被攻击对象；然后，实现可靠性测试机制，针对模型输出的随机性，对每个候选注入进行多次评估以获取稳定信号；同时，优化攻击者和评估器LLM的系统提示工程，设计面向工具调用劫持的变异策略列表，降低攻击者模型的拒绝率；在此基础上，实现并行评估以加速树搜索过程，并实现单任务与通用攻击两种配置的TAP攻击。
 
 \subsubsection{关键问题与拟采用方案}
 
-\paragraph{关键问题1：智能体场景下攻击成功的二元判定信号有限}
+\paragraph{关键问题1：步骤级密集奖励函数设计}
 
-在越狱攻击中，评估攻击成功相对直接，可通过关键词匹配检测响应是否包含被禁止内容（如毒品配方、仇恨言论），或通过LLM-as-judge判断响应是否有害。这类评估产生的信号虽然不完美，但提供了足够的梯度信息指导迭代搜索。然而在智能体提示注入场景中，攻击成功的判定本质不同且更为困难：攻击者需要智能体\emph{执行正确的工具调用}（如\texttt{delete\_file(filename="secret.pdf")}），而非仅仅在文本中提及该操作。这带来两个核心困难：第一，评估粒度问题，工具调用成功需要同时满足两个条件，即调用了正确的工具\emph{且}传递了正确的参数，但现有评估器（LLM-as-judge）只能给出整体评分而无法分别评估这两个维度。例如，智能体可能调用了\texttt{send\_email}但收件人地址错误，或虽然表达了发送邮件的意图但实际调用了\texttt{list\_emails}，这些部分成功的情况需要不同的优化方向；第二，多轮交互存在延迟判定问题，智能体的攻击成功可能跨越多轮对话实现（先在第一轮确认意图，第二轮才执行工具调用），而TAP的树搜索需要对每个候选注入进行快速评估以决定剪枝，无法等待完整多轮交互结束再评分。因此，评估器必须基于首轮响应预测攻击最终是否成功，这种预测本身引入了额外的不确定性。
+现有方法（AutoInject\cite{chen2026autoinject}、PISmith\cite{yin2026pismith}）仅在攻击最终成功时提供二元奖励信号，无法区分中间步骤的有效性。在智能体多步交互场景中，攻击可能在某一中间步骤已成功使智能体偏离预期行为，但最终未完成攻击目标。传统稀疏二元奖励$\mathcal{R}_{\text{sparse}} \in \{0, 1\}$无法提供中间步骤有效性的任何信号，导致RL策略的信用分配困难。
 
-形式化地，TAP中评估器对候选注入$s$的评分为$r = f_{\text{eval}}(s) \in [0, 1]$，其中$r$是离散整数评分（1--10）归一化后的连续值。该信号存在两个问题：(1)~评估粒度粗。仅依据目标智能体是否表现出追求攻击者目标的意图进行整体评分，而非分别评估工具调用正确性和参数匹配度；(2)~评估噪声高。单次评估的方差$\text{Var}[r]$较大，尤其在目标模型自身输出具有随机性时。拟通过精心设计评估器LLM的评分提示和阈值$\tau$，结合可靠性测试（对同一候选执行$n_{\text{eval}}$次独立评估取均值$\bar{r} = \frac{1}{n_{\text{eval}}}\sum_{j=1}^{n_{\text{eval}}} r_j$）增强信号质量。同时，设计两级评估策略：粗粒度评估判断是否调用了正确工具（工具名匹配），细粒度评估判断参数是否匹配攻击目标（参数值匹配）。
+本研究设计由五个可观测信号组成的步骤级密集奖励函数：
+\begin{equation}
+  \mathcal{R}_{\text{dense}}(a_l) = w_1 \cdot \mathcal{R}_{\text{tool}}(a_l) + w_2 \cdot \mathcal{R}_{\text{text}}(a_l) + w_3 \cdot \mathcal{R}_{\text{env}}(a_l) + w_4 \cdot \mathcal{R}_{\text{cover}}(a_l) + w_5 \cdot \mathcal{R}_{\text{risk}}(a_l)
+  \label{eq:dense_reward}
+\end{equation}
+其中$w_1 + w_2 + w_3 + w_4 + w_5 = 1$。前三个信号从智能体执行轨迹中直接提取，后两个信号将原研究点三的覆盖度量和风险评分简化为奖励组分，使奖励函数统一提供攻击方向性引导。
+
+\paragraph{关键问题2：GRPO策略优化与停滞感知搜索扩展的协同}
+
+GRPO策略优化通过策略梯度高效利用已发现的攻击模式，但当策略陷入局部最优（连续多步无法获得正反馈）时缺乏有效的突破机制。关键问题在于如何设计停滞感知的搜索扩展机制，在策略陷入奖励停滞时引入变异策略尝试触发新路径进行突破，并将搜索发现有效反馈给GRPO策略更新。
+
+\textbf{RL模块设计。}攻击策略$\pi_\phi^{\text{atk}}$以LLM为策略网络，输入当前注入模板$s_k$和智能体可观测行为状态（工具调用序列、回复文本特征），输出注入后缀token的概率分布。训练算法采用GRPO，奖励函数使用五个密集信号$\mathcal{R}_{\text{dense}}$替代稀疏二元奖励。与AutoInject\cite{chen2026autoinject}的关键区别在于：AutoInject为纯RL生成，策略直接输出完整注入提示，无搜索扩展机制；本研究的RL模块生成注入后缀，当策略陷入停滞时通过搜索扩展尝试突破。
+
+\textbf{停滞感知搜索扩展设计。}当策略网络连续$N_{\text{stall}}$步（如10步）未获得正反馈时，触发搜索扩展机制，引入5种变异策略（继承AgentVigil\cite{wang2025agentvigil}的动作空间设计）：（1）替换注入指令，用不同措辞重述攻击者目标；（2）增加约束指令，添加权威性或紧急性框架；（3）切换语气，在正式/非正式/紧急等语气间切换；（4）拼接已有候选，将多个成功候选的关键片段组合；（5）LLM辅助生成，利用LLM基于已有轨迹生成语义变体。
+
+\textbf{融合机制。}两个模块通过三路交互协同：（1）\textit{RL引导搜索}：RL策略生成"注入后缀候选"作为搜索扩展的高优先级起点，使搜索扩展时优先探索策略认为有潜力的方向；（2）\textit{搜索反馈RL}：搜索扩展发现的有效候选加入RL的训练数据（on-policy更新），使策略从搜索发现的攻击模式中学习；（3）\textit{覆盖饱和驱动}：当连续$N_{\text{plateau}}$步（拟设为5步）未取得ASR突破或覆盖率突破时，动态提高覆盖路径新颖性奖励$\mathcal{R}_{\text{cover}}$的权重系数$w_4$（增幅为$\Delta w$），驱动策略向未覆盖的攻击路径探索。
+
+设策略模型为$\pi_\phi$。在每轮迭代中，策略优化算法以密集奖励$\mathcal{R}_{\text{dense}}$评估候选质量。覆盖加权优势估计为：
+\begin{equation}
+  \hat{A}_\text{cov}(\tau) = \hat{A}(\tau) \cdot (1 + \beta \cdot \mathcal{R}_{\text{cover}}(\tau))
+\end{equation}
+其中$\hat{A}(\tau)$为GRPO组内标准化优势（式~\ref{eq:grpo_advantage}），$\mathcal{R}_{\text{cover}}$为覆盖路径新颖性信号，$\beta$为覆盖激励系数。当检测到停滞（连续$N_{\text{stall}}$步无正反馈）时，动态调整$w_4 \leftarrow w_4 + \Delta w$，直至取得突破后恢复原值。策略更新为：
+\begin{equation}
+  \phi \leftarrow \phi + \eta \cdot \mathbb{E}_{\tau \sim \pi_\phi}\left[\hat{A}_\text{cov}(\tau) \nabla_\phi \log \pi_\phi(\tau)\right]
+\end{equation}
+拟采用交替迭代策略：每$N_{\text{search}}$轮搜索扩展后执行一轮策略更新，确保搜索与策略优化交替进行、相互增强。
 
 \begin{algorithm}[htbp]
-\caption{面向LLM智能体的TAP树搜索攻击算法}
-\label{alg:tap}
+\caption{ProbeRL攻击策略训练主循环}
+\label{alg:proberl}
 \begin{algorithmic}[1]
-\Require 攻击者LLM $M_{\text{att}}$，评估器LLM $M_{\text{eval}}$，目标LLM $M_{\text{target}}$，用户任务$u$，攻击者目标$g$，搜索宽度$w$，搜索深度$D$，可靠性测试次数$n_{\text{eval}}$
-\Ensure 最优注入字符串 $s^*_{\text{inj}}$
-\State 初始化根节点集合 $\mathcal{N}_0 \leftarrow \{n_1, \ldots, n_w\}$，每个节点包含攻击者系统消息和任务上下文
-\State $s^*_{\text{inj}} \leftarrow \varnothing$，$r^* \leftarrow 0$
-\For{$d = 0, 1, \ldots, D-1$}
-  \State $\mathcal{N}_{\text{new}} \leftarrow \varnothing$
-  \For{每个节点 $n \in \mathcal{N}_d$}
-    \State 构造反馈消息：$\text{msg}_{\text{fb}} \leftarrow \text{FormatFeedback}(n.\text{history}, r, g)$
-    \State 生成候选：$s_{\text{cand}} \leftarrow M_{\text{att}}(n.\text{system}, n.\text{history} \cup \text{msg}_{\text{fb}})$
-    \If{$s_{\text{cand}}$ 为拒绝响应}
-      \State 丢弃此候选 \Comment{拒绝处理}
-    \EndIf
-    \State 将候选注入插入AgentDojo对话上下文
-    \State 查询目标模型：$(\text{resp}, \text{tool\_calls}) \leftarrow M_{\text{target}}(\text{ctx}[s_{\text{cand}}])$
-    \State 可靠性测试：$\bar{r} \leftarrow \frac{1}{n_{\text{eval}}} \sum_{j=1}^{n_{\text{eval}}} M_{\text{eval}}(\text{ctx}, g, \text{tool\_calls}, \text{resp})$
-    \State 创建子节点 $n' \leftarrow (s_{\text{cand}}, \bar{r}, n.\text{history} \cup \{(s_{\text{cand}}, \text{msg}_{\text{fb}})\})$
-    \State $\mathcal{N}_{\text{new}} \leftarrow \mathcal{N}_{\text{new}} \cup \{n'\}$
-    \If{$\bar{r} > r^*$}
-      \State $r^* \leftarrow \bar{r}$，$s^*_{\text{inj}} \leftarrow s_{\text{cand}}$
-    \EndIf
+\Require 目标智能体$\mathcal{A}$，攻击策略$\pi_\phi^{\text{atk}}$，最大搜索轮数$T$，停滞阈值$N_{\text{stall}}$
+\Ensure 训练后的攻击策略$\pi_\phi^{\text{atk}}$
+\State 初始化经验池$\mathcal{D} \leftarrow \varnothing$，停滞计数器$\text{stall} \leftarrow 0$
+\For{$t = 1, 2, \ldots, T$}
+  \State 采样$K$个注入提示$\{p_i\}_{i=1}^K \sim \pi_\phi^{\text{atk}}$
+  \For{每个$p_i$}
+    \State 执行攻击：$\tau_i \leftarrow \text{Execute}(\mathcal{A}, p_i)$
+    \State 计算密集奖励$\mathcal{R}_{\text{dense}}(\tau_i)$（式~\ref{eq:dense_reward}）
   \EndFor
-  \State 剪枝：$\mathcal{N}_{d+1} \leftarrow \text{TopW}(\mathcal{N}_{\text{new}}, w)$ \Comment{保留评分最高的$w$个节点}
+  \State $\mathcal{D} \leftarrow \mathcal{D} \cup \{\tau_1, \ldots, \tau_K\}$
+  \If{所有$\mathcal{R}_{\text{sparse}} = 0$} $\text{stall} \leftarrow \text{stall} + 1$
+  \Else \hspace{0.5em} $\text{stall} \leftarrow 0$
+  \EndIf
+  \If{$\text{stall} \geq N_{\text{stall}}$}
+    \State \textbf{搜索扩展：}应用5种变异策略生成新候选，执行并加入$\mathcal{D}$
+    \State $\text{stall} \leftarrow 0$
+  \EndIf
+  \State 计算覆盖加权优势$\hat{A}_\text{cov}(\tau) = \hat{A}(\tau) \cdot (1 + \beta \cdot \mathcal{R}_{\text{cover}}(\tau))$
+  \State 更新策略$\phi$（式~\ref{eq:grpo_loss}，以$\hat{A}_\text{cov}$替换$A_i$）
 \EndFor
-\State \Return $s^*_{\text{inj}}$
+\State \Return $\pi_\phi^{\text{atk}}$
 \end{algorithmic}
 \end{algorithm}
 
-TAP树搜索的完整流程如算法~\ref{alg:tap}所示。其中，第7--8行实现拒绝响应的过滤机制，避免无效分支浪费搜索资源；第10--11行实现可靠性测试，通过多次独立评估取均值降低评估噪声；第15--17行实现全局最优追踪；第19行实现基于评分的宽度剪枝，保留最有潜力的搜索方向。
+ProbeRL攻击策略训练主循环如算法~\ref{alg:proberl}所示。第3--6行采样并执行攻击获取轨迹，第7--9行检测停滞状态，第10--12行在停滞时触发搜索扩展，第13--14行以覆盖加权优势更新策略。
 
-\paragraph{关键问题2：攻击者LLM的拒绝行为干扰搜索过程}
+\subsection{研究点二：基于强化学习的恶意注入检测与自适应防御}
 
-TAP的树搜索依赖于攻击者LLM持续生成多样化、有创造性的注入候选来探索攻击空间。然而，攻击者LLM（如GPT-4o）经过安全对齐训练，在收到"生成提示注入攻击字符串"这类请求时可能触发拒绝机制，以"我无法协助生成用于攻击或操纵系统的内容"等理由拒绝合作。这种拒绝行为在树搜索中尤为致命：一旦某个分支的攻击者LLM回复了拒绝信息，该分支的后续迭代会将拒绝响应作为"上一次尝试的结果"反馈给攻击者LLM，形成拒绝的上下文锚定效应，后续生成倾向于继续拒绝，导致整条搜索路径坍缩为无效分支。更严重的是，当多个分支同时出现拒绝时，树搜索的有效宽度急剧缩减，可探索的攻击策略空间大幅缩小。实验观察表明，在无提示工程干预的情况下，攻击者LLM的拒绝率可达30\%--50\%，严重制约TAP的搜索效率。此外，拒绝行为与攻击者LLM的安全对齐强度正相关，更安全的模型拒绝率更高，但同时也可能生成更有效的注入候选（因为其理解恶意指令的能力更强），由此形成安全性与攻击能力之间的矛盾。
+\subsubsection{研究内容}
 
-形式化地，设树搜索第$d$层有$w$个活跃分支$\mathcal{B}_d = \{b_1, \ldots, b_w\}$，攻击者LLM对分支$b$生成候选时的拒绝率记为$\rho(b)$。当$\rho(b) > 0$时，该分支的后续子节点也以高概率继承拒绝行为，导致搜索空间坍缩。记有效（非拒绝）候选集合为$\mathcal{S}_{\text{valid}} = \{s \in \mathcal{S} : \rho(s) = 0\}$，则拒绝问题导致$|\mathcal{S}_{\text{valid}}|$随搜索深度$d$指数衰减。拟通过提示工程降低$\rho(b)$：明确声明安全研究上下文、设计角色扮演框架、提供多样化变异策略模板（包括权威操纵、紧急性框架、工具定向、社会工程等10种策略）。同时，在剪枝阶段优先保留$\rho(b)=0$的分支，并在分支多样性不足时重新初始化搜索。
-
-\paragraph{关键问题3：LLM-as-judge评估准确性不足}
-
-TAP的树搜索效率高度依赖评估器LLM对攻击成功与否的判断准确性，评估器扮演"裁判"角色，决定哪些分支值得继续探索、哪些应当剪枝。当评估器准确率高时，有效候选被保留、无效候选被剪除，搜索向成功方向快速收敛；但当评估器准确率接近随机猜测时，剪枝决策与实际攻击效果几乎无关，搜索退化为无方向的随机游走。在越狱场景中，LLM-as-judge已被证明具有较高的判断准确性（GPT-4作为评估器在有害内容检测上准确率可达85\%以上），因为判断"文本是否包含有害内容"是一个相对直接的语言理解任务。然而在智能体场景中，评估器需要判断"智能体是否会在后续交互中执行攻击者的目标工具调用"，这要求评估器理解智能体的推理过程、预测多轮交互的结果、并区分"表达意图"与"实际执行"的微妙差别，任务复杂度显著提升。实验结果表明，当使用Qwen3-4B等开源模型作为评估器时，判断准确率仅约50\%（近乎随机猜测），即使使用GPT-4o作为评估器，在部分复杂场景下的准确率也不稳定。评估不准对优化的影响是毁灭性的：假阴性（将成功攻击误判为失败）导致有效候选被错误剪枝，而假阳性（将失败攻击误判为成功）导致搜索方向偏移，两者都会严重降低TAP的收敛效率。
-
-形式化地，设真实攻击成功标签为$y \in \{0, 1\}$，评估器预测为$\hat{y} \in \{0, 1\}$（由评分$r$与阈值$\tau$比较决定：$\hat{y} = \mathbb{1}[r \geq \tau]$），则评估准确率为$P(\hat{y} = y)$。当$P(\hat{y}=y) \approx 0.5$时，评估器等价于随机猜测，此时错误剪枝（假阴性）概率$P(\hat{y}=0 \mid y=1)$极高，导致有效候选被误杀。记评估器的真正率为$\alpha = P(\hat{y}=1 \mid y=1)$，假负率为$\beta = P(\hat{y}=0 \mid y=1)$，则有效候选在$N$次独立评估中至少被正确识别一次的概率为$1 - \beta^N$。拟针对不同目标模型调整评估器阈值$\tau$和提示，对Qwen等模型采用更保守的剪枝策略（增大$w$保留更多候选），并增加每候选的评估次数$N$以降低假阴性概率。
+针对G4（攻防割裂），研究攻击驱动的自适应防御机制，构建"语义检测+规则兜底"的双层防御架构。攻击侧的发现持续反馈驱动防御改进，形成攻防闭环。防御策略$\pi_\psi^{\text{def}}$与攻击策略$\pi_\phi^{\text{atk}}$共享GRPO训练范式但奖励函数对称相反：攻击侧奖励攻击成功，防御侧奖励成功拦截。防御侧包含两个互补层级：第一层为语义注入检测模型，检测模型在语义层面过滤和拦截恶意注入，超越启发式规则实现泛化性防御；第二层为启发式规则防御，基于ProbeRL攻击发现的脆弱模式生成针对性规则，作为语义检测的补充保障。
 
 \subsubsection{研究目标}
 
 \begin{enumerate}
-  \item 实现TAP攻击在间接提示注入场景下的完整适配，包括目标函数转换、可靠性测试、系统提示优化和并行评估。
-  \item 在开源模型上实现显著攻击成功率，显著超越GCG白盒方法的表现。
-  \item 生成语义连贯、人类可读的自然语言注入字符串，验证黑盒方法在可解释性和隐蔽性上的优势。
-  \item 实现通用TAP攻击的跨场景泛化，在GPT-5上评估直接优化与跨模型迁移的攻击效果，揭示前沿模型的安全边界。
+  \item 构建攻击模式-防御策略的自动映射系统，训练针对注入攻击模式的语义检测模型，实现对攻击侧生成的多样化攻击模式的泛化检测能力。
+  \item 设计启发式规则防御机制，基于ProbeRL攻击发现的脆弱模式生成针对性规则，提升整体防御的覆盖率和鲁棒性。
+  \item 实现ProbeRL驱动的闭环验证机制，在AgentDojo上证明闭环优化相比固定规则一次性防御部署的鲁棒性优势。
 \end{enumerate}
 
-\subsubsection{研究方法及技术路线}
+\subsubsection{关键问题与拟采用方案}
 
-\textbf{研究点一} GCG白盒攻击的适配实施分为四个阶段：
+\paragraph{关键问题1：面向注入攻击范式的语义检测模型}
 
-第一阶段为框架基础设施搭建。实现\texttt{TransformersLLM}基类扩展AgentDojo的\texttt{BaseLLM}接口，封装模型加载（bfloat16精度、自动设备映射的模型并行）、推理（评估模式+KV缓存加速）和梯度计算接口。针对不同模型家族实现双向消息格式转换：Llama系列处理原生工具角色标记、Gemma系列手动注入工具定义至系统消息（因其缺少原生工具支持）、Qwen系列处理特殊工具调用标签。开发统一工具schema格式（兼容OpenAI function calling规范），并实现从模型输出中鲁棒提取JSON工具调用的解析器（处理工具调用嵌入额外文本的情况）。
+现有防御方法（StruQ\cite{chen2025struq}、SecAlign\cite{chen2025secalign}）依赖微调或偏好优化，缺乏对新型攻击模式的泛化能力。本研究针对这一问题，提出基于GRPO训练的语义注入检测模型$\pi_\psi^{\text{def}}$，与攻击策略$\pi_\phi^{\text{atk}}$同源对称：两者共享相同的LLM骨干网络和GRPO训练范式，但奖励函数对称相反。
 
-第二阶段为攻击优化核心实现。设计三层提示掩码系统——\texttt{prefix\_mask}标记攻击者目标前的对抗token、\texttt{payload\_mask}标记固定攻击者目标文本、\texttt{suffix\_mask}标记目标后的对抗token，\texttt{optim\_mask}为前两者之并集，\texttt{target\_mask}标记目标输出位置用于损失计算。实现梯度信号函数：计算损失关于one-hot token嵌入的梯度，选取梯度幅度最大的$\text{TopK}$个候选token；同时实现随机信号函数用于消融对照。开发\texttt{CachedTargetLogprobs}类缓存静态提示前缀的KV注意力对，仅从第一个对抗位置起重新计算激活值，减少重复前向传播开销。实现动态批量大小检测，根据GPU显存自动调整并行候选数。设计两种早停模式：\texttt{starts\_with\_target}验证生成是否以目标序列开头（允许后续文本）、\texttt{equals\_target}要求精确匹配，且需连续多步成功才触发终止以防瞬态匹配。
+攻击策略的奖励为攻击成功信号：$\mathcal{R}^{\text{atk}} = \mathcal{R}_{\text{sparse}}^{\text{atk}} + \mu \cdot \sum_{l=1}^{L} \mathcal{R}_{\text{dense}}^{\text{atk}}(a_l)$。防御策略的奖励为拦截成功信号：$\mathcal{R}^{\text{def}} = 1 - \mathcal{R}_{\text{sparse}}^{\text{atk}} + \mu \cdot \sum_{l=1}^{L} \mathcal{R}_{\text{dense}}^{\text{def}}(a_l)$，其中防御侧密集奖励的三个信号定义与攻击侧对称：（1）工具调用一致性信号$\mathcal{R}_{\text{tool}}^{\text{def}} = 1 - \mathcal{R}_{\text{tool}}^{\text{atk}}$，奖励工具调用与预期一致；（2）文本正常性信号$\mathcal{R}_{\text{text}}^{\text{def}} = 1 - \mathcal{R}_{\text{text}}^{\text{atk}}$，奖励输出无异常特征；（3）环境稳定性信号$\mathcal{R}_{\text{env}}^{\text{def}} = 1 - \mathcal{R}_{\text{env}}^{\text{atk}}$，奖励环境状态未受扰动。
 
-第三阶段为鲁棒性增强。实现decode-reencode验证过滤器：对候选token序列执行完整解码→重编码→比较，若不一致则将候选损失设为${+}\infty$排除选择，并统计无效化率以监控分词不稳定性的频率。实现ASCII-only候选过滤：识别词汇表中所有非ASCII token（Unicode、控制字符、模型特殊token），在梯度信号计算时将其梯度设为$-\infty$确保不被选入$\text{TopK}$，减少搜索空间并保证注入字符串在JSON/YAML处理管道中的存活率。
+语义检测模型的训练流程为：对每条输入$(x_{\text{inst}}, x_{\text{ctx}})$，防御策略$\pi_\psi^{\text{def}}$输出检测决策$d \in \{\text{accept}, \text{reject}\}$及其置信度。若判定为注入攻击则拦截，否则放行至智能体执行。奖励信号由攻击侧的ProbeRL提供：若拦截了成功攻击则获得正奖励，若错误拦截正常请求则获得负奖励。这种对抗训练机制使防御策略持续适应攻击策略的演化，超越基于静态特征的启发式检测。
 
-第四阶段为通用攻击扩展。将单样本优化目标扩展为多样本平均损失最小化，实现跨训练样本的梯度聚合（逐样本计算梯度后取平均）和平均损失评估（为每个样本维护独立的KV缓存，并行前向传播后取均值）。设计多样本早停条件：要求达到指定比例的训练样本同时匹配目标输出。实现通用触发器的提取与复用：优化完成后提取前缀和后缀token序列并解码为字符串，对新测试用例拼接为[学习前缀]+[新攻击者目标]+[学习后缀]即可部署，无需重新优化。
+\paragraph{关键问题2：Agent过程间上下文信号的具体设计}
 
-\textbf{研究点二} TAP黑盒攻击的适配实施分为四个阶段：
+Agent的执行过程中带有丰富的上下文信息，而这些上下文信息携带的信号，如语义、状态转移等，可能包含攻击成功与否的线索。如何设计具体的奖励信号以有效利用这些上下文信息，是实现高效攻击搜索和精准防御的关键问题。
 
-第一阶段为多模型架构搭建。通过OpenAI兼容API统一接口访问目标模型、攻击者模型和评估器模型，支持闭源API（GPT系列）、第三方托管开源模型（Together AI）和本地部署模型（vLLM）。为目标模型配置贪心解码（temperature=0）确保确定性响应以匹配标准评估协议；为攻击者模型配置较高温度（temperature=1）鼓励候选多样性；为评估器模型配置贪心解码确保评分一致性。设计攻击者模型的系统提示：建立红队助手角色，提供涵盖权威操纵、紧急性框架、上下文利用、工具定向、社会工程、紧急威胁、角色扮演、假设性框架、多语言切换和前缀注入等策略的注入策略目录；规定结构化JSON输出格式（单样本模式包含injection string、reasoning、improvement字段，多样本模式包含prefix、suffix、reasoning、improvement字段）。设计评估器模型的系统提示：提供完整交互上下文（用户任务、攻击者目标、注入字符串、目标工具调用真值、实际工具调用、模型文本响应），强调多轮执行的渐进性和部分成功的认可，输出1--10整数评分后归一化至$[0, 1]$区间。
+\textbf{工具调用偏差信号$\mathcal{R}_{\text{tool}}$。}衡量攻击步骤引入的工具调用与原始任务预期的偏差程度。设攻击步骤$a_l$触发工具调用$f_l$，原始任务预期工具调用为$\hat{f}_l$，则：
+\begin{equation}
+  \mathcal{R}_{\text{tool}}(a_l) = \mathbb{1}[f_l \neq \hat{f}_l] \cdot \text{Sim}(f_l, f_{\text{target}})
+\end{equation}
+其中$\text{Sim}(f_l, f_{\text{target}})$衡量实际调用$f_l$与攻击者目标调用$f_{\text{target}}$的相似度。当攻击步骤使智能体调用了非预期工具，且该工具与攻击者目标相关时，$\mathcal{R}_{\text{tool}}$取正值。该信号可通过对执行轨迹中的工具调用序列进行差分分析获得，无需模型内部状态。
 
-第二阶段为树搜索核心实现。初始化阶段创建多个独立根节点以促进探索多样性，每个根节点包含攻击者系统消息和包含具体任务上下文的初始用户消息（多样本模式下描述全部训练样本信息）。主循环执行固定深度迭代：每步对当前代所有节点执行候选生成→评估→剪枝三阶段。候选生成阶段查询攻击者模型，将前次迭代的评估反馈（评分、成功率、失败分析）构造为反馈消息追加至对话历史，攻击者模型以结构化JSON响应新候选。评估阶段将候选注入插入AgentDojo对话上下文（替换占位符），查询目标模型获取响应和工具调用，再查询评估器模型获取评分；多样本模式下对每个训练样本分别评估后取均值。剪枝阶段按评分降序排列，仅保留前$w$个节点，同时记录全局最优节点。移除原始TAP的on-topic分类器（因其基于越狱设计，在智能体场景中工具定向攻击天然相关），但保留基于评分的剪枝机制。
+\textbf{文本异常信号$\mathcal{R}_{\text{text}}$。}衡量智能体输出中指令遵循异常的文本特征。设攻击步骤后智能体输出文本为$r_l$，原始任务预期输出为$\hat{r}_l$，则：
+\begin{equation}
+  \mathcal{R}_{\text{text}}(a_l) = \sigma(\text{AnomalyScore}(r_l, \hat{r}_l) - \theta_{\text{anomaly}})
+\end{equation}
+其中$\sigma$为Sigmoid函数，$\theta_{\text{anomaly}}$为异常阈值。AnomalyScore的计算通过三个互补途径实现：（1）指令拒绝率：检测输出中是否出现"I cannot"/"I'm unable to"等拒绝模式，若智能体在正常任务中产生拒绝回复则表明其可能被注入指令误导；（2）主题偏移度：用BM25或余弦相似度等快速算法计算输出语义与原始任务的偏移程度，偏移越大表明注入指令的影响越强；（3）工具调用-文本一致性：检查工具调用结果与文本输出是否矛盾（如工具调用\texttt{transfer\_funds}但文本声称"未执行任何操作"），不一致表明智能体行为已被操纵。预期输出$\hat{r}_l$可从AgentDojo的GROUND\_TRUTH\_OUTPUT字段获取（部分只读任务有明确定义），或通过无攻击基线运行的输出作为参考。
 
-第三阶段为可靠性增强。实现拒绝处理机制：在攻击者系统提示中明确声明安全研究上下文和沙盒环境，以角色扮演框架降低安全对齐触发率；在评估器提示中指示对拒绝响应给予极低评分，通过负反馈引导攻击者远离触发拒绝的策略。实现可靠性测试：对同一候选注入执行多次独立评估取均值，降低单次评估的随机性。实现持续对话管理：为每条搜索路径维护完整的攻击者模型对话线程（交替包含生成的候选和反馈），而非原始TAP的单消息打包方式，使攻击者模型更好地跟踪改进轨迹。
+\textbf{环境变化信号$\mathcal{R}_{\text{env}}$。}衡量攻击步骤导致的环境状态变化幅度。设攻击前环境状态为$s_{\text{before}}$，攻击后环境状态为$s_{\text{after}}$，则：
+\begin{equation}
+  \mathcal{R}_{\text{env}}(a_l) = \frac{\|s_{\text{after}} - s_{\text{before}}\|}{\|s_{\text{after}} - s_{\text{before}}\| + \epsilon}
+\end{equation}
+其中$\epsilon$为平滑常数。该信号利用AgentDojo的有状态环境特性，通过对比攻击前后的环境快照获得，完全基于外部可观测信息。
 
-第四阶段为通用攻击与并行加速。多样本模式下攻击者模型接收全部训练样本的聚合信息（共享的攻击者目标列表、代表性样本详情、各场景可用工具），被指示生成跨场景有效的prefix和suffix组件。评估时反馈包含整体平均评分、成功率、失败样本的具体分析，引导攻击者优化跨场景泛化能力。实现基于线程池的并行评估：对多样本场景中的各训练样本并发执行前向传播，配合指数退避重试逻辑处理API速率限制。最终攻击验证使用AgentDojo标准评估协议（确定性检查函数验证工具调用名称和参数），而非优化过程中的LLM-as-judge评分。
+\textbf{覆盖路径新颖性信号$\mathcal{R}_{\text{cover}}$。}奖励触发了具有新的工具调用路径的攻击步骤，使用工具所属类型的切换进行判断。设当前攻击步骤的工具调用$f_l$所属类型为$\text{cat}(f_l)$（如"数据读取类""资金操作类""通信类"），已观测到的类型转移对集合为$\mathcal{S}_{\text{trans}}$，则：
+\begin{equation}
+  \mathcal{R}_{\text{cover}}(a_l) = \mathbb{1}[(\text{cat}(f_{l-1}), \text{cat}(f_l)) \notin \mathcal{S}_{\text{trans}}]
+\end{equation}
+当攻击步骤触发了此前未观测到的工具类型切换时，$\mathcal{R}_{\text{cover}}=1$，驱动策略探索新的攻击路径。与细粒度多维覆盖度量不同，该信号仅关注工具类型级别的路径新颖性，避免覆盖空间过大导致难以有效探索的问题。
+
+\textbf{风险评分信号$\mathcal{R}_{\text{risk}}$。}基于环境状态差异量化攻击后果的严重性，作为奖励组分引导策略关注高风险攻击。设环境状态由多个属性构成（如银行余额、文件列表、邮件收件箱等），每个属性$a_i$具有敏感度权重$w_i$，则：
+\begin{equation}
+  \mathcal{R}_{\text{risk}}(a_l) = \frac{\sum_{i} w_i \cdot |a_i(s_{\text{after}}) - a_i(s_{\text{before}})|}{\sum_{i} w_i \cdot |a_i(s_{\text{after}}) - a_i(s_{\text{before}})| + \epsilon}
+\end{equation}
+例如，银行域中资金转移的权重$w_{\text{balance}}$高于文件查询的权重$w_{\text{file\_read}}$，使得转移资金的攻击获得更高风险评分信号。
+
+\begin{algorithm}[htbp]
+\caption{DenseReward步骤级密集奖励计算}
+\label{alg:dense_reward}
+\begin{algorithmic}[1]
+\Require 攻击轨迹$\pi = \langle a_1, \ldots, a_L \rangle$，预期轨迹$\hat{\pi} = \langle \hat{a}_1, \ldots, \hat{a}_L \rangle$，环境状态序列$\langle s_0, s_1, \ldots, s_L \rangle$，信号权重$w_1, w_2, w_3$
+\Ensure 步骤级密集奖励序列$\langle \mathcal{R}_{\text{dense}}(a_1), \ldots, \mathcal{R}_{\text{dense}}(a_L) \rangle$
+\For{$l = 1, 2, \ldots, L$}
+  \State \textbf{工具调用偏差：}提取$a_l$的工具调用$f_l$和预期调用$\hat{f}_l$
+  \State $\mathcal{R}_{\text{tool}}(a_l) \leftarrow \mathbb{1}[f_l \neq \hat{f}_l] \cdot \text{Sim}(f_l, f_{\text{target}})$
+  \State \textbf{文本异常：}提取$a_l$的输出文本$r_l$和预期输出$\hat{r}_l$
+  \State $\mathcal{R}_{\text{text}}(a_l) \leftarrow \sigma(\text{AnomalyScore}(r_l, \hat{r}_l) - \theta_{\text{anomaly}})$
+  \State \textbf{环境变化：}计算状态差异$\Delta s_l \leftarrow s_l - s_{l-1}$
+  \State $\mathcal{R}_{\text{env}}(a_l) \leftarrow \|\Delta s_l\| / (\|\Delta s_l\| + \epsilon)$
+  \State $\mathcal{R}_{\text{dense}}(a_l) \leftarrow w_1 \cdot \mathcal{R}_{\text{tool}}(a_l) + w_2 \cdot \mathcal{R}_{\text{text}}(a_l) + w_3 \cdot \mathcal{R}_{\text{env}}(a_l)$
+\EndFor
+\State \Return $\langle \mathcal{R}_{\text{dense}}(a_1), \ldots, \mathcal{R}_{\text{dense}}(a_L) \rangle$
+\end{algorithmic}
+\end{algorithm}
+
+DenseReward计算流程如算法~\ref{alg:dense_reward}所示。三个信号均基于外部可观测的执行轨迹信息计算，无需模型内部状态，适用于黑盒设置。密集奖励与稀疏奖励组合为最终训练信号：$\mathcal{R}_{\text{total}} = \mathcal{R}_{\text{sparse}} + \mu \cdot \sum_{l=1}^{L} \mathcal{R}_{\text{dense}}(a_l)$，其中$\mu$为密集奖励缩放因子。
+
+\textbf{与PISmith自适应熵正则的对比。}PISmith\cite{yin2026pismith}通过自适应熵正则化$\mathcal{L}_{\text{entropy}}$维持策略探索以缓解奖励稀疏，其核心机制是在策略熵低于阈值$\mathcal{H}_{\text{cap}}$时施加熵奖励，并根据组内平均奖励$\bar{r}$动态调整正则系数$\beta(\bar{r})$。该方法本质上仍是"在稀疏奖励下训练RL"的优化策略，信号粒度为回合级。本研究采取根本不同的路径：不修改RL训练算法本身，而是通过步骤级密集信号从源头缓解稀疏性，使每一步执行都能提供方向性反馈。即使攻击最终被防御拦截，中间步骤的工具调用偏差$\mathcal{R}_{\text{tool}}$和环境变化$\mathcal{R}_{\text{env}}$仍可为策略提供"部分成功"的正反馈，避免了PISmith面临的"极稀疏奖励导致策略坍塌"问题。
+
+\textbf{与ChainFuzzer TPS的对比。}ChainFuzzer\cite{wu2026chainfuzzer}的TPS（Trace-guided Prompt Solving）与本研究的密集奖励都利用运行时trace信息，但机制根本不同：TPS是确定性的局部修复，比较trace与目标链的偏差后生成约束，由LLM局部编辑prompt以提升链可达性（从27.05\%提升至95.45\%），但每次修复仅针对一条链，无法跨链迁移攻击策略；本研究的密集奖励是可学习的全局策略，通过3类黑盒信号的步骤级反馈训练RL策略网络，学到的攻击模式可跨任务、跨链迁移。此外，TPS依赖已知目标链（由静态依赖图预先提取），而本研究无需预设目标链，RL策略和搜索扩展自动发现高危害行为路径。
+
+\paragraph{关键问题3：基于启发式系统规则的防御}
+
+ProbeRL的攻击发现揭示了智能体的脆弱模式，包括高脆弱性工具调用链（如\texttt{read\_file} $\to$ \texttt{send\_email}的数据泄露链路）、注入模式（如权威伪装、紧急性框架等策略的攻击成功率分布）和参数篡改路径（如转账金额、收件人地址等参数的易受攻击程度）。启发式规则防御基于这些攻击发现自动生成针对性规则，作为语义检测模型的补充保障。
+
+定义攻击模式-防御策略映射函数$\mathcal{M}: \mathcal{P}_{\text{attack}} \to \mathcal{S}_{\text{defense}}$，其中$\mathcal{P}_{\text{attack}}$为攻击模式空间，$\mathcal{S}_{\text{defense}}$为防御策略空间。映射规则包括：高脆弱性工具调用链映射为指令隔离策略（在系统提示中明确禁止链式调用）、高频注入策略映射为输入检测规则（检测权威伪装和紧急性框架的文本特征）、参数篡改路径映射为参数校验策略（对敏感参数实施范围约束和用户确认）。拟构建基于规则和LLM的混合映射系统：对已知攻击模式采用规则映射保证效率，对新型攻击模式利用LLM生成防御策略保证覆盖。
+
+\textbf{两层防御的互补关系。}关键问题1的语义注入检测模型做前期过滤，在语义层面拦截恶意注入，超越启发式规则的泛化能力；关键问题2的启发式规则做兜底保护，对语义检测模型漏报的已知攻击模式实施确定性拦截。两层防御形成互补：语义检测模型适应新型攻击但可能漏报，启发式规则对已知攻击精确拦截但缺乏泛化性，组合使用可同时兼顾泛化性和精确性。
+
+\subsection{研究方法及技术路线}
+
+本研究的技术实施分为三个阶段：
+
+\textbf{第一阶段为框架基础设施搭建。}基于AgentDojo框架扩展，实现ProbeRL的整体架构。具体包括：实现GRPO策略模型训练流程，封装策略推理接口以支持搜索扩展时的候选生成；设计DenseReward计算管道，从AgentDojo执行轨迹中自动提取5个黑盒可观测信号（工具调用偏差、文本异常、环境变化、覆盖路径新颖性、风险评分）；实现启发式规则映射模块，从攻击发现自动生成指令隔离、参数校验和行为监控规则。
+
+\textbf{第二阶段为核心算法实现与训练。}实现ProbeRL攻击训练主循环（算法~\ref{alg:proberl}），包括停滞感知搜索扩展和策略更新的交替执行。实现DenseReward步骤级密集奖励计算（算法~\ref{alg:dense_reward}），包含5个可观测信号的提取和加权组合。实现语义注入检测模型训练，包含攻防对称奖励定义和对抗训练流程。实现启发式规则防御的自动生成和闭环验证机制。在AgentDojo的训练集上进行策略模型训练和超参数调优。
+
+\textbf{第三阶段为评估与消融实验。}在AgentDojo的4个域上进行全面评估，包括：（1）与AutoInject、PISmith、AgentVigil等基线方法的攻击成功率对比；（2）密集奖励与稀疏奖励的消融实验；（3）5个密集奖励信号的独立贡献消融；（4）停滞感知搜索扩展与标准搜索的消融；（5）语义检测与规则的独立和协同效果消融；（6）AIAD防御的闭环验证实验；（7）跨模型迁移性评估（开源模型到闭源模型）。
