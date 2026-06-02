@@ -2,11 +2,11 @@
 
 \subsection{研究背景与国内外研究现状}
 
-大语言模型（Large Language Models, LLMs）已从单纯的文本生成系统演进为能够在现实世界中执行操作的自主智能体\cite{xi2024rise}。现代LLM智能体可调用外部工具、访问邮件与日历、查询数据库、浏览网页并执行代码\cite{schick2023toolformer, yao2022react}，这一演进催生了个人助理管理日程与通信、企业自动化系统处理文档与协调工作流、客服代理访问后端系统解决查询等诸多应用。然而，能力的提升同时带来了显著的安全风险：当LLM不仅能生成文本，还能执行操作时，对抗性攻击的后果变得更加严重。能够发送邮件、转移资金或修改文件的智能体，与仅生成文本的聊天机器人相比，呈现出根本不同的威胁面。
+大语言模型（Large Language Models, LLMs）已从单纯的文本生成系统演进为能够在现实世界中执行操作的自主智能体\cite{xi2025rise}。现代LLM智能体可调用外部工具、访问邮件与日历、查询数据库、浏览网页并执行代码\cite{schick2023toolformer, yao2022react}，这一演进催生了个人助理管理日程与通信、企业自动化系统处理文档与协调工作流、客服代理访问后端系统解决查询等诸多应用。然而，能力的提升同时带来了显著的安全风险：当LLM不仅能生成文本，还能执行操作时，对抗性攻击的后果变得更加严重。能够发送邮件、转移资金或修改文件的智能体，与仅生成文本的聊天机器人相比，呈现出根本不同的威胁面。
 
 提示注入攻击（Prompt Injection）利用了LLM处理自然语言的基本特性：指令与数据之间没有明确的边界\cite{greshake2023not, perez2022ignore}，且模型必须根据上下文理解来决定遵循哪些指令。间接提示注入对LLM智能体构成尤为严重的威胁\cite{greshake2023not}，攻击者不直接与智能体交互，而是将恶意指令嵌入智能体在运行过程中检索的外部内容（如邮件、文档或网页），导致数据泄露、未授权操作和输出完整性受损等后果。
 
-当前，关于LLM自动化攻击的研究主要集中在越狱（Jailbreaking）方面，即诱使已对齐模型生成被禁止内容。GCG\cite{zou2023universal}、AutoDAN\cite{liu2024autodan}、PAIR\cite{chao2023jailbreaking}和TAP\cite{mehrotra2024tree}等方法已在越狱场景中被广泛评估。相比之下，提示注入攻击在对抗性机器学习社区中受到的关注远少于越狱攻击。在提示注入文献内部，研究大多聚焦于直接注入场景与简单评估设置，多数工作依赖手工攻击或基本启发式策略\cite{liu2024formalizing, yi2025benchmarking}，而非自动化优化方法。评估场景通常限于简化任务，在具有工具调用能力的智能体操作有状态环境的现实场景中，系统性的自动化攻击评估仍然匮乏\cite{debenedetti2024agentdojo}。
+当前，关于LLM自动化攻击的研究主要集中在越狱（Jailbreaking）方面，即诱使已对齐模型生成被禁止内容。GCG\cite{zou2023universal}、AutoDAN\cite{liu2024autodan}、PAIR\cite{chao2025jailbreaking}和TAP\cite{mehrotra2024tree}等方法已在越狱场景中被广泛评估。相比之下，提示注入攻击在对抗性机器学习社区中受到的关注远少于越狱攻击。在提示注入文献内部，研究大多聚焦于直接注入场景与简单评估设置，多数工作依赖手工攻击或基本启发式策略\cite{liu2024formalizing, yi2025benchmarking}，而非自动化优化方法。评估场景通常限于简化任务，在具有工具调用能力的智能体操作有状态环境的现实场景中，系统性的自动化攻击评估仍然匮乏\cite{debenedetti2024agentdojo}。
 
 \subsubsection{基于越狱的LLM对抗攻击技术}
 
@@ -20,11 +20,11 @@
 
 \textbf{白盒优化方法。}Pasquini等\cite{pasquini2024neural}提出Neural Exec，针对RAG系统中的延迟提示注入优化"执行触发器"，在RAG系统上实现87\%攻击成功率。Fu等\cite{fu2024imprompter}将GCG优化适配到智能体工具误用场景。Zhan等\cite{zhan2025adaptive}系统研究自适应攻击对智能体防御的威胁，在StruQ、SecAlign等多种防御范式下均实现超50\%攻击成功率。Wu等\cite{wu2025dissecting}将对抗鲁棒性评估扩展到多模态LM智能体，揭示智能体攻击面在多模态设置下显著扩大。
 
-\textbf{黑盒优化方法。}Liu等\cite{liu2024prompt}提出HOUYI框架，将提示注入系统化分解为框架、分隔符和破坏器三个组件进行组合优化。Zhang等\cite{zhang2024goal}提出G2PIA，结合理论攻击原则与LLM引导生成多样化提示注入。Wang等\cite{wang2025agentvigil}提出基于蒙特卡洛树搜索（Monte Carlo Tree Search, MCTS）的AgentVigil。MCTS是一种基于随机模拟的启发式搜索算法\cite{browne2012survey}，通过选择、扩展、模拟和回传四个阶段迭代构建搜索树，利用UCB1策略平衡探索与利用，已在围棋\cite{silver2016mastering}等复杂决策问题中取得突破性成果。AgentVigil将提示注入攻击建模为序列决策问题，在AgentDojo基准上实现71\%攻击成功率，但依赖手工设计的动作空间。
+\textbf{黑盒优化方法。}Liu等\cite{liu2023prompt}提出HOUYI框架，将提示注入系统化分解为框架、分隔符和破坏器三个组件进行组合优化。Zhang等\cite{zhang2024goal}提出G2PIA，结合理论攻击原则与LLM引导生成多样化提示注入。Wang等\cite{wang2025agentvigil}提出基于蒙特卡洛树搜索（Monte Carlo Tree Search, MCTS）的AgentVigil。MCTS是一种基于随机模拟的启发式搜索算法\cite{browne2012survey}，通过选择、扩展、模拟和回传四个阶段迭代构建搜索树，利用UCB1策略平衡探索与利用，已在围棋\cite{silver2016mastering}等复杂决策问题中取得突破性成果。AgentVigil将提示注入攻击建模为序列决策问题，在AgentDojo基准上实现71\%攻击成功率，但依赖手工设计的动作空间。
 
-\textbf{强化学习驱动的攻击方法。}近期工作开始探索将强化学习引入提示注入攻击的自动化优化。Chen等\cite{chen2026autoinject}提出AutoInject，采用GRPO（Group Relative Policy Optimization）\cite{shao2024deepseekmath}算法训练攻击策略模型，将提示注入攻击转化为策略优化问题，以攻击成功率为稀疏奖励信号引导策略更新，显著提升了攻击自动化程度，但其仅依赖最终攻击结果的二元反馈，缺乏对中间步骤有效性的精细评估。Yin等\cite{yin2026pismith}提出PISmith，在GRPO框架基础上引入自适应熵正则化机制以平衡探索与利用，提升了攻击多样性，但仍未解决覆盖搜索的结构性问题：奖励信号仅在攻击成功时提供正反馈，无法引导策略探索尚未覆盖的攻击路径，导致搜索空间利用效率不足。Wen等\cite{wen2025rlhammer}提出RL-Hammer，通过同时训练弱防御和强防御目标模型来缓解奖励稀疏性，但该方法增加了训练成本，且弱防御和强防御的训练信号存在不匹配问题。Deng等\cite{deng2026learning}提出LTOI（Learning to Inject），利用RL自动优化注入策略，但在智能体多步交互场景中的评估尚不充分。上述RL方法的核心局限在于：搜索空间被人为限定在后缀或完整prompt生成，策略仅优化攻击成功率，无法系统性覆盖攻击行为空间。
+\textbf{强化学习驱动的攻击方法。}近期工作开始探索将强化学习引入提示注入攻击的自动化优化。Chen等\cite{chen2026autoinject}提出AutoInject，采用GRPO（Group Relative Policy Optimization）\cite{shao2024deepseekmath}算法训练攻击策略模型，将提示注入攻击转化为策略优化问题，以攻击成功率为稀疏奖励信号引导策略更新，显著提升了攻击自动化程度，但其仅依赖最终攻击结果的二元反馈，缺乏对中间步骤有效性的精细评估。Yin等\cite{yin2026pismith}提出PISmith，在GRPO框架基础上引入自适应熵正则化机制以平衡探索与利用，提升了攻击多样性，但仍未解决覆盖搜索的结构性问题：奖励信号仅在攻击成功时提供正反馈，无法引导策略探索尚未覆盖的攻击路径，导致搜索空间利用效率不足。Wen等\cite{wen2025rlhammer}提出RL-Hammer，通过同时训练弱防御和强防御目标模型来缓解奖励稀疏性，但该方法增加了训练成本，且弱防御和强防御的训练信号存在不匹配问题。Deng等\cite{chen2026learning}提出LTOI（Learning to Inject），利用RL自动优化注入策略，但在智能体多步交互场景中的评估尚不充分。上述RL方法的核心局限在于：搜索空间被人为限定在后缀或完整prompt生成，策略仅优化攻击成功率，无法系统性覆盖攻击行为空间。
 
-\textbf{覆盖引导的模糊测试方法。}受软件测试中覆盖引导模糊测试（CGF）的启发，部分工作将覆盖概念引入LLM攻击领域。Li等\cite{wang2025agentfuzz}提出AgentFuzzer，针对LLM智能体实施黑盒模糊测试，采用MCTS搜索和种子调度策略，但其惩罚分数机制采用硬编码系数（0.5），不可自适应，且依赖白盒插桩获取调用链信息。Wu等\cite{wu2026chainfuzzer}提出ChainFuzzer，基于静态依赖图对智能体工作流中的多工具链路进行灰盒模糊测试，但其依赖预定义的静态工作流结构，无法适应动态交互的智能体行为，且需工具源码和静态分析，不适用于闭源智能体。Zhang等\cite{zhang2026verigrey}提出VeriGrey，在灰盒设置下利用覆盖引导搜索验证提示注入攻击，但其覆盖度量的定义局限于输出文本的语义相似性，未能捕捉智能体行为维度的多样性（如工具调用序列、参数取值范围等）。Yu等\cite{yu2025promptfuzz}提出PromptFuzz，采用模板生成与LLM引导变异的两阶段模糊测试框架，在多个智能体框架上实现攻击，但缺乏系统性的覆盖引导机制。
+\textbf{覆盖引导的模糊测试方法。}受软件测试中覆盖引导模糊测试（CGF）的启发，部分工作将覆盖概念引入LLM攻击领域。Li等\cite{wang2025agentfuzzer}提出AgentFuzzer，针对LLM智能体实施黑盒模糊测试，采用MCTS搜索和种子调度策略，但其惩罚分数机制采用硬编码系数（0.5），不可自适应，且依赖白盒插桩获取调用链信息。Wu等\cite{wu2026chainfuzzer}提出ChainFuzzer，基于静态依赖图对智能体工作流中的多工具链路进行灰盒模糊测试，但其依赖预定义的静态工作流结构，无法适应动态交互的智能体行为，且需工具源码和静态分析，不适用于闭源智能体。Zhang等\cite{zhang2026verigrey}提出VeriGrey，在灰盒设置下利用覆盖引导搜索验证提示注入攻击，但其覆盖度量的定义局限于输出文本的语义相似性，未能捕捉智能体行为维度的多样性（如工具调用序列、参数取值范围等）。Yu等\cite{yu2024promptfuzz}提出PromptFuzz，采用模板生成与LLM引导变异的两阶段模糊测试框架，在多个智能体框架上实现攻击，但缺乏系统性的覆盖引导机制。
 
 \textbf{其他攻击方法。}Nasr等\cite{nasr2025attacker}证明更强大的自适应攻击可以绕过包括SecAlign在内的多种防御，揭示了防御鲁棒性评估的必要性。Labunets等\cite{labunets2025computing}利用微调API从闭源模型提取梯度等价信息进行优化攻击。Shi等\cite{shi2025prompt}针对智能体推理循环中的工具选择决策实施两阶段优化攻击，揭示了智能体推理链的脆弱性。
 
@@ -32,7 +32,7 @@
 
 \textbf{基于微调的防御。}Chen等\cite{chen2025struq}提出StruQ，通过结构化分隔符强制指令-数据分离，在手工攻击下实现低于2\%攻击成功率，但在自适应GCG攻击下成功率仍可超50\%。Wallace等\cite{wallace2024instruction}形式化指令层级概念，训练LLM优先遵循系统指令，实现30\%以上鲁棒性提升。Chen等\cite{chen2025secalign}提出SecAlign，利用直接偏好优化训练模型区分合法指令与注入内容，是首个将GCG攻击成功率降至10\%以下的防御方法。然而，Nasr等\cite{nasr2025attacker}证明更强大的自适应攻击可以绕过这些防御。
 
-\textbf{基于检测的防御。}Zhu等\cite{zhu2025melon}提出MELON，通过遮蔽可疑内容后重新执行智能体检测注入攻击。Hung等\cite{hung2025attention}提出AttentionTracker，利用注意力模式中的"分心效应"检测注入。Jacob等\cite{jacob2025promptshield}开发PromptShield注入检测分类器。Liu等\cite{liu2025datasentinel}以博弈论方法训练检测器。然而，Hackett等\cite{hackett2025bypassing}证明许多护栏系统可通过字符注入和编码操纵绕过。
+\textbf{基于检测的防御。}Zhu等\cite{zhu2025melon}提出MELON，通过遮蔽可疑内容后重新执行智能体检测注入攻击。Hung等\cite{hung2025attention}提出AttentionTracker，利用注意力模式中的"分心效应"检测注入。Jacob等\cite{jacob2024promptshield}开发PromptShield注入检测分类器。Liu等\cite{liu2025datasentinel}以博弈论方法训练检测器。然而，Hackett等\cite{hackett2025bypassing}证明许多护栏系统可通过字符注入和编码操纵绕过。
 
 \textbf{架构与系统级防御。}Wang等\cite{wang2025cacheprune}提出CachePrune，基于特征归因的KV缓存神经元剪枝缓解提示注入。Zhong等\cite{zhong2025rtbas}提出RTBAS，将信息流控制应用于LLM智能体。Debenedetti等\cite{debenedetti2025defeating}提出CaMeL，通过将智能体操作权限与数据流分离防御提示注入，但需修改智能体架构且仅适用于工具调用接口明确的场景。Costa等\cite{costa2025securing}提出基于信息流控制的安全智能体架构，通过安全策略约束智能体行为。Li等\cite{li2025drift}提出DRIFT，通过动态规则生成和注入内容隔离实现运行时防御。Shi等\cite{shi2025progent}提出Progent，引入领域特定语言表达细粒度权限控制策略。这些系统级防御虽在各自场景下有效，但普遍面临两个局限：一是主要针对具有明确工具调用接口的智能体场景，难以泛化到问答、文档摘要等非智能体任务；二是安全策略的准确制定本身具有挑战性。Zverev等\cite{zverev2025can, zverev2025aside}从计算复杂性理论出发，证明LLM在计算上无法可靠区分指令与数据。
 
