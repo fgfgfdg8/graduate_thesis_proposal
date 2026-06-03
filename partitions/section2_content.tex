@@ -13,11 +13,9 @@
 在阐述具体研究内容之前，本节对本文所研究的LLM智能体自动化提示注入攻击问题进行形式化定义，明确威胁模型、攻击面与优化目标，为后续研究点提供统一的问题定义基准。
 
 \subsubsection{威胁模型与攻击面}
-
-设目标LLM智能体为$\mathcal{A}$，其底层语言模型为$\mathcal{M}_\theta$，配备工具集$\mathcal{T} = \{t_1, t_2, \ldots, t_m\}$和系统提示$s_{\text{sys}}$。智能体接收用户指令$x_{\text{inst}}$，在执行过程中可能调用外部工具并获取外部数据上下文$x_{\text{ctx}}$（如邮件内容、网页文本、文档片段等）。
-
 本研究采用严格黑盒威胁模型\cite{yin2026pismith, wang2025agentvigil}：攻击者无法访问智能体内部状态（模型参数、注意力权重、推理链），仅能通过文本通道与智能体交互。攻击面锚定于两种提示注入方式：（1）间接提示注入（Indirect Prompt Injection, IPI），攻击者将恶意指令$p$嵌入智能体在运行过程中检索的外部数据上下文$x_{\text{ctx}}$，间接操纵智能体行为；（2）直接提示注入（Direct Prompt Injection, DPI），攻击者在用户输入中嵌入恶意指令。本研究聚焦于IPI，因其更贴近真实部署场景中的攻击模式\cite{greshake2023not}。
 
+设目标LLM智能体为$\mathcal{A}$，其底层语言模型为$\mathcal{M}_\theta$，配备工具集$\mathcal{T} = \{t_1, t_2, \ldots, t_m\}$和系统提示$s_{\text{sys}}$。智能体接收用户指令$x_{\text{inst}}$，在执行过程中可能调用外部工具并获取外部数据上下文$x_{\text{ctx}}$（如邮件内容、网页文本、文档片段等）。
 设注入操作为$\oplus$，将注入提示$p$嵌入数据上下文$x_{\text{ctx}}$的特定位置。攻击后智能体接收的输入为$(x_{\text{inst}}, x_{\text{ctx}} \oplus p)$，输出为智能体响应$r$和工具调用序列$\tau = \langle a_1, a_2, \ldots, a_L \rangle$，其中每个动作$a_l$包含工具调用$f_l$及其参数$p_l$。
 
 \subsubsection{攻击策略的优化目标}
