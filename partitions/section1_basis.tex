@@ -18,7 +18,7 @@
 
 \subsubsection{基于提示注入的LLM智能体攻击技术}
 
-\textbf{白盒优化方法。}Pasquini等\cite{pasquini2024neural}提出Neural Exec，针对RAG系统中的延迟提示注入优化"执行触发器"，在RAG系统上实现87\%攻击成功率。Fu等\cite{fu2024imprompter}将GCG优化适配到智能体工具误用场景。Zhan等\cite{zhan2025adaptiveb}系统研究自适应攻击对智能体防御的威胁，在StruQ、SecAlign等多种防御范式下均实现超50\%攻击成功率。Wu等\cite{wu2024dissecting}将对抗鲁棒性评估扩展到多模态LM智能体，揭示智能体攻击面在多模态设置下显著扩大。
+\textbf{白盒优化方法。}Pasquini等\cite{pasquini2024neural}提出Neural Exec，针对RAG系统中的延迟提示注入优化"执行触发器"，在RAG系统上实现87\%攻击成功率。Fu等\cite{fu2024imprompter}将GCG优化适配到智能体工具误用场景。Zhan等\cite{zhan2025adaptive}系统研究自适应攻击对智能体防御的威胁，在StruQ、SecAlign等多种防御范式下均实现超50\%攻击成功率。Wu等\cite{wu2024dissecting}将对抗鲁棒性评估扩展到多模态LM智能体，揭示智能体攻击面在多模态设置下显著扩大。
 
 \textbf{黑盒优化方法。}Liu等\cite{liu2023prompt}提出HOUYI框架，将提示注入系统化分解为框架、分隔符和破坏器三个组件进行组合优化。Zhang等\cite{zhang2024goal}提出G2PIA，结合理论攻击原则与LLM引导生成多样化提示注入。Wang等\cite{wang2025agentvigil}提出基于蒙特卡洛树搜索（Monte Carlo Tree Search, MCTS）的AgentVigil。MCTS是一种基于随机模拟的启发式搜索算法\cite{browne2012survey}，通过选择、扩展、模拟和回传四个阶段迭代构建搜索树，利用UCB1策略平衡探索与利用，已在围棋\cite{silver2016mastering}等复杂决策问题中取得突破性成果。AgentVigil将提示注入攻击建模为序列决策问题，在AgentDojo基准上实现71\%攻击成功率，但依赖手工设计的动作空间。
 
@@ -30,9 +30,9 @@
 
 \subsubsection{LLM智能体防御与评估技术}
 
-\textbf{基于微调的防御。}Chen等\cite{chen2025struq}提出StruQ，通过结构化分隔符强制指令-数据分离，在手工攻击下实现低于2\%攻击成功率，但在自适应GCG攻击下成功率仍可超50\%。Wallace等\cite{wallace2024instruction}形式化指令层级概念，训练LLM优先遵循系统指令，实现30\%以上鲁棒性提升。Chen等\cite{chen2025secalignb}提出SecAlign，利用直接偏好优化训练模型区分合法指令与注入内容，是首个将GCG攻击成功率降至10\%以下的防御方法。然而，Nasr等\cite{nasr2025attacker}证明更强大的自适应攻击可以绕过这些防御。
+\textbf{基于微调的防御。}Chen等\cite{chen2025struq}提出StruQ，通过结构化分隔符强制指令-数据分离，在手工攻击下实现低于2\%攻击成功率，但在自适应GCG攻击下成功率仍可超50\%。Wallace等\cite{wallace2024instruction}形式化指令层级概念，训练LLM优先遵循系统指令，实现30\%以上鲁棒性提升。Chen等\cite{chen2025secalign}提出SecAlign，利用直接偏好优化训练模型区分合法指令与注入内容，是首个将GCG攻击成功率降至10\%以下的防御方法。然而，Nasr等\cite{nasr2025attacker}证明更强大的自适应攻击可以绕过这些防御。
 
-\textbf{基于检测的防御。}Zhu等\cite{zhu2025melon}提出MELON，通过遮蔽可疑内容后重新执行智能体检测注入攻击。Hung等\cite{hung2025attention}提出AttentionTracker，利用注意力模式中的"分心效应"检测注入。Jacob等\cite{jacob2024promptshieldb}开发PromptShield注入检测分类器。Liu等\cite{liu2025datasentinelb}以博弈论方法训练检测器。然而，Hackett等\cite{hackett2025bypassing}证明许多护栏系统可通过字符注入和编码操纵绕过。
+\textbf{基于检测的防御。}Zhu等\cite{zhu2025melon}提出MELON，通过遮蔽可疑内容后重新执行智能体检测注入攻击。Hung等\cite{hung2025attention}提出AttentionTracker，利用注意力模式中的"分心效应"检测注入。Jacob等\cite{jacob2024promptshield}开发PromptShield注入检测分类器。Liu等\cite{liu2025datasentinel}以博弈论方法训练检测器。然而，Hackett等\cite{hackett2025bypassing}证明许多护栏系统可通过字符注入和编码操纵绕过。
 
 \textbf{架构与系统级防御。}Wang等\cite{wang2025cacheprune}提出CachePrune，基于特征归因的KV缓存神经元剪枝缓解提示注入。Zhong等\cite{zhong2025rtbas}提出RTBAS，将信息流控制应用于LLM智能体。Debenedetti等\cite{debenedetti2025camel}提出CaMeL，通过将智能体操作权限与数据流分离防御提示注入，但需修改智能体架构且仅适用于工具调用接口明确的场景。Costa等\cite{costa2025securing}提出基于信息流控制的安全智能体架构，通过安全策略约束智能体行为。Li等\cite{li2026drift}提出DRIFT，通过动态规则生成和注入内容隔离实现运行时防御。Shi等\cite{shi2025progent}提出Progent，引入领域特定语言表达细粒度权限控制策略。这些系统级防御虽在各自场景下有效，但普遍面临两个局限：一是主要针对具有明确工具调用接口的智能体场景，难以泛化到问答、文档摘要等非智能体任务；二是安全策略的准确制定本身具有挑战性。Zverev等\cite{zverev2025can, zverev2025aside}从计算复杂性理论出发，证明LLM在计算上无法可靠区分指令与数据。
 
@@ -43,7 +43,7 @@
 \begin{enumerate}
   \item \textbf{G1：搜索策略盲目，导致攻击空间利用效率低下。} 现有RL攻击方法\cite{chen2026learning}\cite{yin2026pismith}仅以攻击成功率为稀疏奖励信号，无法引导策略探索尚未覆盖的攻击路径。MCTS方法（AgentVigil\cite{wang2025agentvigil}）依赖手工设计的动作空间，缺乏对攻击行为多样性的系统性覆盖度量。灰盒模糊测试（ChainFuzzer\cite{wu2026chainfuzzer}）依赖静态依赖图，无法适应智能体动态交互行为。覆盖引导搜索（VeriGrey\cite{zhang2026verigrey}）的覆盖度量局限于输出文本语义相似性，未能捕捉工具调用序列、参数取值范围等行为维度。上述方法均未建立面向LLM智能体攻击的覆盖引导搜索框架，搜索空间利用效率不足。
   \item \textbf{G2：攻击反馈信号稀疏且延迟，优化过程效率低下。} 现有工作仅在攻击最终成功时提供正反馈（稀疏二元奖励），而攻击失败时无法获得关于中间步骤有效性的任何信号。在智能体多步交互场景中，攻击可能在某一中间步骤已成功使智能体偏离预期行为（如调用了非预期工具、传递了异常参数），但最终未完成攻击目标。这种稀疏奖励导致RL策略的信用分配困难，优化过程效率低下。此外，攻击严重性评估缺失，现有评估以攻击成功率（ASR）为单一指标，无法量化不同攻击后果的风险差异，导致防御优先级排序缺乏依据。
-  \item \textbf{G3：攻防策略脱节，攻击发现无法直接驱动防御改进。} 现有工作将攻击与防御视为独立问题分别研究，攻击方法用于评估而防御方法独立设计，缺乏从攻击发现到防御改进的闭环机制。攻击所揭示的脆弱模式（如特定工具调用链的注入漏洞）未被系统性地转化为防御策略的优化信号，导致防御设计缺乏攻击侧的针对性指导。现有防御方法（StruQ\cite{chen2025struq}、SecAlign\cite{chen2025secalignb}等）在自适应攻击下仍可被绕过，缺乏对抗训练驱动的语义检测能力与启发式规则兜底的互补防御架构。
+  \item \textbf{G3：攻防策略脱节，攻击发现无法直接驱动防御改进。} 现有工作将攻击与防御视为独立问题分别研究，攻击方法用于评估而防御方法独立设计，缺乏从攻击发现到防御改进的闭环机制。攻击所揭示的脆弱模式（如特定工具调用链的注入漏洞）未被系统性地转化为防御策略的优化信号，导致防御设计缺乏攻击侧的针对性指导。现有防御方法（StruQ\cite{chen2025struq}、SecAlign\cite{chen2025secalign}等）在自适应攻击下仍可被绕过，缺乏对抗训练驱动的语义检测能力与启发式规则兜底的互补防御架构。
 \end{enumerate}
 
 \subsection{本研究的创新点}

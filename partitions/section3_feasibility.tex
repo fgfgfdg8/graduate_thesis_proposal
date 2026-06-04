@@ -8,7 +8,7 @@
 在技术理论上，GRPO算法已在AutoInject\cite{chen2026learning}和PISmith\cite{yin2026pismith}中被验证可成功应用于提示注入攻击的策略优化，为本研究提供了坚实的算法理论基础。停滞感知搜索扩展的思想借鉴了MCTS中探索-利用平衡的成熟方法论，AgentVigil\cite{wang2025agentvigil}已实现基于MCTS的搜索，本研究在其基础上引入停滞检测和自适应扩展机制。在信号获取可行性上，5个信号均可从AgentDojo执行轨迹中程序化提取：（1）工具调用偏差信号$\mathcal{R}_{\text{tool}}$可通过\texttt{functions\_stack\_trace\_from\_messages}接口获取当前工具调用序列，与正常基线进行LCS差分分析；（2）文本异常信号$\mathcal{R}_{\text{text}}$可通过预定义的异常特征提取器（拒绝率、主题偏移BM25/cosine、工具-文本一致性）计算；（3）环境变化信号$\mathcal{R}_{\text{env}}$通过\texttt{diff(pre\_env, post\_env)}量化攻击前后环境状态差异；（4）覆盖路径新颖性信号$\hat{A}_{\text{cov}}$基于路径指纹集合判重；（5）风险评分信号$\mathcal{R}_{\text{risk}}$基于环境属性加权差异。5个信号均基于外部可观测信息，无需模型内部状态访问，在黑盒设置下技术可行。
 
 \subsubsection{研究点二（恶意注入检测与自适应防御）的研究基础}
-在技术理论上，StruQ\cite{chen2025struq}、SecAlign\cite{chen2025secalignb}和CaMeL\cite{debenedetti2025camel}等防御方法已验证了指令隔离、参数校验和行为监控的可行性，本研究将这些防御策略整合为启发式规则兜底防御，并创新性地引入基于GRPO的语义注入检测模型作为语义过滤层。攻防对称训练的理论基础在于GRPO本身不限定策略的应用方向，攻击策略和检测模型共享相同的优化框架但奖励信号对称（攻击以偏离为目标，检测以识别注入为目标），AutoInject\cite{chen2026learning}已验证GRPO在攻击策略训练中的有效性，本研究将其扩展到防御侧。攻击模式-防御策略映射可基于规则和LLM的混合系统实现，工程上无原理性障碍。ProbeRL闭环验证的可行性在于：部署防御后使用ProbeRL重新攻击验证有效性，攻击发现与防御改进形成迭代闭环，理论上每轮迭代中发现的攻击模式严格扩充防御覆盖范围。
+在技术理论上，StruQ\cite{chen2025struq}、SecAlign\cite{chen2025secalign}和CaMeL\cite{debenedetti2025camel}等防御方法已验证了指令隔离、参数校验和行为监控的可行性，本研究将这些防御策略整合为启发式规则兜底防御，并创新性地引入基于GRPO的语义注入检测模型作为语义过滤层。攻防对称训练的理论基础在于GRPO本身不限定策略的应用方向，攻击策略和检测模型共享相同的优化框架但奖励信号对称（攻击以偏离为目标，检测以识别注入为目标），AutoInject\cite{chen2026learning}已验证GRPO在攻击策略训练中的有效性，本研究将其扩展到防御侧。攻击模式-防御策略映射可基于规则和LLM的混合系统实现，工程上无原理性障碍。ProbeRL闭环验证的可行性在于：部署防御后使用ProbeRL重新攻击验证有效性，攻击发现与防御改进形成迭代闭环，理论上每轮迭代中发现的攻击模式严格扩充防御覆盖范围。
 
 
 \subsection{实验可行性分析}

@@ -224,7 +224,7 @@ ProbeRL攻击策略训练主循环如算法~\ref{alg:proberl}所示。第3--6行
 
 \todo{完善与攻击模式对应的奖励函数信号设计}
 
-现有防御方法（StruQ\cite{chen2025struq}、SecAlign\cite{chen2025secalignb}）依赖微调或偏好优化，缺乏对新型攻击模式的泛化能力。本研究针对这一问题，提出基于GRPO训练的语义注入检测模型$\pi_\psi^{\text{def}}$，与攻击策略$\pi_\phi^{\text{atk}}$同源对称：两者共享相同的LLM骨干网络和GRPO训练范式，但奖励函数对称相反。
+现有防御方法（StruQ\cite{chen2025struq}、SecAlign\cite{chen2025secalign}）依赖微调或偏好优化，缺乏对新型攻击模式的泛化能力。本研究针对这一问题，提出基于GRPO训练的语义注入检测模型$\pi_\psi^{\text{def}}$，与攻击策略$\pi_\phi^{\text{atk}}$同源对称：两者共享相同的LLM骨干网络和GRPO训练范式，但奖励函数对称相反。
 
 攻击策略的奖励为攻击成功信号：$\mathcal{R}^{\text{atk}} = \mathcal{R}_{\text{sparse}}^{\text{atk}} + \mu \cdot \sum_{l=1}^{L} \mathcal{R}_{\text{dense}}^{\text{atk}}(a_l)$。防御策略的奖励为拦截成功信号：$\mathcal{R}^{\text{def}} = 1 - \mathcal{R}_{\text{sparse}}^{\text{atk}} + \mu \cdot \sum_{l=1}^{L} \mathcal{R}_{\text{dense}}^{\text{def}}(a_l)$，其中防御侧密集奖励的三个信号定义与攻击侧对称：（1）工具调用一致性信号$\mathcal{R}_{\text{tool}}^{\text{def}} = 1 - \mathcal{R}_{\text{tool}}^{\text{atk}}$，奖励工具调用与预期一致；（2）文本正常性信号$\mathcal{R}_{\text{text}}^{\text{def}} = 1 - \mathcal{R}_{\text{text}}^{\text{atk}}$，奖励输出无异常特征；（3）环境稳定性信号$\mathcal{R}_{\text{env}}^{\text{def}} = 1 - \mathcal{R}_{\text{env}}^{\text{atk}}$，奖励环境状态未受扰动。
 
