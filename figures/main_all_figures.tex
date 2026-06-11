@@ -1,0 +1,28 @@
+\documentclass[UTF8,a4paper]{ctexart}
+\usepackage[margin=1.2cm,landscape]{geometry}
+\usepackage{graphicx}
+\input{common_style.tex}
+\pagestyle{empty}
+\begin{document}
+
+\begin{figure}[p]
+\centering
+\resizebox{0.98\linewidth}{!}{\input{fig1_risk_evaluation_body.tikz}}
+\caption{面向 LLM Agent 的工具调用链风险度量与可解释评估框架}
+\end{figure}
+\clearpage
+
+\begin{figure}[p]
+\centering
+\resizebox{0.98\linewidth}{!}{\input{fig2_trace_graph_attribution_body.tikz}}
+\caption{基于行为轨迹图的 LLM Agent 工具滥用检测与风险归因方法}
+\end{figure}
+\clearpage
+
+\begin{figure}[p]
+\centering
+\resizebox{0.98\linewidth}{!}{\input{fig3_overall_framework_body.tikz}}
+\caption{LLM Agent 工具调用安全研究总体架构}
+\end{figure}
+
+\end{document}

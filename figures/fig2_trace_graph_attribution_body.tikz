@@ -1,0 +1,105 @@
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+\path[use as bounding box] (0,0) rectangle (24,13.8);
+\node[titleText] at (12,13.45) {基于行为轨迹图的 LLM Agent 工具滥用检测与风险归因方法};
+
+% === 1. Left input panel ===
+\draw[panelG] (0.25,1.25) rectangle (4.25,12.8);
+\draw[headG] (0.25,12.25) rectangle (4.25,12.8);
+\node[sectionText, text=agentGreen] at (2.25,12.52) {1. 数据输入与轨迹采集};
+
+\foreach \i/\y/\name/\desc in {
+1/11.55/{用户任务指令}/{目标与约束条件},
+2/10.50/{prompt}/{系统/用户提示词},
+3/9.45/{plan}/{任务分解与策略},
+4/8.40/{tool call}/{工具调用事件},
+5/7.35/{args}/{参数与配置},
+6/6.30/{observation}/{工具返回与反馈},
+7/5.25/{state}/{内部状态快照},
+8/4.20/{final answer}/{模型输出结论},
+9/3.15/{environment event}/{外部事件记录}}
+{
+  \node[innerG, text width=3.25cm, minimum height=0.72cm] (in\i) at (2.25,\y) {\textbf{\name}\\\desc};
+}
+\foreach \i/\j in {1/2,2/3,3/4,4/5,5/6,6/7,7/8,8/9}{\draw[arrowG, dashed] (in\i) -- (in\j);}
+\node[dashedB, text width=3.25cm, minimum height=0.75cm] at (2.25,2.05) {运行时日志持续采集\\全量、增量、时间戳对齐};
+\draw[arrowG] (4.25,8.4) -- (4.55,8.4);
+
+% === 2. Graph construction ===
+\draw[panelB] (4.55,7.25) rectangle (19.85,12.8);
+\draw[headB] (4.55,12.25) rectangle (19.85,12.8);
+\node[sectionText, text=agentBlue] at (12.2,12.52) {2. 行为轨迹图构建};
+
+\node[innerB, text width=3.1cm, minimum height=4.15cm] (g1) at (6.45,9.75) {\textbf{2.1 日志解析与实体抽取}\\[2pt]
+日志清洗与标准化\\实体抽取（对象、时间、属性）\\事件类型识别（动作、结果、状态）\\时间对齐与去重\\[4pt]
+\fbox{输出：标准化事件序列}};
+\node[innerB, text width=3.1cm, minimum height=4.15cm] (g2) at (10.25,9.75) {\textbf{2.2 节点类型化建模}\\[2pt]
+用户意图\\计划步骤\\工具\\参数\\观测结果\\状态\\输出\\[4pt]
+\fbox{输出：节点集合 $V$}};
+\node[innerB, text width=3.1cm, minimum height=4.15cm] (g3) at (14.05,9.75) {\textbf{2.3 边关系构建}\\[2pt]
+时序关系\\调用关系\\依赖关系\\数据流关系\\反馈关系\\[4pt]
+\fbox{输出：边集合 $E$}};
+\node[innerB, text width=3.1cm, minimum height=4.15cm, align=center] (g4) at (17.85,9.75) {\textbf{2.4 轨迹图生成}\\[3pt]
+\begin{tikzpicture}[scale=0.36,baseline=-0.5ex]
+\foreach \x/\y in {0/0,1.4/0.7,2.8/0.1,1.1/-0.9,2.4/-1.1,3.6/-0.6}{\filldraw[agentBlue!15,draw=agentBlue] (\x,\y) circle (0.14);}
+\draw[agentBlue,-Stealth] (0,0)--(1.4,0.7)--(2.8,0.1)--(3.6,-0.6);
+\draw[agentBlue,dashed,-Stealth] (1.4,0.7)--(2.4,-1.1);
+\draw[agentBlue,-Stealth] (1.1,-0.9)--(2.4,-1.1)--(2.8,0.1);
+\end{tikzpicture}\\[-1pt]
+$\displaystyle G=(V,E,X,R)$\\[-1pt]
+$V$ 为节点集合，$E$ 为边集合；\\$X$ 为属性，$R$ 为关系类型。\\[4pt]
+\fbox{输出：行为轨迹图 $G$}};
+\foreach \a/\b in {g1/g2,g2/g3,g3/g4}{\draw[arrowB] (\a) -- (\b);}
+\draw[arrowB] (12.2,7.25) -- (12.2,6.95);
+
+% === 3. Detection and attribution ===
+\draw[panelP] (4.55,1.25) rectangle (19.85,6.95);
+\draw[headP] (4.55,6.40) rectangle (19.85,6.95);
+\node[sectionText, text=agentPurple] at (12.2,6.67) {3. 工具滥用检测与风险归因};
+
+\node[innerP, text width=2.2cm, minimum height=4.25cm] (d1) at (5.85,3.70) {\textbf{3.1 图规则检测}\\[2pt]
+越权调用\\敏感工具组合\\异常循环\\越界数据流动\\[3pt]
+\fbox{规则命中集合}};
+\node[innerP, text width=2.2cm, minimum height=4.25cm] (d2) at (8.25,3.70) {\textbf{3.2 结构与语义特征提取}\\[2pt]
+节点度分布\\子图模式计数\\路径长度分布\\实体语义嵌入\\上下文一致性\\[3pt]
+\fbox{特征向量 $h_G$}};
+\node[innerP, text width=2.2cm, minimum height=4.25cm, align=center] (d3) at (10.65,3.70) {\textbf{3.3 轻量检测模型}\\[2pt]
+图级风险评分\\[2pt]
+$\displaystyle M(G)=\lambda_1 S_{rule}$\\[-1pt]
+$\displaystyle +\lambda_2 S_{struct}$\\[-1pt]
+$\displaystyle +\lambda_3 S_{sem}$\\[2pt]
+\fbox{风险概率 $M(G)$}};
+\node[innerP, text width=2.2cm, minimum height=4.25cm] (d4) at (13.05,3.70) {\textbf{3.4 关键风险子图定位}\\[2pt]
+异常密度最大化\\违规节点覆盖率\\语义不一致性\\影响范围识别\\[3pt]
+\fbox{关键子图 $G_k$}};
+\node[innerP, text width=2.2cm, minimum height=4.25cm, align=center] (d5) at (15.45,3.70) {\textbf{3.5 风险路径归因}\\[2pt]
+候选风险路径 $P$\\[2pt]
+$\displaystyle C(p)=\sum_{v\in p} w_v a_v$\\[2pt]
+衡量路径贡献大小\\[3pt]
+\fbox{贡献度排序}};
+\node[innerP, text width=2.2cm, minimum height=4.25cm] (d6) at (17.85,3.70) {\textbf{3.6 可解释结果生成}\\[2pt]
+告警结论\\风险子图\\关键节点\\责任路径\\解释报告\\[3pt]
+\fbox{解释报告包}};
+\foreach \a/\b in {d1/d2,d2/d3,d3/d4,d4/d5,d5/d6}{\draw[arrowP] (\a) -- (\b);}
+\draw[arrowO] (19.85,4.1) -- (20.05,4.1);
+
+% === 4. Right output ===
+\draw[panelO] (20.05,1.25) rectangle (23.75,12.8);
+\draw[headO] (20.05,12.25) rectangle (23.75,12.8);
+\node[sectionText, text=agentOrange] at (21.90,12.52) {4. 输出与人工研判};
+
+\node[innerO, text width=3.05cm] (r1) at (21.90,11.35) {\textbf{工具滥用告警}\\风险等级与时间};
+\node[innerO, text width=3.05cm, below=0.25cm of r1] (r2) {\textbf{根因定位结果}\\关键原因与位置};
+\node[innerO, text width=3.05cm, below=0.25cm of r2] (r3) {\textbf{轨迹回放}\\可视化回放过程};
+\node[innerO, text width=3.05cm, below=0.25cm of r3] (r4) {\textbf{证据报告}\\规则与数据证据};
+\node[innerO, text width=3.05cm, below=0.25cm of r4] (r5) {\textbf{人工复核接口}\\确认、标注与反馈};
+\node[dashedO, text width=3.05cm, minimum height=2.6cm] at (21.90,3.00) {\textbf{证据清单}\\[3pt]
+轨迹图快照\\风险路径\\贡献度排序};
+\draw[arrowO] (19.85,9.4) -- (20.05,9.4);
+
+% === Legend ===
+\draw[rounded corners=4pt, draw=agentGray, fill=white] (0.55,0.30) rectangle (18.85,0.95);
+\draw[arrowG] (0.85,0.62) -- (1.55,0.62); \node[font=\tiny, anchor=west] at (1.68,0.62) {日志流};
+\draw[arrowB] (2.85,0.62) -- (3.55,0.62); \node[font=\tiny, anchor=west] at (3.68,0.62) {图构建流};
+\draw[arrowP] (5.25,0.62) -- (5.95,0.62); \node[font=\tiny, anchor=west] at (6.08,0.62) {检测与归因流};
+\draw[arrowO] (8.10,0.62) -- (8.80,0.62); \node[font=\tiny, anchor=west] at (8.93,0.62) {输出流};
+\end{tikzpicture}

@@ -1,0 +1,99 @@
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+\path[use as bounding box] (0,0) rectangle (24,13.8);
+\node[titleText] at (12,13.45) {面向 LLM Agent 的工具调用链风险度量与可解释评估框架};
+
+% === 1. Left panel ===
+\draw[panelG] (0.25,1.25) rectangle (4.25,12.8);
+\draw[headG] (0.25,12.25) rectangle (4.25,12.8);
+\node[sectionText, text=agentGreen] at (2.25,12.52) {1. 任务输入与执行环境};
+
+\node[innerG, text width=3.25cm] (u1) at (2.25,11.55) {\textbf{用户任务指令}\\自然语言目标、约束条件与上下文需求};
+\node[innerG, text width=3.25cm, below=0.28cm of u1] (u2) {\textbf{LLM Agent}\\执行推理、规划与多步骤工具调用};
+\node[innerG, text width=3.25cm, below=0.28cm of u2] (u3) {\textbf{规划器（Planner）}\\步骤分解、工具选择与执行调度};
+\node[innerG, text width=3.25cm, below=0.28cm of u3] (u4) {\textbf{工具集合（Toolset）}\\文件、邮件、数据库、Web API 等};
+\node[innerG, text width=3.25cm, below=0.28cm of u4] (u5) {\textbf{外部资源/数据源}\\本地文件、网页、数据库与第三方服务};
+\draw[arrowG] (u1) -- (u2);
+\draw[arrowG] (u2) -- (u3);
+\draw[arrowG] (u3) -- (u4);
+\draw[arrowG] (u4) -- (u5);
+\node[bodyText, text=agentGreen, text width=3.45cm] at (2.25,2.0) {说明：Agent 通过规划器与工具集合完成用户任务，每个步骤均产生可审计的运行轨迹。};
+
+% === 2. Top center panel ===
+\draw[panelB] (4.55,7.25) rectangle (19.85,12.8);
+\draw[headB] (4.55,12.25) rectangle (19.85,12.8);
+\node[sectionText, text=agentBlue] at (12.2,12.52) {2. 工具调用链形成过程};
+
+\foreach \i/\x/\t/\d in {
+1/4.95/{任务解析\\意图识别}/{识别目标、实体与约束},
+2/7.30/{计划生成\\步骤分解}/{生成执行计划与子步骤},
+3/9.65/{工具选择\\参数构造}/{匹配工具并构造参数},
+4/12.00/{工具调用\\执行交互}/{调用工具并访问资源},
+5/14.35/{结果观测\\状态更新}/{接收返回并更新状态},
+6/16.70/{调用链\\连续形成}/{形成序列直到任务完成}}
+{
+  \node[innerB, text width=1.95cm, minimum height=1.55cm, align=center] (s\i) at (\x+0.95,10.85) {\textbf{\i. \t}\\[2pt]\d};
+}
+\foreach \i/\j in {1/2,2/3,3/4,4/5,5/6}{\draw[arrowB] (s\i) -- (s\j);}
+
+\node[innerB, text width=14.4cm, minimum height=1.2cm, align=center] at (12.2,8.35) {\textbf{运行时采集的关键要素（逐步记录）}\\[2pt]
+\begin{tabular}{cccccccc}
+prompt & plan & tool & args & observation & state & final answer & time\\
+输入提示 & 执行计划 & 工具信息 & 参数 & 观测结果 & 状态快照 & 最终答案 & 时间戳
+\end{tabular}};
+
+% arrows from left to top center
+\draw[arrowG] (4.25,9.9) -- (4.55,9.9);
+\draw[arrowB, dashed] (12.2,8.95) -- (12.2,7.25);
+
+% === 3. Risk evaluation panel ===
+\draw[panelP] (4.55,1.25) rectangle (19.85,6.95);
+\draw[headP] (4.55,6.40) rectangle (19.85,6.95);
+\node[sectionText, text=agentPurple] at (12.2,6.67) {3. 风险度量与可解释评估};
+
+\node[innerP, text width=2.55cm, minimum height=4.35cm] (m31) at (6.10,3.70) {\textbf{3.1 日志采集与 Schema 规范化}\\[2pt]
+采集原始运行日志，统一字段、类型与时间戳。\\[3pt]
+\textbf{字段示例：}\\step\_id、tool、args、observation、permission、confirm};
+\node[innerP, text width=2.55cm, minimum height=4.35cm] (m32) at (9.00,3.70) {\textbf{3.2 调用链结构特征提取}\\[2pt]
+提取调用拓扑、权限变化、工具类型分布与外部交互模式。};
+\node[innerP, text width=2.75cm, minimum height=4.35cm] (m33) at (12.05,3.70) {\textbf{3.3 风险指标计算}\\[2pt]
+$S_{tool}$：工具敏感度\\
+$D_{call}$：调用深度\\
+$P_{diff}$：权限扩散度\\
+$I_{irrev}$：不可逆比例\\
+$H_{cov}$：人工确认覆盖率\\[2pt]
+指标归一化到 $[0,1]$。};
+\node[innerP, text width=3.25cm, minimum height=4.35cm] (m34) at (15.35,3.70) {\textbf{3.4 综合风险评分与分级}\\[4pt]
+\fbox{\parbox{2.85cm}{\centering
+$\displaystyle R=\alpha S_{tool}+\beta D_{call}+\gamma P_{diff}$\\[-1pt]
+$\displaystyle +\delta I_{irrev}+\eta(1-H_{cov})$}}
+\\[5pt]
+低风险 / 中风险 / 高风险};
+\node[innerP, text width=2.65cm, minimum height=4.35cm] (m35) at (18.20,3.70) {\textbf{3.5 可解释评估与证据生成}\\[2pt]
+链级风险报告\\步骤级评分\\热点步骤定位\\指标贡献可视化};
+
+\foreach \a/\b in {m31/m32,m32/m33,m33/m34,m34/m35}{\draw[arrowP] (\a) -- (\b);}
+\draw[arrowR] (19.85,4.05) -- (20.05,4.05);
+
+% === 4. Right panel ===
+\draw[panelO] (20.05,1.25) rectangle (23.75,12.8);
+\draw[headO] (20.05,12.25) rectangle (23.75,12.8);
+\node[sectionText, text=agentOrange] at (21.90,12.52) {4. 评估输出与应用};
+
+\node[innerO, text width=3.05cm] (o1) at (21.90,11.35) {\textbf{风险报告}\\链级总体风险与要点摘要};
+\node[innerO, text width=3.05cm, below=0.25cm of o1] (o2) {\textbf{评估基准}\\风险评估集合与对标基线};
+\node[innerO, text width=3.05cm, below=0.25cm of o2] (o3) {\textbf{预警提示}\\高风险阈值提醒};
+\node[innerO, text width=3.05cm, below=0.25cm of o3] (o4) {\textbf{Dashboard}\\可视化分析与趋势监控};
+\node[innerO, text width=3.05cm, below=0.25cm of o4] (o5) {\textbf{人工审查接口}\\人工复核与判定};
+
+\node[dashedO, text width=3.0cm, minimum height=2.5cm] at (21.90,3.05) {\textbf{证据与追溯}\\[3pt]
+日志记录\\调用链轨迹\\指标明细\\计算依据};
+\draw[arrowO] (19.85,9.7) -- (20.05,9.7);
+\draw[arrowO] (19.85,4.8) -- (20.05,4.8);
+
+% === Legend ===
+\draw[rounded corners=4pt, draw=agentGray, fill=white] (0.55,0.30) rectangle (18.65,0.95);
+\draw[arrowG] (0.85,0.62) -- (1.55,0.62); \node[font=\tiny, anchor=west] at (1.68,0.62) {正常执行流};
+\draw[arrowB, dashed] (3.25,0.62) -- (3.95,0.62); \node[font=\tiny, anchor=west] at (4.08,0.62) {日志/数据流};
+\draw[arrowP] (5.95,0.62) -- (6.65,0.62); \node[font=\tiny, anchor=west] at (6.78,0.62) {风险评分流};
+\draw[arrowR] (8.70,0.62) -- (9.40,0.62); \node[font=\tiny, anchor=west] at (9.53,0.62) {结果输出流};
+\end{tikzpicture}

@@ -1,0 +1,100 @@
+\begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
+\path[use as bounding box] (0,0) rectangle (24,13.8);
+\node[titleText] at (12,13.45) {LLM Agent 工具调用安全研究总体架构};
+
+% === 1. Left data source panel ===
+\draw[panelG] (0.25,2.55) rectangle (4.25,12.8);
+\draw[headG] (0.25,12.25) rectangle (4.25,12.8);
+\node[font=\small\bfseries, text=agentGreen, align=center] at (2.25,12.52) {1. Agent 任务执行与数据来源};
+
+\node[innerG, text width=3.25cm] (a1) at (2.25,11.45) {\textbf{用户任务}\\自然语言指令、目标约束、上下文与偏好};
+\node[innerG, text width=3.25cm, below=0.28cm of a1] (a2) {\textbf{LLM Agent}\\具备推理、规划与工具调用能力};
+\node[innerG, text width=3.25cm, below=0.28cm of a2] (a3) {\textbf{规划器（Planner）}\\任务分解、步骤规划、工具选择与调用顺序};
+\node[innerG, text width=3.25cm, below=0.28cm of a3] (a4) {\textbf{工具集合（Toolset）}\\功能工具、API、插件、服务与第三方系统};
+\node[innerG, text width=3.25cm, below=0.28cm of a4] (a5) {\textbf{外部资源/数据源}\\数据库、文件、网页、知识库、云服务、IoT};
+\foreach \x/\y in {a1/a2,a2/a3,a3/a4,a4/a5}{\draw[arrowG] (\x) -- (\y);}
+\node[dashedB, text width=3.35cm, minimum height=1.0cm] (trace) at (2.25,3.35) {\textbf{运行时轨迹生成}\\计划、调用日志、参数/响应、状态/错误、时间戳};
+\draw[arrowG] (a5) -- (trace);
+\draw[arrowG] (4.25,8.6) -- (4.55,8.6);
+
+% === 2. Topic 1 ===
+\draw[panelB] (4.55,7.40) rectangle (19.85,12.8);
+\draw[headB] (4.55,12.25) rectangle (19.85,12.8);
+\node[sectionText, text=agentBlue] at (12.2,12.52) {2. 课题一：工具调用链风险度量与可解释评估框架};
+
+\node[innerB, text width=3.0cm, minimum height=2.55cm] (t11) at (6.35,10.35) {\textbf{2.1 日志 Schema 规范化}\\统一日志结构与字段\\标准化事件类型\\映射工具与权限元数据\\时间对齐与会话聚合};
+\node[innerB, text width=3.0cm, minimum height=2.55cm] (t12) at (10.05,10.35) {\textbf{2.2 风险指标提取}\\工具敏感度 $S_{tool}$\\调用深度 $D_{call}$\\权限扩散度 $P_{diff}$\\不可逆操作比例 $I_{irrev}$\\人工确认覆盖率 $H_{cov}$};
+\node[innerB, text width=3.25cm, minimum height=2.55cm, align=center] (t13) at (13.95,10.35) {\textbf{2.3 综合风险评分}\\[2pt]
+$\displaystyle R=\alpha S_{tool}+\beta D_{call}+\gamma P_{diff}$\\[-1pt]
+$\displaystyle +\delta I_{irrev}+\eta(1-H_{cov})$\\[3pt]
+\fbox{回答问题：风险有多大？}};
+\node[innerB, text width=2.9cm, minimum height=2.55cm] (t14) at (17.55,10.35) {\textbf{2.4 风险分级与评估输出}\\风险分级（低/中/高）\\评分解释与贡献度分析\\评估报告与可视化\\初始标签与基线生成};
+\foreach \a/\b in {t11/t12,t12/t13,t13/t14}{\draw[arrowB] (\a) -- (\b);}
+\node[dashedB, text width=14.35cm, minimum height=0.70cm] (base1) at (12.2,7.95) {\textbf{课题一核心产出：}任务集 / 统一日志格式 / 风险指标体系 / 风险分数与分级 / 初始标签集 / 评估基座};
+
+% Dependency connector
+\node[dashedB, text width=13.5cm, minimum height=0.55cm] (dep) at (12.2,7.05) {课题一输出：任务集、日志格式、风险指标、初始标签、评估基座 $\rightarrow$ 支撑课题二};
+\draw[arrowB, dashed] (base1.south) -- (dep.north);
+
+% === 3. Topic 2 ===
+\draw[panelP] (4.55,2.55) rectangle (19.85,6.80);
+\draw[headP] (4.55,6.25) rectangle (19.85,6.80);
+\node[sectionText, text=agentPurple] at (12.2,6.52) {3. 课题二：基于行为轨迹图的工具滥用检测与风险归因方法};
+\draw[arrowP, dashed] (dep.south) -- (12.2,6.80);
+
+\node[innerP, text width=2.55cm, minimum height=2.85cm] (t21) at (5.95,4.35) {\textbf{3.1 轨迹图构建}\\节点：动作/工具/对象\\边：时序/依赖/数据流\\属性：权限/状态/结果\\[2pt]
+$G=(V,E,X,R)$};
+\node[innerP, text width=2.55cm, minimum height=2.85cm] (t22) at (8.95,4.35) {\textbf{3.2 图规则/轻量模型检测}\\图模式匹配\\异常传播与拓扑特征\\与风险指标联合判别\\[2pt]
+\fbox{正常 / 异常}};
+\node[innerP, text width=2.55cm, minimum height=2.85cm] (t23) at (11.95,4.35) {\textbf{3.3 风险子图定位}\\提取异常相关子图\\关键节点与边识别\\影响范围与传播路径\\[2pt]
+\fbox{风险发生位置}};
+\node[innerP, text width=2.55cm, minimum height=2.85cm] (t24) at (14.95,4.35) {\textbf{3.4 责任路径归因}\\最小责任路径搜索\\归因到具体操作/工具/人\\贡献度与置信度估计\\[2pt]
+\fbox{由谁引入风险}};
+\node[innerP, text width=2.55cm, minimum height=2.85cm] (t25) at (17.95,4.35) {\textbf{3.5 可解释告警输出}\\风险等级与类型说明\\证据展示（子图/路径）\\建议措施与缓解策略\\[2pt]
+\fbox{可解释告警}};
+\foreach \a/\b in {t21/t22,t22/t23,t23/t24,t24/t25}{\draw[arrowP] (\a) -- (\b);}
+\node[dashedP, text width=10.0cm, minimum height=0.45cm] at (12.2,2.95) {回答问题：风险在哪里、由谁引入？};
+
+% === 4. Right output panel ===
+\draw[panelO] (20.05,2.55) rectangle (23.75,12.8);
+\draw[headO] (20.05,12.25) rectangle (23.75,12.8);
+\node[font=\small\bfseries, text=agentOrange, align=center] at (21.90,12.52) {4. 原型系统与应用输出};
+
+\foreach \i/\x/\y/\txt in {1/20.55/11.25/{在线预警},2/22.00/11.25/{人工复核},3/20.55/10.25/{风险报告},4/22.00/10.25/{轨迹回放},5/20.55/9.25/{Dashboard},6/22.00/9.25/{证据存储}}
+{\node[innerO, text width=1.15cm, minimum height=0.55cm, align=center] at (\x,\y) {\txt};}
+\node[dashedO, text width=3.05cm, minimum height=4.15cm] at (21.90,5.25) {\textbf{证据产物（可审计与复用）}\\[3pt]
+日志记录：原始与规范化日志\\[2pt]
+风险标签：分数、等级与类型\\[2pt]
+关键子图：异常子图与路径证据\\[2pt]
+归因结论：责任对象与证据链};
+\draw[arrowO] (19.85,10.35) -- (20.05,10.35);
+\draw[arrowO] (19.85,4.35) -- (20.05,4.35);
+
+% === Bottom comparison table ===
+\draw[rounded corners=3pt, draw=agentBlue, fill=white, line width=0.6pt] (0.55,0.55) rectangle (19.85,2.20);
+\draw[fill=agentBlueHead, draw=agentBlue, line width=0.4pt] (0.55,1.86) rectangle (19.85,2.20);
+\draw[agentBlue, line width=0.4pt] (3.25,0.55) -- (3.25,2.20);
+\draw[agentBlue, line width=0.4pt] (11.55,0.55) -- (11.55,2.20);
+\draw[agentBlue, line width=0.4pt] (0.55,1.42) -- (19.85,1.42);
+\draw[agentBlue, line width=0.4pt] (0.55,0.98) -- (19.85,0.98);
+\node[font=\scriptsize\bfseries, text=agentBlue] at (1.90,2.03) {课题对比与关系};
+\node[font=\scriptsize\bfseries, text=agentBlue] at (7.40,2.03) {课题一：工具调用链风险度量与可解释评估};
+\node[font=\scriptsize\bfseries, text=agentBlue] at (15.70,2.03) {课题二：行为轨迹图检测与风险归因};
+\node[font=\tiny\bfseries, anchor=west] at (0.75,1.64) {研究目标};
+\node[font=\tiny, anchor=west] at (3.45,1.64) {量化风险大小，提供解释性评估与分级输出};
+\node[font=\tiny, anchor=west] at (11.75,1.64) {发现异常滥用，定位风险位置并归因责任来源};
+\node[font=\tiny\bfseries, anchor=west] at (0.75,1.20) {输入输出};
+\node[font=\tiny, anchor=west] at (3.45,1.20) {输入日志与任务集 $\rightarrow$ 输出风险分数、等级、初始标签};
+\node[font=\tiny, anchor=west] at (11.75,1.20) {输入课题一输出 $\rightarrow$ 输出风险来源、路径与可解释告警};
+\node[font=\tiny\bfseries, anchor=west] at (0.75,0.76) {研究关系};
+\node[font=\tiny, anchor=west] at (3.45,0.76) {为检测与归因提供统一度量体系、格式标准与基线支持};
+\node[font=\tiny, anchor=west] at (11.75,0.76) {在课题一基础上完成检测与归因能力提升};
+
+% === Legend ===
+\draw[rounded corners=4pt, draw=agentGray, fill=white] (20.15,0.55) rectangle (23.75,2.20);
+\node[font=\scriptsize\bfseries] at (21.95,2.03) {图例};
+\draw[arrowG] (20.45,1.65) -- (21.00,1.65); \node[font=\tiny, anchor=west] at (21.10,1.65) {正常执行流};
+\draw[arrowB, dashed] (20.45,1.35) -- (21.00,1.35); \node[font=\tiny, anchor=west] at (21.10,1.35) {日志/数据流};
+\draw[arrowB] (20.45,1.05) -- (21.00,1.05); \node[font=\tiny, anchor=west] at (21.10,1.05) {课题一评估流};
+\draw[arrowP] (20.45,0.75) -- (21.00,0.75); \node[font=\tiny, anchor=west] at (21.10,0.75) {课题二检测归因流};
+\end{tikzpicture}

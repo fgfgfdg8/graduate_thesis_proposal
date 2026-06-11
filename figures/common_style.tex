@@ -1,0 +1,65 @@
+% common_style.tex
+% Compile with XeLaTeX. Chinese fallback: SimSun -> Noto Serif CJK SC -> FandolSong.
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,shapes.geometric,backgrounds}
+
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\IfFontExistsTF{Tinos}{\setmainfont{Tinos}}{\setmainfont{Latin Modern Roman}}}
+% 如需强制使用 Windows 宋体，可将下一行改为：\setCJKmainfont{SimSun}
+\IfFontExistsTF{Noto Serif CJK SC}{\setCJKmainfont{Noto Serif CJK SC}}{\IfFontExistsTF{SimSun}{\setCJKmainfont{SimSun}}{\setCJKmainfont{FandolSong-Regular}}}
+
+\definecolor{agentGreen}{HTML}{2E7D32}
+\definecolor{agentGreenFill}{HTML}{F1FBEF}
+\definecolor{agentGreenHead}{HTML}{E3F6DF}
+\definecolor{agentBlue}{HTML}{1565C0}
+\definecolor{agentBlueFill}{HTML}{EFF7FF}
+\definecolor{agentBlueHead}{HTML}{DCEBFF}
+\definecolor{agentPurple}{HTML}{6A1B9A}
+\definecolor{agentPurpleFill}{HTML}{FBF6FF}
+\definecolor{agentPurpleHead}{HTML}{F0E3FF}
+\definecolor{agentOrange}{HTML}{EF6C00}
+\definecolor{agentOrangeFill}{HTML}{FFF7ED}
+\definecolor{agentOrangeHead}{HTML}{FFE6C7}
+\definecolor{agentRed}{HTML}{D32F2F}
+\definecolor{agentGray}{HTML}{616161}
+\definecolor{softGray}{HTML}{F8F8F8}
+
+\tikzset{
+  arrowG/.style={-{Stealth[length=2.0mm,width=2.0mm]}, agentGreen, line width=0.8pt},
+  arrowB/.style={-{Stealth[length=2.0mm,width=2.0mm]}, agentBlue, line width=0.8pt},
+  arrowP/.style={-{Stealth[length=2.0mm,width=2.0mm]}, agentPurple, line width=0.8pt},
+  arrowO/.style={-{Stealth[length=2.0mm,width=2.0mm]}, agentOrange, line width=0.8pt},
+  arrowR/.style={-{Stealth[length=2.0mm,width=2.0mm]}, agentRed, line width=0.8pt, dashed},
+  panelG/.style={draw=agentGreen, fill=agentGreenFill, rounded corners=5pt, line width=0.7pt},
+  panelB/.style={draw=agentBlue, fill=agentBlueFill, rounded corners=5pt, line width=0.7pt},
+  panelP/.style={draw=agentPurple, fill=agentPurpleFill, rounded corners=5pt, line width=0.7pt},
+  panelO/.style={draw=agentOrange, fill=agentOrangeFill, rounded corners=5pt, line width=0.7pt},
+  headG/.style={fill=agentGreenHead, draw=agentGreen, line width=0.4pt, rounded corners=5pt},
+  headB/.style={fill=agentBlueHead, draw=agentBlue, line width=0.4pt, rounded corners=5pt},
+  headP/.style={fill=agentPurpleHead, draw=agentPurple, line width=0.4pt, rounded corners=5pt},
+  headO/.style={fill=agentOrangeHead, draw=agentOrange, line width=0.4pt, rounded corners=5pt},
+  innerG/.style={draw=agentGreen, fill=white, rounded corners=4pt, line width=0.55pt, align=left, inner sep=3pt, font=\scriptsize},
+  innerB/.style={draw=agentBlue, fill=white, rounded corners=4pt, line width=0.55pt, align=left, inner sep=3pt, font=\scriptsize},
+  innerP/.style={draw=agentPurple, fill=white, rounded corners=4pt, line width=0.55pt, align=left, inner sep=3pt, font=\scriptsize},
+  innerO/.style={draw=agentOrange, fill=white, rounded corners=4pt, line width=0.55pt, align=left, inner sep=3pt, font=\scriptsize},
+  dashedB/.style={draw=agentBlue, fill=white, rounded corners=4pt, line width=0.45pt, dash pattern=on 3pt off 2pt, align=center, inner sep=2pt, font=\scriptsize},
+  dashedP/.style={draw=agentPurple, fill=white, rounded corners=4pt, line width=0.45pt, dash pattern=on 3pt off 2pt, align=center, inner sep=2pt, font=\scriptsize},
+  dashedO/.style={draw=agentOrange, fill=white, rounded corners=4pt, line width=0.45pt, dash pattern=on 3pt off 2pt, align=center, inner sep=2pt, font=\scriptsize},
+  moduleTitle/.style={font=\bfseries\scriptsize, align=center},
+  smallText/.style={font=\tiny, align=left},
+  bodyText/.style={font=\scriptsize, align=left},
+  titleText/.style={font=\LARGE\bfseries, align=center},
+  sectionText/.style={font=\large\bfseries, align=center},
+  formulaBox/.style={draw=#1, fill=white, rounded corners=4pt, line width=0.5pt, align=center, inner sep=3pt}
+}
+
+\newcommand{\sectionheader}[5]{%
+  \draw[#1] (#2,#3) rectangle ++(#4,#5);
+}
+
+\newcommand{\circledlabel}[3]{%
+  \node[circle, draw=#1, fill=#1!12, inner sep=1.2pt, minimum size=0.32cm, font=\tiny\bfseries, text=#1] at (#2) {#3};
+}
