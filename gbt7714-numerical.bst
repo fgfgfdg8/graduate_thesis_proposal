@@ -1593,29 +1593,10 @@ FUNCTION {format.series.vol.num.title}
 
 FUNCTION {format.booktitle.vol.num}
 { booktitle
-  entry.numbered
-    'skip$
-    { format.volume.number 's :=
-      s empty$ not
-        { bbl.colon * s * }
-        'skip$
-      if$
-    }
-  if$
 }
 
 FUNCTION {format.series.vol.num.booktitle}
-{ format.volume.number 's :=
-  series empty$ not
-    { series bbl.colon *
-      entry.numbered not s empty$ not and
-        { s * bbl.wide.space * }
-        'skip$
-      if$
-      booktitle *
-    }
-    { format.booktitle.vol.num }
-  if$
+{ format.booktitle.vol.num
   format.btitle
 }
 
@@ -1722,6 +1703,8 @@ FUNCTION {format.mark}
         { medium empty$ not
             { "/" * medium * }
             { entry.is.electronic
+              entry.mark "C" = not and
+              entry.mark "J" = not and
                 { "/OL" * }
                 'skip$
               if$
@@ -2422,8 +2405,6 @@ FUNCTION {periodical}
     'skip$
   if$
   format.urldate "" output.after
-  output.url
-  output.doi
   new.block
   format.note output
   fin.entry
@@ -2469,8 +2450,6 @@ FUNCTION {journal.article}
   format.journal.number "" output.after
   format.journal.pages bbl.pages.colon output.after
   format.urldate "" output.after
-  output.url
-  output.doi
   new.block
   format.note output
   fin.entry
@@ -2586,9 +2565,6 @@ FUNCTION {preprint}
   new.sentence
   format.edition output
   format.pages bbl.pages.colon output.after
-  format.urldate "" output.after
-  output.url
-  output.doi
   new.block
   format.note output
   fin.entry
@@ -2662,7 +2638,39 @@ FUNCTION {inbook} {
 
 FUNCTION {inproceedings}
 { "C" set.entry.mark
-  incollection
+  output.bibitem
+  output.translation
+  format.authors output
+  author format.key output
+  year.after.author
+    { period.after.author
+        'new.sentence
+        'skip$
+      if$
+      format.year "year" output.check
+    }
+    'skip$
+  if$
+  new.block
+  format.title "title" output.check
+  format.mark "" output.after
+  new.block
+  format.translators output
+  new.slash
+  format.editors output
+  new.block
+  format.series.vol.num.booktitle "booktitle" output.check
+  new.block
+  format.edition output
+  new.block
+  year.after.author not
+    { format.year "year" output.check }
+    'skip$
+  if$
+  format.extracted.pages bbl.pages.colon output.after
+  new.block
+  format.note output
+  fin.entry
 }
 
 FUNCTION {conference} { inproceedings }

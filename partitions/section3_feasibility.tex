@@ -8,7 +8,7 @@
 
 研究点一的风险度量模型具有明确的可解释指标，每个指标均可从日志中直接计算，不依赖不可解释的黑盒评分。权限扩散度$P_{\text{diff}}$基于集合论直接计算实际权限与必要权限的偏差，具有严格的形式化定义；不可逆操作比例$I_{\text{irrev}}$和敏感数据暴露度$E_{\text{expo}}$的计算均基于事件属性的统计汇总，无不可实现的理论障碍。加权求和的综合风险评分（式~\ref{eq:risk_score}）在初始版本采用规则权重，后续通过消融实验验证各指标的有效性。
 
-在信号获取可行性上，所有指标均可从统一日志Schema中程序化提取：工具敏感度可从预定义的工具注册表获取；权限扩散度可通过对比任务必要权限与实际调用权限集合计算；不可逆操作比例可通过事件\texttt{irreversible}字段统计；敏感数据暴露度可通过数据标签（pii、credential、secret）和外部输出标志（\texttt{external\_sink}）组合判断；人工确认覆盖率可从\texttt{confirmed}字段计算。全部信号在黑盒设置下技术可行，不需要访问模型内部状态。
+在信号获取可行性上，所有指标均可从统一日志模式中程序化提取：工具敏感度可从预定义的工具注册表获取；权限扩散度可通过对比任务必要权限与实际调用权限集合计算；不可逆操作比例可通过事件\texttt{irreversible}字段统计；敏感数据暴露度可通过数据标签（pii、credential、secret）和外部输出标志（\texttt{external\_sink}）组合判断；人工确认覆盖率可从\texttt{confirmed}字段计算。全部信号在黑盒设置下技术可行，不需要访问模型内部状态。
 
 \subsubsection{研究点二（行为轨迹图检测与归因）的理论基础}
 
@@ -21,26 +21,21 @@
 \subsection{实验可行性分析}
 
 \begin{enumerate}
-  \item \textbf{实验环境可行性。}本课题不需要大规模GPU训练。所有实验可在CPU或单张消费级GPU上完成。核心数据由Python可控工具环境（模拟文件、邮件、数据库等工具）离线生成，不依赖真实生产系统或大规模在线API调用。
-
   \item \textbf{评估协议可行性。}风险标签优先通过规则自动生成（例如：当敏感对象节点到外部发送工具之间存在可达路径时，标注为$R_2$；当高风险工具调用没有人工确认时，标注为$R_3$），自动标签生成后再抽样进行人工复核，保证可复现性和标注成本可控。
+  
+  \item \textbf{实验数据可行性。}实验所用Agent轨迹可以基于AgentDojo\cite{balunovic2024agentdojo}、AgentCanary\cite{li2026agentcanary}、IPI-Arena-Bench\cite{dziemian2026vulnerable}等成熟且基于真实任务构造的集成Agent安全评估基准，自行构造环境进行采集；同时，可以通过合成模拟数据（模拟文件、邮件、数据库等工具）的方式进行数据集扩充。先期原型验证的合成数据集（文件-邮件场景file\_mail、数据库-日程场景db\_calendar、代码-IoT场景code\_iot），每个数据集各200条样例，合计600条，覆盖$R_0$至$R_6$全部风险类型，已验证可支撑主实验、消融实验、路径定位实验和归因实验的完整评估。
 
-  \item \textbf{计算资源可行性。}核心逻辑代码拟控制在1000行Python代码左右，整体项目代码量控制在2500行以内。图构建使用networkx，轻量分类器使用scikit-learn，均为成熟可靠的开源库。图可视化和报告生成使用matplotlib或graphviz。
+  \item \textbf{对比基线可行性。}本研究拟采用的14个代理基线方法\cite{yao2023react,schick2023toolformer,patil2024gorilla,qin2024toolllm,balunovic2024agentdojo,xie2024osworld,bonatti2025windows,krawiecka2025extending,debenedetti2025defeating,costa2025securing,abdelnabi2025firewalls,dong2025pear,wang2026aligning,he2025sentinelagent}，涵盖2021—2026年代表性研究思想），均可在同一日志模式上实现，包括权限控制（StaticWhitelist、RBAC-ABAC）、信息流（TaintLite）、运行时监控（RuntimeAnomaly）、动态防火墙（DynamicLLM-Firewall）、授权图（AuthGraph-DualGraph）等，覆盖多元、比较翔实，具有坚实的研究基础支撑。
+  
+  \item \textbf{工程可行性。}工程实现方面，可以基于现有的成熟开源库进行整体实现，图构建使用networkx，图可视化和报告生成使用matplotlib或graphviz，使用pandas/jsonlines处理日志，scikit-learn实现轻量分类器。核心模块保持解耦，优先保证代码可读性和可维护性。度量指标方面，研究点一的风险度量指标（工具敏感度、权限扩散度、调用深度、不可逆操作比例、敏感数据暴露度、人工确认覆盖率）均可从日志中直接计算，且具有明确的定义和计算方法；研究点二的路径归因指标（Path Recall@K、Attribution Hit@K）基于gold path和gold node标签进行计算，技术上完全可行。
 
-  \item \textbf{对比基线可行性。}14个代理基线方法均在同一日志Schema上实现的轻量代理，涵盖2021—2026年代表性研究思想，包括权限控制（StaticWhitelist、RBAC-ABAC）、信息流（TaintLite）、运行时监控（RuntimeAnomaly）、动态防火墙（DynamicLLM-Firewall）、授权图（AuthGraph-DualGraph）等，无需复现原始系统，工程复杂度可控。
-
-  \item \textbf{实验规模可行性。}初始版本拟构造三个数据集（文件-邮件场景file\_mail、数据库-日程场景db\_calendar、代码-IoT场景code\_iot），每个数据集各200条样例，合计600条，覆盖$R_0$至$R_6$全部风险类型，可支撑主实验、消融实验、路径定位实验和归因实验的完整评估。
 \end{enumerate}
-
-\subsection{工程可行性分析}
-
-工程实现拟采用Python作为主要语言，使用pandas/jsonlines处理日志，networkx构建行为轨迹图，scikit-learn实现轻量分类器，matplotlib或graphviz生成可视化。核心模块保持解耦，优先保证代码可读性和可维护性。原型系统可提供命令行接口，后续视时间增加简单Web UI。整体代码量不超过2500行，符合当前代码基础和三个月左右小论文推进周期。
 
 \subsection{已有研究基础}
 
 \subsubsection{先期工作}
 
-目前已完成的工作包括：（1）完成TraceGraphAudit原型系统的核心代码实现，包括统一日志Schema定义（\texttt{schema.py}）、三个合成数据集生成器（\texttt{data\_generator.py}）、序列级风险指标计算（\texttt{risk\_metrics.py}）、行为轨迹图构建与路径定位（\texttt{graph\_builder.py}）、14个代理基线方法和两个提出方法（\texttt{methods.py}）、实验评估流程（\texttt{evaluation.py}）以及实验报告生成（\texttt{report.py}）。（2）完成一键复现脚本（\texttt{run\_all.py}），可自动生成600条样例、运行所有方法、输出实验表格和图表。（3）已完成Agent安全方向文献库的初步积累，围绕LLM Agent安全、多智能体安全、工具调用、执行溯源、运行时监控、权限控制和风险归因等主题，整理了2021—2026年相关文献。
+目前已完成的工作包括：（1）Agent安全方向文献库的初步积累，围绕LLM Agent安全、多智能体安全、工具调用、执行溯源、运行时监控、权限控制和风险归因等主题，整理了2021—2026年相关文献。（2）完成TraceGraphAudit原型系统的核心代码实现，包括统一日志模式定义、序列级风险指标计算、行为轨迹图构建与路径定位和基线方法复现。
 
 \subsubsection{先期实验结果}
 

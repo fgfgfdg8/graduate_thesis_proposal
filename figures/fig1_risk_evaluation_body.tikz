@@ -50,7 +50,7 @@ prompt & plan & tool & args & observation & state & final answer & time\\
 \draw[headP] (4.55,6.40) rectangle (19.85,6.95);
 \node[sectionText, text=agentPurple] at (12.2,6.67) {3. 风险度量与可解释评估};
 
-\node[innerP, text width=2.55cm, minimum height=4.35cm] (m31) at (6.10,3.70) {\textbf{3.1 日志采集与 Schema 规范化}\\[2pt]
+\node[innerP, text width=2.55cm, minimum height=4.35cm] (m31) at (6.10,3.70) {\textbf{3.1 日志采集与 模式 规范化}\\[2pt]
 采集原始运行日志，统一字段、类型与时间戳。\\[3pt]
 \textbf{字段示例：}\\step\_id、tool、args、observation、permission、confirm};
 \node[innerP, text width=2.55cm, minimum height=4.35cm] (m32) at (9.00,3.70) {\textbf{3.2 调用链结构特征提取}\\[2pt]

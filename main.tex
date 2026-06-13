@@ -19,6 +19,12 @@
 \usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=3cm]{geometry}
 \usepackage{pdflscape} % 横向页面支持
 \usepackage{microtype} % 微字型调整，减少溢出
+\usepackage{setspace}  % 行距控制
+% 正文行距设置：三种方式任选其一（取消注释即可生效）
+% \singlespacing        % 单倍行距（约1.0×）
+% \onehalfspacing       % 1.5倍行距（约1.5×，常用于学术报告）
+% \doublespacing        % 双倍行距（约2.0×）
+\setstretch{1.0}        % 自定义倍数：当前1.4×，可直接修改此数值
 % 版心矩形框：仅标示文本区边缘，不含页眉页脚区域
 \usepackage{atbegshi}
 \AtBeginShipout{%
