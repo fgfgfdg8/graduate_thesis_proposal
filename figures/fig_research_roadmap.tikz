@@ -1,0 +1,197 @@
+% fig_research_roadmap.tikz
+% 研究脉络图：黑白风格，纵向时间轴 + 四条研究脉络 + 汇聚到本课题
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  tracknode/.style={
+    draw=black, fill=white, rounded corners=3pt,
+    line width=0.55pt, align=center,
+    inner sep=2.5pt, font=\fontsize{5.5}{6.5}\selectfont,
+    text width=2.45cm
+  },
+  gapnode/.style={
+    draw=black, fill=black!8, rounded corners=3pt,
+    line width=0.8pt, align=center,
+    inner sep=3pt, font=\fontsize{6}{7.5}\selectfont,
+    text width=2.45cm
+  },
+  rqnode/.style={
+    draw=black, fill=black!18, rounded corners=4pt,
+    line width=1.0pt, align=center,
+    inner sep=4pt, font=\fontsize{6.5}{8}\selectfont\bfseries,
+    text width=2.8cm
+  },
+  trackhead/.style={
+    draw=black, fill=black!14, rounded corners=3pt,
+    line width=0.8pt, align=center,
+    inner sep=3pt, font=\fontsize{6}{7.5}\selectfont\bfseries,
+    text width=2.45cm
+  },
+  yearlab/.style={
+    font=\fontsize{5.5}{7}\selectfont, text=black!55, align=right
+  },
+  arr/.style={-{Stealth[length=1.6mm,width=1.3mm]}, black, line width=0.5pt},
+  arrdash/.style={-{Stealth[length=1.6mm,width=1.3mm]}, black!45,
+                  line width=0.4pt, dashed},
+  converge/.style={-{Stealth[length=2mm,width=1.6mm]}, black, line width=0.75pt},
+]
+
+% ===== 列坐标（四列，列间距3.1cm）=====
+\def\xA{1.5}   % 列1: Agent能力与评测
+\def\xB{4.6}   % 列2: 安全威胁与防御
+\def\xC{7.7}   % 列3: 溯源审计与可观测性
+\def\xD{10.8}  % 列4: 风险度量与可解释评估
+
+% ===== 行坐标（8行内容 + Gap + RQ，行间距1.45cm）=====
+\def\yHead{0}
+\def\yI{-1.45}
+\def\yII{-2.90}
+\def\yIII{-4.35}
+\def\yIV{-5.80}
+\def\yV{-7.25}
+\def\yVI{-8.70}
+\def\yVII{-10.15}
+\def\yGap{-11.75}
+\def\yRQ{-13.45}
+
+% ===== 时间轴（左侧）=====
+\draw[black!35, line width=0.55pt] (0, 0.45) -- (0, -11.1);
+\foreach \y/\yr in {
+  \yHead/2022,
+  \yI/2023,
+  \yII/2023--2024,
+  \yIII/2024,
+  \yIV/2024--2025,
+  \yV/2025,
+  \yVI/2025,
+  \yVII/2025--2026
+}{
+  \draw[black!25, line width=0.35pt] (-0.12,\y) -- (0.12,\y);
+  \node[yearlab] at (-0.9,\y) {\yr};
+}
+
+% ===== 列标题 =====
+\node[trackhead] (h1) at (\xA,\yHead) {Agent能力\\与工具调用评测};
+\node[trackhead] (h2) at (\xB,\yHead) {安全威胁\\与防御机制};
+\node[trackhead] (h3) at (\xC,\yHead) {溯源审计\\与可观测性};
+\node[trackhead] (h4) at (\xD,\yHead) {风险度量\\与可解释评估};
+
+% ===== 列1：Agent能力与工具调用评测 =====
+\node[tracknode] (n11) at (\xA,\yI)
+  {ReAct~\cite{yao2023react}\\Toolformer~\cite{schick2023toolformer}\\工具调用基础范式};
+\node[tracknode] (n12) at (\xA,\yII)
+  {Gorilla~\cite{patil2024gorilla}\\ToolLLM~\cite{qin2024toolllm}\\大规模API调用};
+\node[tracknode] (n13) at (\xA,\yIII)
+  {AgentBench~\cite{liu2024agentbench}\\WebArena~\cite{zhou2023webarena}\\多环境能力基准};
+\node[tracknode] (n14) at (\xA,\yIV)
+  {OSWorld~\cite{xie2024osworld}\\Mind2Web~\cite{deng2023mind2web}\\操作系统级评测};
+\node[tracknode] (n15) at (\xA,\yV)
+  {CodeAct~\cite{wang2024codeact}\\Reflexion~\cite{shinn2023reflexion}\\执行范式优化};
+\node[tracknode] (n16) at (\xA,\yVI)
+  {WorfBench~\cite{qiao2025worfbench}\\CogAgent~\cite{hong2024cogagent}\\工作流\&GUI评测};
+\node[tracknode] (n17) at (\xA,\yVII)
+  {PEAR~\cite{dong2026pear}\\综述~\cite{wang2024survey_agents,xi2025rise}\\真实场景多步执行};
+
+% ===== 列2：安全威胁与防御机制 =====
+\node[tracknode] (n21) at (\xB,\yI)
+  {Greshake等~\cite{greshake2023notwhat3}\\Schulhoff等~\cite{schulhoff2023ignore}\\IPI威胁基础框架};
+\node[tracknode] (n22) at (\xB,\yII)
+  {InjecAgent~\cite{zhang2024injectagent}\\BIPIA~\cite{liu2024formalizing}\\注入攻击形式化};
+\node[tracknode] (n23) at (\xB,\yIII)
+  {AgentDojo~\cite{balunovic2024agentdojo}\\AgentPoison~\cite{chen2024agentpoison}\\动态攻防评测};
+\node[tracknode] (n24) at (\xB,\yIV)
+  {CaMeL~\cite{debenedetti2025defeating}\\FIDES~\cite{costa2025fides}\\信息流控制防御};
+\node[tracknode] (n25) at (\xB,\yV)
+  {StruQ~\cite{chen2025struq}\ IPIGuard~\cite{an2025ipiguard}\\PIGuard~\cite{li2025piguard}\\结构化输入防御};
+\node[tracknode] (n26) at (\xB,\yVI)
+  {DRIFT~\cite{li2026drift}\ Progent~\cite{shi2025progent}\\IsolateGPT~\cite{wu2025isolategpt}\\权限管控\&隔离};
+\node[tracknode] (n27) at (\xB,\yVII)
+  {Attn.Tracker~\cite{hung2025attention}\\Adaptive~\cite{zhan2025adaptive}\\检测与对抗评估};
+
+% ===== 列3：溯源审计与可观测性 =====
+\node[tracknode] (n31) at (\xC,\yI)
+  {ThreatRaptor~\cite{gao2021threatraptor}\\Kairos~\cite{cheng2024kairos}\\系统溯源图基础};
+\node[tracknode] (n32) at (\xC,\yII)
+  {Inam等 SoK~\cite{inam2023sok}\\Weidinger等~\cite{weidinger2022taxonomy}\\审计\&风险分类综述};
+\node[tracknode] (n33) at (\xC,\yIII)
+  {Chan可见性~\cite{chan2024visibility}\\Chan IDs~\cite{chan2024ids}\\Agent可观测性};
+\node[tracknode] (n34) at (\xC,\yIV)
+  {MS Taxonomy~\cite{microsoft2025taxonomy}\\Zhang记忆~\cite{zhang2025memory}\\日志\&记忆追踪};
+\node[tracknode] (n35) at (\xC,\yV)
+  {SentinelAgent~\cite{he2025sentinelagent}\\AuthGraph~\cite{wang2026authgraph}\\执行图检测};
+\node[tracknode] (n36) at (\xC,\yVI)
+  {AgentVigil~\cite{wang2025agentvigil}\\AirgapAgent~\cite{bagdasarian2024airgapagent}\\在线监控\&隔离};
+\node[tracknode] (n37) at (\xC,\yVII)
+  {Wang综述~\cite{wang2026traces}\\de Witt等~\cite{dewitt2026openchallenges}\\归因挑战与链式攻击};
+
+% ===== 列4：风险度量与可解释评估 =====
+\node[tracknode] (n41) at (\xD,\yI)
+  {OWASP Top10~\cite{owasp2025llmtop10}\\NIST AI RMF~\cite{nist2023airmf}\\行业风险度量框架};
+\node[tracknode] (n42) at (\xD,\yII)
+  {MAESTRO~\cite{huang2025maestro}\\七层威胁建模};
+\node[tracknode] (n43) at (\xD,\yIII)
+  {Dehghantanha SoK~\cite{dehghantanha2026sokattacksurfaceagentic}\\UAR/PAR/RRS度量};
+\node[tracknode] (n44) at (\xD,\yIV)
+  {He综述~\cite{he2025survey}\\Das综述~\cite{das2025security}\\Agent安全全景综述};
+\node[tracknode] (n45) at (\xD,\yV)
+  {Deng综述~\cite{deng2025agentsunderthreat}\\ToolEmu失效模式\\过程级评估需求};
+\node[tracknode] (n46) at (\xD,\yVI)
+  {SeqAR~\cite{yang2025seqar}\\Yu综述~\cite{yu2025survey}\\序列与轨迹评估};
+\node[tracknode] (n47) at (\xD,\yVII)
+  {Chu等 T1--T4~\cite{chu2026systematic}\\Dziemian等~\cite{dziemian2026vulnerable}\\评估层级空白};
+
+% ===== 列内纵向箭头 =====
+\foreach \from/\to in {h1/n11, n11/n12, n12/n13, n13/n14, n14/n15, n15/n16, n16/n17}{\draw[arr] (\from) -- (\to);}
+\foreach \from/\to in {h2/n21, n21/n22, n22/n23, n23/n24, n24/n25, n25/n26, n26/n27}{\draw[arr] (\from) -- (\to);}
+\foreach \from/\to in {h3/n31, n31/n32, n32/n33, n33/n34, n34/n35, n35/n36, n36/n37}{\draw[arr] (\from) -- (\to);}
+\foreach \from/\to in {h4/n41, n41/n42, n42/n43, n43/n44, n44/n45, n45/n46, n46/n47}{\draw[arr] (\from) -- (\to);}
+
+% ===== 跨列关联（虚线横向箭头，有语义关联的位置）=====
+% 能力评测揭示安全缺口 → 攻击研究
+\draw[arrdash] (n13.east) -- (n23.west);
+% 系统溯源方法迁移 → 风险量化
+\draw[arrdash] (n31.east) -- (n41.west);
+% 注入攻击推动防御 → 可观测性需求
+\draw[arrdash] (n23.east) -- (n33.west);
+% 防御局限揭示 → 度量需求
+\draw[arrdash] (n25.east) -- (n45.west);
+% 执行图检测 → 可解释评估
+\draw[arrdash] (n35.east) -- (n45.west);
+% 归因挑战 → 评估空白
+\draw[arrdash] (n37.east) -- (n47.west);
+
+% ===== Gap节点（两组）=====
+\node[gapnode] (gap1) at (3.05,\yGap)
+  {\textbf{Gap G1/G2}\\调用链度量体系缺失\\日志结构不统一};
+\node[gapnode] (gap2) at (9.25,\yGap)
+  {\textbf{Gap G3/G4}\\跨步骤组合风险路径\\责任归因机制缺失};
+
+% Gap汇聚箭头（列1/2 → Gap1；列3/4 → Gap2）
+\draw[converge] (n17.south) -- ++(0,-0.18) -| (gap1.north);
+\draw[converge] (n27.south) -- ++(0,-0.18) -| (gap1.north);
+\draw[converge] (n37.south) -- ++(0,-0.18) -| (gap2.north);
+\draw[converge] (n47.south) -- ++(0,-0.18) -| (gap2.north);
+
+% ===== 本课题研究点 =====
+\node[rqnode] (rq1) at (3.05,\yRQ)
+  {研究点一\\工具调用链\\风险度量框架};
+\node[rqnode] (rq2) at (9.25,\yRQ)
+  {研究点二\\行为轨迹图\\检测与归因};
+
+\draw[converge] (gap1) -- (rq1);
+\draw[converge] (gap2) -- (rq2);
+
+% 两研究点互补支撑
+\draw[arr, <->] (rq1.east) --
+  node[above, font=\fontsize{5}{6}\selectfont]{互补支撑} (rq2.west);
+
+% ===== 图例 =====
+\node[font=\fontsize{5}{6.5}\selectfont, align=left, text=black!65]
+  at (0.55,\yRQ) {%
+  \tikz[baseline=-0.5ex]\draw[arr](0,0)--(0.45,0); 演进\\[1pt]
+  \tikz[baseline=-0.5ex]\draw[arrdash](0,0)--(0.45,0); 关联};
+
+\end{tikzpicture}
+\caption{相关研究脉络图}
+\label{fig:research_roadmap}
+\end{figure}

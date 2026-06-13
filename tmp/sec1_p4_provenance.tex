@@ -1,0 +1,63 @@
+% ===== 第四段：Agent可观测性、执行溯源与威胁归因 =====
+\subsubsection{Agent可观测性、执行溯源与威胁归因相关研究现状}
+
+Agent可观测性是近年来快速发展的研究方向，其核心问题是如何在不侵入Agent内部的情况下，
+对执行过程进行全面、可信的记录与分析。
+Chan等\cite{chan2024visibility}将Agent identifiers、实时监控和活动日志记录作为提升Agent可见性的三项关键措施，
+指出缺乏可见性是当前Agent系统治理的首要障碍；
+在后续工作\cite{chan2024ids}中进一步讨论了Agent身份标识对追踪、审计和责任界定的重要性，
+提出标准化的Agent身份体系是实现跨系统审计的前提条件。
+Microsoft AI Red Team\cite{microsoft2025taxonomy}在Agent故障模式分类报告中，
+将审计日志不完整性列为Agent系统治理层的核心风险，
+并系统梳理了从单Agent到多Agent协作场景下的故障模式分类体系。
+Wang等\cite{wang2026traces}的综述指出，最终答案的正确性不足以说明输出是如何产生的、
+工具调用是否合理、记忆如何影响后续决策，以及失败根因位于何处——
+这一论断揭示了"结果导向"评估范式的根本局限，并呼吁建立面向执行过程的可追踪性机制。
+Zhang等\cite{zhang2025memory}在ACM上对LLM记忆机制进行了系统综述，
+指出记忆模块的引入使Agent执行轨迹具有跨会话依赖性，
+进一步增加了执行溯源和归因的复杂度。
+
+\textbf{系统安全领域的溯源图方法。}
+系统安全领域已有大量provenance graph研究，
+用于将系统调用、文件访问、网络连接等日志组织为依赖图，并支持异常行为检测和攻击调查。
+Inam等\cite{inam2023sok}在IEEE S\&P 2023上对溯源审计领域进行了系统化综述（SoK），
+梳理了从日志采集、图构建到威胁检测的完整技术栈，
+并指出溯源图在攻击调查中的核心价值在于其能够表达跨进程、跨时间的因果依赖关系。
+ThreatRaptor\cite{gao2021threatraptor}利用网络威胁情报和溯源图实现高效的威胁狩猎，
+通过将CTI报告中的攻击行为描述转化为溯源图查询，显著降低了威胁调查的人工成本。
+Kairos\cite{cheng2024kairos}基于全系统溯源的异常检测，
+通过对比正常行为基线与实时溯源图的结构差异实现入侵检测，
+验证了溯源图在大规模系统环境中的检测有效性与可扩展性。
+这些工作为将溯源图方法迁移至LLM Agent场景提供了成熟的方法论基础。
+
+\textbf{将溯源图迁移至LLM Agent场景的挑战。}
+然而，将传统provenance graph方法直接应用于LLM Agent存在若干结构性障碍。
+其一，LLM Agent的日志具有语义性、异构性和高层抽象性，
+传统以进程-文件-网络连接为节点的图模型无法直接表达
+prompt、plan、tool call、observation、memory和final answer之间的语义依赖与数据流转关系。
+其二，de Witt等\cite{dewitt2026openchallenges}指出，
+在代理链中当多个Agent以管道形式协作时，
+确定哪个Agent执行了特定操作、追踪完整的委托链条在技术上极为困难，
+导致现有RBAC等人类身份管理机制在Agent场景下失效；
+该工作还将"链式攻击"（chaining attacks）定义为利用每次调用合法性与序列级意图之间鸿沟的新型攻击模式。
+其三，Chu等\cite{chu2026systematic}指出，
+思维链（CoT）轨迹被越来越多地用作Agent行为的审计日志，
+但若CoT不能忠实反映实际计算过程，则基于CoT的审计存在根本性的不可信问题。
+
+\textbf{面向Agent的新型检测与归因方法。}
+SentinelAgent\cite{he2025sentinelagent}提出基于执行图的Agent异常检测方法，
+通过构建Agent执行过程的图表示并与预期行为模式对比，实现对异常工具调用序列的检测；
+但该工作主要关注单Agent场景，对多Agent委托链和跨权限域风险路径的处理较为有限。
+AuthGraph\cite{wang2026authgraph}提出双图结构用于Agent授权对齐验证，
+通过对比授权图与执行图的结构差异识别越权行为；
+但其图构建依赖预定义的授权策略，对动态工具调用场景的适应性有待提升。
+AgentVigil\cite{wang2025agentvigil}在ACL Findings 2025上提出面向Agent工具调用的监控框架，
+通过实时分析工具调用序列的语义一致性检测潜在的注入攻击和行为偏离；
+但该工作侧重在线检测，对事后归因和风险路径解释的支持较为有限。
+Bagdasarian等\cite{bagdasarian2024airgapagent}在CCS 2024上提出AirgapAgent，
+通过在Agent与外部环境之间建立隐私隔离层保护对话内容，
+但该方案以牺牲部分工具调用能力为代价，难以直接应用于功能完整的Agent系统。
+
+综上，Agent可观测性研究已清晰表明执行溯源和归因归责的必要性，
+系统安全领域的provenance graph提供了可借鉴的技术基础，
+但适应LLM Agent执行语义的异构轨迹图表示与归因方法尚属空白。

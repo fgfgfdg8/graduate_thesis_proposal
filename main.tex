@@ -10,18 +10,52 @@
 \usepackage{booktabs} % 三线表
 \usepackage{tikz} % TikZ绘图
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc, backgrounds} % TikZ库
+\input{figures/tikz_styles.tex} % 统一颜色与TikZ样式定义
 \usepackage{algorithm} % 伪代码算法块
 \usepackage{algpseudocode} % 伪代码排版（支持\Comment）
 \usepackage{url} % gbt7714生成的.bbl需要\DeclareUrlCommand等命令
 \usepackage{todonotes} % \todo{}批注支持
 \usepackage[numbers,sort&compress]{natbib} % 数字编号引用，压缩连续编号
 \usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=3cm]{geometry}
+\usepackage{pdflscape} % 横向页面支持
+\usepackage{microtype} % 微字型调整，减少溢出
+% 版心矩形框：仅标示文本区边缘，不含页眉页脚区域
+\usepackage{atbegshi}
+\AtBeginShipout{%
+  \AtBeginShipoutUpperLeft{%
+    \begin{tikzpicture}[remember picture, overlay]
+      \draw[black, line width=0.6pt]
+        ([xshift=\dimexpr\oddsidemargin+1in-10pt\relax,
+           yshift=-\dimexpr\topmargin+1in+\headheight+\headsep-10pt\relax]
+          current page.north west)
+        rectangle
+        ([xshift=\dimexpr\oddsidemargin+1in+\textwidth+10pt\relax,
+           yshift=-\dimexpr\topmargin+1in+\headheight+\headsep+\textheight+10pt\relax]
+          current page.north west);
+    \end{tikzpicture}%
+  }%
+}
+% 禁止字符/公式溢出页边距：严格遵守换行规则
+\sloppy                        % 优先宽松行间距以避免文字溢出
+\emergencystretch=3em          % 允许额外伸展空间处理极端情况
+\setlength{\hfuzz}{0pt}        % 将hbox溢出容忍度设为0
+\setlength{\vfuzz}{0pt}        % 将vbox溢出容忍度设为0
+% 公式断行：降低二元运算符和关系符处断行代价，允许长公式自动换行
+\binoppenalty=0                % 二元运算符处允许断行
+\relpenalty=0                  % 关系符处允许断行
+\allowdisplaybreaks[1]         % 允许display公式在需要时跨页断开
+% URL自动断行设置（\makeatletter允许使用内部宏）
+\makeatletter
+\g@addto@macro\UrlBreaks{\do\/\do\-\do\_\do\.\do\@\do\&\do\#}
+\makeatother
+\urlstyle{same}
 \bibliographystyle{gbt7714-numerical} % GB/T 7714-2015数字编号样式
 
 
-\title{面向LLM Agent 工具调用行为的风险度量、检测与归因方法研究}
-\author{吴丰艺}
-\date{2026年5月}
+\title{面向基于大语言模型的智能体的工具调用链风险度量与防御方法研究}
+% \author{吴丰艺}
+% \date{2026年5月}
+\date{}
 
 \begin{document}
 

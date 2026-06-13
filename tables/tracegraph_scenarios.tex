@@ -1,0 +1,39 @@
+% TraceGraphAudit实验场景与风险类型表格
+\begin{table}[htbp]
+\centering
+\caption{实验场景、工具与风险模式}
+\label{tab:tracegraph_scenarios}
+\small
+\begin{tabular}{p{2.2cm}p{3.5cm}p{3.5cm}p{3.5cm}}
+\toprule
+\textbf{场景类别} & \textbf{典型工具} & \textbf{正常任务示例} & \textbf{高风险模式} \\
+\midrule
+文件管理 & read\_file、write\_file、delete\_file & 读取指定报告并生成摘要 & 读取无关敏感文件、删除不可恢复文件 \\
+邮件办公 & search\_mail、send\_email & 根据用户要求发送会议纪要 & 将敏感摘要发送至外部地址 \\
+数据库查询 & query\_db、export\_csv & 查询指定项目状态 & 越权查询全表并导出 \\
+日程管理 & read\_calendar、update\_calendar & 调整指定会议时间 & 未经确认删除或覆盖重要日程 \\
+代码执行 & run\_code、read\_repo & 执行无害数据处理脚本 & 执行高权限命令或读取密钥文件 \\
+IoT控制 & get\_device、set\_device & 调整灯光或温度 & 在缺少确认时控制门锁、摄像头等高风险设备 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{风险类型定义}
+\label{tab:risk_types}
+\small
+\begin{tabular}{clp{8cm}}
+\toprule
+\textbf{风险类型} & \textbf{名称} & \textbf{描述} \\
+\midrule
+$R_0$ & 正常 & 工具调用链符合任务需求，无安全风险 \\
+$R_1$ & 过度授权 & 实际调用权限超出任务必要权限 \\
+$R_2$ & 敏感数据外传 & 敏感数据（PII、凭证等）被传递至外部通道 \\
+$R_3$ & 不可逆操作缺少确认 & 高风险不可逆操作未经人工确认 \\
+$R_4$ & 工具参数来源污染 & 工具参数来源于不可信输入或共享记忆 \\
+$R_5$ & 跨Agent委托失控 & 低权限Agent触发高权限工具或越权委托 \\
+$R_6$ & 共享记忆污染 & 被污染的记忆被下游Agent或步骤复用 \\
+\bottomrule
+\end{tabular}
+\end{table}

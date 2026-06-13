@@ -1,6 +1,5 @@
 \begin{tikzpicture}[x=1cm,y=1cm,>=Stealth]
 \path[use as bounding box] (0,0) rectangle (24,13.8);
-\node[titleText] at (12,13.45) {LLM Agent 工具调用安全研究总体架构};
 
 % === 1. Left data source panel ===
 \draw[panelG] (0.25,2.55) rectangle (4.25,12.8);

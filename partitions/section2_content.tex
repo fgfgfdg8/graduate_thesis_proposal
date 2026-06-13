@@ -1,251 +1,188 @@
 \section{研究内容及方法}
 
-本研究围绕“如何构建面向LLM智能体的自动化提示注入攻防框架”这一核心问题，提出ProbeRL（Prompt-injection REinforced cOverage-guided Search）框架，以AgentDojo评估框架为基础平台，采用GRPO（Group Relative Policy Optimization）\cite{shao2024deepseekmath}策略训练两个同源对称模型：攻击策略$\pi_\phi^{\text{atk}}$训练生成对抗性提示注入样本，防御策略$\pi_\psi^{\text{def}}$训练生成拒绝对抗样本的检测与拦截决策。攻击侧通过步骤级密集奖励和停滞感知搜索扩展实现高效的自动化攻击；防御侧通过语义注入检测模型和启发式规则防御实现分层过滤与拦截。两个策略共享相同的GRPO训练范式，但奖励函数与训练目标对称相反，从而实现攻击侧的发现持续反馈至防御侧驱动防御改进。具体研究内容分为以下两个方面。
+本研究围绕“如何构建面向LLM Agent工具调用链的低成本、可复现、可解释安全评估与行为轨迹图归因方法”这一核心问题，提出两个相互关联但贡献边界明确的研究点：
+
+研究点一：“面向LLM Agent的工具调用链风险度量与可解释评估框架”，研究点二：“基于行为轨迹图的LLM Agent工具滥用检测与风险归因方法”。两个研究点的关系可以概括为“先度量、再检测与归因”：研究点一回答“Agent工具调用链风险有多大、由哪些指标构成、如何低成本评估”；研究点二回答“风险位于哪条行为路径、是否构成工具滥用、由哪些节点或步骤贡献”。研究点一为研究点二提供任务集、日志标准格式、风险指标、标签规则和实验基座；研究点二在研究点一基础上进行图建模、检测和归因。两个研究点相辅相成，并共同服务于LLM Agent工具调用安全这一核心主题。
 
 \subsection{研究框架}
 
-本研究整体遵循“威胁建模、攻击策略+防御策略协同优化、攻防互补部署”的研究路线，各环节逻辑自洽、紧密衔接。在威胁建模阶段，明确LLM智能体间接提示注入的攻击面与优化目标的形式化定义；在攻击策略+防御策略协同优化阶段，采用GRPO策略同时训练攻击策略$\pi_\phi^{\text{atk}}$和防御策略$\pi_\psi^{\text{def}}$，两者共享训练范式但奖励函数对称相反；在攻击侧，设计步骤级密集奖励和停滞感知搜索扩展实现高效攻击搜索；在防御侧，设计语义注入检测模型和启发式规则防御实现分层拦截；在攻防互补部署阶段，语义检测模型做前期过滤，启发式规则做兜底保护，攻击侧的发现持续反馈驱动防御改进。研究框架如图~\ref{fig:framework}所示。
+本研究整体遵循"日志规范化—风险度量—图建模—检测归因—审计报告"的研究路线，各环节逻辑自洽、紧密衔接。研究框架如图~\ref{fig:framework}所示。
 
-\input{figures/research_framework_tikz}
+\begin{figure}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{\input{figures/fig3_overall_framework_body.tikz}}
+  \caption{本研究的研究框架}
+  \label{fig:framework}
+\end{figure}
 
-\subsection{威胁模型与优化问题定义}
-
-在阐述具体研究内容之前，本节对本文所研究的LLM智能体自动化提示注入攻击问题进行形式化定义，明确威胁模型、攻击面与优化目标，为后续研究点提供统一的问题定义基准。
-
-\subsubsection{威胁模型与攻击面}
-本研究采用严格黑盒威胁模型\cite{yin2026pismith, wang2025agentvigil}：攻击者无法访问智能体内部状态（模型参数、注意力权重、推理链），仅能通过文本通道与智能体交互。攻击面锚定于两种提示注入方式：（1）间接提示注入（Indirect Prompt Injection, IPI），攻击者将恶意指令$p$嵌入智能体在运行过程中检索的外部数据上下文$x_{\text{ctx}}$，间接操纵智能体行为；（2）直接提示注入（Direct Prompt Injection, DPI），攻击者在用户输入中嵌入恶意指令。本研究聚焦于IPI，因其更贴近真实部署场景中的攻击模式\cite{greshake2023notwhat3}。
-
-设目标LLM智能体为$\mathcal{A}$，其底层语言模型为$\mathcal{M}_\theta$，配备工具集$\mathcal{T} = \{t_1, t_2, \ldots, t_m\}$和系统提示$s_{\text{sys}}$。智能体接收用户指令$x_{\text{inst}}$，在执行过程中可能调用外部工具并获取外部数据上下文$x_{\text{ctx}}$（如邮件内容、网页文本、文档片段等）。
-设注入操作为$\oplus$，将注入提示$p$嵌入数据上下文$x_{\text{ctx}}$的特定位置。攻击后智能体接收的输入为$(x_{\text{inst}}, x_{\text{ctx}} \oplus p)$，输出为智能体响应$r$和工具调用序列$\tau = \langle a_1, a_2, \ldots, a_L \rangle$，其中每个动作$a_l$包含工具调用$f_l$及其参数$p_l$。
-
-\subsubsection{攻击策略的优化目标}
-
-设攻击者拥有一组训练样本$\mathcal{D} = \{(x_{\text{inst}}^{(i)}, x_{\text{ctx}}^{(i)}, g^{(i)})\}_{i=1}^{|\mathcal{D}|}$，其中每条样本由用户指令$x_{\text{inst}}$、数据上下文$x_{\text{ctx}}$和攻击者目标$g$（如指定智能体执行特定工具调用或产生特定环境状态变更）构成。攻击者训练攻击策略$\pi_\phi$（以LLM为策略网络），对给定输入生成注入提示$p$。
-
-本文沿用PISmith\cite{yin2026pismith}的形式化框架，将攻击策略训练建模为如下优化问题：
-\begin{equation}
-  \max_{\pi_\phi} \frac{1}{|\mathcal{D}|} \sum_{(x_{\text{inst}}, x_{\text{ctx}}, g) \in \mathcal{D}} \mathbb{E}_{p \sim \pi_\phi(\cdot \mid x_{\text{inst}}, x_{\text{ctx}}, g)} \left[ r\left(\mathcal{A}(x_{\text{inst}}, x_{\text{ctx}} \oplus p), g\right) \right]
-  \label{eq:attack_objective}
-\end{equation}
-其中$\mathcal{A}(x_{\text{inst}}, x_{\text{ctx}} \oplus p)$为智能体在受攻击输入下的响应，$r(\cdot, g) \in \{0, 1\}$为二元奖励函数：若智能体响应满足攻击者目标$g$则$r=1$，否则$r=0$。与PISmith针对无防御或单一防御的LLM不同，本研究的优化目标面向配备工具集的智能体$\mathcal{A}$，攻击成功不仅要求智能体输出包含目标内容，还要求智能体执行正确的工具调用并传递合法参数，且攻击效果通过实际环境状态变更验证。
-
-\subsubsection{基于强化学习的策略训练}
-
-采用GRPO训练攻击策略$\pi_\phi$。对每条训练样本$(x_{\text{inst}}, x_{\text{ctx}}, g)$，采样$K$个注入提示$\{p_i\}_{i=1}^K \sim \pi_\phi$，计算对应奖励$\{r_i\}_{i=1}^K$。每个样本的优势估计为组内标准化：
-\begin{equation}
-  A_i = \frac{r_i - \bar{r}}{\sigma_r + \epsilon}, \quad \bar{r} = \frac{1}{K}\sum_{j=1}^K r_j, \quad \sigma_r = \sqrt{\frac{1}{K}\sum_{j=1}^K (r_j - \bar{r})^2}
-  \label{eq:grpo_advantage}
-\end{equation}
-其中$\epsilon$为数值稳定常数。策略更新最小化裁剪代理损失与KL散度惩罚之和：
-\begin{equation}
-  \mathcal{L}_{\text{GRPO}} = -\frac{1}{K}\sum_{i=1}^K \min\left(\rho_i A_i, \, \text{clip}(\rho_i, 1-\epsilon_c, 1+\epsilon_c) A_i\right) + \beta_{\text{KL}} \cdot D_{\text{KL}}(\pi_\phi \| \pi_{\text{ref}})
-  \label{eq:grpo_loss}
-\end{equation}
-其中$\rho_i = \pi_\phi(p_i) / \pi_{\phi}^{\text{old}}(p_i)$为重要性采样比率，$\epsilon_c$为裁剪阈值，$\beta_{\text{KL}}$控制KL散度惩罚强度，$\pi_{\text{ref}}$为参考策略。
-
-\subsubsection{奖励信号稀疏背景下的策略优化}
-
-PISmith\cite{yin2026pismith}揭示了标准GRPO在强防御下遭遇的"奖励稀疏导致策略坍塌"（entropy collapse）问题：绝大多数采样注入提示被防御拦截，仅极少数成功样本提供正反馈，策略快速过拟合至少数成功模式导致探索终止。该工作引入自适应熵正则化和动态优势加权缓解此问题。然而，本研究的智能体攻击场景面临更严峻的稀疏性挑战：
-
-\textbf{（1）智能体攻击的成功条件更为严格。}攻击成功不仅要求智能体输出特定文本，还要求执行正确的工具调用$f_l$、传递合法参数$p_l$，并通过环境状态变更验证。这种多维度成功条件使攻击成功率进一步降低，奖励稀疏性更为严重。
-
-\textbf{（2）中间步骤的有效信号未被利用。}在智能体多步交互场景中，攻击可能在某一中间步骤已成功使智能体偏离预期行为（如调用了非预期工具、传递了异常参数），但最终未完成攻击目标。现有二元奖励$r \in \{0, 1\}$无法区分"完全无效"与"部分有效但最终未成功"的攻击步骤，导致信用分配困难。
-
-\textbf{（3）策略搜索缺乏停滞突破机制。}GRPO的策略梯度优化仅关注攻击成功率，当策略陷入局部最优（连续多步无法获得正反馈）时缺乏有效的突破机制，导致搜索停滞。
-
-上述分析表明，仅依赖策略梯度优化的RL方法无法有效解决智能体提示注入攻击中的搜索效率问题，需要引入步骤级密集奖励信号和停滞感知的搜索扩展机制。这正是本研究提出ProbeRL框架的出发点。
-
-\subsection{数据集的选取}
-
-本研究选取AgentDojo\cite{balunovic2024agentdojo}作为训练与评估数据集。AgentDojo是一个于NIPS 2024上提出的Agent安全基准测试数据集，基于银行服务、日常工作、旅行、即时通信等四大真实的Agent应用场景，由于其有状态环境、确定性检查函数和跨域多样化任务的特性，成为研究LLM智能体提示注入攻击与防御的理想平台，是目前使用最广泛的Agent安全数据评估基准之一。AgentDojo具有如下特性：
-
-\textbf{（1）有状态环境支撑步骤级密集奖励计算。} AgentDojo提供4个域（工作区、银行、旅行、Slack）的有状态智能体执行环境，每个域包含可观测、可操作的环境状态（如银行余额、文件列表、邮件收件箱）。这种有状态特性使得本研究提出的步骤级密集奖励（特别是环境变化信号$\mathcal{R}_{\text{env}}$）和基于环境差异的风险评分RiskScore的计算成为可能。相比之下，InjecAgent\cite{zhang2024injectagent}等基准仅提供无状态的对话交互，无法获取攻击前后的环境状态差异。
-
-\textbf{（2）确定性检查函数提供精确的攻击成功判定。} AgentDojo采用确定性检查函数验证工具调用名称和参数是否匹配攻击者目标，而非简单的字符串匹配或LLM判断。这一特性对奖励计算至关重要：工具调用偏差信号需要精确判断攻击是否触发了与预期不同的工具调用，环境变化信号需要精确计算攻击前后的状态差异。仅依赖LLM-as-judge的评估方法（准确率约50\%）无法提供奖励计算所需的精确信号。
-
-\textbf{（3）跨域多样化攻击搜索空间。} AgentDojo包含97个UserTask和35个InjectionTask，构成949个UT-IT任务对，覆盖工作区管理（文件操作、日程管理）、银行服务（资金转账、账户查询）、旅行预订（航班搜索、酒店预订）和Slack通信（消息发送、频道管理）4个域，每个域包含5--10个不同的工具（详见表~\ref{tab:agentdojo_overview}、表~\ref{tab:agentdojo_it}和表~\ref{tab:agentdojo_ut}）。这种跨域多样性为攻击策略提供了丰富的搜索空间：不同域的工具调用模式、参数结构和环境状态类型差异显著，有效验证攻击策略的跨域泛化能力。
-
-\textbf{（4）丰富的攻击-防御评估基线。} AgentDojo已积累大量攻击与防御方法的评估结果，包括手工攻击（71\% ASR）、StruQ防御（2\% ASR）和CaMeL防御（0\% ASR）等基线数据，为ProbeRL攻击效果的对比分析提供了参考标准。
-
-\input{tables/agentdojo_tasks}
-
-\subsection{研究点一：基于强化学习的自动提示注入攻击策略}
+\subsection{研究点一：面向LLM Agent的工具调用链风险度量与可解释评估框架}
 
 \subsubsection{研究内容}
 
-针对G1（搜索策略缺乏覆盖引导）和G2（奖励信号稀疏且延迟），研究基于强化学习策略优化的自动提示注入攻击方法。首先，设计步骤级密集奖励函数，从智能体执行轨迹中提取五个可观测信号作为奖励组分，仅依赖外部可观测信息，在黑盒设置下实现步骤级信用分配；其次，设计停滞感知的搜索扩展机制，当策略陷入奖励停滞时引入变异策略尝试触发新路径进行突破；然后，实现策略模型训练，以密集奖励信号引导策略更新，动态调整奖励权重以驱动策略探索未覆盖的攻击路径。
+研究点一拟建立一个不依赖大量在线API的工具调用链风险评估框架。该框架将Agent执行过程抽象为一个工具调用序列，并围绕工具敏感度、权限扩散度、调用深度、不可逆操作比例、敏感数据暴露度、人工确认覆盖率等指标建立风险度量模型。研究对象不是单一prompt攻击，而是面向一般工具增强型Agent的行为审计。
+
+\textbf{统一日志Schema设计。}不同Agent框架对执行轨迹的记录方式并不一致，导致后续度量难以复用。拟采用事件日志Schema作为统一中间表示，将prompt、plan、tool call、parameters、observation、permission、memory write、final answer等字段显式记录：
+
+\begin{equation}
+  \begin{aligned}
+    \text{Log} = \{&Task,\ AgentID,\ Step,\ Role,\ Input,\ Plan,\\
+                   &Tool,\ Args,\ Output,\ Permission,\\
+                   &Confirm,\ Parent,\ Timestamp\}
+  \end{aligned}
+\end{equation}
+
+该Schema不依赖特定框架，可由模拟Agent、LangChain类框架或自定义Python工具链生成。
+
+\textbf{工具调用链形式化定义。}设某次Agent执行任务的工具调用链为：
+
+\begin{equation}
+  C = \langle e_1, e_2, \ldots, e_T \rangle, \quad e_t = (id_t, a_t, tool_t, p_t, o_t, perm_t, dep_t, \tau_t)
+\end{equation}
+
+其中，$e_t$表示第$t$个执行事件，$id_t$表示Agent或会话标识，$a_t$表示当前动作类型，$tool_t$表示调用工具，$p_t$表示工具参数，$o_t$表示工具返回结果，$perm_t$表示工具调用所需权限，$dep_t$表示该事件对前序事件的依赖关系，$\tau_t$表示时间戳。
+
+\textbf{多维风险指标体系。}工具调用链的总体风险由多维指标加权获得。定义工具调用链$C$的风险向量为：
+
+\begin{equation}
+  \Phi(C) = \left[S_{\text{tool}}(C),\; D_{\text{call}}(C),\; P_{\text{diff}}(C),\; I_{\text{irrev}}(C),\; E_{\text{expo}}(C),\; H_{\text{cov}}(C)\right]
+\end{equation}
+
+其中，$S_{\text{tool}}(C)$表示工具敏感度，$D_{\text{call}}(C)$表示调用深度，$P_{\text{diff}}(C)$表示权限扩散度，$I_{\text{irrev}}(C)$表示不可逆操作比例，$E_{\text{expo}}(C)$表示敏感数据暴露度，$H_{\text{cov}}(C)$表示人工确认覆盖率。综合风险分数定义为：
+
+\begin{equation}
+  R(C) = \alpha_s S_{\text{tool}} + \alpha_d D_{\text{call}} + \alpha_p P_{\text{diff}} + \alpha_i I_{\text{irrev}} + \alpha_e E_{\text{expo}} - \alpha_h H_{\text{cov}}
+  \label{eq:risk_score}
+\end{equation}
+
+其中$\alpha_s, \alpha_d, \alpha_p, \alpha_i, \alpha_e, \alpha_h$为权重参数，经归一化后$R(C) \in [0,1]$。该公式的含义是：工具越敏感、调用链越深、权限越扩散、不可逆操作越多、敏感数据暴露越严重，则风险越高；人工确认在一定程度上降低风险评估中的误报影响。
+
+\textbf{关键指标定义。}权限扩散度用于刻画实际工具调用权限集合与任务必要权限集合之间的偏差。设任务$q$的必要权限集合为$Perm_{req}(q)$，实际工具调用链涉及的权限集合为$Perm(C)$，则：
+
+\begin{equation}
+  P_{\text{diff}}(C) = \frac{|Perm(C) \setminus Perm_{req}(q)|}{|Perm(C) \cup Perm_{req}(q)| + \epsilon}
+\end{equation}
+
+不可逆操作比例用于衡量调用链中不可撤销或难以恢复的操作占比。设$irr(e_t) \in \{0,1\}$表示事件$e_t$是否为不可逆操作，则：
+
+\begin{equation}
+  I_{\text{irrev}}(C) = \frac{1}{T} \sum_{t=1}^{T} irr(e_t)
+\end{equation}
+
+敏感数据暴露度用于衡量敏感对象被传递至外部工具、低权限Agent或共享记忆的程度。设$Data_s$为敏感数据集合，$sink(e_t)$表示事件输出是否进入外部通道，则：
+
+\begin{equation}
+  E_{\text{expo}}(C) = \frac{\sum_{t=1}^{T} \mathbb{I}\left[o_t \cap Data_s \neq \varnothing\right] \cdot sink(e_t)}{|Data_s| + \epsilon}
+\end{equation}
+
+\textbf{可解释性设计。}每个风险分数均输出贡献分解，即说明风险来自工具敏感度、权限扩散、不可逆操作还是敏感数据暴露。对某个调用链$C$，其第$j$个指标贡献可表示为：
+
+\begin{equation}
+  contrib_j(C) = \frac{\alpha_j \Phi_j(C)}{\sum_k |\alpha_k \Phi_k(C)| + \epsilon}
+\end{equation}
 
 \subsubsection{研究目标}
 
-\begin{enumerate}
-  \item 设计步骤级密集奖励函数，包含工具调用偏差信号、文本生成偏差信号、环境变化信号、覆盖度量信号和风险评分信号，提供攻击步骤的有效性反馈，提升RL策略的搜索效率。
-  \item 设计停滞感知的搜索扩展机制，在策略陷入局部最优时引入变异策略尝试突破，并将搜索发现的有效候选反馈给RL策略更新，提升攻击策略的探索能力。
-  \item 在AgentDojo数据集上实现ProbeRL框架，评估其在提示注入攻击中的效果提升，并与现有方法进行对比分析。
-\end{enumerate}
+研究点一的目标包括：第一，构建一套面向工具增强型LLM Agent的统一日志Schema；第二，定义工具调用链风险度量指标体系和综合风险评分函数；第三，形成覆盖六类工具场景的低成本任务集与风险样例集；第四，实现可插拔评估模块，能够对任意执行日志输出风险分数、指标贡献和审计报告；第五，在2026年8月中旬前完成代码、实验、消融和论文大章节初稿。
 
-\subsubsection{关键问题与拟采用方案}
+\subsubsection{实验数据集与场景设计}
 
-\paragraph{关键问题1：对齐Agent提示注入攻击场景的步骤级密集奖励函数设计}
+本课题的实验数据集拟采用"任务模板—工具轨迹—风险标签—归因标注"四层结构。具体而言，每条样例包含用户任务、初始上下文、可用工具列表、工具权限清单、执行步骤、工具参数、工具返回结果、最终输出、全局标签、风险类型标签和归因标签。风险类型划分为七类：$R_0$表示正常，$R_1$表示过度授权，$R_2$表示敏感数据外传，$R_3$表示不可逆操作缺少确认，$R_4$表示工具参数来源污染，$R_5$表示跨Agent委托失控，$R_6$表示共享记忆或中间结果污染。
 
-现有方法（AutoInject\cite{chen2026learning}、PISmith\cite{yin2026pismith}）仅在攻击最终成功时提供二元奖励信号，无法区分中间步骤的有效性。在智能体多步交互场景中，攻击可能在某一中间步骤已成功使智能体偏离预期行为，但最终未完成攻击目标。传统稀疏二元奖励$\mathcal{R}_{\text{sparse}} \in \{0, 1\}$无法提供中间步骤有效性的任何信号，导致RL策略的信用分配困难。
+实验场景覆盖文件管理（read\_file、write\_file、delete\_file）、邮件办公（search\_mail、send\_email）、数据库查询（query\_db、export\_csv）、日程管理（read\_calendar、update\_calendar）、代码执行（run\_code、read\_repo）和IoT控制（get\_device、set\_device）六类工具场景，每类场景包含正常样例、过度授权样例、敏感数据外传样例、不可逆操作样例、跨工具组合风险样例和人工确认缺失样例。实验场景与风险类型定义如表~\ref{tab:tracegraph_scenarios}和表~\ref{tab:risk_types}所示。
 
-本研究设计由五个可观测信号组成的步骤级密集奖励函数：
-\begin{equation}
-  \mathcal{R}_{\text{dense}}(a_l) = w_1 \cdot \mathcal{R}_{\text{tool}}(a_l) + w_2 \cdot \mathcal{R}_{\text{text}}(a_l) + w_3 \cdot \mathcal{R}_{\text{env}}(a_l) + w_4 \cdot \mathcal{R}_{\text{cover}}(a_l) + w_5 \cdot \mathcal{R}_{\text{risk}}(a_l)
-  \label{eq:dense_reward}
-\end{equation}
-其中$w_1 + w_2 + w_3 + w_4 + w_5 = 1$。
+\input{tables/tracegraph_scenarios}
 
-由于Agent的执行过程中带有丰富的上下文信息，而这些上下文信息携带的信号，如语义、状态转移等，可能包含攻击成功与否的线索。如何设计具体的奖励信号以有效利用这些上下文信息，是实现高效攻击搜索和精准防御的关键问题。式中的前三个Reward信号可以从智能体执行轨迹及环境变化情况中直接提取；后两个信号将分别奖励新工具调用覆盖和风险评分，使奖励函数统一提供攻击方向性引导。各项奖励信号的详细定义如下：
-
-\textbf{工具调用偏差信号$\mathcal{R}_{\text{tool}}$。}衡量攻击步骤引入的工具调用与原始任务预期的偏差程度。设攻击步骤$a_l$触发工具调用$f_l$，原始任务预期工具调用为$\hat{f}_l$，则：
-\begin{equation}
-  \mathcal{R}_{\text{tool}}(a_l) = \mathbb{1}[f_l \neq \hat{f}_l] \cdot \text{Sim}(f_l, f_{\text{target}})
-\end{equation}
-其中$\text{Sim}(f_l, f_{\text{target}})$衡量实际调用$f_l$与攻击者目标调用$f_{\text{target}}$的相似度。当攻击步骤使智能体调用了非预期工具，且该工具与攻击者目标相关时，$\mathcal{R}_{\text{tool}}$取正值。该信号可通过对执行轨迹中的工具调用序列进行差分分析获得，无需模型内部状态。
-
-\textbf{文本异常信号$\mathcal{R}_{\text{text}}$。}衡量智能体输出中指令遵循异常的文本特征。设攻击步骤后智能体输出文本为$r_l$，原始任务预期输出为$\hat{r}_l$，则：
-\begin{equation}
-  \mathcal{R}_{\text{text}}(a_l) = \sigma(\text{AnomalyScore}(r_l, \hat{r}_l) - \theta_{\text{anomaly}})
-\end{equation}
-其中$\sigma$为Sigmoid函数，$\theta_{\text{anomaly}}$为异常阈值。AnomalyScore的计算通过三个互补途径实现：（1）指令拒绝率：检测输出中是否出现"I cannot"/"I'm unable to"等拒绝模式，若智能体在正常任务中产生拒绝回复则表明其可能被注入指令误导；（2）主题偏移度：用BM25或余弦相似度等快速算法计算输出语义与原始任务的偏移程度，偏移越大表明注入指令的影响越强；（3）工具调用-文本一致性：检查工具调用结果与文本输出是否矛盾（如工具调用\texttt{transfer\_funds}但文本声称"未执行任何操作"），不一致表明智能体行为已被操纵。预期输出$\hat{r}_l$可从AgentDojo的GROUND\_TRUTH\_OUTPUT字段获取（部分只读任务有明确定义），或通过无攻击基线运行的输出作为参考。
-
-\textbf{环境变化信号$\mathcal{R}_{\text{env}}$。}衡量攻击步骤导致的环境状态变化幅度。设攻击前环境状态为$s_{\text{before}}$，攻击后环境状态为$s_{\text{after}}$，则：
-\begin{equation}
-  \mathcal{R}_{\text{env}}(a_l) = \frac{\|s_{\text{after}} - s_{\text{before}}\|}{\|s_{\text{after}} - s_{\text{before}}\| + \epsilon}
-\end{equation}
-其中$\epsilon$为平滑常数。该信号利用AgentDojo的有状态环境特性，通过对比攻击前后的环境快照获得，完全基于外部可观测信息。
-
-\textbf{新路径覆盖信号$\mathcal{R}_{\text{cover}}$。}奖励触发了具有新的工具调用路径的攻击步骤，使用工具所属类型的切换进行判断。设当前攻击步骤的工具调用$f_l$所属类型为$\text{cat}(f_l)$（如"数据读取类""资金操作类""通信类"），已观测到的类型转移对集合为$\mathcal{S}_{\text{trans}}$，则：
-\begin{equation}
-  \mathcal{R}_{\text{cover}}(a_l) = \mathbb{1}[(\text{cat}(f_{l-1}), \text{cat}(f_l)) \notin \mathcal{S}_{\text{trans}}]
-\end{equation}
-当攻击步骤触发了此前未观测到的工具类型切换时，$\mathcal{R}_{\text{cover}}=1$，驱动策略探索新的攻击路径。与细粒度多维覆盖度量不同，该信号仅关注工具类型级别的路径新颖性，避免覆盖空间过大导致难以有效探索的问题。
-
-\textbf{风险评分信号$\mathcal{R}_{\text{risk}}$。}基于环境状态差异量化攻击后果的严重性，作为奖励组分引导策略关注高风险攻击。设环境状态由多个属性构成（如银行余额、文件列表、邮件收件箱等），每个属性$a_i$具有敏感度权重$w_i$，则：
-\begin{equation}
-  \mathcal{R}_{\text{risk}}(a_l) = \frac{\sum_{i} w_i \cdot |a_i(s_{\text{after}}) - a_i(s_{\text{before}})|}{\sum_{i} w_i \cdot |a_i(s_{\text{after}}) - a_i(s_{\text{before}})| + \epsilon}
-\end{equation}
-例如，银行域中资金转移的权重$w_{\text{balance}}$高于文件查询的权重$w_{\text{file\_read}}$，使得转移资金的攻击获得更高风险评分信号。
-
-\begin{algorithm}[htbp]
-\caption{DenseReward步骤级密集奖励计算}
-\label{alg:dense_reward}
-\begin{algorithmic}[1]
-\Require 攻击轨迹$\pi = \langle a_1, \ldots, a_L \rangle$，预期轨迹$\hat{\pi} = \langle \hat{a}_1, \ldots, \hat{a}_L \rangle$，环境状态序列$\langle s_0, s_1, \ldots, s_L \rangle$，信号权重$w_1, w_2, w_3$
-\Ensure 步骤级密集奖励序列$\langle \mathcal{R}_{\text{dense}}(a_1), \ldots, \mathcal{R}_{\text{dense}}(a_L) \rangle$
-\For{$l = 1, 2, \ldots, L$}
-  \State \textbf{工具调用偏差：}提取$a_l$的工具调用$f_l$和预期调用$\hat{f}_l$
-  \State $\mathcal{R}_{\text{tool}}(a_l) \leftarrow \mathbb{1}[f_l \neq \hat{f}_l] \cdot \text{Sim}(f_l, f_{\text{target}})$
-  \State \textbf{文本异常：}提取$a_l$的输出文本$r_l$和预期输出$\hat{r}_l$
-  \State $\mathcal{R}_{\text{text}}(a_l) \leftarrow \sigma(\text{AnomalyScore}(r_l, \hat{r}_l) - \theta_{\text{anomaly}})$
-  \State \textbf{环境变化：}计算状态差异$\Delta s_l \leftarrow s_l - s_{l-1}$
-  \State $\mathcal{R}_{\text{env}}(a_l) \leftarrow \|\Delta s_l\| / (\|\Delta s_l\| + \epsilon)$
-  \State $\mathcal{R}_{\text{dense}}(a_l) \leftarrow w_1 \cdot \mathcal{R}_{\text{tool}}(a_l) + w_2 \cdot \mathcal{R}_{\text{text}}(a_l) + w_3 \cdot \mathcal{R}_{\text{env}}(a_l)$
-\EndFor
-\State \Return $\langle \mathcal{R}_{\text{dense}}(a_1), \ldots, \mathcal{R}_{\text{dense}}(a_L) \rangle$
-\end{algorithmic}
-\end{algorithm}
-
-DenseReward计算流程如算法~\ref{alg:dense_reward}所示。三个信号均基于外部可观测的执行轨迹信息计算，无需模型内部状态，适用于黑盒设置。密集奖励与稀疏奖励组合为最终训练信号：$\mathcal{R}_{\text{total}} = \mathcal{R}_{\text{sparse}} + \mu \cdot \sum_{l=1}^{L} \mathcal{R}_{\text{dense}}(a_l)$，其中$\mu$为密集奖励缩放因子。
-
-
-\textbf{与PISmith自适应熵正则的对比。}PISmith\cite{yin2026pismith}通过自适应熵正则化$\mathcal{L}_{\text{entropy}}$维持策略探索以缓解奖励稀疏，其核心机制是在策略熵低于阈值$\mathcal{H}_{\text{cap}}$时施加熵奖励，并根据组内平均奖励$\bar{r}$动态调整正则系数$\beta(\bar{r})$。该方法本质上仍是"在稀疏奖励下训练RL"的优化策略，信号粒度为回合级；且根据实验结果表明，其奖励策略在ASR较低时，容易陷入“熵陷阱”，即奖励策略鼓励模型输出策略熵值更高的输出，但是模型在该奖励策略下输出更混乱的Token序列，最终导致语义退化，无法生成有效的攻击载荷，训练将长时间陷入停滞。本研究采取根本不同的路径：不修改RL训练算法本身，而是通过步骤级密集信号从源头缓解稀疏性，使每一步执行都能提供方向性反馈。即使攻击最终被防御拦截，中间步骤的工具调用偏差$\mathcal{R}_{\text{tool}}$和环境变化$\mathcal{R}_{\text{env}}$仍可为策略提供"部分成功"的正反馈，避免了PISmith面临的"极稀疏奖励导致策略坍塌"问题。
-
-\textbf{与ChainFuzzer TPS的对比。}ChainFuzzer\cite{wu2026chainfuzzer}的TPS（Trace-guided Prompt Solving）与本研究的密集奖励都利用运行时trace信息，但机制根本不同：TPS是确定性的局部修复，比较trace与目标链的偏差后生成约束，由LLM局部编辑prompt以提升链可达性（从27.05\%提升至95.45\%），但每次修复仅针对一条链，无法跨链迁移攻击策略；本研究的密集奖励是可学习的全局策略，通过3类黑盒信号的步骤级反馈训练RL策略网络，学到的攻击模式可跨任务、跨链迁移。此外，TPS依赖已知目标链（由静态依赖图预先提取），而本研究无需预设目标链，RL策略和搜索扩展自动发现高危害行为路径。
-
-\paragraph{关键问题2：GRPO策略优化与停滞感知搜索扩展的协同}
-
-GRPO策略优化通过策略梯度高效利用已发现的攻击模式，但当策略陷入局部最优（连续多步无法获得正反馈）时缺乏有效的突破机制。关键问题在于如何设计停滞感知的搜索扩展机制，在策略陷入奖励停滞时引入变异策略尝试触发新路径进行突破，并将搜索发现有效反馈给GRPO策略更新。
-
-\textbf{RL模块设计。}攻击策略$\pi_\phi^{\text{atk}}$以LLM为策略网络，输入当前注入模板$s_k$和智能体可观测行为状态（工具调用序列、回复文本特征），输出注入后缀token的概率分布。训练算法采用GRPO，奖励函数使用五个密集信号$\mathcal{R}_{\text{dense}}$替代稀疏二元奖励。与AutoInject\cite{chen2026learning}的关键区别在于：AutoInject为纯RL生成，策略直接输出完整注入提示，无搜索扩展机制；本研究的RL模块生成注入后缀，当策略陷入停滞时通过搜索扩展尝试突破。
-
-\textbf{停滞感知搜索扩展设计。}当策略网络连续$N_{\text{stall}}$步（如10步）未获得正反馈时，触发搜索扩展机制，引入5种变异策略（继承AgentVigil\cite{wang2025agentvigil}的动作空间设计）：（1）替换注入指令，用不同措辞重述攻击者目标；（2）增加约束指令，添加权威性或紧急性框架；（3）切换语气，在正式/非正式/紧急等语气间切换；（4）拼接已有候选，将多个成功候选的关键片段组合；（5）LLM辅助生成，利用LLM基于已有轨迹生成语义变体。
-
-\textbf{融合机制。}两个模块通过三路交互协同：（1）\textit{RL引导搜索}：RL策略生成"注入后缀候选"作为搜索扩展的高优先级起点，使搜索扩展时优先探索策略认为有潜力的方向；（2）\textit{搜索反馈RL}：搜索扩展发现的有效候选加入RL的训练数据（on-policy更新），使策略从搜索发现的攻击模式中学习；（3）\textit{覆盖饱和驱动}：当连续$N_{\text{plateau}}$步（拟设为5步）未取得ASR突破或覆盖率突破时，动态提高覆盖路径新颖性奖励$\mathcal{R}_{\text{cover}}$的权重系数$w_4$（增幅为$\Delta w$），驱动策略向未覆盖的攻击路径探索。
-
-设策略模型为$\pi_\phi$。在每轮迭代中，策略优化算法以密集奖励$\mathcal{R}_{\text{dense}}$评估候选质量。覆盖加权优势估计为：
-\begin{equation}
-  \hat{A}_\text{cov}(\tau) = \hat{A}(\tau) \cdot (1 + \beta \cdot \mathcal{R}_{\text{cover}}(\tau))
-\end{equation}
-其中$\hat{A}(\tau)$为GRPO组内标准化优势（式~\ref{eq:grpo_advantage}），$\mathcal{R}_{\text{cover}}$为覆盖路径新颖性信号，$\beta$为覆盖激励系数。当检测到停滞（连续$N_{\text{stall}}$步无正反馈）时，动态调整$w_4 \leftarrow w_4 + \Delta w$，直至取得突破后恢复原值。策略更新为：
-\begin{equation}
-  \phi \leftarrow \phi + \eta \cdot \mathbb{E}_{\tau \sim \pi_\phi}\left[\hat{A}_\text{cov}(\tau) \nabla_\phi \log \pi_\phi(\tau)\right]
-\end{equation}
-拟采用交替迭代策略：每$N_{\text{search}}$轮搜索扩展后执行一轮策略更新，确保搜索与策略优化交替进行、相互增强。
-
-\begin{algorithm}[htbp]
-\caption{ProbeRL攻击策略训练主循环}
-\label{alg:proberl}
-\begin{algorithmic}[1]
-\Require 目标智能体$\mathcal{A}$，攻击策略$\pi_\phi^{\text{atk}}$，最大搜索轮数$T$，停滞阈值$N_{\text{stall}}$
-\Ensure 训练后的攻击策略$\pi_\phi^{\text{atk}}$
-\State 初始化经验池$\mathcal{D} \leftarrow \varnothing$，停滞计数器$\text{stall} \leftarrow 0$
-\For{$t = 1, 2, \ldots, T$}
-  \State 采样$K$个注入提示$\{p_i\}_{i=1}^K \sim \pi_\phi^{\text{atk}}$
-  \For{每个$p_i$}
-    \State 执行攻击：$\tau_i \leftarrow \text{Execute}(\mathcal{A}, p_i)$
-    \State 计算密集奖励$\mathcal{R}_{\text{dense}}(\tau_i)$（式~\ref{eq:dense_reward}）
-  \EndFor
-  \State $\mathcal{D} \leftarrow \mathcal{D} \cup \{\tau_1, \ldots, \tau_K\}$
-  \If{所有$\mathcal{R}_{\text{sparse}} = 0$} $\text{stall} \leftarrow \text{stall} + 1$
-  \Else \hspace{0.5em} $\text{stall} \leftarrow 0$
-  \EndIf
-  \If{$\text{stall} \geq N_{\text{stall}}$}
-    \State \textbf{搜索扩展：}应用5种变异策略生成新候选，执行并加入$\mathcal{D}$
-    \State $\text{stall} \leftarrow 0$
-  \EndIf
-  \State 计算覆盖加权优势$\hat{A}_\text{cov}(\tau) = \hat{A}(\tau) \cdot (1 + \beta \cdot \mathcal{R}_{\text{cover}}(\tau))$
-  \State 更新策略$\phi$（式~\ref{eq:grpo_loss}，以$\hat{A}_\text{cov}$替换$A_i$）
-\EndFor
-\State \Return $\pi_\phi^{\text{atk}}$
-\end{algorithmic}
-\end{algorithm}
-
-ProbeRL攻击策略训练主循环如算法~\ref{alg:proberl}所示。第3--6行采样并执行攻击获取轨迹，第7--9行检测停滞状态，第10--12行在停滞时触发搜索扩展，第13--14行以覆盖加权优势更新策略。
-
-\subsection{研究点二：攻击范式驱动的自适应恶意注入防御策略}
+\subsection{研究点二：基于行为轨迹图的LLM Agent工具滥用检测与风险归因方法}
 
 \subsubsection{研究内容}
 
-针对G4（攻防割裂），研究攻击驱动的自适应防御（Attack-Informed Adaptive Defense， AIAD）机制，构建"语义检测+规则兜底"的双层防御架构。攻击侧的发现持续反馈驱动防御改进，形成攻防闭环。防御策略$\pi_\psi^{\text{def}}$与攻击策略$\pi_\phi^{\text{atk}}$共享GRPO训练范式但奖励函数对称相反：攻击侧奖励攻击成功，防御侧奖励成功拦截。防御侧包含两个互补层级：第一层为语义注入检测模型，检测模型在语义层面过滤和拦截恶意注入，超越启发式规则实现泛化性防御；第二层为启发式规则防御，基于ProbeRL攻击发现的脆弱模式生成针对性规则，作为语义检测的补充保障。
+研究点二在研究点一的日志Schema和风险指标基础上，进一步把Agent执行过程建模为异构行为轨迹图。与序列度量相比，图模型能够更自然地表达多源数据、多工具调用、多Agent委托和跨步骤依赖关系。该研究点重点突出"图建模+工具滥用检测+风险路径定位+可解释归因"四个创新点。
+
+\textbf{行为轨迹图定义。}定义行为轨迹图为：
+
+\begin{equation}
+  G = (V, E, X, R), \quad V = V_a \cup V_p \cup V_{pl} \cup V_t \cup V_o \cup V_m \cup V_y
+\end{equation}
+
+其中，$V_a$表示Agent节点，$V_p$表示prompt或用户任务节点，$V_{pl}$表示计划节点，$V_t$表示工具调用节点，$V_o$表示工具返回观测节点，$V_m$表示记忆或中间数据对象节点，$V_y$表示最终输出节点。边集合$E$表示生成、调用、读取、写入、派生、转发、确认、拒绝等关系，$X$表示节点与边的特征，$R$表示关系类型集合：
+
+\begin{equation}
+  E = E_{gen} \cup E_{call} \cup E_{read} \cup E_{write} \cup E_{derive} \cup E_{send} \cup E_{confirm} \cup E_{delegate}
+\end{equation}
+
+\textbf{工具滥用检测。}在此基础上，工具滥用检测问题可表述为图分类或路径异常检测问题。给定行为轨迹图$G$，检测器$f$输出该轨迹是否存在工具滥用风险：
+
+\begin{equation}
+  \hat{y} = f(G; \Theta), \quad \hat{y} \in \{0, 1\}
+\end{equation}
+
+考虑工程复杂度与可解释性，研究点二拟优先采用"图规则+轻量机器学习"的方法，而不是直接训练复杂图神经网络。图规则用于识别典型高风险模式，如敏感读取后外部发送、低权限Agent触发高权限工具、未确认不可逆写操作、工具参数来源不明、记忆污染后下游复用等；轻量模型则基于图统计特征、路径特征和研究点一风险指标进行分类。
+
+图级风险评分综合规则匹配得分$S_{\text{rule}}$、结构与语义特征得分$S_{\text{struct}}$和语义异常得分$S_{\text{sem}}$：
+
+\begin{equation}
+  M(G) = \lambda_1 S_{\text{rule}} + \lambda_2 S_{\text{struct}} + \lambda_3 S_{\text{sem}}
+  \label{eq:graph_score}
+\end{equation}
+
+\textbf{风险路径定位。}风险路径定位用于在检测出异常后指出关键路径。设$\mathcal{P}(G)$为图中所有从输入节点到高风险工具或外部输出节点的候选路径集合，路径$P$的风险得分定义为：
+
+\begin{equation}
+  Score(P) = \sum_{v \in P} w_v r(v) + \sum_{e \in P} w_e r(e) + \beta \cdot len(P) + \gamma \cdot cross(P)
+\end{equation}
+
+其中，$r(v)$和$r(e)$分别为节点和边的风险分数，$len(P)$表示路径长度，$cross(P)$表示路径是否跨越权限域或外部边界。系统输出得分最高的Top-K风险路径作为审计证据。
+
+\textbf{反事实归因。}归因部分采用反事实消融思想。对于图中节点$v$，其归因贡献定义为删除或屏蔽该节点前后综合风险的差值：
+
+\begin{equation}
+  Attr(v) = R(G) - R(G \setminus v)
+\end{equation}
+
+对于边$e$，同理定义：
+
+\begin{equation}
+  Attr(e) = R(G) - R(G \setminus e)
+\end{equation}
+
+为便于比较不同节点贡献，对归因分数进行归一化：
+
+\begin{equation}
+  \widetilde{Attr}(z) = \frac{Attr(z)}{\sum_{z' \in V \cup E} |Attr(z')| + \epsilon}, \quad z \in V \cup E
+\end{equation}
+
+最终，研究点二输出的不是单纯的"异常/正常"标签，而是包含异常类型、风险路径、关键节点、触发工具、参数来源和归因贡献的解释性报告。
 
 \subsubsection{研究目标}
 
-\begin{enumerate}
-  \item 构建攻击模式-防御策略的自动映射系统，训练针对注入攻击模式的语义检测模型，实现对攻击侧生成的多样化攻击模式的泛化检测能力。
-  \item 设计启发式规则防御机制，基于ProbeRL攻击发现的脆弱模式生成针对性规则，提升整体防御的覆盖率和鲁棒性。
-  \item 实现ProbeRL驱动的闭环验证机制，在AgentDojo上证明闭环优化相比固定规则一次性防御部署的鲁棒性优势。
-\end{enumerate}
+研究点二的目标包括：第一，提出适用于LLM Agent执行过程的异构行为轨迹图建模方法；第二，构建面向工具滥用的图模式库和轻量检测算法；第三，提出基于风险路径与反事实消融的可解释归因方法；第四，在研究点一任务集上完成对比实验、消融实验和案例分析。
 
-\subsubsection{关键问题与拟采用方案}
+\subsection{评价指标与对比实验设计}
 
-\paragraph{关键问题1：与攻击者模型对称范式的语义防御评估模型}
+研究点一的评价重点是风险度量框架是否能够稳定地区分正常调用链与高风险调用链。除分类指标外，还需使用排序指标和可解释性指标。设测试集中共有$N$条调用链，真实风险标签为$y_i$，模型输出风险分数为$R(C_i)$，则风险排序质量可使用AUROC和Recall@K衡量：
 
-\todo{完善与攻击模式对应的奖励函数信号设计}
+\begin{equation}
+  Recall@K = \frac{|TopK(R) \cap Pos|}{|Pos|}
+\end{equation}
 
-现有防御方法（StruQ\cite{chen2025struq}、SecAlign\cite{chen2025secalign}）依赖微调或偏好优化，缺乏对新型攻击模式的泛化能力。本研究针对这一问题，提出基于GRPO训练的语义注入检测模型$\pi_\psi^{\text{def}}$，与攻击策略$\pi_\phi^{\text{atk}}$同源对称：两者共享相同的LLM骨干网络和GRPO训练范式，但奖励函数对称相反。
+研究点二的评价重点是检测、定位和归因是否有效。对于工具滥用检测，使用Precision、Recall、F1和AUROC；对于风险路径定位，使用Path Recall@K，即真实风险路径是否出现在系统输出的Top-K风险路径中；对于归因，使用Hit@K和MRR衡量真实触发节点的排序位置：
 
-攻击策略的奖励为攻击成功信号：$\mathcal{R}^{\text{atk}} = \mathcal{R}_{\text{sparse}}^{\text{atk}} + \mu \cdot \sum_{l=1}^{L} \mathcal{R}_{\text{dense}}^{\text{atk}}(a_l)$。防御策略的奖励为拦截成功信号：$\mathcal{R}^{\text{def}} = 1 - \mathcal{R}_{\text{sparse}}^{\text{atk}} + \mu \cdot \sum_{l=1}^{L} \mathcal{R}_{\text{dense}}^{\text{def}}(a_l)$，其中防御侧密集奖励的三个信号定义与攻击侧对称：（1）工具调用一致性信号$\mathcal{R}_{\text{tool}}^{\text{def}} = 1 - \mathcal{R}_{\text{tool}}^{\text{atk}}$，奖励工具调用与预期一致；（2）文本正常性信号$\mathcal{R}_{\text{text}}^{\text{def}} = 1 - \mathcal{R}_{\text{text}}^{\text{atk}}$，奖励输出无异常特征；（3）环境稳定性信号$\mathcal{R}_{\text{env}}^{\text{def}} = 1 - \mathcal{R}_{\text{env}}^{\text{atk}}$，奖励环境状态未受扰动。
+\begin{equation}
+  PathRecall@K = \frac{1}{N} \sum_{i=1}^{N} \mathbb{I}(P_i^* \in TopK(\mathcal{P}(G_i)))
+\end{equation}
 
-语义检测模型的训练流程为：对每条输入$(x_{\text{inst}}, x_{\text{ctx}})$，防御策略$\pi_\psi^{\text{def}}$输出检测决策$d \in \{\text{accept}, \text{reject}\}$及其置信度。若判定为注入攻击则拦截，否则放行至智能体执行。奖励信号由攻击侧的ProbeRL提供：若拦截了成功攻击则获得正奖励，若错误拦截正常请求则获得负奖励。这种对抗训练机制使防御策略持续适应攻击策略的演化，超越基于静态特征的启发式检测。
+\begin{equation}
+  MRR = \frac{1}{N} \sum_{i=1}^{N} \frac{1}{rank_i(z_i^*)}
+\end{equation}
 
-\paragraph{关键问题2：启发式自动化防御规则生成策略}
-
-\todo{根据现有文献，完善启发式防御规则的具体生成算法}
-
-ProbeRL的攻击发现揭示了智能体的脆弱模式，包括高脆弱性工具调用链（如\texttt{read\_file} $\to$ \texttt{send\_email}的数据泄露链路）、注入模式（如权威伪装、紧急性框架等策略的攻击成功率分布）和参数篡改路径（如转账金额、收件人地址等参数的易受攻击程度）。启发式规则防御基于这些攻击发现自动生成针对性规则，作为语义检测模型的补充保障。
-
-定义攻击模式-防御策略映射函数$\mathcal{M}: \mathcal{P}_{\text{attack}} \to \mathcal{S}_{\text{defense}}$，其中$\mathcal{P}_{\text{attack}}$为攻击模式空间，$\mathcal{S}_{\text{defense}}$为防御策略空间。映射规则包括：高脆弱性工具调用链映射为指令隔离策略（在系统提示中明确禁止链式调用）、高频注入策略映射为输入检测规则（检测权威伪装和紧急性框架的文本特征）、参数篡改路径映射为参数校验策略（对敏感参数实施范围约束和用户确认）。拟构建基于规则和LLM的混合映射系统：对已知攻击模式采用规则映射保证效率，对新型攻击模式利用LLM生成防御策略保证覆盖。
-
-\textbf{两层防御的互补关系。}关键问题1的语义注入检测模型做前期过滤，在语义层面拦截恶意注入，超越启发式规则的泛化能力；关键问题2的启发式规则做兜底保护，对语义检测模型漏报的已知攻击模式实施确定性拦截。两层防御形成互补：语义检测模型适应新型攻击但可能漏报，启发式规则对已知攻击精确拦截但缺乏泛化性，组合使用可同时兼顾泛化性和精确性。
+对比方法拟设置为四组：Baseline-1为单步权限检查，只判断当前工具是否在白名单中；Baseline-2为敏感工具计数，只根据敏感工具数量给出风险；Baseline-3为序列级风险评分，即研究点一方法但不构建图；Baseline-4为无归因图检测，即使用图特征分类但不输出风险路径和反事实贡献。此外，还将与2021—2026年间代表性工作（包括RBAC/ABAC权限门控、污点追踪代理、ReAct轨迹启发式、CaMeL流代理、FIDES动态污点代理、动态LLM防火墙代理、AuthGraph双图代理等）进行对比，以体现研究点二相对于简单规则和序列方法的优势。
 
 \subsection{研究方法及技术路线}
 
 本研究的技术实施分为三个阶段：
 
-\textbf{第一阶段为框架基础设施搭建。}基于AgentDojo框架扩展，实现ProbeRL的整体架构。具体包括：实现GRPO策略模型训练流程，封装策略推理接口以支持搜索扩展时的候选生成；设计DenseReward计算管道，从AgentDojo执行轨迹中自动提取5个黑盒可观测信号（工具调用偏差、文本异常、环境变化、覆盖路径新颖性、风险评分）；实现启发式规则映射模块，从攻击发现自动生成指令隔离、参数校验和行为监控规则。
+\textbf{第一阶段为框架基础设施搭建。}基于Python构造简化工具环境，包括文件、邮件、数据库、日程、代码执行和IoT设备控制等工具。每个工具提供明确的权限标签、敏感度标签和可逆性标签，从而不依赖真实生产系统即可复现风险调用链。实现统一日志Schema解析模块和风险指标计算管道，形成首批可复现实验数据。
 
-\textbf{第二阶段为核心算法实现与训练。}实现ProbeRL攻击训练主循环（算法~\ref{alg:proberl}），包括停滞感知搜索扩展和策略更新的交替执行。实现DenseReward步骤级密集奖励计算（算法~\ref{alg:dense_reward}），包含5个可观测信号的提取和加权组合。实现语义注入检测模型训练，包含攻防对称奖励定义和对抗训练流程。实现启发式规则防御的自动生成和闭环验证机制。在AgentDojo的训练集上进行策略模型训练和超参数调优。
+\textbf{第二阶段为核心算法实现与训练。}实现行为轨迹图构建模块，确定节点类型、边类型、图特征和工具滥用模式库。实现图规则检测、轻量分类器、风险路径定位和反事实归因算法。在研究点一任务集上开展对比实验和消融实验。
 
-\textbf{第三阶段为评估与消融实验。}在AgentDojo的4个域上进行全面评估，包括：（1）与AutoInject、PISmith、AgentVigil等基线方法的攻击成功率对比；（2）密集奖励与稀疏奖励的消融实验；（3）5个密集奖励信号的独立贡献消融；（4）停滞感知搜索扩展与标准搜索的消融；（5）语义检测与规则的独立和协同效果消融；（6）“语义拦截+启发式规则”防御的闭环验证实验；（7）跨模型迁移性评估（开源模型到闭源模型）。
+\textbf{第三阶段为评估与消融实验。}在六类工具场景上进行全面评估，包括：（1）与14个代理基线方法的检测性能对比（F1、AUROC、Recall）；（2）风险路径定位实验（PathRecall@K）；（3）归因实验（Hit@K、MRR）；（4）各指标和图边类型贡献的消融实验；（5）原型系统轻量性验证（平均检测耗时、内存占用）；（6）典型案例分析。

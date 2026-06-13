@@ -1,56 +1,133 @@
 \section{立题依据及价值}
 
-\subsection{研究背景与国内外研究现状}
+\subsection{研究背景与有关研究现状}
 
-大语言模型（Large Language Models, LLMs）已从单纯的文本生成系统演进为能够在现实世界中执行操作的自主智能体\cite{xi2025rise}。现代LLM智能体可调用外部工具、访问邮件与日历、查询数据库、浏览网页并执行代码\cite{cancedda2023toolformer, yao2023react}，这一演进催生了个人助理管理日程与通信、企业自动化系统处理文档与协调工作流、客服代理访问后端系统解决查询等诸多应用。然而，能力的提升同时带来了显著的安全风险：当LLM不仅能生成文本，还能执行操作时，对抗性攻击的后果变得更加严重。能够发送邮件、转移资金或修改文件的智能体，与仅生成文本的聊天机器人相比，呈现出根本不同的威胁面。
+近年来，大语言模型（Large Language Model，LLM）逐步从“文本生成模型”演化为能够进行任务规划、工具调用、环境交互和多轮反馈修正的智能体（LLM Agent）。
+在ReAct\cite{yao2023react}、Toolformer\cite{schick2023toolformer}、ToolLLM\cite{qin2024toolllm}、Gorilla\cite{patil2024gorilla}等代表性工作中，模型不再仅依赖内部参数完成推理，而是通过外部API、检索系统、文件系统、邮件日程、数据库、浏览器或代码执行器等工具获取信息并改变外部环境。
+CodeAct\cite{wang2024codeact}则进一步表明，将工具调用以可执行代码动作的形式组织，可以显著提升Agent在多步任务上的完成能力。Wang等\cite{wang2024survey_agents}和Xi等\cite{xi2025rise}对LLM Agent的能力框架、应用场景和挑战进行了系统综述，揭示Agent系统已逐步进入办公自动化、软件工程、网络安全运维、数据分析和智能物联网等关键应用领域\cite{park2023generativeagents}；Weidinger等\cite{weidinger2022taxonomy}则从更宏观的视角对语言模型的风险进行了系统分类，指出随着模型与外部环境交互能力的增强，安全与治理挑战将成倍增加。
 
-提示注入攻击（Prompt Injection）利用了LLM处理自然语言的基本特性：指令与数据之间没有明确的边界\cite{greshake2023notwhat3, perez2022ignore}，且模型必须根据上下文理解来决定遵循哪些指令。间接提示注入对LLM智能体构成尤为严重的威胁\cite{greshake2023notwhat3}，攻击者不直接与智能体交互，而是将恶意指令嵌入智能体在运行过程中检索的外部内容（如邮件、文档或网页），导致数据泄露、未授权操作和输出完整性受损等后果。
+然而，工具调用能力的引入从根本上改变了LLM的安全威胁面。Chu等\cite{chu2026systematic}指出，与传统LLM的文本生成风险不同，工具调用的每一次执行都构成具有现实侧效应的动作，且工具返回结果通常在无显式信任标记的情况下被注入Agent规划上下文，使得数据流污染、权限误用和不可逆操作等问题从推理层延伸至执行层；尤其是“语义权限提升”问题，每次工具调用均经过授权，但授权动作的语义组合可能超越预期授权范围，而这一过程对基于单次调用的访问控制系统完全不可见。Deng等\cite{deng2025agentsunderthreat}的综述则进一步表明，序列规划中的单次错误会沿推理链持续放大与传播，最终导致级联失效，这意味着Agent工具调用的安全性不能通过孤立评估每次调用来保证，而必须从调用链的整体结构出发建立风险度量体系。
 
-当前，关于LLM自动化攻击的研究主要集中在越狱（Jailbreaking）方面，即诱使已对齐模型生成被禁止内容。GCG\cite{zou2023universal}、AutoDAN\cite{liu2024autodan}、PAIR\cite{chao2024jailbreaking}和TAP\cite{mehrotra2024tree}等方法已在越狱场景中被广泛评估。相比之下，提示注入攻击在对抗性机器学习社区中受到的关注远少于越狱攻击。在提示注入文献内部，研究大多聚焦于直接注入场景与简单评估设置，多数工作依赖手工攻击或基本启发式策略\cite{liu2024formalizing, yao2024survey}，而非自动化优化方法。评估场景通常限于简化任务，在具有工具调用能力的智能体操作有状态环境的现实场景中，系统性的自动化攻击评估仍然匮乏\cite{balunovic2024agentdojo}。
+从工具调用攻防现状看，WebArena\cite{zhou2023webarena}、Mind2Web\cite{deng2023mind2web}、OSWorld\cite{xie2024osworld}、Windows Agent Arena\cite{bonatti2024windowsarena}等基准显示，真实环境中的Agent任务通常呈现长时序、跨应用和多工具组合特征。Dziemian等\cite{dziemian2026vulnerable}在迄今最大规模的红队竞赛（覆盖22个前沿Agent、44个真实部署场景）中发现，当前Agent系统在多种模型和部署场景下攻击成功率接近100\%，且成功攻击具有高度可迁移性，而Agent鲁棒性与模型规模、能力或推理算力之间几乎不存在相关性，说明单纯提升模型能力无法解决工具调用链的安全问题，需要独立的审计与度量机制。
+Balunovic等\cite{balunovic2024agentdojo}提出的AgentDojo动态评测框架，系统量化了提示注入对工具调用型Agent的威胁，是目前研究中采用最广泛的Agent安全性评估基准之一\cite{chen2025struq,li2026drift,wu2025isolategpt,an2025ipiguard,li2025piguard,zhan2025adaptive,hung2025attention,debenedetti2025defeating,costa2025fides}。Imprompter\cite{fu2024imprompter}、CaMeL\cite{debenedetti2025defeating}、FIDES\cite{costa2025fides}、Firewalled Agentic Networks\cite{abdelnabi2025firewalls}等工作进一步表明，工具调用过程中的提示注入、数据流污染、权限误用和轨迹偏离已成为Agent安全的核心问题。然而，上述工作的评价视角大多停留于“攻击是否成功”或“防御是否阻断”，对工具调用链本身的风险结构、过程级可解释评估和事后归因机制关注不足。
 
-\subsubsection{基于越狱的LLM对抗攻击技术}
+从多智能体安全和系统安全的视角看，将工具调用执行轨迹结构化为溯源图（Provenance Graph），是解决上述问题的天然路径。传统系统安全领域长期使用审计日志和溯源图刻画进程、文件、网络连接之间的因果关系\cite{gao2021threatraptor,cheng2024kairos,inam2023sok}；对于LLM Agent而言，提示词（Prompt）、计划（Plan）、工具调用（Tool Call）、观察（Observation）、记忆（Memory）、最终答案（Final Answer）等执行片段同样构成可追踪的行为链条。将这些片段图化，可以同时表达“谁触发了哪个工具”“参数来源于何处”“敏感数据经过哪些转换”“最终风险由哪些路径贡献”等信息，从而为工具滥用检测与风险归因提供结构化基础\cite{wang2026traces,dewitt2026openchallenges}。
 
-越狱攻击旨在诱使已安全对齐的LLM生成被禁止内容，根据模型访问级别可分为白盒和黑盒两大类。
+针对LLM智能体工具调用链安全问题，本课题拟围绕“工具调用链风险度量”和“行为轨迹图检测归因”两个研究点展开，
+从序列层面建立可解释风险指标体系，从图结构层面实现工具滥用检测与责任归因。下面将从基于大语言模型的智能体能力与工具调用评测、基于大语言模型的智能体安全威胁与防御、基于大语言模型的智能体的轨迹可观测性、执行溯源与威胁归因和基于大语言模型的智能体工具调用风险度量与可解释评估四个方向，逐一梳理整个领域内的相关研究现状。图~\ref{fig:research_roadmap}展示了四条研究脉络的演进路径及其与本课题的关联。
 
-\textbf{白盒优化方法。}基于梯度的攻击利用对模型参数的白盒访问，通过直接微分优化对抗输入。Zou等\cite{zou2023universal}提出GCG（Greedy Coordinate Gradient）算法，通过计算损失函数关于one-hot token嵌入的梯度选取候选token，经批量前向传播评估后选择使损失最小化的替换，在白盒Vicuna模型上实现88\%攻击成功率，且优化的对抗后缀对黑盒系统表现出显著可迁移性。Geisler等\cite{geisler2024attacking}引入投影梯度下降方法攻击RAG系统，通过连续松弛重构离散token优化问题。Wen等\cite{wen2023hard}建立梯度引导离散token搜索的通用范式，为后续算法提供理论框架。Liu等\cite{liu2024autodan}提出AutoDAN，采用遗传算法生成语义连贯的对抗提示，在保持竞争性成功率的同时降低困惑度。Andriushchenko等\cite{andriushchenko2025jailbreaking}证明仅使用logprob反馈的简单自适应攻击即可在GPT-4、Claude等领先模型上实现近100\%成功率。
+\input{figures/fig_research_roadmap.tikz}
 
-\textbf{黑盒优化方法。}Mehrotra等\cite{mehrotra2024tree}提出TAP（Tree of Attacks with Pruning），采用三模型架构通过树结构搜索探索多种攻击策略，在GPT-4上以平均29次查询实现80--94\%成功率。Sitawarin等\cite{sitawarin2024pal}提出PAL，利用代理模型上的GCG优化攻击后迁移至目标模型。Chen等\cite{chen2024instructzero}提出InstructZero，通过贝叶斯优化将黑盒越狱转化为连续提示嵌入空间上的优化问题。
+\subsubsection{基于大语言模型的智能体能力与工具调用评测研究现状}
 
-\subsubsection{基于提示注入的LLM智能体攻击技术}
+LLM Agent研究的早期主线是如何使模型在推理过程中调用外部环境。
+ReAct\cite{yao2023react}将推理轨迹与行动轨迹交替组织，提出“思考—行动—观察”（Thought-Action-Observation）循环范式，使模型能够在与外部工具或检索系统的交互中完成具有现实侧效应的任务，奠定了今天工具调用型Agent的基本架构。Toolformer\cite{schick2023toolformer}探索模型自监督学习何时调用API、调用何种API以及如何吸收工具返回结果，证明仅需少量标注样本即可使语言模型掌握多种外部工具的使用，从而大幅降低了工具调用能力的训练成本。Gorilla\cite{patil2024gorilla}面向大规模API调用构建了覆盖1600余个API的训练数据集和评测框架，并提出通过检索增强解决API参数幻觉问题，说明工具调用能力已成为现代Agent系统的核心基础能力；ToolLLM\cite{qin2024toolllm}则通过构建覆盖16000余个真实世界API的RapidAPI数据集，系统评估了LLM在工具选择、参数生成和多步规划方面的综合能力。CodeAct\cite{wang2024codeact}提出以可执行Python代码动作替代传统JSON格式的工具调用，实验表明代码化动作能够显著减少多步交互轮次并提升任务完成率，为工具调用范式提供了新的设计维度。Reflexion\cite{shinn2023reflexion}通过语言反馈机制使Agent能够从失败经验中学习，将错误调用经验转化为自然语言反思并存入记忆，进一步提升了多步工具调用的鲁棒性与自适应能力。
 
-\textbf{白盒优化方法。}Pasquini等\cite{pasquini2024neural}提出Neural Exec，针对RAG系统中的延迟提示注入优化"执行触发器"，在RAG系统上实现87\%攻击成功率。Fu等\cite{fu2024imprompter}将GCG优化适配到智能体工具误用场景。Zhan等\cite{zhan2025adaptive}系统研究自适应攻击对智能体防御的威胁，在StruQ、SecAlign等多种防御范式下均实现超50\%攻击成功率。Wu等\cite{wu2024dissecting}将对抗鲁棒性评估扩展到多模态LM智能体，揭示智能体攻击面在多模态设置下显著扩大。
+在评测方面，AgentBench\cite{liu2024agentbench}将Agent能力放入操作系统、数据库、网络浏览等八个交互环境中进行系统评估，揭示了当前LLM在多步工具调用任务上的普遍性能瓶颈。WebArena\cite{zhou2023webarena}构建了高度真实的Web交互环境，强调任务的长时序性和目标多义性；Mind2Web\cite{deng2023mind2web}则覆盖了超过2000个真实网页任务，侧重在多样化网页布局和动态DOM结构下的泛化能力评测。OSWorld\cite{xie2024osworld}与Windows Agent Arena\cite{bonatti2024windowsarena}进一步把Agent放入真实操作系统环境中，要求其执行文件操作、应用切换、GUI控制等复杂任务，验证了多步工具调用在非结构化现实场景下的挑战。PEAR\cite{dong2026pear}等新近基准则将评测扩展至真实世界场景的多步执行，覆盖更复杂的工具组合与跨应用操作，进一步揭示了Agent在安全敏感操作场景下的风险暴露面。Qiao等\cite{qiao2025worfbench}提出WorfBench基准，将评测视角延伸至Agent工作流生成的质量，揭示当前LLM在理解多步工具调用依赖关系并将其规划为具体工作流时仍存在较大差距。Hong等\cite{hong2024cogagent}提出CogAgent，将视觉语言模型与GUI Agent能力相结合，实现了对程序界面元素的理解与操作，进一步扩展了工具调用在视觉化环境中的应用范围。
 
-\textbf{黑盒优化方法。}Liu等\cite{liu2023prompt}提出HOUYI框架，将提示注入系统化分解为框架、分隔符和破坏器三个组件进行组合优化。Zhang等\cite{zhang2024goal}提出G2PIA，结合理论攻击原则与LLM引导生成多样化提示注入。Wang等\cite{wang2025agentvigil}提出基于蒙特卡洛树搜索（Monte Carlo Tree Search, MCTS）的AgentVigil。MCTS是一种基于随机模拟的启发式搜索算法\cite{browne2012survey}，通过选择、扩展、模拟和回传四个阶段迭代构建搜索树，利用UCB1策略平衡探索与利用，已在围棋\cite{silver2016mastering}等复杂决策问题中取得突破性成果。AgentVigil将提示注入攻击建模为序列决策问题，在AgentDojo基准上实现71\%攻击成功率，但依赖手工设计的动作空间。
+上述工作说明，工具型Agent的执行过程通常不是单次调用，而是包含多轮计划、调用、观察和修正的链式结构。然而，现有能力评测基准普遍以任务完成率为核心指标，较少关注工具调用链的过程合规性，即调用过程中是否存在权限越界、敏感数据泄露或不可逆操作等安全风险。这一缺口意味着：一个任务完成率高的Agent系统，其工具调用链可能同时存在严重的安全隐患，而现有评测框架无法有效识别和度量这类过程级风险。
 
-\textbf{强化学习驱动的攻击方法。} 近期工作开始探索将强化学习引入提示注入攻击的自动化优化。Chen等\cite{chen2026learning}提出AutoInject，采用GRPO（Group Relative Policy Optimization）\cite{shao2024deepseekmath}算法训练攻击策略模型，将提示注入攻击转化为策略优化问题，以攻击成功率为稀疏奖励信号引导策略更新，显著提升了攻击自动化程度，但其仅依赖最终攻击结果的二元反馈，缺乏对中间步骤有效性的精细评估。Yin等\cite{yin2026pismith}提出PISmith，在GRPO框架基础上引入自适应熵正则化机制以平衡探索与利用，提升了攻击多样性，但仍未解决覆盖搜索的结构性问题：奖励信号仅在攻击成功时提供正反馈，无法引导策略探索尚未覆盖的攻击路径，导致搜索空间利用效率不足。Wen等\cite{wen2025rlhammer}提出RL-Hammer，通过同时训练弱防御和强防御目标模型来缓解奖励稀疏性，但该方法增加了训练成本，且弱防御和强防御的训练信号存在不匹配问题。Deng等\cite{chen2026learning}提出LTOI（Learning to Inject），利用RL自动优化注入策略，但在智能体多步交互场景中的评估尚不充分。上述RL方法的核心局限在于：搜索空间被人为限定在后缀或完整prompt生成，策略仅优化攻击成功率，无法系统性覆盖攻击行为空间。
+\subsubsection{基于大语言模型的智能体安全威胁与防御相关研究现状}
 
-\textbf{覆盖引导的模糊测试方法。}受软件测试中覆盖引导模糊测试（CGF）的启发，部分工作将覆盖概念引入LLM攻击领域。Li等\cite{wang2025agentvigil}提出AgentFuzzer，针对LLM智能体实施黑盒模糊测试，采用MCTS搜索和种子调度策略，但其惩罚分数机制采用硬编码系数（0.5），不可自适应，且依赖白盒插桩获取调用链信息。Wu等\cite{wu2026chainfuzzer}提出ChainFuzzer，基于静态依赖图对智能体工作流中的多工具链路进行灰盒模糊测试，但其依赖预定义的静态工作流结构，无法适应动态交互的智能体行为，且需工具源码和静态分析，不适用于闭源智能体。Zhang等\cite{zhang2026verigrey}提出VeriGrey，在灰盒设置下利用覆盖引导搜索验证提示注入攻击，但其覆盖度量的定义局限于输出文本的语义相似性，未能捕捉智能体行为维度的多样性（如工具调用序列、参数取值范围等）。Yu等\cite{yu2024promptfuzz}提出PromptFuzz，采用模板生成与LLM引导变异的两阶段模糊测试框架，在多个智能体框架上实现攻击，但缺乏系统性的覆盖引导机制。
+目前，围绕LLM Agent安全的研究范式已从早期的提示词注入攻击（Prompt Injection）扩展到工具误用、权限失配和系统级执行安全等领域，研究面呈现多元化趋势。下面将进行简要概述。
 
-\textbf{其他攻击方法。}Nasr等\cite{nasr2025attacker}证明更强大的自适应攻击可以绕过包括SecAlign在内的多种防御，揭示了防御鲁棒性评估的必要性。Labunets等\cite{labunets2025computing}利用微调API从闭源模型提取梯度等价信息进行优化攻击。Shi等\cite{shi2026pitoolselection}针对智能体推理循环中的工具选择决策实施两阶段优化攻击，揭示了智能体推理链的脆弱性。
+\textbf{威胁分类与系统化分析。}
+Greshake等\cite{greshake2023notwhat3}最早系统揭示了间接提示注入（Indirect Prompt Injection，IPI）攻击的现实威胁：攻击者将恶意指令嵌入Agent可访问的外部内容（网页、文档、邮件等），使Agent在处理正常任务时被劫持执行攻击者意图，该工作奠定了IPI研究的基础框架。Schulhoff等\cite{schulhoff2023ignore}通过HackAPrompt竞赛系统暴露了提示注入的多种变体，收集了超过600,000条攻击样本，揭示了当前LLM在指令遵循与安全边界维护之间的结构性矛盾。
+Dehghantanha等\cite{dehghantanha2026sokattacksurfaceagentic}对Agentic AI的攻击面进行了系统化知识总结（Systematization of Knowledge, SoK），将攻击路径归纳为提示/间接注入、检索增强生成（Retrieve Argumented Generation，RAG）投毒、工具/API滥用、状态与记忆投毒、多智能体编排攻击和供应链妥协六大类，并指出真实攻击事件鲜少依赖单一漏洞，而是通过跨流水线阶段的向量组合实现。Chhabra等\cite{chhabra2025agentic}对Agentic AI安全的威胁、防御与评估进行了全面综述，系统梳理了从单Agent到多Agent系统的安全挑战演化路径。Chu等\cite{chu2026systematic}提出七层攻击面框架LASM，将工具调用风险定位于第四层（Tool Execution Layer），明确指出“语义权限提升”是当前访问控制系统的结构性盲区。He等\cite{he2025survey}对LLM Agent安全与隐私展开了全面综述，和Deng等\cite{deng2025agentsunderthreat}的综述均指出，现有LLM Agent安全研究在工具审计、过程级可解释评估和跨步骤风险路径识别方面存在明显不足。Das等\cite{das2025security}进一步梳理了LLM安全与隐私挑战的全貌，指出Agent化部署使得传统LLM安全机制面临根本性的适用性挑战。
 
-\subsubsection{LLM智能体防御与评估技术}
+\textbf{提示词注入攻击的形式化与基准化。}
+提示词注入攻击对基于LLM工作的系统具有巨大的威胁，名列OWASP 2025 LLM Top 10威胁中的首位\cite{owasp2025llmtop10}，相关研究也一直是LLM安全领域的热门与重点。在从早期的ChatBot形式进入LLM Agent时代后，针对LLM Agent的提示词注入攻击也继承了这一威胁面。Liu等\cite{liu2024formalizing}对提示注入攻击进行了形式化定义，提出BIPIA基准，系统评估了多种LLM在间接提示注入场景下的脆弱性，为后续防御研究提供了标准化的评测基础。Zhang等\cite{zhang2024injectagent}提出InjecAgent基准，覆盖17种工具调用场景下的1054个测试用例，揭示了当前主流Agent在工具调用链中对注入攻击的普遍脆弱性，是目前研究中受到广泛采用的基准之一\cite{balunovic2024agentdojo,zhan2025adaptive,an2025ipiguard}。Yi等\cite{yi2024survey}对间接提示注入攻击进行了系统综述，梳理了攻击向量、传播路径和防御策略，并提出了统一的评测框架。Shi等\cite{shi2024optimization}提出基于优化的提示注入攻击，通过梯度引导搜索构造能够绕过LLM-as-a-Judge评估系统的对抗样本，揭示了工具调用结果被恶意裁判操控的威胁。Wang等\cite{wang2025webinject}提出WebInject，专门针对Web Agent的工具调用链设计注入攻击，实验表明即使是具备安全对齐的前沿模型也难以抵御精心设计的Web环境注入。An等\cite{an2025rag}进一步指出，引入检索增强生成的LLM系统并未因此更加安全，外部知识库反而构成新的注入向量，攻击者可通过污染检索结果劫持Agent的推理与工具调用行为。Shi等\cite{shi2026pitoolselection}提出针对工具选择阶段的提示注入攻击，揭示了攻击者可通过操控工具描述影响Agent的工具选择决策，进一步扩展了工具调用链的攻击面。Zverev等\cite{zverev2025can}系统研究了LLM区分指令与数据的能力边界，发现当前模型在结构化输入场景下仍无法可靠地将用户指令与外部数据内容分离，从根本上揭示了提示注入防御的困难所在。
 
-\textbf{基于微调的防御。}Chen等\cite{chen2025struq}提出StruQ，通过结构化分隔符强制指令-数据分离，在手工攻击下实现低于2\%攻击成功率，但在自适应GCG攻击下成功率仍可超50\%。Wallace等\cite{wallace2024instruction}形式化指令层级概念，训练LLM优先遵循系统指令，实现30\%以上鲁棒性提升。Chen等\cite{chen2025secalign}提出SecAlign，利用直接偏好优化训练模型区分合法指令与注入内容，是首个将GCG攻击成功率降至10\%以下的防御方法。然而，Nasr等\cite{nasr2025attacker}证明更强大的自适应攻击可以绕过这些防御。
+\textbf{后门与对抗性攻击。}
+针对LLM Agent系统的后门攻击同样是一个潜在的威胁，并且针对LLM Agent系统的后门攻击形式呈现多元化与隐蔽性共存的特性。Bi等\cite{bi2024backdoor}系统研究了针对LLM Agent的后门威胁，提出攻击者可通过在工具调用链的特定触发条件下激活后门行为，使Agent在正常任务中表现正常而在特定场景下执行恶意操作。Chen等\cite{chen2024agentpoison}提出AgentPoison，通过污染Agent的RAG知识库实现对工具调用行为的隐蔽操控，实验表明该攻击在多种Agent框架上均具有高度有效性。Dong等\cite{dong2025philosopher}研究了针对LLM插件机制的木马攻击，攻击者可将恶意载荷植入第三方工具插件，使Agent在调用受感染插件时触发预设的恶意工具调用序列。Gu等\cite{gu2024agent}揭示了多模态Agent系统中的越狱传播威胁：单张对抗性图像可通过共享记忆机制在多Agent网络中横向扩散，使百万量级的多模态Agent实例同时被劫持，暴露了共享记忆在工具调用链中的系统性安全隐患。Andriushchenko等\cite{andriushchenko2025jailbreaking}系统研究了针对安全对齐LLM的越狱攻击，发现简单的对抗性后缀即可绕过主流安全对齐机制，为理解Agent安全边界的脆弱性提供了重要参考。
 
-\textbf{基于检测的防御。}Zhu等\cite{zhu2025melon}提出MELON，通过遮蔽可疑内容后重新执行智能体检测注入攻击。Hung等\cite{hung2025attention}提出AttentionTracker，利用注意力模式中的"分心效应"检测注入。Jacob等\cite{jacob2024promptshield}开发PromptShield注入检测分类器。Liu等\cite{liu2025datasentinel}以博弈论方法训练检测器。然而，Hackett等\cite{hackett2025bypassing}证明许多护栏系统可通过字符注入和编码操纵绕过。
+\textbf{防御机制研究。}
+现有防御工作大致分为三类：
+\begin{enumerate}
+  \item 基于信息流控制的防御：CaMeL\cite{debenedetti2025defeating}通过区分可信控制流与不可信数据流，利用能力机制约束数据外流，从架构层面阻断注入内容对Agent规划的影响；FIDES\cite{costa2025fides}使用动态污点追踪与信息流控制为Agent规划器提供确定性安全策略，实验表明其在保持较高任务完成率的同时能够有效阻断数据外泄路径。
+  \item 基于结构化输入的防御：StruQ\cite{chen2025struq}提出通过结构化查询格式将用户指令与外部数据内容在语法层面分离，从根本上降低注入内容被误解析为指令的概率；IPIGuard\cite{an2025ipiguard}提出基于指令优先级的防御框架，通过显式标记指令来源和优先级约束Agent的指令遵循行为。PIGuard\cite{li2025piguard}提出基于策略的防御方法，通过在推理阶段动态检测并过滤注入内容，在多种Agent场景下取得了较好的防御效果。Tsai等\cite{tsai2025contextual}提出面向上下文的Agent安全策略框架，主张根据Agent所处任务上下文动态匹配安全策略，避免静态策略在多变场景下导致的过度限制或防护不足。
+  \item 基于权限管控与运行时监控的防御：Progent\cite{shi2025progent}引入领域特定语言实现细粒度权限控制，通过约束工具调用权限范围降低过度授权风险；DRIFT\cite{li2026drift}通过动态规则生成和注入内容隔离实现运行时防御；Firewalled Agentic Networks\cite{abdelnabi2025firewalls}从多Agent交互角度设计输入防火墙、数据防火墙和轨迹防火墙，以降低隐私泄露和轨迹偏离风险；NeMo Guardrails\cite{rebedea2023nemo}提供了一套可编程的安全护栏工具包，支持在LLM应用层面定义对话流程约束和内容安全规则。
+\end{enumerate}
 
-\textbf{架构与系统级防御。}Wang等\cite{wang2025cacheprune}提出CachePrune，基于特征归因的KV缓存神经元剪枝缓解提示注入。Zhong等\cite{zhong2025rtbas}提出RTBAS，将信息流控制应用于LLM智能体。Debenedetti等\cite{debenedetti2025defeating}提出CaMeL，通过将智能体操作权限与数据流分离防御提示注入，但需修改智能体架构且仅适用于工具调用接口明确的场景。Costa等\cite{costa2025securing}提出基于信息流控制的安全智能体架构，通过安全策略约束智能体行为。Li等\cite{li2026drift}提出DRIFT，通过动态规则生成和注入内容隔离实现运行时防御。Shi等\cite{shi2025progent}提出Progent，引入领域特定语言表达细粒度权限控制策略。这些系统级防御虽在各自场景下有效，但普遍面临两个局限：一是主要针对具有明确工具调用接口的智能体场景，难以泛化到问答、文档摘要等非智能体任务；二是安全策略的准确制定本身具有挑战性。Zverev等\cite{zverev2025can, zverev2025aside}从计算复杂性理论出发，证明LLM在计算上无法可靠区分指令与数据。
+\textbf{攻击检测研究。}
+Abdelnabi等\cite{abdelnabi2025drift}提出通过激活差异检测任务漂移，利用LLM内部激活状态的统计特征识别Agent是否被注入内容劫持，为无需修改Agent架构的轻量级检测提供了新思路。Hung等\cite{hung2025attention}提出Attention Tracker，通过分析注意力权重分布识别提示注入攻击，实验表明注意力模式在正常任务与注入攻击之间存在可区分的统计差异。Chen等\cite{chen2025can}研究了间接提示注入攻击的可检测性与可移除性，发现当前检测方法在面对自适应攻击时存在明显局限，揭示了检测与攻击之间的军备竞赛本质。Zhan等\cite{zhan2025adaptive}系统研究了自适应攻击对现有IPI防御的破坏能力，发现大多数防御方法在面对针对性自适应攻击时防御效果大幅下降，强调了防御鲁棒性评估的重要性。此外，Russinovich等\cite{russinovich2025great}通过Red Teaming实践系统验证了上述防御机制在自适应攻击下的局限性；RAZA等\cite{raza2025trism}提出了面向Agent可信度评估的三维框架；Wu等\cite{wu2025isolategpt}提出IsolateGPT执行隔离架构，通过将LLM推理与工具执行环境隔离，从系统架构层面降低工具调用链的攻击面。
 
-\textbf{评估框架。}Debenedetti等\cite{balunovic2024agentdojo}提出AgentDojo框架，提供跨4个域（工作区、银行、旅行、Slack）的有状态智能体执行环境，包含900+测试用例，通过确定性检查函数评估攻击成功率，是目前最接近真实部署的智能体安全评估平台。Zhan等\cite{zhang2024injectagent}提出InjecAgent基准，评估工具集成LLM智能体中的间接提示注入。
+然而，现有防御研究存在共同局限：
+其一，大多针对特定攻击场景（如提示注入防御），而非通用的过程级安全审计；
+其二，现有机制普遍面临安全性与任务效用之间的权衡，强安全约束会显著降低任务完成率；
+其三，防御效果验证通常依赖有限的手工构造案例，缺乏覆盖多样化风险类型的系统性评估基准。
+这三个局限共同指向一个核心缺口：缺乏一个独立于特定防御策略的、面向工具调用链的通用风险度量框架。
+
+\subsubsection{基于大语言模型的智能体的轨迹可观测性、执行溯源与威胁归因相关研究现状}
+
+Agent可观测性是近年来快速发展的研究方向，其核心问题是如何在不侵入Agent内部的情况下，对执行过程进行全面、可信的记录与分析。
+Chan等\cite{chan2024visibility}将Agent identifiers、实时监控和活动日志记录作为提升Agent可见性的三项关键措施，指出缺乏可见性是当前Agent系统治理的首要障碍；在后续工作\cite{chan2024ids}中进一步讨论了Agent身份标识对追踪、审计和责任界定的重要性，提出标准化的Agent身份体系是实现跨系统审计的前提条件。Microsoft AI Red Team\cite{microsoft2025taxonomy}在Agent故障模式分类报告中，将审计日志不完整性列为Agent系统治理层的核心风险，并系统梳理了从单Agent到多Agent协作场景下的故障模式分类体系。Wang等\cite{wang2026traces}的综述指出，最终答案的正确性不足以说明输出是如何产生的、工具调用是否合理、记忆如何影响后续决策，以及失败根因位于何处，这一论断揭示了“结果导向”评估范式的根本局限，并呼吁建立面向执行过程的可追踪性机制。Zhang等\cite{zhang2025memory}对LLM记忆机制进行了系统综述，指出记忆模块的引入使Agent执行轨迹具有跨会话依赖性，进一步增加了执行溯源和归因的复杂度。
+
+\textbf{系统安全领域的溯源图方法。}
+系统安全领域已有大量溯源图研究，用于将系统调用、文件访问、网络连接等日志组织为依赖图，并支持异常行为检测和攻击调查。Inam等\cite{inam2023sok}对源证审计领域进行了系统化综述（SoK），梳理了从日志采集、图构建到威胁检测的完整技术栈，并指出溯源图在攻击调查中的核心价值在于其能够表达跨进程、跨时间的因果依赖关系。ThreatRaptor\cite{gao2021threatraptor}利用网络威胁情报和溯源图实现高效的威胁狩猎，通过将开源网络威胁情报报告中的攻击行为描述转化为溯源图查询，显著降低了威胁调查的人工成本。Kairos\cite{cheng2024kairos}基于全系统溯源的异常检测，通过对比正常行为基线与实时溯源图的结构差异实现入侵检测，验证了溯源图在大规模系统环境中的检测有效性与可扩展性。这些工作为将溯源图方法迁移至LLM Agent场景提供了成熟的方法论基础。
+
+\textbf{将溯源图迁移至LLM Agent场景的挑战。}
+然而，将传统溯源图方法直接应用于LLM Agent存在若干结构性障碍。
+其一，LLM Agent的日志具有语义性、异构性和高层抽象性，传统以进程-文件-网络连接为节点的图模型无法直接表达
+Prompt、Plan、Tool Call、Observation、Memory、Final Answer之间的语义依赖与数据流转关系。
+其二，de Witt等\cite{dewitt2026openchallenges}指出，在代理链中当多个Agent以管道形式协作时，确定哪个Agent执行了特定操作、追踪完整的委托链条在技术上极为困难，导致现有基于角色的访问控制（Role-Based Access Control, RBAC）等人类身份管理机制在Agent场景下失效；该工作还将“链式攻击”定义为利用每次调用合法性与序列级意图之间鸿沟的新型攻击模式。
+其三，Chu等\cite{chu2026systematic}指出，思维链（Chain-of-Thought, CoT）轨迹被越来越多地用作Agent行为的审计日志，但若CoT不能忠实反映实际计算过程，则基于CoT的审计存在根本性的不可信问题。
+
+\textbf{面向Agent的新型检测与归因方法。}
+SentinelAgent\cite{he2025sentinelagent}提出基于执行图的Agent异常检测方法，通过构建Agent执行过程的图表示并与预期行为模式对比，实现对异常工具调用序列的检测；但该工作主要关注单Agent场景，对多Agent委托链和跨权限域风险路径的处理较为有限。AuthGraph\cite{wang2026authgraph}提出双图结构用于Agent授权对齐验证，通过对比授权图与执行图的结构差异识别越权行为；但其图构建依赖预定义的授权策略，对动态工具调用场景的适应性有待提升。AgentVigil\cite{wang2025agentvigil}提出面向Agent工具调用的监控框架，通过实时分析工具调用序列的语义一致性检测潜在的注入攻击和行为偏离；但该工作侧重在线检测，对事后归因和风险路径解释的支持较为有限。Bagdasarian等\cite{bagdasarian2024airgapagent}提出AirgapAgent，通过在Agent与外部环境之间建立隐私隔离层保护对话内容，但该方案以牺牲部分工具调用能力为代价，难以直接应用于功能完整的Agent系统。
+
+综上，Agent可观测性研究已清晰表明执行溯源和归因归责的必要性，系统安全领域的溯源图提供了可借鉴的技术基础，但适应LLM Agent执行语义的异构轨迹图表示与归因方法尚属空白。
+
+\subsubsection{基于大语言模型的智能体工具调用风险度量与可解释评估相关研究现状}
+
+随着Agent系统部署规模的扩大，仅依赖攻防视角已不足以满足实际安全评估需求，需要建立独立的、过程级的风险度量框架。
+
+\textbf{行业标准与威胁建模框架。}
+OWASP LLM Top 10\cite{owasp2025llmtop10}将过度代理权限、不安全的工具设计和不受控的执行行为列为Agent系统的核心安全风险，指出工具调用链的权限边界管理是当前工业界Agent部署的首要安全挑战。Cloud Security Alliance的MAESTRO框架\cite{huang2025maestro}将Agent威胁建模分解为七个协调层，指出权限边界管理和执行可追溯性是工业界部署Agent的主要安全挑战，并提供了面向企业级Agent系统的结构化风险评估方法论。美国国家标准与技术研究院（National Institute of Standards and Technology，NIST）AI风险管理框架（Artificial Intelligence Risk Management Framework, AIRMF）\cite{nist2023airmf}强调，AI系统的风险评估需要从可测量、可解释的指标出发，而非仅依赖黑盒评分，为建立基于证据的Agent安全评估体系提供了政策层面的支撑。
+
+\textbf{工具调用评估的不足。}
+在学术研究层面，现有工作大多以攻击成功率（Attack Success Rate, ASR）或任务完成率（Task Completion Rate, TCR）为核心评价指标，缺少对工具调用链过程的精细度量。Deng等\cite{deng2025agentsunderthreat}明确指出，当前AI Agent安全基准缺乏统一的设计标准，且ToolEmu等工具调用评测系统识别出的失效模式，如Agent执行需要过度工具权限的操作、在未经用户确认情况下执行高风险命令，说明工具调用链的安全性必须从权限边界、操作可逆性和用户确认等维度进行过程级评估，而非仅从最终结果判断。Chu等\cite{chu2026systematic}进一步指出，所有已发布的Agent安全基准仅覆盖到T1（单次调用检测）或T2（有限序列检测）层面，T3（跨步骤组合风险度量）和T4（过程级可解释评估）方面的进展在结构上不可测量，即现有评估方法缺乏区分不同防御策略在组合风险检测上差异的能力。
+
+\textbf{面向序列与轨迹的评估探索。}
+SeqAR\cite{yang2025seqar}提出基于序列自动生成的越狱评估框架，将工具调用过程的时序特征纳入评测视角，在Agent安全评测方向取得了一定进展，但仍局限于特定攻击类型的评估。Yu等\cite{yu2025survey}对可信LLM Agent的威胁与对策进行了系统综述，梳理了从单次调用到多步任务链的安全评估挑战，指出可信度评估需要同时考虑行为合规性、可解释性和责任归因三个维度。
+
+\textbf{可解释性与归因度量。}
+在可解释性方面，de Witt等\cite{dewitt2026openchallenges}指出，现有评价指标大多是基于结果的，无法捕捉Agent间协调的质量或效率；Dehghantanha等\cite{dehghantanha2026sokattacksurfaceagentic}提出了可从Agent执行轨迹直接计算的可攻击度量（如不安全行为率、策略遵从率、检索风险评分），为基于轨迹的风险量化提供了初步思路，但尚未形成面向通用工具调用链的系统性度量框架。Wang等\cite{wang2025protect}从防御视角探讨了如何通过可解释性机制增强Agent系统对提示注入的抵抗能力，指出可解释性不仅有助于检测攻击，也是事后追责的必要条件。Pearce等\cite{pearce2025asleep}通过大规模实验揭示了AI代码生成工具在安全敏感代码上的系统性缺陷，说明工具调用生成的代码同样需要过程级安全审计，而非仅依赖最终代码的静态分析。
+
+综上，工业界的威胁建模框架已明确提出过程级风险度量的需求，学术界对跨步骤组合风险和可解释评估的研究尚处于起步阶段，建立一套低成本、可复现、可解释的工具调用链风险指标体系具有重要的理论价值和实践意义。
 
 \subsection{现有研究存在的问题}
 
+综合上述四个方向的研究现状，现有工作在以下五个方面存在系统性不足，这些不足构成本课题的直接研究动机：
+
 \begin{enumerate}
-  \item \textbf{G1：搜索策略盲目，导致攻击空间利用效率低下。} 现有RL攻击方法\cite{chen2026learning}\cite{yin2026pismith}仅以攻击成功率为稀疏奖励信号，无法引导策略探索尚未覆盖的攻击路径。MCTS方法（AgentVigil\cite{wang2025agentvigil}）依赖手工设计的动作空间，缺乏对攻击行为多样性的系统性覆盖度量。灰盒模糊测试（ChainFuzzer\cite{wu2026chainfuzzer}）依赖静态依赖图，无法适应智能体动态交互行为。覆盖引导搜索（VeriGrey\cite{zhang2026verigrey}）的覆盖度量局限于输出文本语义相似性，未能捕捉工具调用序列、参数取值范围等行为维度。上述方法均未建立面向LLM智能体攻击的覆盖引导搜索框架，搜索空间利用效率不足。
-  \item \textbf{G2：攻击反馈信号稀疏且延迟，优化过程效率低下。} 现有工作仅在攻击最终成功时提供正反馈（稀疏二元奖励），而攻击失败时无法获得关于中间步骤有效性的任何信号。在智能体多步交互场景中，攻击可能在某一中间步骤已成功使智能体偏离预期行为（如调用了非预期工具、传递了异常参数），但最终未完成攻击目标。这种稀疏奖励导致RL策略的信用分配困难，优化过程效率低下。此外，攻击严重性评估缺失，现有评估以攻击成功率（ASR）为单一指标，无法量化不同攻击后果的风险差异，导致防御优先级排序缺乏依据。
-  \item \textbf{G3：攻防策略脱节，攻击发现无法直接驱动防御改进。} 现有工作将攻击与防御视为独立问题分别研究，攻击方法用于评估而防御方法独立设计，缺乏从攻击发现到防御改进的闭环机制。攻击所揭示的脆弱模式（如特定工具调用链的注入漏洞）未被系统性地转化为防御策略的优化信号，导致防御设计缺乏攻击侧的针对性指导。现有防御方法（StruQ\cite{chen2025struq}、SecAlign\cite{chen2025secalign}等）在自适应攻击下仍可被绕过，缺乏对抗训练驱动的语义检测能力与启发式规则兜底的互补防御架构。
+  \item \textbf{G1：工具调用链风险度量体系缺失，组合性风险无法被现有单词调用评估框架捕获。}
+  现有基准（如AgentDojo\cite{balunovic2024agentdojo}）和防御方法以攻击成功率为核心指标，而对工具敏感度、权限扩散度、调用深度、不可逆操作比例、敏感数据暴露等过程性风险指标缺乏统一刻画。Chu等\cite{chu2026systematic}明确指出，语义权限提升发生时每次工具调用均经过授权，但授权动作的语义组合超越了预期授权范围，这类“序列合法但组合有害”的风险对现有以单次调用为粒度的访问控制系统完全不可见，也无法被任务完成率或攻击成功率等结果导向指标所量化。NIST AI RMF\cite{nist2023airmf}和MAESTRO\cite{huang2025maestro}均呼吁建立可测量的过程级风险指标，但具体的工具调用链度量方法尚未见于学术文献。
+
+  \item \textbf{G2：Agent执行日志结构不统一，过程级审计缺乏可靠数据基础。}
+  不同Agent框架记录的日志字段差异显著：部分框架只记录Prompt与Final Answer，部分记录Tool Call与Observation，鲜少完整记录计划步骤、参数来源、权限状态、工具返回对象、人工确认标记和跨Agent委托关系\cite{chan2024visibility,microsoft2025taxonomy,wang2026traces}。Chu等\cite{chu2026systematic}指出，CoT轨迹被越来越多地用作审计日志，但其不可信性使基于CoT的审计存在根本缺陷；Dehghantanha等\cite{dehghantanha2026sokattacksurfaceagentic}则进一步指出，防篁改的执行追踪需要从设计层面将审计日志与Agent控制流分离。日志结构不统一导致后续安全度量和归因缺少标准化的数据基础。
+
+  \item \textbf{G3：工具滥用检测局限于单步权限检查或最终结果判断，跨步骤组合风险路径识别不足。}
+  现有防御机制（如权限白名单、提示注入过滤）主要在工具调用前进行单步权限检查，或在最终输出阶段判断违规内容，但对跨步骤、跨工具的风险路径识别不足，例如“读取敏感文件—摘要压缩—调用外部发送工具”或“查询数据库—写入共享记忆—下游Agent复用”等链式风险路径\cite{dewitt2026openchallenges,debenedetti2025defeating,costa2025fides}。de Witt等\cite{dewitt2026openchallenges}将这类攻击定义为链式攻击，指出其利用的恰是“每次调用合法性与序列级意图之间的鸿沟”；Chu等\cite{chu2026systematic}指出，所有已发布的Agent安全基准均止步于单次调用或有限序列检测层面，跨步骤组合风险在结构上无法被现有评估框架测量。Zhang等\cite{zhang2024injectagent}和Liu等\cite{liu2024formalizing}的基准工作虽揭示了工具调用链的广泛脆弱性，但均以攻击成功率为最终指标，未提供面向组合风险路径的结构化检测方法。
+
+  \item \textbf{G4：风险发现后的责任归因机制不足，审计结论缺乏可解释证据链。}
+  当Agent系统出现不当工具调用或敏感数据外传时，仅输出“异常”二元标签无法满足实际审计需求。
+  de Witt等\cite{dewitt2026openchallenges}指出，在代理链场景中，当多个Agent以管道形式协作时，确定哪个Agent执行了特定操作在技术上极为困难，导致现有审计日志不支持非否认性保证；Chu等\cite{chu2026systematic}将L1--L6层规避归因的攻击统一定义为L7治理层失效，说明缺乏归因机制是Agent系统安全体系中贯穿各层的系统性漏洞。实际应用需要回答：风险路径由哪些节点构成、关键触发工具是哪一个、参数来源于何处、哪个步骤对最终风险贡献最大，而SentinelAgent\cite{he2025sentinelagent}、AuthGraph\cite{wang2026authgraph}等现有工具调用研究尚未提供满足上述需求的可解释归因方法。
+
+  \item \textbf{G5：实验成本与工程复杂度制约研究落地，现有高成本评估框架难以低成本复现。}
+  Deng等\cite{deng2025agentsunderthreat}指出，严格工具审计方法（如PrivacyAsst）相较标准Agent产生了高达100倍的额外计算开销，且仍未完全防止敏感信息泄露，说明高成本并不等价于高安全性；Wang等\cite{wang2024autored}提出自动化攻击场景生成框架AutoRed，尝试降低红队测试的人工成本，但仍依赖大量真实工具调用环境，难以作为标准化的可复现基准；Dziemian等\cite{dziemian2026vulnerable}的大规模红队竞赛虽覆盖了22个前沿Agent，但其框架依赖大量在线API调用，难以低成本复现。本课题需在较短周期内完成两个研究点、一个原型系统和会议论文投稿，必须设计实验成本可控、工具环境可模拟、标签可自动生成的低成本研究方案。
 \end{enumerate}
 
 \subsection{本研究的创新点}
 
+针对上述五个研究问题，本课题提出以下两个具有明确贡献边界的创新点：
+
 \begin{enumerate}
-  \item \textbf{创新点一：面向Agent过程间上下文的自适应搜索扩展协同的提示注入攻击策略。} 针对G1和G2，提出ProbeRL框架，设计步骤级密集奖励函数（工具调用偏差、文本异常、环境变化、覆盖路径新颖性、风险评分），在黑盒约束下实现精细化信用分配；提出停滞感知搜索扩展机制，当策略优化陷入停滞时自动驱动搜索扩展，突破局部最优。相比AutoInject和PISmith仅依赖稀疏奖励和纯策略梯度，本方法实现了密集奖励引导的结构化搜索；相比AgentVigil的手工动作空间和标准MCTS，本方法通过停滞检测和自适应扩展自动发现有效攻击路径。
-  \item \textbf{创新点二：面向攻击策略的针对性语义检测-规则复合防御策略。} 针对G4，提出攻防对称的GRPO训练框架，攻击策略和语义注入检测模型共享相同的GRPO优化流程但奖励信号对称；设计语义检测-规则兜底双层防御架构，语义检测模型做前期过滤（泛化新型攻击），启发式规则做兜底保护（精确拦截已知攻击），两层互补实现兼顾泛化性和精确性的防御；利用ProbeRL攻击发现驱动闭环验证，确保防御对自适应攻击的鲁棒性。
+  \item \textbf{创新点一：面向LLM Agent工具调用链的多维可解释风险度量框架。}
+  针对G1和G2，本课题提出统一日志Schema和多维风险指标体系，将工具敏感度$S_{\text{tool}}$、调用深度$D_{\text{call}}$、权限扩散度$P_{\text{diff}}$、不可逆操作比例$I_{\text{irrev}}$、敏感数据暴露度$E_{\text{expo}}$、人工确认覆盖率$H_{\text{cov}}$等指标纳入统一加权评分框架，并提供指标贡献分解。区别于现有以攻击成功率为核心的评估方案\cite{balunovic2024agentdojo,zhang2024injectagent,liu2024formalizing}，本框架从序列层面对工具调用链的组合性风险进行可解释量化，使“单次调用合法但序列有害”的安全隐患得以被系统性捕获和度量，回应了Chu等\cite{chu2026systematic}对T3/T4层面评估空白的明确呼吁。
+
+  \item \textbf{创新点二：基于行为轨迹图的工具滥用检测与反事实归因方法。}
+  针对G3和G4，本课题将Agent执行轨迹建模为异构行为轨迹图$G=(V,E,X)$，将过去孤立评估单次调用的检测范式扩展至跨步骤、跨权限域的图结构检测。提出面向六类工具滥用模式（过度授权、敏感数据外传、不可逆操作缺少确认、参数来源污染、跨Agent委托失控、共享记忆污染）的图规则检测方法，结合轻量分类器实现组合风险识别；进一步提出基于风险路径定位与反事实消融的可解释归因方法，输出Top-K风险路径、关键节点贡献和可审计的归因报告，填补现有工作\cite{dewitt2026openchallenges,he2025sentinelagent,wang2026authgraph}在跨步骤风险路径识别和可解释责任归因方面的空白。
 \end{enumerate}
 
 \subsection{研究意义与价值}
@@ -58,23 +135,24 @@
 \subsubsection{理论意义}
 
 \begin{enumerate}
-  \item 提出对齐LLM智能体间接提示注入实际威胁模型的自适应搜索扩展协同的提示注入攻击策略，将步骤级密集信用分配与自适应搜索扩展相结合，为自动化对抗搜索提供了新的理论视角，弥合了密集奖励引导与搜索空间扩展之间的方法论鸿沟。
-  \item 提出对齐攻击策略的针对性语义检测-规则复合防御架构，将攻击发现与防御设计纳入统一的对抗训练框架，为理解攻击-防御博弈的动态演化和实现兼顾泛化性与精确性的防御提供了理论支撑。
+  \item 本研究从工具调用链出发，将Agent安全问题由“输入输出文本安全”扩展到“过程级行为安全”。研究点一提出可解释风险度量体系，能够把工具敏感性、权限边界、调用深度、不可逆性和人工确认等因素纳入统一框架；
+  研究点二进一步将执行轨迹图化，把Prompt、Plan、Tool Call、Observation和Final Answer之间的依赖关系形式化表达，  为工具滥用检测和风险归因提供结构化基础。该思路有助于弥补现有研究中“重防御、轻度量”、“重结果、轻过程”、“重报警、轻归因”的不足。
+
+  \item 本研究将系统安全领域的溯源图思想\cite{inam2023sok,gao2021threatraptor,cheng2024kairos}迁移至LLM Agent场景，提出适应Agent执行语义的异构轨迹图表示，为Agent可观测性和执行溯源研究提供新的方法论视角，从而为Agent安全从“攻防对抗”向“过程审计与责任归因”的范式演进提供一种可能的思路。
 \end{enumerate}
 
 \subsubsection{实用价值}
 
 \begin{enumerate}
-  \item 开发ProbeRL自动化攻击框架，通过基于环境反馈的密集奖励和停滞感知搜索显著提升攻击效率，使安全评估在有限计算预算下能够发现更多安全漏洞，为工业界部署LLM智能体提供量化的安全风险评估参考。
-  \item 基于攻防对称训练的语义检测-规则兜底双层防御，为安全工程师提供从攻击发现到防御部署的自动化流程，兼顾防御的泛化性和精确性，缩短安全响应周期。
-  \item 在多场景和多模型的实验设置上提供全面实证评估，为LLM智能体的安全标准与合规评估提供方法论参考。
+  \item 从框架贡献角度看，本研究构建的低成本可复现任务集与评估框架，可为后续Agent安全研究提供标准化的实验基座，降低研究门槛，促进该方向的可复现性和可比较性。
+  
+  \item 从工程落地角度看，本研究旨在设计一个轻量级、可接入现有LLM Agent系统的的可插拔审计模块，接收Agent执行日志，输出工具调用链风险分数、异常模式、关键风险路径和归因报告。对于企业办公Agent、数据分析Agent、代码执行Agent和Agentic IoT原型系统而言，该审计模块可以作为部署前评估、运行时监控和事后审计的轻量组件，回应了OWASP LLM Top 10\cite{owasp2025llmtop10}对工具调用安全审计工具的明确需求。
 \end{enumerate}
 
 \subsubsection{与国家及行业发展战略的契合度}
+
 \begin{enumerate}
-  \item 契合《新一代人工智能发展规划》中关于"人工智能安全"的战略部署，为AI系统的安全评估与风险防控提供关键技术支撑。
-  \item 响应《网络安全法》和《数据安全法》对关键信息基础设施安全保护的要求，为LLM智能体在金融、政务等敏感领域的安全部署提供攻击评估方法。
-  \item 服务于国家人工智能标准化总体组关于"人工智能可信特征"标准的研究，为LLM智能体鲁棒性与安全性评测提供方法论参考。
+  \item 契合《新一代人工智能发展规划》中关于“人工智能安全”的战略部署，为AI系统的安全评估与风险防控提供关键技术支撑。
+  \item 响应《网络安全法》和《数据安全法》对关键信息基础设施安全保护的要求，为LLM Agent在金融、政务等敏感领域的安全部署提供风险度量与审计方法。
+  \item 服务于国家人工智能标准化总体组关于“人工智能可信特征”标准的研究，为LLM Agent工具调用链的安全性与可解释性评测提供方法论参考。
 \end{enumerate}
-
-

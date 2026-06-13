@@ -1,0 +1,101 @@
+% ===== 第三段：LLM Agent安全威胁与防御 =====
+\subsubsection{LLM Agent安全威胁与防御相关研究现状}
+
+围绕LLM Agent安全的研究已从prompt injection扩展到工具误用、权限失配和系统级执行安全。
+
+\textbf{威胁分类与系统化分析。}
+Greshake等\cite{greshake2023notwhat3}最早系统揭示了间接提示注入（Indirect Prompt Injection，IPI）攻击的现实威胁：
+攻击者将恶意指令嵌入Agent可访问的外部内容（网页、文档、邮件等），
+使Agent在处理正常任务时被劫持执行攻击者意图，该工作奠定了IPI研究的基础框架。
+Schulhoff等\cite{schulhoff2023ignore}通过HackAPrompt竞赛系统暴露了提示注入的多种变体，
+收集了超过600,000条攻击样本，揭示了当前LLM在指令遵循与安全边界维护之间的结构性矛盾。
+Dehghantanha等\cite{dehghantanha2026sokattacksurfaceagentic}对Agentic AI的攻击面进行了系统化分析（SoK），
+将攻击路径归纳为提示/间接注入、RAG投毒、工具/API滥用、状态与记忆投毒、多智能体编排攻击和供应链妥协六大类，
+并指出真实攻击事件鲜少依赖单一漏洞，而是通过跨流水线阶段的向量组合实现。
+Chhabra等\cite{chhabra2025agentic}在IEEE Access上对Agentic AI安全的威胁、防御与评估进行了全面综述，
+系统梳理了从单Agent到多Agent系统的安全挑战演化路径。
+Chu等\cite{chu2026systematic}提出七层攻击面框架（LASM），
+将工具调用风险定位于第四层（Tool Execution Layer），
+明确指出"语义权限提升"是当前访问控制系统的结构性盲区。
+He等\cite{he2025survey}在ACM Computing Surveys上的综述和Deng等\cite{deng2025agentsunderthreat}的综述均指出，
+现有LLM Agent安全研究在工具审计、过程级可解释评估和跨步骤风险路径识别方面存在明显不足。
+Das等\cite{das2025security}在ACM Computing Surveys上进一步梳理了LLM安全与隐私挑战的全貌，
+指出Agent化部署使得传统LLM安全机制面临根本性的适用性挑战。
+
+\textbf{提示注入攻击的形式化与基准化。}
+Liu等\cite{liu2024formalizing}在USENIX Security 2024上对提示注入攻击进行了形式化定义，
+提出BIPIA基准，系统评估了多种LLM在间接提示注入场景下的脆弱性，
+为后续防御研究提供了标准化的评测基础。
+Zhang等\cite{zhang2024injectagent}在ACL Findings 2024上提出InjecAgent基准，
+覆盖17种工具调用场景下的1054个测试用例，
+揭示了当前主流Agent在工具调用链中对注入攻击的普遍脆弱性。
+Yi等\cite{yi2024survey}在SIGKDD 2024上对间接提示注入攻击进行了系统综述，
+梳理了攻击向量、传播路径和防御策略，并提出了统一的评测框架。
+Wang等\cite{wang2025webinject}在EMNLP 2025上提出WebInject，
+专门针对Web Agent的工具调用链设计注入攻击，
+实验表明即使是具备安全对齐的前沿模型也难以抵御精心设计的Web环境注入。
+Shi等\cite{shi2026pitoolselection}在NDSS 2026上提出针对工具选择阶段的提示注入攻击，
+揭示了攻击者可通过操控工具描述影响Agent的工具选择决策，
+进一步扩展了工具调用链的攻击面。
+Zverev等\cite{zverev2025can}在ICLR 2025上系统研究了LLM区分指令与数据的能力边界，
+发现当前模型在结构化输入场景下仍无法可靠地将用户指令与外部数据内容分离，
+从根本上揭示了提示注入防御的困难所在。
+
+\textbf{后门与对抗性攻击。}
+Bi等\cite{bi2024backdoor}在NeurIPS 2024上系统研究了针对LLM Agent的后门威胁，
+提出攻击者可通过在工具调用链的特定触发条件下激活后门行为，
+使Agent在正常任务中表现正常而在特定场景下执行恶意操作。
+Chen等\cite{chen2024agentpoison}在NeurIPS 2024上提出AgentPoison，
+通过污染Agent的RAG知识库实现对工具调用行为的隐蔽操控，
+实验表明该攻击在多种Agent框架上均具有高度有效性。
+Andriushchenko等\cite{andriushchenko2025jailbreaking}在ICLR 2025上系统研究了针对安全对齐LLM的越狱攻击，
+发现简单的对抗性后缀即可绕过主流安全对齐机制，
+为理解Agent安全边界的脆弱性提供了重要参考。
+
+\textbf{防御机制研究。}
+现有防御工作大致分为三类。
+第一类是基于信息流控制的防御：
+CaMeL\cite{debenedetti2025defeating}通过区分可信控制流与不可信数据流，
+利用能力机制约束数据外流，从架构层面阻断注入内容对Agent规划的影响；
+FIDES\cite{costa2025fides}使用动态污点追踪与信息流控制为Agent规划器提供确定性安全策略，
+实验表明其在保持较高任务完成率的同时能够有效阻断数据外泄路径。
+第二类是基于结构化输入的防御：
+StruQ\cite{chen2025struq}在USENIX Security 2025上提出通过结构化查询格式将用户指令与外部数据内容在语法层面分离，
+从根本上降低注入内容被误解析为指令的概率；
+IPIGuard\cite{an2025ipiguard}在EMNLP 2025上提出基于指令优先级的防御框架，
+通过显式标记指令来源和优先级约束Agent的指令遵循行为。
+PIGuard\cite{li2025piguard}在ACL 2025上提出基于策略的防御方法，
+通过在推理阶段动态检测并过滤注入内容，在多种Agent场景下取得了较好的防御效果。
+第三类是基于权限管控与运行时监控的防御：
+Progent\cite{shi2025progent}引入领域特定语言实现细粒度权限控制，
+通过约束工具调用权限范围降低过度授权风险；
+DRIFT\cite{li2026drift}通过动态规则生成和注入内容隔离实现运行时防御；
+Firewalled Agentic Networks\cite{abdelnabi2025firewalls}从多Agent交互角度设计输入防火墙、数据防火墙和轨迹防火墙，
+以降低隐私泄露和轨迹偏离风险；
+NeMo Guardrails\cite{rebedea2023nemo}提供了一套可编程的安全护栏工具包，
+支持在LLM应用层面定义对话流程约束和内容安全规则。
+
+\textbf{攻击检测研究。}
+Abdelnabi等\cite{abdelnabi2025drift}在SaTML 2025上提出通过激活差异检测任务漂移（task drift），
+利用LLM内部激活状态的统计特征识别Agent是否被注入内容劫持，
+为无需修改Agent架构的轻量级检测提供了新思路。
+Hung等\cite{hung2025attention}在NAACL 2025上提出Attention Tracker，
+通过分析注意力权重分布识别提示注入攻击，
+实验表明注意力模式在正常任务与注入攻击之间存在可区分的统计差异。
+Chen等\cite{chen2025can}在ACL 2025上研究了间接提示注入攻击的可检测性与可移除性，
+发现当前检测方法在面对自适应攻击时存在明显局限，
+揭示了检测与攻击之间的军备竞赛本质。
+Zhan等\cite{zhan2025adaptive}在NAACL 2025 Findings上系统研究了自适应攻击对现有IPI防御的破坏能力，
+发现大多数防御方法在面对针对性自适应攻击时防御效果大幅下降，
+强调了防御鲁棒性评估的重要性。
+
+此外，Russinovich等\cite{russinovich2025great}通过Red Teaming实践系统验证了上述防御机制在自适应攻击下的局限性；
+RAZA等\cite{raza2025trism}提出了面向Agent可信度评估的三维框架；
+Wu等\cite{wu2025isolategpt}在NDSS 2025上提出IsolateGPT执行隔离架构，
+通过将LLM推理与工具执行环境隔离，从系统架构层面降低工具调用链的攻击面。
+
+然而，现有防御研究存在共同局限：
+其一，大多针对特定攻击场景（如提示注入防御），而非通用的过程级安全审计；
+其二，现有机制普遍面临安全性与任务效用之间的权衡，强安全约束会显著降低任务完成率；
+其三，防御效果验证通常依赖有限的手工构造案例，缺乏覆盖多样化风险类型的系统性评估基准。
+这三个局限共同指向一个核心缺口：缺乏一个独立于特定防御策略的、面向工具调用链的通用风险度量框架。
