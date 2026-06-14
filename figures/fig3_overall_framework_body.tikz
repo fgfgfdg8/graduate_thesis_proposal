@@ -38,7 +38,7 @@ $\displaystyle +\delta I_{irrev}+\eta(1-H_{cov})$\\[3pt]};
 % === 3. Topic 2 ===
 \draw[panelP] (4.55,2.55) rectangle (19.85,6.80);
 \draw[headP] (4.55,6.25) rectangle (19.85,6.80);
-\node[sectionText, text=agentPurple] at (12.2,6.52) {3. 研究点二：基于行为轨迹图的工具滥用检测与风险归因方法};
+\node[sectionText, text=agentPurple] at (12.2,6.52) {3. 研究点二：基于行为轨迹图的工具滥用检测、威胁归因与防御方法};
 \draw[arrowP, dashed] (dep.south) -- (12.2,6.80);
 
 \node[innerP, text width=2.55cm, minimum height=2.85cm] (t21) at (5.95,4.35) {\textbf{3.1 轨迹图构建}\\节点：动作/工具/对象\\边：时序/依赖/数据流\\属性：权限/状态/结果\\[2pt]

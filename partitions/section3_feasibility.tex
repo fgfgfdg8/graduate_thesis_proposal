@@ -16,14 +16,14 @@
 
 行为轨迹图的构建采用确定性规则：每个任务生成一个根节点，每个plan生成计划节点，每个工具调用生成工具节点，工具参数与返回结果生成数据对象节点，最终答案生成输出节点；若某个参数来自前序observation或memory，则增加derive边；若某个结果被写入外部通道，则增加send或write边。该构建过程完全确定性，无随机性，技术可靠。
 
-反事实消融归因的可行性在于：图规模可控（每条轨迹通常不超过20个节点），消融计算可以直接枚举关键节点，不需要训练复杂解释器。ProbeRL闭环验证的可行性在于数据构造时同步记录真实风险触发节点和风险路径，形成gold path与gold node标签，可用于验证归因准确性。
+反事实消融归因的可行性在于：图规模可控（每条轨迹通常不超过20个节点），消融计算可以直接枚举关键节点，不需要训练复杂解释器。闭环验证的可行性在于数据构造时同步记录真实风险触发节点和风险路径，形成gold path与gold node标签，可用于验证归因准确性。
 
 \subsection{实验可行性分析}
 
 \begin{enumerate}
   \item \textbf{评估协议可行性。}风险标签优先通过规则自动生成（例如：当敏感对象节点到外部发送工具之间存在可达路径时，标注为$R_2$；当高风险工具调用没有人工确认时，标注为$R_3$），自动标签生成后再抽样进行人工复核，保证可复现性和标注成本可控。
   
-  \item \textbf{实验数据可行性。}实验所用Agent轨迹可以基于AgentDojo\cite{balunovic2024agentdojo}、AgentCanary\cite{li2026agentcanary}、IPI-Arena-Bench\cite{dziemian2026vulnerable}等成熟且基于真实任务构造的集成Agent安全评估基准，自行构造环境进行采集；同时，可以通过合成模拟数据（模拟文件、邮件、数据库等工具）的方式进行数据集扩充。先期原型验证的合成数据集（文件-邮件场景file\_mail、数据库-日程场景db\_calendar、代码-IoT场景code\_iot），每个数据集各200条样例，合计600条，覆盖$R_0$至$R_6$全部风险类型，已验证可支撑主实验、消融实验、路径定位实验和归因实验的完整评估。
+  \item \textbf{实验数据可行性。}实验所用Agent轨迹可以基于AgentDojo\cite{balunovic2024agentdojo}、AgentCanary\cite{li2026agentcanary}、IPI-Arena-Bench\cite{dziemian2026vulnerable}、HINTBench\cite{wang2026hintbench}等成熟且基于真实任务构造的集成Agent安全评估基准，自行构造环境进行采集；同时，可以通过合成模拟数据（模拟文件、邮件、数据库等工具）的方式进行数据集扩充。先期原型验证的合成数据集（文件-邮件场景file\_mail、数据库-日程场景db\_calendar、代码-IoT场景code\_iot），每个数据集各200条样例，合计600条，覆盖$R_0$至$R_6$全部风险类型，已验证可支撑主实验、消融实验、路径定位实验和归因实验的完整评估。
 
   \item \textbf{对比基线可行性。}本研究拟采用的14个代理基线方法\cite{yao2023react,schick2023toolformer,patil2024gorilla,qin2024toolllm,balunovic2024agentdojo,xie2024osworld,bonatti2025windows,krawiecka2025extending,debenedetti2025defeating,costa2025securing,abdelnabi2025firewalls,dong2025pear,wang2026aligning,he2025sentinelagent}，涵盖2021—2026年代表性研究思想），均可在同一日志模式上实现，包括权限控制（StaticWhitelist、RBAC-ABAC）、信息流（TaintLite）、运行时监控（RuntimeAnomaly）、动态防火墙（DynamicLLM-Firewall）、授权图（AuthGraph-DualGraph）等，覆盖多元、比较翔实，具有坚实的研究基础支撑。
   
@@ -35,7 +35,7 @@
 
 \subsubsection{先期工作}
 
-目前已完成的工作包括：（1）Agent安全方向文献库的初步积累，围绕LLM Agent安全、多智能体安全、工具调用、执行溯源、运行时监控、权限控制和风险归因等主题，整理了2021—2026年相关文献。（2）完成TraceGraphAudit原型系统的核心代码实现，包括统一日志模式定义、序列级风险指标计算、行为轨迹图构建与路径定位和基线方法复现。
+目前已完成的工作包括：（1）Agent安全方向文献库的初步积累，围绕LLM Agent安全、多智能体安全、工具调用、执行溯源、运行时监控、权限控制和风险归因等主题，整理了2021—2026年相关文献。（2）完成TraceGraphAudit原型系统的核心代码实现，包括统一日志模式定义、序列级风险指标计算、行为轨迹图构建与路径定位。（3）完成了有关的14个对比基线方法的复现。
 
 \subsubsection{先期实验结果}
 
