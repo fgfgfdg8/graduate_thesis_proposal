@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\caption{风险类型到防御动作的映射表（AGRD策略规则）}
+\label{tab:defense_actions}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{风险类型} & \textbf{触发条件（图模式）} & \textbf{防御动作} \\
+\midrule
+$R_1$: 过度授权 & $Perm(C) \setminus Perm_{req}(q) \neq \varnothing$ & \texttt{trim\_permissions} \\
+$R_2$: 敏感数据外传 & $\text{sensitive} \xrightarrow{derive\ast} \text{external\_sink}$ & \texttt{block\_external\_send} \\
+$R_3$: 不可逆无确认 & $e \in E_{write},\, irr(e)=1,\, e.\text{confirm}=\varnothing$ & \texttt{insert\_confirm\_node} \\
+$R_4$: 参数污染 & $\text{source\_trust}=\text{untrusted} \rightarrow \text{high-sens}$ & \texttt{mark\_untrusted} \\
+$R_5$: 委托失控 & $\text{low\_priv} \xrightarrow{delegate} \text{high\_priv}$ & \texttt{restrict\_delegation} \\
+$R_6$: 记忆污染 & $\text{tainted} \rightarrow E_{write(memory)} \rightarrow E_{read}$ & \texttt{isolate\_memory} \\
+\bottomrule
+\end{tabular}
+\end{table}

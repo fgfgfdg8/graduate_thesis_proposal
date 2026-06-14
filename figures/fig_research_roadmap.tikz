@@ -50,12 +50,12 @@
 \def\yIV{-5.80}
 \def\yV{-7.25}
 \def\yVI{-8.70}
-\def\yVII{-10.15}
-\def\yGap{-11.75}
-\def\yRQ{-13.45}
+\def\yVII{-10.80}  % 下移0.65cm，为文献较多的末行留出空间
+\def\yGap{-12.65}
+\def\yRQ{-14.35}
 
 % ===== 时间轴（左侧）=====
-\draw[black!35, line width=0.55pt] (0, 0.45) -- (0, -11.1);
+\draw[black!35, line width=0.55pt] (0, 0.45) -- (0, -11.95);
 \foreach \y/\yr in {
   \yHead/2022,
   \yI/2023,
@@ -96,17 +96,17 @@
 \node[tracknode] (n21) at (\xB,\yI)
   {Greshake等~\cite{greshake2023notwhat3}\\Schulhoff等~\cite{schulhoff2023ignore}\\Chhabra等~\cite{chhabra2025agentic}\\IPI威胁综述};
 \node[tracknode] (n22) at (\xB,\yII)
-  {InjecAgent~\cite{zhang2024injectagent}\\BIPIA~\cite{liu2024formalizing}~Yi~\cite{yi2024survey}\\WebInject~\cite{wang2025webinject}~RAG~\cite{an2025rag}\\注入攻击形式化\&展层};
+  {InjecAgent~\cite{zhang2024injectagent}\\BIPIA~\cite{liu2024formalizing}~Yi~\cite{yi2024survey}\\Shi等~\cite{shi2024optimization,shi2026pitoolselection}\\Zverev~\cite{zverev2025can}\\注入攻击形式化\&扩展};
 \node[tracknode] (n23) at (\xB,\yIII)
-  {AgentDojo~\cite{balunovic2024agentdojo}\\AgentPoison~\cite{chen2024agentpoison}\\后门植入~\cite{bi2024backdoor,dong2025philosopher,gu2024agent}\\动态攻防\&后门攻击};
+  {AgentDojo~\cite{balunovic2024agentdojo}\\AgentPoison~\cite{chen2024agentpoison}\\后门~\cite{bi2024backdoor,dong2025philosopher,gu2024agent}\\供应链~\cite{li2026secure,tie2026badskill,duan2026skillattack}\\动态攻防\&多类型后门};
 \node[tracknode] (n24) at (\xB,\yIV)
   {CaMeL~\cite{debenedetti2025defeating}~FIDES~\cite{costa2025fides}\\Firewalled~\cite{abdelnabi2025firewalls}\\NeMo~\cite{rebedea2023nemo}~Tsai~\cite{tsai2025contextual}\\信息流控制\&护栏防御};
 \node[tracknode] (n25) at (\xB,\yV)
   {StruQ~\cite{chen2025struq}\ IPIGuard~\cite{an2025ipiguard}\\PIGuard~\cite{li2025piguard}\\结构化输入防御};
 \node[tracknode] (n26) at (\xB,\yVI)
-  {DRIFT~\cite{li2026drift}\ Progent~\cite{shi2025progent}\\IsolateGPT~\cite{wu2025isolategpt}\\权限管控\&隔离};
+  {DRIFT~\cite{li2026drift}\ Progent~\cite{shi2025progent}\\IsolateGPT~\cite{wu2025isolategpt}\\OpenClaw五层~\cite{deng2026tamingopenclaw}\\权限管控\&隔离};
 \node[tracknode] (n27) at (\xB,\yVII)
-  {Attn.Tracker~\cite{hung2025attention}\\Adaptive~\cite{zhan2025adaptive}\\Chen等~\cite{chen2025can}~Russinovich~\cite{russinovich2025great}\\检测攻防\&鲁棒性边界};
+  {持久化注入~\cite{wang2026froma,yang2026zombie}\\MCP协议层~\cite{maloyan2026breaking,belkhiter2026breaking}\\IterInject~\cite{chen2026iterinjectindirectpromptinjection}\\Tracker~\cite{hung2025attention}~Reframing~\cite{wang2026reframing}\\协议攻击\&检测边界};
 
 % ===== 列3：轨迹溯源与威胁归因 =====
 \node[tracknode] (n31) at (\xC,\yI)
@@ -122,7 +122,7 @@
 \node[tracknode] (n36) at (\xC,\yVI)
   {AgentVigil~\cite{wang2025agentvigil}\\AirgapAgent~\cite{bagdasarian2024airgapagent}\\在线监控\&隔离};
 \node[tracknode] (n37) at (\xC,\yVII)
-  {Wang综述~\cite{wang2026agenttraces}\\de Witt等~\cite{dewitt2026openchallenges}\\AgentTrace~\cite{wang2026agenttrace}\\归因挑战\&根因定位};
+  {Wang综述~\cite{wang2026agenttraces}\\de Witt等~\cite{dewitt2026openchallenges}\\AgentTrace~\cite{wang2026agenttrace}\\ChainFuzzer~\cite{wu2026chainfuzzer}\\归因挑战\&根因定位};
 
 % ===== 列4：风险度量与可解释评估 =====
 \node[tracknode] (n41) at (\xD,\yI)
@@ -135,10 +135,10 @@
   {He综述~\cite{he2025survey}\\Das综述~\cite{das2025security}\\Agent安全全景综述};
 \node[tracknode] (n45) at (\xD,\yV)
   {Deng综述~\cite{deng2025agentsunderthreat}\\ToolEmu失效模式\\过程级评估需求};
-\node[tracknode] (n46) at (\xD,\yVI)
-  {SeqAR~\cite{yang2025seqar}~Yu~\cite{yu2025survey}\\AgentArmor~\cite{wang2025agentarmor}\\TRACE~\cite{hong2026trace}\\TRACES~\cite{li2026traces}\\轨迹级审计探索};
+\node[tracknode, text width=2.85cm] (n46) at (\xD,\yVI)
+  {SeqAR~\cite{yang2025seqar}~Yu~\cite{yu2025survey}\\AgentArmor~\cite{wang2025agentarmor}\\TRACE~\cite{hong2026trace}~TRACES~\cite{li2026traces}\\Jin六维~\cite{jin2026security}~mcp-scan~\cite{beurerkellner2026technical}\\轨迹级审计探索};
 \node[tracknode] (n47) at (\xD,\yVII)
-  {Chu~\cite{chu2026systematic}~Dziemian~\cite{dziemian2026vulnerable}\\HarnessAudit~\cite{liu2026auditing}\\HINTBench~\cite{wang2026hintbench}\\评估空白\&归因缺口};
+  {Chu~\cite{chu2026systematic}~Dziemian~\cite{dziemian2026vulnerable}\\HarnessAudit~\cite{liu2026auditing}~HINTBench~\cite{wang2026hintbench}\\ChainFuzz~\cite{wu2026chainfuzzer}~VeriGrey~\cite{zhang2026verigrey}\\Jha等~\cite{jha2026agent}~Chen等~\cite{chen2026trajectorybased}\\评估空白\&归因缺口};
 
 % ===== 列内纵向箭头 =====
 \foreach \from/\to in {h1/n11, n11/n12, n12/n13, n13/n14, n14/n15, n15/n16, n16/n17}{\draw[arr] (\from) -- (\to);}
@@ -167,11 +167,14 @@
 \node[gapnode] (gap2) at (9.25,\yGap)
   {\textbf{Gap G3/G4}\\跨步骤组合风险路径\\威胁归因机制缺失};
 
-% Gap汇聚箭头（列1/2 → Gap1；列3/4 → Gap2）
-\draw[converge] (n17.south) -- ++(0,-0.40) -| (gap1.north);
-\draw[converge] (n27.south) -- ++(0,-0.18) -| (gap1.north);
-\draw[converge] (n37.south) -- ++(0,-0.18) -| (gap2.north);
-\draw[converge] (n47.south) -- ++(0,-0.18) -| (gap2.north);
+% Gap汇聚箭头（汇聚到Gap块上方正中间）
+\draw[black, line width=0.75pt] (n17.south) |- (3.05,{\yGap+0.7});
+\draw[black, line width=0.75pt] (n27.south) |- (3.05,{\yGap+0.7});
+\draw[converge] (3.05,{\yGap+0.6}) -- (gap1.north);
+
+\draw[black, line width=0.75pt] (n47.south) |- (9.25,{\yGap+0.7});
+\draw[black, line width=0.75pt] (n37.south) |- (9.25,{\yGap+0.7});
+\draw[converge] (9.25,{\yGap+0.6}) -- (gap2.north);
 
 % ===== 本课题研究点 =====
 \node[rqnode] (rq1) at (3.05,\yRQ)
