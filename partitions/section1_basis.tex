@@ -127,8 +127,9 @@ SentinelAgent\cite{he2025sentinelagent}提出基于执行图的Agent异常检测
   \item \textbf{创新点一：面向LLM Agent工具调用链的多维可解释风险度量框架。}
   针对G1和G2，本课题提出统一日志模式和多维风险指标体系，将工具敏感度$S_{\text{tool}}$、调用深度$D_{\text{call}}$、权限扩散度$P_{\text{diff}}$、不可逆操作比例$I_{\text{irrev}}$、敏感数据暴露度$E_{\text{expo}}$、人工确认覆盖率$H_{\text{cov}}$等指标纳入统一加权评分框架，并提供指标贡献分解。区别于现有以攻击成功率为核心的评估方案\cite{balunovic2024agentdojo,zhang2024injectagent,liu2024formalizing}，本框架从序列层面对工具调用链的组合性风险进行可解释量化，使“单次调用合法但序列有害”的安全隐患得以被系统性捕获和度量，回应了Chu\cite{chu2026systematic}对跨步骤组合风险度量和过程级可解释评估层面评估空白的明确呼吁。
 
-  \item \textbf{创新点二：基于行为轨迹图的工具滥用检测与反事实归因方法。}
-  针对G3和G4，本课题将Agent执行轨迹建模为异构行为轨迹图$G=(V,E,X)$，将过去孤立评估单次调用的检测范式扩展至跨步骤、跨权限域的图结构检测。提出面向六类工具滥用模式（过度授权、敏感数据外传、不可逆操作缺少确认、参数来源污染、跨Agent委托失控、共享记忆污染）的图规则检测方法，结合轻量分类器实现组合风险识别；进一步提出基于风险路径定位与反事实消融的可解释归因方法，输出Top-K风险路径、关键节点贡献和可审计的归因报告，填补现有工作\cite{dewitt2026openchallenges,he2025sentinelagent,wang2026authgraph,wang2026agenttrace,hong2026trace,li2026traces,liu2026auditing}在跨步骤风险路径识别和可解释威胁归因方面的空白：相较于AgentArmor/HarnessAudit的二元违规判断，本方法提供量化风险路径；相较于AgentTrace的单根因定位，本方法支持多路径组合风险和反事实归因；相较于TRACE/TRACES的检测标签，本方法输出Top-K风险路径和节点贡献分解。
+  \item \textbf{创新点二：基于行为轨迹图的工具滥用检测、威胁归因与防御方法。}
+  针对G3和G4，本课题将Agent执行轨迹建模为异构行为轨迹图$G=(V,E,X)$，将过去孤立评估单次调用的检测范式扩展至跨步骤、跨权限域的图结构检测。提出面向六类工具滥用模式（过度授权、敏感数据外传、不可逆操作缺少确认、参数来源污染、跨Agent委托失控、共享记忆污染）的图规则检测方法，结合轻量分类器实现组合风险识别，检测滥用或越权等异常工具调用行为；在识别风险行为的基础上，进一步提出基于风险路径定位与反事实消融的可解释归因方法，输出Top-K风险路径、关键节点贡献和可审计的归因报告，填补现有工作\cite{dewitt2026openchallenges,he2025sentinelagent,wang2026authgraph,wang2026agenttrace,hong2026trace,li2026traces,liu2026auditing}在跨步骤风险路径识别和可解释威胁归因方面的空白。本研究相较于AgentArmor\cite{wang2025agentarmor}/HarnessAudit\cite{liu2026auditing}的二元违规判断，本方法可额外提供量化风险路径；相较于AgentTrace\cite{wang2026agenttrace}的单根因定位，本方法支持多路径组合风险和反事实归因，有助于细粒度的风险归因和防御措施实施；相较于TRACE\cite{hong2026trace}/TRACES\cite{li2026traces}的检测标签，本方法输出Top-K风险路径和节点贡献分解，为风险路径上的每个节点标签都提供一个可量化、可追溯、可解释的标签。
+
 \end{enumerate}
 
 \subsection{研究意义与价值}
