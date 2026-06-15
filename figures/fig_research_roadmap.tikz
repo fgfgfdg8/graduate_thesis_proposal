@@ -100,7 +100,7 @@
 \node[tracknode] (n23) at (\xB,\yIII)
   {AgentDojo~\cite{balunovic2024agentdojo}\\AgentPoison~\cite{chen2024agentpoison}\\后门~\cite{bi2024backdoor,dong2025philosopher,gu2024agent}\\供应链~\cite{li2026secure,tie2026badskill,duan2026skillattack}\\动态攻防\&多类型后门};
 \node[tracknode] (n24) at (\xB,\yIV)
-  {CaMeL~\cite{debenedetti2025defeating}~FIDES~\cite{costa2025fides}\\Firewalled~\cite{abdelnabi2025firewalls}\\NeMo~\cite{rebedea2023nemo}~Tsai~\cite{tsai2025contextual}\\信息流控制\&护栏防御};
+  {CaMeL~\cite{debenedetti2025camel}~FIDES~\cite{costa2025fides}\\Firewalled~\cite{abdelnabi2025firewalls}\\NeMo~\cite{rebedea2023nemo}~Tsai~\cite{tsai2025contextual}\\信息流控制\&护栏防御};
 \node[tracknode] (n25) at (\xB,\yV)
   {StruQ~\cite{chen2025struq}\ IPIGuard~\cite{an2025ipiguard}\\PIGuard~\cite{li2025piguard}\\结构化输入防御};
 \node[tracknode] (n26) at (\xB,\yVI)
@@ -134,7 +134,7 @@
 \node[tracknode] (n44) at (\xD,\yIV)
   {He综述~\cite{he2025survey}\\Das综述~\cite{das2025security}\\Agent安全全景综述};
 \node[tracknode] (n45) at (\xD,\yV)
-  {Deng综述~\cite{deng2025agentsunderthreat}\\ToolEmu失效模式\\过程级评估需求};
+  {Deng综述~\cite{deng2025agentsunderthreat}\\ToolEmu~\cite{ruan2024toolemu}失效模式\\过程级评估需求};
 \node[tracknode, text width=2.85cm] (n46) at (\xD,\yVI)
   {SeqAR~\cite{yang2025seqar}~Yu~\cite{yu2025survey}\\AgentArmor~\cite{wang2025agentarmor}\\TRACE~\cite{hong2026trace}~TRACES~\cite{li2026traces}\\Jin六维~\cite{jin2026security}~mcp-scan~\cite{beurerkellner2026technical}\\轨迹级审计探索};
 \node[tracknode] (n47) at (\xD,\yVII)

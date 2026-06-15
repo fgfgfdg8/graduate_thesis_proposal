@@ -225,7 +225,7 @@
 
 DSR与UPR共同构成防御评估的“帕累托前沿”：理想防御应同时最大化DSR和UPR，回应了文献中反复指出的“安全性与效用权衡”问题~\cite{deng2025agentsunderthreat,balunovic2024agentdojo}，并为后续研究提供标准化比较维度。
 
-对比方法拟设置为五组：Baseline-1为单步权限检查，只判断当前工具是否在白名单中；Baseline-2为敏感工具计数，只根据敏感工具数量给出风险；Baseline-3为序列级风险评分，即研究点一方法但不构建图；Baseline-4为无归因图检测，即使用图特征分类但不输出风险路径和反事实贡献；Baseline-5为全量阻断（Block-All），即对所有检测为阳性的轨迹中的所有高风险操作统一阻断（无归因优先级排序），专门用于验证“归因驱动”优先级排序相对于“全量阻断”在UPR上的优势。此外，还将与2021—2026年间代表性工作（包括RBAC-ABAC权限门控\cite{shi2025progent}、TaintLite污点追踪\cite{costa2025securing}、ReAct轨迹启发式、CaMeL流分析\cite{debenedetti2025defeating}、FIDES动态污点\cite{costa2025fides}、DynamicLLM-Firewall动态LLM防火墙\cite{abdelnabi2025firewalls}、AuthGraph-DualGraph授权图\cite{wang2026authgraph}等）进行对比，以体现本方法相对于简单规则和序列方法的综合优势。
+对比方法拟设置为五组：Baseline-1为单步权限检查，只判断当前工具是否在白名单中；Baseline-2为敏感工具计数，只根据敏感工具数量给出风险；Baseline-3为序列级风险评分，即研究点一方法但不构建图；Baseline-4为无归因图检测，即使用图特征分类但不输出风险路径和反事实贡献；Baseline-5为全量阻断（Block-All），即对所有检测为阳性的轨迹中的所有高风险操作统一阻断（无归因优先级排序），专门用于验证“归因驱动”优先级排序相对于“全量阻断”在UPR上的优势。此外，还将与2021—2026年间代表性工作（包括RBAC-ABAC权限门控\cite{shi2025progent}、TaintLite污点追踪\cite{costa2025securing}、ReAct轨迹启发式、CaMeL流分析\cite{debenedetti2025camel}、FIDES动态污点\cite{costa2025fides}、DynamicLLM-Firewall动态LLM防火墙\cite{abdelnabi2025firewalls}、AuthGraph-DualGraph授权图\cite{wang2026authgraph}等）进行对比，以体现本方法相对于简单规则和序列方法的综合优势。
 
 \subsection{研究方法及技术路线}
 
