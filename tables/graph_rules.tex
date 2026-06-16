@@ -1,0 +1,36 @@
+\begin{table}[htbp]
+\centering
+\caption{TraceGraph-Guard 图规则库（Rule-1至Rule-8）}
+\label{tab:graph_rules}
+\small
+\begin{tabular}{clp{4.6cm}cp{2.2cm}}
+\toprule
+\textbf{规则} & \textbf{名称} & \raggedright\arraybackslash\textbf{触发模式（图路径条件）} & \multicolumn{1}{l}{\textbf{对应攻击}} & \raggedright\arraybackslash\textbf{防御动作} \\
+\midrule
+Rule-1 & 敏感数据直接外传 &
+  $v_{\text{sens}} \xrightarrow{E_{\text{send}}} v_{\text{ext}}$，且$\nexists$中间脱敏节点 &
+  A1 & Block \\
+Rule-2 & 敏感数据间接外传 &
+  $v_{\text{sens}} \xrightarrow{*} v_{\text{tool}} \xrightarrow{E_{\text{send}}} v_{\text{ext}}$，路径长度$\geq 2$ &
+  A1 & Block \\
+Rule-3 & 权限超出必要集合 &
+  $\exists\, perm_t \in Perm(C) \setminus Perm_{\text{req}}(q)$，$v_{\text{perm}}$节点越界 &
+  A2 & AskConfirm \\
+Rule-4 & 不可逆操作无确认 &
+  $v_{\text{tool}}.\text{irrev}=1$ 且 $\nexists\, e \in E_{\text{confirm}}$指向该节点 &
+  A3 & AskConfirm \\
+Rule-5 & 不可信参数流入高危工具 &
+  $v_{\text{untrusted}} \xrightarrow{E_{\text{derive}}} v_{\text{args}} \xrightarrow{E_{\text{call}}} v_{\text{sens\_tool}}$ &
+  A4 & Mask \\
+Rule-6 & 低权限Agent调用高权限工具 &
+  $v_{\text{agent}}.\text{level} < v_{\text{tool}}.\text{req\_level}$，$v_{\text{agent}} \xrightarrow{E_{\text{delegate}}} v_{\text{tool}}$ &
+  A5 & Block \\
+Rule-7 & 跨Agent越权委托链 &
+  $\exists$委托路径$v_{a_1} \xrightarrow{E_{\text{delegate}}} \cdots \xrightarrow{E_{\text{delegate}}} v_{a_k}$，链末权限高于链首 &
+  A5 & Block \\
+Rule-8 & 记忆污染复用 &
+  $v_{\text{mem}}.\text{taint}=1$ 且 $v_{\text{mem}} \xrightarrow{E_{\text{read}}} v_{\text{tool/agent}}$ &
+  A6 & Mask+Log \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\caption{本研究的攻击链分类（A1--A6）}
+\label{tab:attack_types}
+\small
+\begin{tabularx}{\textwidth}{clX}
+\toprule
+\textbf{编号} & \textbf{攻击链类型} & \raggedright\arraybackslash\textbf{触发条件与攻击后果（违反的安全属性）} \\
+\midrule
+A1 & 敏感数据外传链 & 敏感数据可达外部sink；用户隐私/凭证泄露，违反数据机密性 \\
+A2 & 权限扩散链 & 实际权限超出任务必要权限集合；过度授权，违反最小权限原则 \\
+A3 & 不可逆无确认链 & 不可逆操作前无人工确认步骤；误操作无法回滚，违反可恢复性 \\
+A4 & 参数污染链 & 工具参数来源于不可信observation或共享记忆；间接提示注入，违反输入完整性 \\
+A5 & 跨权限委托链 & 低权限Agent触发高权限工具或越权子委托；权限提升，违反访问控制边界 \\
+A6 & 记忆投毒传播链 & 被污染记忆被后续步骤或下游Agent复用；持久性污染扩散，违反记忆完整性 \\
+\bottomrule
+\end{tabularx}
+\end{table}

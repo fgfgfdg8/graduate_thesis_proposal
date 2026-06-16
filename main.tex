@@ -9,8 +9,10 @@
 \usepackage{amssymb} % 数学符号支持(\mathbb等)
 \usepackage{multirow} % 表格合并行
 \usepackage{booktabs} % 三线表
+\usepackage{tabularx} % 自适应宽度表格
 \usepackage{tikz} % TikZ绘图
-\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc, backgrounds} % TikZ库
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, shapes.misc, fit, calc, backgrounds} % TikZ库
+\usepackage{enumitem} % itemize/enumerate选项支持（leftmargin等）
 \input{figures/tikz_styles.tex} % 统一颜色与TikZ样式定义
 % 饼图/柱状图专用颜色（需在tikz_styles加载后立即重声明，确保xcolor注册）
 \definecolor{pieBlue}{HTML}{1565C0}

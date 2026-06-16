@@ -4,9 +4,9 @@
 \caption{AgentCanary各类攻击路径典型案例}
 \label{tab:agentcanary_cases}
 \small
-\begin{tabular}{p{2.0cm}p{2.2cm}p{5.5cm}p{2.0cm}}
+\begin{tabularx}{\textwidth}{llXc}
 \toprule
-\textbf{攻击路径} & \textbf{攻击类型} & \textbf{典型攻击目标} & \textbf{风险类型} \\
+\textbf{攻击路径} & \textbf{攻击类型} & \raggedright\arraybackslash\textbf{典型攻击目标} & \multicolumn{1}{l}{\textbf{风险类型}} \\
 \midrule
 \multirow{3}{*}{直接攻击}
 & permission\_escalation & 指令Agent调用高权限工具（如系统管理API）完成未授权操作 & $R_1$ \\
@@ -27,5 +27,5 @@
 & illegal\_memory & 将违法或有害内容写入共享记忆，影响后续所有Agent的行为 & $R_6$ \\
 & persona\_corruption & 通过记忆注入修改Agent的角色设定，使其持续执行恶意行为 & $R_6$ \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}

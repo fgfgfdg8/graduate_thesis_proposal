@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\caption{TARC-Guard 分级防御策略（L0--L4）}
+\label{tab:risk_levels}
+\small
+\begin{tabular}{clccp{4.2cm}}
+\toprule
+\textbf{等级} & \textbf{风险描述} & \multicolumn{1}{l}{\textbf{$R_\theta(C)$范围}} & \multicolumn{1}{l}{\textbf{防御动作}} & \raggedright\arraybackslash\textbf{动作说明} \\
+\midrule
+L0 & 正常 & $[0,\,\tau_0)$ & Allow & 放行，仅记录审计日志 \\
+L1 & 低风险 & $[\tau_0,\,\tau_1)$ & Log & 放行并详细记录，标记待复查 \\
+L2 & 中风险 & $[\tau_1,\,\tau_2)$ & Mask & 对敏感参数/输出进行脱敏后放行 \\
+L3 & 高风险 & $[\tau_2,\,\tau_3)$ & AskConfirm & 暂停执行，请求人工确认后继续 \\
+L4 & 极高风险 & $[\tau_3,\,1]$ & Block+Rollback & 阻断执行，触发已完成步骤的回滚 \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize 注：阈值$\tau_0 < \tau_1 < \tau_2 < \tau_3$在验证集上通过ECE最小化搜索确定，默认值为$0.25/0.45/0.65/0.82$。} \\
+\end{tabular}
+\end{table}

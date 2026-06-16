@@ -84,7 +84,7 @@
 \node[tracknode] (n13) at (\xA,\yIII)
   {AgentBench~\cite{liu2024agentbench}\\WebArena~\cite{zhou2023webarena}\\多环境能力基准};
 \node[tracknode] (n14) at (\xA,\yIV)
-  {OSWorld~\cite{xie2024osworld}\\WinArena~\cite{bonatti2024windowsarena}\\Mind2Web~\cite{deng2023mind2web}\\操作系统级评测};
+  {OSWorld~\cite{xie2024osworld}\\WinArena~\cite{bonatti2025windows}\\Mind2Web~\cite{deng2023mind2web}\\操作系统级评测};
 \node[tracknode] (n15) at (\xA,\yV)
   {CodeAct~\cite{wang2024codeact}\\Reflexion~\cite{shinn2023reflexion}\\执行范式优化};
 \node[tracknode] (n16) at (\xA,\yVI)
@@ -104,7 +104,7 @@
 \node[tracknode] (n25) at (\xB,\yV)
   {StruQ~\cite{chen2025struq}\ IPIGuard~\cite{an2025ipiguard}\\PIGuard~\cite{li2025piguard}\\结构化输入防御};
 \node[tracknode] (n26) at (\xB,\yVI)
-  {DRIFT~\cite{li2026drift}\ Progent~\cite{shi2025progent}\\IsolateGPT~\cite{wu2025isolategpt}\\OpenClaw五层~\cite{deng2026tamingopenclaw}\\权限管控\&隔离};
+  {DRIFT~\cite{li2025drift}\ Progent~\cite{shi2025progent}\\IsolateGPT~\cite{wu2025isolategpt}\\OpenClaw五层~\cite{deng2026tamingopenclaw}\\权限管控\&隔离};
 \node[tracknode] (n27) at (\xB,\yVII)
   {持久化注入~\cite{wang2026froma,yang2026zombie}\\MCP协议层~\cite{maloyan2026breaking,belkhiter2026breaking}\\IterInject~\cite{chen2026iterinjectindirectpromptinjection}\\Tracker~\cite{hung2025attention}~Reframing~\cite{wang2026reframing}\\协议攻击\&检测边界};
 
@@ -116,9 +116,9 @@
 \node[tracknode] (n33) at (\xC,\yIII)
   {Chan可见性~\cite{chan2024visibility}\\Chan IDs~\cite{chan2024ids}\\Agent可观测性};
 \node[tracknode] (n34) at (\xC,\yIV)
-  {MS Taxonomy~\cite{microsoft2025taxonomy}\\Zhang记忆~\cite{zhang2025memory}\\日志\&记忆追踪};
+  {MS Taxonomy~\cite{microsoft2025taxonomy}\\Zhang记忆~\cite{zhang2025survey}\\日志\&记忆追踪};
 \node[tracknode] (n35) at (\xC,\yV)
-  {SentinelAgent~\cite{he2025sentinelagent}\\AuthGraph~\cite{wang2026authgraph}\\执行图检测};
+  {SentinelAgent~\cite{he2025sentinelagent}\\AuthGraph~\cite{wang2026aligning}\\执行图检测};
 \node[tracknode] (n36) at (\xC,\yVI)
   {AgentVigil~\cite{wang2025agentvigil}\\AirgapAgent~\cite{bagdasarian2024airgapagent}\\在线监控\&隔离};
 \node[tracknode] (n37) at (\xC,\yVII)

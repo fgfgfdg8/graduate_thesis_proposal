@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\caption{TARC-Guard七维风险因子体系}
+\label{tab:risk_factors}
+\small
+\begin{tabularx}{\textwidth}{clcr}
+\toprule
+\textbf{因子符号} & \textbf{因子名称} & \multicolumn{1}{l}{\textbf{方向}} & \textbf{防御语义} \\
+\midrule
+$S_{\text{tool}}$ & 工具敏感度 & $+$ & 调用高权限工具、外部发送、代码执行、IoT控制，提升风险等级 \\
+$D_{\text{call}}$ & 调用深度 & $+$ & 长链组合放大单步低风险操作的累积威胁 \\
+$P_{\text{diff}}$ & 权限扩散度 & $+$ & 实际权限超出任务必要权限集合（对应A2） \\
+$E_{\text{leak}}$ & 敏感数据暴露度 & $+$ & 个人识别信息/凭证经中间转换流向外部sink（对应A1） \\
+$I_{\text{irrev}}$ & 不可逆操作比例 & $+$ & 发送、删除、写库等操作比例越高，违反可恢复性（对应A3） \\
+$H_{\text{cov}}$ & 人工确认覆盖率 & $-$ & 高风险动作经确认，降低残余风险（保护因子） \\
+$N_{\text{need}}$ & 任务必要性偏差 & $+$ & 工具调用偏离用户目标或超出必要范围（对应A2/A5） \\
+\bottomrule
+\end{tabularx}
+\end{table}
