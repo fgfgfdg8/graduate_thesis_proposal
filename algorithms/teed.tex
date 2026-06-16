@@ -1,0 +1,35 @@
+\begin{algorithm}[htbp]
+\caption{Three-Tier Escalation Detection (TTED)}
+\label{alg:tted}
+\begin{algorithmic}[1]
+\Require Behavior trajectory graph $G=(V,E,X,R)$, thresholds $\theta_{lo}=0.35$, $\theta_{hi}=0.65$
+\Ensure Risk verdict $\hat{y} \in \{0,1\}$, composite score $M(G)$, explanation $\mathcal{E}$
+\State \textbf{// Tier 1: Heuristic Rule Gate} \hfill $O(|V|+|E|)$
+\State $\text{hits} \leftarrow \emptyset$
+\For{each rule $\rho$ in RuleBook} \Comment{6 high-confidence graph patterns}
+  \If{$\rho$ matches in $G$}
+    \State $\text{hits} \leftarrow \text{hits} \cup \{(\rho.\text{type},\, \rho.\text{path})\}$
+  \EndIf
+\EndFor
+\If{$\text{hits} \neq \emptyset$}
+  \State $S_{\text{rule}} \leftarrow \max_{\rho \in \text{hits}} \rho.\text{weight}$;\; $\hat{y} \leftarrow 1$;\; $\mathcal{E} \leftarrow \text{hits}$
+  \State \Return $\hat{y}$, $M(G) \leftarrow S_{\text{rule}}$, $\mathcal{E}$
+\EndIf
+\State \textbf{// Tier 2: GAT Lightweight Classifier}
+\State $h_G \leftarrow \text{GAT}_\Theta(G)$ \Comment{2-layer GAT + MLP, $\approx$50K params}
+\State $\hat{p} \leftarrow \text{Sigmoid}(\text{MLP}(h_G))$
+\If{$\hat{p} > \theta_{hi}$}
+  \State $\hat{y} \leftarrow 1$;\; $S_{\text{GAT}} \leftarrow \hat{p}$;\; $\mathcal{E} \leftarrow \text{TopK\_paths}(G, h_G)$
+  \State \Return $\hat{y}$, $M(G) \leftarrow \lambda_1 \cdot 0 + \lambda_2 S_{\text{GAT}} + \lambda_3 S_{\text{GAT}}$, $\mathcal{E}$
+\ElsIf{$\hat{p} < \theta_{lo}$}
+  \State \Return $\hat{y} \leftarrow 0$, $M(G) \leftarrow \hat{p}$, $\mathcal{E} \leftarrow \emptyset$
+\EndIf
+\State \textbf{// Tier 3: LLM Final Arbiter} \Comment{activated for $\approx$10--15\% of samples}
+\State $\mathcal{P}^* \leftarrow \text{TopK\_paths}(G, h_G)$
+\State $(S_{\text{LLM}}, \text{reason}) \leftarrow \text{LLM\_Arbiter}(G, \mathcal{P}^*, \hat{p})$
+\State $\hat{y} \leftarrow \mathbb{I}[S_{\text{LLM}} > 0.5]$
+\State $M(G) \leftarrow \lambda_1 \cdot 0 + \lambda_2 \hat{p} + \lambda_3 S_{\text{LLM}}$
+\State $\mathcal{E} \leftarrow (\mathcal{P}^*, \text{reason})$
+\State \Return $\hat{y}$, $M(G)$, $\mathcal{E}$
+\end{algorithmic}
+\end{algorithm}

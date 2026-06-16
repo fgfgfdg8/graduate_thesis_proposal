@@ -1,0 +1,20 @@
+% AgentCanary攻击类型与本研究风险类型对应关系表
+\begin{table}[htbp]
+\centering
+\caption{AgentCanary攻击类型与本研究$R_0$--$R_6$风险类型对应关系}
+\label{tab:agentcanary_risk_mapping}
+\small
+\begin{tabular}{p{1.5cm}p{2.8cm}p{4.5cm}p{3.0cm}}
+\toprule
+\textbf{风险类型} & \textbf{定义} & \textbf{对应AgentCanary攻击类型} & \textbf{对应攻击路径} \\
+\midrule
+$R_0$ & 正常或已阻断 & no-attack（无攻击基线） & 全部路径 \\
+$R_1$ & 过度授权 / 越权操作 & permission\_escalation, defense\_disable & 直接攻击、间接注入 \\
+$R_2$ & 敏感数据外传 & privacy\_leak, phishing & 直接攻击、间接注入 \\
+$R_3$ & 不可逆操作缺少确认 & file\_deletion, resource\_exhaustion & 间接注入 \\
+$R_4$ & 工具参数来源污染 & env\_tampering, integrity\_tamper & 间接注入、链式委托 \\
+$R_5$ & 跨Agent委托失控 & unauthorized\_access, privilege\_inheritance & 链式委托 \\
+$R_6$ & 共享记忆/中间结果污染 & illegal\_memory, persona\_corruption & 记忆投毒 \\
+\bottomrule
+\end{tabular}
+\end{table}

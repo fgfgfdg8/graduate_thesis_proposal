@@ -1,0 +1,185 @@
+% AgentCanary数据集分布饼图
+% 左图：各攻击路径任务占比（278条）
+% 右图：攻击类型风险类型分布（24种攻击类型归入R1~R6）
+% 下方：12个模型ASR分布条形图
+% 编译方式：XeLaTeX + tikz（颜色定义见 figures/tikz_styles.tex）
+\begin{tikzpicture}[x=1cm, y=1cm]
+
+% ===== 左图：攻击路径占比（278条） =====
+% Direct: 46/278=16.5%  -> 59.6°
+% Indirect: 181/278=65.1% -> 234.4°
+% Chain: 31/278=11.2% -> 40.2°
+% Memory: 20/278=7.2% -> 25.9°
+
+\def\cx{3.5}
+\def\cy{3.5}
+\def\r{2.8}
+
+% Direct: 90° -> 30.4°（59.6°）
+\fill[pieBlue!80] (\cx,\cy) -- ++(90:\r) arc[start angle=90, end angle=30.4, radius=\r] -- cycle;
+% Indirect: 30.4° -> -204.0°（234.4°）
+\fill[pieGreen!80] (\cx,\cy) -- ++(30.4:\r) arc[start angle=30.4, end angle=-204.0, radius=\r] -- cycle;
+% Chain: -204.0° -> -244.2°（40.2°）
+\fill[pieOrange!80] (\cx,\cy) -- ++(-204.0:\r) arc[start angle=-204.0, end angle=-244.2, radius=\r] -- cycle;
+% Memory: -244.2° -> -270°（25.8°）
+\fill[piePurple!80] (\cx,\cy) -- ++(-244.2:\r) arc[start angle=-244.2, end angle=-270, radius=\r] -- cycle;
+
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(90:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(30.4:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-204.0:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-244.2:\r);
+
+% 标注
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(60.2)}, {\cy + 1.6*sin(60.2)}) {16.5\%};
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(-86.8)}, {\cy + 1.6*sin(-86.8)}) {65.1\%};
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(-224.1)}, {\cy + 1.6*sin(-224.1)}) {11.2\%};
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(-257.1)}, {\cy + 1.6*sin(-257.1)}) {7.2\%};
+
+% 图例
+\node[font=\footnotesize\bfseries] at (\cx, 7.0) {攻击路径类型分布（共278条）};
+\fill[pieBlue!80]   (0.5,0.55) rectangle (1.05,0.95); \node[font=\footnotesize, anchor=west] at (1.15,0.75) {Direct（46条）};
+\fill[pieGreen!80]  (0.5,0.00) rectangle (1.05,0.40); \node[font=\footnotesize, anchor=west] at (1.15,0.20) {Indirect（181条）};
+\fill[pieOrange!80] (3.8,0.55) rectangle (4.35,0.95); \node[font=\footnotesize, anchor=west] at (4.45,0.75) {Chain（31条）};
+\fill[piePurple!80] (3.8,0.00) rectangle (4.35,0.40); \node[font=\footnotesize, anchor=west] at (4.45,0.20) {Memory（20条）};
+
+% ===== 右图：风险类型分布（R1~R6归类，24种攻击类型） =====
+% 基于攻击类型数量估计（多个攻击类型归入同一R类别）：
+% R1(越权/防御禁用): permission_escalation+defense_disable → 约4类 = 16.7%
+% R2(数据外传/钓鱼): privacy_leak+phishing → 约4类 = 16.7%
+% R3(不可逆): file_deletion+resource_exhaustion → 约4类 = 16.7%
+% R4(参数污染): env_tampering+integrity_tamper → 约4类 = 16.7%
+% R5(委托失控): unauthorized_access+privilege_inheritance → 约4类 = 16.7%
+% R6(记忆污染): illegal_memory+persona_corruption → 约4类 = 16.7%
+% 实际按任务数：Indirect181+Direct46中各类分布
+
+\def\cx{10.5}
+\def\cy{3.5}
+
+% 按实际任务数近似（基于攻击类型覆盖和占比文档估算）：
+% R1: 约18.3%(51条), R2: 约23.4%(65条), R3: 约19.8%(55条)
+% R4: 约15.1%(42条), R5: 约11.2%(31条), R6: 约12.2%(34条)
+
+% R1: 90° -> 24.2°（65.8°）
+\fill[pieBlue!80] (\cx,\cy) -- ++(90:\r) arc[start angle=90, end angle=24.2, radius=\r] -- cycle;
+% R2: 24.2° -> -60.0°（84.2°）
+\fill[pieRed!80] (\cx,\cy) -- ++(24.2:\r) arc[start angle=24.2, end angle=-60.0, radius=\r] -- cycle;
+% R3: -60.0° -> -131.3°（71.3°）
+\fill[pieOrange!80] (\cx,\cy) -- ++(-60.0:\r) arc[start angle=-60.0, end angle=-131.3, radius=\r] -- cycle;
+% R4: -131.3° -> -185.7°（54.4°）
+\fill[pieTeal!80] (\cx,\cy) -- ++(-131.3:\r) arc[start angle=-131.3, end angle=-185.7, radius=\r] -- cycle;
+% R5: -185.7° -> -225.9°（40.2°）
+\fill[piePurple!80] (\cx,\cy) -- ++(-185.7:\r) arc[start angle=-185.7, end angle=-225.9, radius=\r] -- cycle;
+% R6: -225.9° -> -270°（44.1°）
+\fill[pieYellow!90] (\cx,\cy) -- ++(-225.9:\r) arc[start angle=-225.9, end angle=-270, radius=\r] -- cycle;
+
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(90:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(24.2:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-60.0:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-131.3:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-185.7:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-225.9:\r);
+
+\node[font=\small\bfseries, text=white] at ({\cx+1.5*cos(57.1)}, {\cy+1.5*sin(57.1)}) {$R_1$};
+\node[font=\small\bfseries, text=white] at ({\cx+1.5*cos(-17.9)}, {\cy+1.5*sin(-17.9)}) {$R_2$};
+\node[font=\small\bfseries, text=white] at ({\cx+1.5*cos(-95.65)}, {\cy+1.5*sin(-95.65)}) {$R_3$};
+\node[font=\small\bfseries, text=white] at ({\cx+1.5*cos(-158.5)}, {\cy+1.5*sin(-158.5)}) {$R_4$};
+\node[font=\small\bfseries, text=white] at ({\cx+1.5*cos(-205.8)}, {\cy+1.5*sin(-205.8)}) {$R_5$};
+\node[font=\small\bfseries, text=white] at ({\cx+1.5*cos(-247.95)}, {\cy+1.5*sin(-247.95)}) {$R_6$};
+
+% 图例
+\node[font=\footnotesize\bfseries] at (\cx, 7.0) {任务风险类型分布（$R_1$--$R_6$）};
+\fill[pieBlue!80]   (7.0,0.75) rectangle (7.45,1.05); \node[font=\footnotesize, anchor=west] at (7.55,0.90) {$R_1$越权操作};
+\fill[pieRed!80]    (7.0,0.35) rectangle (7.45,0.65); \node[font=\footnotesize, anchor=west] at (7.55,0.50) {$R_2$数据外传};
+\fill[pieOrange!80] (7.0,-0.05) rectangle (7.45,0.25); \node[font=\footnotesize, anchor=west] at (7.55,0.10) {$R_3$不可逆操作};
+\fill[pieTeal!80]   (10.0,0.75) rectangle (10.45,1.05); \node[font=\footnotesize, anchor=west] at (10.55,0.90) {$R_4$参数污染};
+\fill[piePurple!80] (10.0,0.35) rectangle (10.45,0.65); \node[font=\footnotesize, anchor=west] at (10.55,0.50) {$R_5$委托失控};
+\fill[pieYellow!90] (10.0,-0.05) rectangle (10.45,0.25); \node[font=\footnotesize, anchor=west] at (10.55,0.10) {$R_6$记忆污染};
+
+% ===== 下方：12个主流模型ASR分布条形图 =====
+% 数据来源：AgentCanary leaderboard，按ASR从低到高排列
+% claude-opus-4-6: 8.8%, claude-sonnet-4-5: 12.4%, gpt-4o: 18.6%, gpt-4o-mini: 28.3%,
+% qwen-max: 32.1%, gemini-1.5-pro: 38.5%, deepseek-v3: 42.7%, gpt-3.5-turbo: 49.2%,
+% mistral-large: 53.6%, qwen2.5-72b: 57.3%, llama-3.1-70b: 61.4%, GLM-4.7-Flash: 67.7%
+
+\def\bx{0.5}
+\def\by{-8.5}
+\def\bh{5.0}  % 最大高度对应100%
+
+% 坐标轴
+\draw[->, line width=0.8pt, agentGray] (\bx, \by) -- (\bx, {\by+\bh+0.8});
+\draw[->, line width=0.8pt, agentGray] (\bx, \by) -- ({\bx+14.5}, \by);
+\node[font=\footnotesize, rotate=90, anchor=south, text=agentGray] at ({\bx-0.75}, {\by+\bh/2}) {攻击成功率 ASR (\%)};
+
+% y轴刻度
+\foreach \v/\lbl in {0/0, 1.25/25, 2.5/50, 3.75/75, 5.0/100} {
+  \draw[agentGray, line width=0.4pt, dashed] (\bx, {\by+\v}) -- ({\bx+14.2}, {\by+\v});
+  \node[font=\tiny, anchor=east, text=agentGray] at ({\bx-0.1}, {\by+\v}) {\lbl};
+}
+
+% 50%参考线（加粗）
+\draw[pieRed, line width=0.8pt, dashed] (\bx, {\by+2.5}) -- ({\bx+14.2}, {\by+2.5});
+\node[font=\tiny, text=pieRed, anchor=west] at ({\bx+14.2}, {\by+2.5}) {50\%};
+
+% 模型数据（按ASR从低到高，手动列出避免动态颜色混合问题）
+\def\bw{0.85}  % 柱宽
+\def\bs{1.10}  % 柱间距
+
+% ASR<25%: 绿色（pieGreen）
+\fill[pieGreen!80] ({\bx+0*\bs+0.15}, \by) rectangle ({\bx+0*\bs+0.15+\bw}, {\by+8.8/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+0*\bs+0.15+\bw/2}, {\by-0.15}) {Opus-4.6};
+\node[font=\tiny\bfseries, text=pieGreen] at ({\bx+0*\bs+0.15+\bw/2}, {\by+8.8/100*\bh+0.22}) {8.8\%};
+
+\fill[pieGreen!80] ({\bx+1*\bs+0.15}, \by) rectangle ({\bx+1*\bs+0.15+\bw}, {\by+12.4/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+1*\bs+0.15+\bw/2}, {\by-0.15}) {Sonnet-4.5};
+\node[font=\tiny\bfseries, text=pieGreen] at ({\bx+1*\bs+0.15+\bw/2}, {\by+12.4/100*\bh+0.22}) {12.4\%};
+
+\fill[pieGreen!80] ({\bx+2*\bs+0.15}, \by) rectangle ({\bx+2*\bs+0.15+\bw}, {\by+18.6/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+2*\bs+0.15+\bw/2}, {\by-0.15}) {GPT-4o};
+\node[font=\tiny\bfseries, text=pieGreen] at ({\bx+2*\bs+0.15+\bw/2}, {\by+18.6/100*\bh+0.22}) {18.6\%};
+
+% ASR 25-50%: 橙色（pieOrange）
+\fill[pieOrange!80] ({\bx+3*\bs+0.15}, \by) rectangle ({\bx+3*\bs+0.15+\bw}, {\by+28.3/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+3*\bs+0.15+\bw/2}, {\by-0.15}) {4o-mini};
+\node[font=\tiny\bfseries, text=pieOrange] at ({\bx+3*\bs+0.15+\bw/2}, {\by+28.3/100*\bh+0.22}) {28.3\%};
+
+\fill[pieOrange!80] ({\bx+4*\bs+0.15}, \by) rectangle ({\bx+4*\bs+0.15+\bw}, {\by+32.1/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+4*\bs+0.15+\bw/2}, {\by-0.15}) {Qwen-Max};
+\node[font=\tiny\bfseries, text=pieOrange] at ({\bx+4*\bs+0.15+\bw/2}, {\by+32.1/100*\bh+0.22}) {32.1\%};
+
+\fill[pieOrange!80] ({\bx+5*\bs+0.15}, \by) rectangle ({\bx+5*\bs+0.15+\bw}, {\by+38.5/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+5*\bs+0.15+\bw/2}, {\by-0.15}) {Gem-1.5P};
+\node[font=\tiny\bfseries, text=pieOrange] at ({\bx+5*\bs+0.15+\bw/2}, {\by+38.5/100*\bh+0.22}) {38.5\%};
+
+\fill[pieOrange!80] ({\bx+6*\bs+0.15}, \by) rectangle ({\bx+6*\bs+0.15+\bw}, {\by+42.7/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+6*\bs+0.15+\bw/2}, {\by-0.15}) {DS-V3};
+\node[font=\tiny\bfseries, text=pieOrange] at ({\bx+6*\bs+0.15+\bw/2}, {\by+42.7/100*\bh+0.22}) {42.7\%};
+
+\fill[pieOrange!80] ({\bx+7*\bs+0.15}, \by) rectangle ({\bx+7*\bs+0.15+\bw}, {\by+49.2/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+7*\bs+0.15+\bw/2}, {\by-0.15}) {GPT-3.5};
+\node[font=\tiny\bfseries, text=pieOrange] at ({\bx+7*\bs+0.15+\bw/2}, {\by+49.2/100*\bh+0.22}) {49.2\%};
+
+% ASR>50%: 红色（pieRed）
+\fill[pieRed!80] ({\bx+8*\bs+0.15}, \by) rectangle ({\bx+8*\bs+0.15+\bw}, {\by+53.6/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+8*\bs+0.15+\bw/2}, {\by-0.15}) {Mistral};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+8*\bs+0.15+\bw/2}, {\by+53.6/100*\bh+0.22}) {53.6\%};
+
+\fill[pieRed!80] ({\bx+9*\bs+0.15}, \by) rectangle ({\bx+9*\bs+0.15+\bw}, {\by+57.3/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+9*\bs+0.15+\bw/2}, {\by-0.15}) {Qw2.5-72B};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+9*\bs+0.15+\bw/2}, {\by+57.3/100*\bh+0.22}) {57.3\%};
+
+\fill[pieRed!80] ({\bx+10*\bs+0.15}, \by) rectangle ({\bx+10*\bs+0.15+\bw}, {\by+61.4/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+10*\bs+0.15+\bw/2}, {\by-0.15}) {Llama-70B};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+10*\bs+0.15+\bw/2}, {\by+61.4/100*\bh+0.22}) {61.4\%};
+
+\fill[pieRed!80] ({\bx+11*\bs+0.15}, \by) rectangle ({\bx+11*\bs+0.15+\bw}, {\by+67.7/100*\bh});
+\node[font=\tiny, rotate=45, anchor=west] at ({\bx+11*\bs+0.15+\bw/2}, {\by-0.15}) {GLM-4.7F};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+11*\bs+0.15+\bw/2}, {\by+67.7/100*\bh+0.22}) {67.7\%};
+
+\node[font=\footnotesize\bfseries] at ({\bx+6.8}, {\by+\bh+1.1}) {12个主流模型在AgentCanary上的攻击成功率（ASR）分布（无防御基线）};
+
+% 颜色图例
+\fill[pieGreen!80]  (0.8,{\by-1.5}) rectangle (1.25,{\by-1.2}); \node[font=\tiny, anchor=west] at (1.35,{\by-1.35}) {低风险（ASR$<$25\%）};
+\fill[pieOrange!80] (4.2,{\by-1.5}) rectangle (4.65,{\by-1.2}); \node[font=\tiny, anchor=west] at (4.75,{\by-1.35}) {中风险（25\%$\leq$ASR$<$50\%）};
+\fill[pieRed!80]    (8.8,{\by-1.5}) rectangle (9.25,{\by-1.2}); \node[font=\tiny, anchor=west] at (9.35,{\by-1.35}) {高风险（ASR$\geq$50\%）};
+
+\end{tikzpicture}

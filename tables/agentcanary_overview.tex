@@ -1,0 +1,19 @@
+% AgentCanary数据集概览表
+\begin{table}[htbp]
+\centering
+\caption{AgentCanary数据集各类攻击路径概览}
+\label{tab:agentcanary_overview}
+\small
+\begin{tabular}{p{2.8cm}ccp{6.0cm}}
+\toprule
+\textbf{攻击路径类型} & \textbf{任务数} & \textbf{占比} & \textbf{说明} \\
+\midrule
+直接攻击（Direct） & 46 & 16.5\% & 攻击者直接通过用户指令注入恶意目标，无需中间媒介 \\
+间接注入（Indirect） & 181 & 65.1\% & 攻击内容嵌入外部工具返回结果（邮件、文件、网页等），触发Agent执行恶意操作 \\
+链式委托攻击（Chain） & 31 & 11.2\% & 通过多Agent委托链传播攻击，下游Agent被上游污染指令驱动 \\
+记忆投毒（Memory） & 20 & 7.2\% & 将恶意内容写入共享记忆或向量数据库，影响后续任务执行 \\
+\midrule
+\textbf{合计} & \textbf{278} & \textbf{100\%} & 覆盖$R_1$至$R_6$全部风险类型，24种攻击场景 \\
+\bottomrule
+\end{tabular}
+\end{table}

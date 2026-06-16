@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage[UTF8, fontset=windows]{ctex} % 支持中文
+\usepackage[dvipsnames,svgnames,x11names]{xcolor} % 显式加载xcolor，启用扩展颜色模型
 \usepackage{graphicx} % Required for inserting images
 % SVG图片支持：在XeLaTeX下transparent包不兼容，使用svg时需设置inkscapelatex=false
 % 若需使用SVG图片，请取消下一行注释，并确保Inkscape已安装
@@ -11,6 +12,15 @@
 \usepackage{tikz} % TikZ绘图
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc, backgrounds} % TikZ库
 \input{figures/tikz_styles.tex} % 统一颜色与TikZ样式定义
+% 饼图/柱状图专用颜色（需在tikz_styles加载后立即重声明，确保xcolor注册）
+\definecolor{pieBlue}{HTML}{1565C0}
+\definecolor{pieGreen}{HTML}{2E7D32}
+\definecolor{pieOrange}{HTML}{EF6C00}
+\definecolor{piePurple}{HTML}{6A1B9A}
+\definecolor{pieRed}{HTML}{C62828}
+\definecolor{pieTeal}{HTML}{00695C}
+\definecolor{pieYellow}{HTML}{F57F17}
+\definecolor{pieGray}{HTML}{546E7A}
 \usepackage{algorithm} % 伪代码算法块
 \usepackage{algpseudocode} % 伪代码排版（支持\Comment）
 \usepackage{url} % gbt7714生成的.bbl需要\DeclareUrlCommand等命令

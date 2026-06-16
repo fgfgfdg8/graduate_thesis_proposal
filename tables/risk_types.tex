@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\caption{风险类型定义}
+\label{tab:risk_types}
+\small
+\begin{tabular}{clp{8cm}}
+\toprule
+\textbf{风险类型} & \textbf{名称} & \textbf{描述} \\
+\midrule
+$R_0$ & 正常 & 工具调用链符合任务需求，无安全风险 \\
+$R_1$ & 过度授权 & 实际调用权限超出任务必要权限 \\
+$R_2$ & 敏感数据外传 & 敏感数据（PII、凭证等）被传递至外部通道 \\
+$R_3$ & 不可逆操作缺少确认 & 高风险不可逆操作未经人工确认 \\
+$R_4$ & 工具参数来源污染 & 工具参数来源于不可信输入或共享记忆 \\
+$R_5$ & 跨Agent委托失控 & 低权限Agent触发高权限工具或越权委托 \\
+$R_6$ & 共享记忆污染 & 被污染的记忆被下游Agent或步骤复用 \\
+\bottomrule
+\end{tabular}
+\end{table}

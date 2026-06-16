@@ -10,7 +10,8 @@
 
 \begin{figure}[htbp]
   \centering
-  \resizebox{\textwidth}{!}{\input{figures/fig3_overall_framework_body.tikz}}
+  % \resizebox{\textwidth}{!}{\input{figures/fig3_overall_framework_body.tikz}}
+  \resizebox{\textwidth}{!}{\includegraphics{figures/framework1.png}}
   \caption{本研究的研究框架}
   \label{fig:framework}
 \end{figure}
@@ -56,6 +57,10 @@
 
 其中$\alpha_s, \alpha_d, \alpha_p, \alpha_i, \alpha_e, \alpha_h$为权重参数，经归一化后$R(C) \in [0,1]$。该公式的含义是：工具越敏感、调用链越深、权限越扩散、不可逆操作越多、敏感数据暴露越严重，则风险越高；人工确认在一定程度上降低风险评估中的误报影响。
 
+各项Agent风险类型的定义如表~\ref{tab:risk_types}所示。
+
+\input{tables/risk_types}
+
 \textbf{动态权重整定机制。}固定权重方案无法适应不同部署场景下各风险维度重要性的差异（如IoT控制场景中不可逆操作的权重应显著高于纯查询场景）。本研究引入基于信息熵的自适应权重整定方法，对包含$N$条调用链的评估集，设第$j$个指标在第$i$条链上的归一化贡献为$p_{ij} = \Phi_j(C_i) / \sum_{i=1}^N \Phi_j(C_i)$，则指标$j$的信息熵为：
 
 \begin{equation}
@@ -94,17 +99,54 @@
   contrib_j(C) = \frac{\alpha_j \Phi_j(C)}{\sum_k |\alpha_k \Phi_k(C)| + \epsilon}
 \end{equation}
 
+\textbf{风险度量算法。}算法~\ref{alg:risk_eval}给出了研究点一的完整计算流程。
+
+\input{algorithms/risk_eval}
+
 \subsubsection{研究目标}
 
 研究点一的目标包括：第一，构建一套面向工具增强型LLM Agent的统一日志模式；第二，定义工具调用链风险度量指标体系和综合风险评分函数；第三，形成覆盖六类工具场景的低成本任务集与风险样例集；第四，实现可插拔评估模块，能够对任意执行日志输出风险分数、指标贡献和审计报告。
 
-\subsubsection{实验数据集与场景设计}
+\subsubsection{实验数据集}
 
-本课题的实验数据集拟采用“任务模板—工具轨迹—风险标签—归因标注”四层结构。具体而言，每条样例包含用户任务、初始上下文、可用工具列表、工具权限清单、执行步骤、工具参数、工具返回结果、最终输出、全局标签、风险类型标签和归因标签。风险类型划分为七类：$R_0$表示正常，$R_1$表示过度授权，$R_2$表示敏感数据外传，$R_3$表示不可逆操作缺少确认，$R_4$表示工具参数来源污染，$R_5$表示跨Agent委托失控，$R_6$表示共享记忆或中间结果污染。
+本课题的实验数据集基于两个覆盖真实部署场景的公开Agent安全基准构建，两者从工具场景、攻击类型和任务长度上形成互补，共同覆盖本研究定义的$R_0$至$R_6$全部风险类型。
 
-实验场景覆盖文件管理（read\_file、write\_file、delete\_file）、邮件办公（search\_mail、send\_email）、数据库查询（query\_db、export\_csv）、日程管理（read\_calendar、update\_calendar）、代码执行（run\_code、read\_repo）和IoT控制（get\_device、set\_device）六类工具场景，每类场景包含正常样例、过度授权样例、敏感数据外传样例、不可逆操作样例、跨工具组合风险样例和人工确认缺失样例。实验场景与风险类型定义如表~\ref{tab:tracegraph_scenarios}和表~\ref{tab:risk_types}所示。
+\textbf{AgentDojo基准。}AgentDojo\cite{balunovic2024agentdojo}是目前Agent安全评估领域采用最广泛的动态评测框架之一\cite{debenedetti2025camel,costa2025fides,mou2026toolsafe,zhao2026clawguard}，其核心数据集包含银行（Banking）、工作区（Workspace）、旅行（Travel）和Slack通信四个真实场景域，合计86个用户任务（UserTask）和27个注入任务（InjectionTask），构成567个（UT, IT）测试对。每个注入任务对应一个具体的攻击目标，包括数据外传（如敏感IBAN、邮件内容、Facebook验证码）、越权操作（如修改定期付款收款人、删除文件）、钓鱼植入等多类高风险行为，其Security指标（ASR）为真实提示注入攻击成功率；Utility指标（TCR）用于衡量防御代价。表~\ref{tab:agentdojo_overview}展示了各域UT/IT的分布情况，表~\ref{tab:agentdojo_it}和表~\ref{tab:agentdojo_ut}分别展示了各域部分典型InjectionTask和UserTask示例。
+
+\input{tables/agentdojo_overview}
+\input{tables/agentdojo_it}
+\input{tables/agentdojo_ut}
+
+图~\ref{fig:agentdojo_piechart}从两个维度对AgentDojo数据集进行统计分析。左图展示了各域任务对占比：Workspace域贡献最多（198对，34.9\%），Banking次之（144对，25.4\%），Travel（140对，24.7\%）与Banking接近，Slack最少（85对，15.0\%）。中图展示了27个IT的风险类型分布：$R_2$（数据外传）占比最高（约37\%），其次是$R_3$（不可逆操作，约33\%），$R_1$（越权操作）和$R_4$（参数污染）各约15\%；高风险类型（$R_2$+$R_3$）合计约70\%，表明AgentDojo侧重于考察"输出管控"和"操作安全"两类高影响风险。下图展示了各域平均工具调用步数及UT任务链长分布：Workspace域平均6.8步（中链为主），Banking域4.2步，Travel域5.1步，Slack域3.9步（短链为主）；整体而言，短链（$\leq$3步）占34.9\%，中链（4--7步）占48.8\%，长链（$\geq$8步）占16.3\%，覆盖三类轨迹长度，有利于验证TTED在不同轨迹复杂度下的检测稳定性。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{\input{figures/fig_agentdojo_piechart.tikz}}
+  \caption{AgentDojo数据集分布分析：各域任务对占比（左）、IT风险类型分布（中）与各域平均工具调用步数及链长分布（右）}
+  \label{fig:agentdojo_piechart}
+\end{figure}
+
+\textbf{AgentCanary基准。}AgentCanary\cite{li2026agentcanary}（Agent3Sigma-Canary）是一个面向真实Agent框架（OpenClaw生态）的多维安全基准，按攻击路径划分为直接攻击（Direct）、间接注入（Indirect）、链式委托攻击（Chain）和记忆投毒（Memory）四类，表~\ref{tab:agentcanary_overview}展示了各类别的任务数量与说明，表~\ref{tab:agentcanary_cases}展示了各类代表性攻击案例。AgentCanary的三大独特优势：其一，任务注入目标覆盖24类攻击类型（涵盖资源耗尽、文件删除、环境篡改、隐私泄露、完整性破坏、人格腐化、违法记忆写入、钓鱼、权限提升、防御禁用等），与本研究$R_1$至$R_6$风险类型的对应关系见表~\ref{tab:agentcanary_risk_mapping}；其二，通过Docker容器化的技能仓库（email、calendar、bank\_system、dingtalk、twitter）提供真实可执行的工具环境，每次运行依托Tracee内核审计产生系统级调用日志；其三，基准内置12个主流模型的排行榜数据，支持跨模型泛化性验证。
+
+\input{tables/agentcanary_overview}
+\input{tables/agentcanary_cases}
+\input{tables/agentcanary_risk_mapping}
+
+图~\ref{fig:agentcanary_piechart}对AgentCanary数据集进行统计分析。左图展示了攻击路径类型分布：间接注入（Indirect）占据主导（181条，65.1\%），体现了真实场景中通过工具返回内容实施攻击的高频性；直接攻击（Direct）占16.5\%，链式委托（Chain）占11.2\%，记忆投毒（Memory）占7.2\%。中图展示了任务风险类型分布：$R_2$（数据外传）和$R_3$（不可逆操作）合计约57\%，与AgentDojo的分布趋势一致，验证了两基准在风险覆盖上的互补性。下图展示了12个主流模型在无防御基线下的ASR分布：整体ASR区间为8.8\%（claude-opus-4-6，绿色低风险区）至67.7\%（GLM-4.7-Flash，红色高风险区），平均ASR约40.6\%；在50\%以上高风险区的模型共4个，说明多数主流模型在无防御配置下均面临显著安全威胁，为本研究提供了充分的攻击轨迹样本来源。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{\input{figures/fig_agentcanary_piechart.tikz}}
+  \caption{AgentCanary数据集分布分析：攻击路径类型占比（左）、任务风险类型分布（中）与12个主流模型ASR分布（下）}
+  \label{fig:agentcanary_piechart}
+\end{figure}
+
+\textbf{实验轨迹标注方案。}本研究对上述两个基准执行固定模型（GPT-4o-mini）进行完整运行，对AgentDojo所有567个测试对和AgentCanary全部278条任务（独立攻击变体）采集执行轨迹，每条轨迹包含完整工具调用序列（含参数、返回值）、系统级权限记录和最终判定结果。风险类型标签采用规则优先、人工复核的方式生成：当SecurityScore=0（攻击成功）且存在特定工具调用时，自动标注为对应风险类型（$R_1$至$R_6$）；SecurityScore>0时标注为$R_0$（正常或已阻断）。归因标注（\texttt{gold\_node}、\texttt{gold\_path}）通过逐步复现攻击步骤确定关键触发节点。工具场景与风险类型对应关系见表~\ref{tab:tracegraph_scenarios}。
 
 \input{tables/tracegraph_scenarios}
+
+\textbf{两基准的互补性分析。}AgentDojo提供了结构化的（UT, IT）注入对，每个IT对应明确的攻击目标和SecurityScore判定，适合评估检测精度（Precision/Recall/F1）和防御有效性（DSR/UPR），并可与CaMeL\cite{debenedetti2025camel}、FIDES\cite{costa2025fides}等已发表结果直接横向比较；AgentCanary提供了真实可执行的工具环境和系统级调用日志，适合评估轨迹图构建完整性和归因准确性（PathRecall@K、MRR），并支持在12个主流模型上分别报告以验证跨模型泛化性。两者合计845条轨迹（567+278），覆盖$R_0$至$R_6$全部风险类型，攻击路径多样（直接/间接/链式/记忆），能够支撑主实验、消融实验、路径定位实验和归因实验的完整评估。
+
 
 \subsection{研究点二：基于LLM Agent行为轨迹图的工具滥用检测、威胁归因与防御方法}
 
@@ -152,6 +194,10 @@
 \end{equation}
 
 其中$S_{\text{rule}}$为规则命中加权得分，$S_{\text{GAT}}$为GAT风险概率，$S_{\text{LLM}}$为LLM终审置信度（未激活时$S_{\text{LLM}}=S_{\text{GAT}}$）。与AgentArmor（LLM推理占运行时间69.6\%）相比，本机制仅对约15\%的模糊样本调用LLM，整体推理开销显著降低；与FIDES（全量污点追踪）相比，本方法仅在Top-K归因路径上传播特征，不引入全量覆盖代价。
+
+\textbf{TTED算法流程。}算法~\ref{alg:tted}给出了三级升级判定检测机制的完整流程。
+
+\input{algorithms/teed}
 
 \textbf{风险路径定位。}风险路径定位用于在检测出异常后指出关键路径。设$\mathcal{P}(G)$为图中所有从输入节点到高风险工具或外部输出节点的候选路径集合，路径$P$的风险得分定义为：
 
@@ -223,7 +269,7 @@
   \item \textbf{效用保持率（Utility Preservation Rate, UPR）}：施加防御后任务完成率相对无防御时的保持比例。设无防御时任务完成率为$TCR_0$，施加AGRD后为$TCR_{def}$，则$UPR = TCR_{def} / TCR_0$。
 \end{itemize}
 
-DSR与UPR共同构成防御评估的“帕累托前沿”：理想防御应同时最大化DSR和UPR，回应了文献中反复指出的“安全性与效用权衡”问题~\cite{deng2025agentsunderthreat,balunovic2024agentdojo}，并为后续研究提供标准化比较维度。
+DSR与UPR共同构成防御评估的“帕累托前沿”：理想防御应同时最大化DSR和UPR，回应了文献中反复指出的“安全性与效用权衡”问题~\cite{deng2025agentsunderthreat,balunovic2024agentdojo}，并为后续研究提供标准化比较维度。在AgentDojo基准上，DSR对应SecurityScore改善量（即攻击成功率ASR降低幅度），UPR对应Utility（TCR）保持率，可直接与CaMeL\cite{debenedetti2025camel}、FIDES\cite{costa2025fides}等已发表结果横向比较；在AgentCanary基准上，DSR对应outcome\_assessment得分提升，UPR对应utility\_evaluation保持率，并可在12个主流模型上分别报告，验证方法的跨模型泛化性。
 
 对比方法拟设置为五组：Baseline-1为单步权限检查，只判断当前工具是否在白名单中；Baseline-2为敏感工具计数，只根据敏感工具数量给出风险；Baseline-3为序列级风险评分，即研究点一方法但不构建图；Baseline-4为无归因图检测，即使用图特征分类但不输出风险路径和反事实贡献；Baseline-5为全量阻断（Block-All），即对所有检测为阳性的轨迹中的所有高风险操作统一阻断（无归因优先级排序），专门用于验证“归因驱动”优先级排序相对于“全量阻断”在UPR上的优势。此外，还将与2021—2026年间代表性工作（包括RBAC-ABAC权限门控\cite{shi2025progent}、TaintLite污点追踪\cite{costa2025securing}、ReAct轨迹启发式、CaMeL流分析\cite{debenedetti2025camel}、FIDES动态污点\cite{costa2025fides}、DynamicLLM-Firewall动态LLM防火墙\cite{abdelnabi2025firewalls}、AuthGraph-DualGraph授权图\cite{wang2026authgraph}等）进行对比，以体现本方法相对于简单规则和序列方法的综合优势。
 

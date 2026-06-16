@@ -1,0 +1,164 @@
+% AgentDojo数据集分布饼图
+% 左图：各域任务对占比（567对）
+% 右图：各域平均工具调用步数分布（短链/中链/长链）
+% 编译方式：XeLaTeX + tikz（颜色定义见 figures/tikz_styles.tex）
+\begin{tikzpicture}[x=1cm, y=1cm]
+
+% ===== 左图：各域任务对占比 =====
+% Banking: 144/567=25.4%, Workspace: 198/567=34.9%, Travel: 140/567=24.7%, Slack: 85/567=15.0%
+% 角度：Banking 91.4°, Workspace 125.7°, Travel 88.9°, Slack 54.0°（从90°顺时针）
+
+\def\cx{3.5}  % 圆心x
+\def\cy{3.5}  % 圆心y
+\def\r{2.8}   % 半径
+
+% 扇形：Banking 90° -> -1.4° (顺时针91.4°)
+\fill[pieBlue!80] (\cx,\cy) -- ++(90:\r) arc[start angle=90, end angle=-1.4, radius=\r] -- cycle;
+% 扇形：Workspace -1.4° -> -127.1°
+\fill[pieGreen!80] (\cx,\cy) -- ++(-1.4:\r) arc[start angle=-1.4, end angle=-127.1, radius=\r] -- cycle;
+% 扇形：Travel -127.1° -> -216.0°
+\fill[pieOrange!80] (\cx,\cy) -- ++(-127.1:\r) arc[start angle=-127.1, end angle=-216.0, radius=\r] -- cycle;
+% 扇形：Slack -216.0° -> -270.0°
+\fill[piePurple!80] (\cx,\cy) -- ++(-216.0:\r) arc[start angle=-216.0, end angle=-270.0, radius=\r] -- cycle;
+
+% 分割线
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(90:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-1.4:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-127.1:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-216.0:\r);
+
+% 标注（扇形中心角方向）
+% Banking: 中心角 = (90 + (-1.4))/2 = 44.3°
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(44.3)}, {\cy + 1.6*sin(44.3)}) {25.4\%};
+% Workspace: 中心角 = (-1.4 + (-127.1))/2 = -64.25°
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(-64.25)}, {\cy + 1.6*sin(-64.25)}) {34.9\%};
+% Travel: 中心角 = (-127.1 + (-216.0))/2 = -171.55°
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(-171.55)}, {\cy + 1.6*sin(-171.55)}) {24.7\%};
+% Slack: 中心角 = (-216.0 + (-270.0))/2 = -243°
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(-243)}, {\cy + 1.6*sin(-243)}) {15.0\%};
+
+% 图例（左图）
+\node[font=\footnotesize\bfseries] at (\cx, 7.0) {各域任务对占比（共567对）};
+\fill[pieBlue!80]   (1.0, 0.55) rectangle (1.55, 0.95); \node[font=\footnotesize, anchor=west] at (1.65, 0.75) {Banking（144对）};
+\fill[pieGreen!80]  (1.0, 0.00) rectangle (1.55, 0.40); \node[font=\footnotesize, anchor=west] at (1.65, 0.20) {Workspace（198对）};
+\fill[pieOrange!80] (3.8, 0.55) rectangle (4.35, 0.95); \node[font=\footnotesize, anchor=west] at (4.45, 0.75) {Travel（140对）};
+\fill[piePurple!80] (3.8, 0.00) rectangle (4.35, 0.40); \node[font=\footnotesize, anchor=west] at (4.45, 0.20) {Slack（85对）};
+
+% ===== 右图：风险类型分布（27个IT） =====
+% R2数据外传: 10/27=37.0%, R3不可逆: 9/27=33.3%, R1越权: 4/27=14.8%, R4参数污染: 4/27=14.8%
+% 角度：R2 133.3°, R3 120.0°, R1 53.3°, R4 53.3°（从90°顺时针）
+
+\def\cx{10.5}
+\def\cy{3.5}
+
+% R2: 90° -> -43.3°
+\fill[pieRed!80] (\cx,\cy) -- ++(90:\r) arc[start angle=90, end angle=-43.3, radius=\r] -- cycle;
+% R3: -43.3° -> -163.3°
+\fill[pieOrange!80] (\cx,\cy) -- ++(-43.3:\r) arc[start angle=-43.3, end angle=-163.3, radius=\r] -- cycle;
+% R1: -163.3° -> -216.6°
+\fill[pieBlue!80] (\cx,\cy) -- ++(-163.3:\r) arc[start angle=-163.3, end angle=-216.6, radius=\r] -- cycle;
+% R4: -216.6° -> -270°
+\fill[pieTeal!80] (\cx,\cy) -- ++(-216.6:\r) arc[start angle=-216.6, end angle=-270, radius=\r] -- cycle;
+
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(90:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-43.3:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-163.3:\r);
+\draw[white, line width=1.2pt] (\cx,\cy) -- ++(-216.6:\r);
+
+% 标注
+% R2: 中心角 = (90 + (-43.3))/2 = 23.35°
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(23.35)}, {\cy + 1.6*sin(23.35)}) {37.0\%};
+% R3: 中心角 = (-43.3 + (-163.3))/2 = -103.3°
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(-103.3)}, {\cy + 1.6*sin(-103.3)}) {33.3\%};
+% R1: 中心角 = (-163.3 + (-216.6))/2 = -189.95°
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(-189.95)}, {\cy + 1.6*sin(-189.95)}) {14.8\%};
+% R4: 中心角 = (-216.6 + (-270))/2 = -243.3°
+\node[font=\small\bfseries, text=white] at ({\cx + 1.6*cos(-243.3)}, {\cy + 1.6*sin(-243.3)}) {14.8\%};
+
+% 图例（右图）
+\node[font=\footnotesize\bfseries] at (\cx, 7.0) {InjectionTask风险类型分布（共27个IT）};
+\fill[pieRed!80]    (7.5, 0.55) rectangle (8.05, 0.95); \node[font=\footnotesize, anchor=west] at (8.15, 0.75) {$R_2$数据外传（10个）};
+\fill[pieOrange!80] (7.5, 0.00) rectangle (8.05, 0.40); \node[font=\footnotesize, anchor=west] at (8.15, 0.20) {$R_3$不可逆操作（9个）};
+\fill[pieBlue!80]   (10.3, 0.55) rectangle (10.85, 0.95); \node[font=\footnotesize, anchor=west] at (10.95, 0.75) {$R_1$越权操作（4个）};
+\fill[pieTeal!80]   (10.3, 0.00) rectangle (10.85, 0.40); \node[font=\footnotesize, anchor=west] at (10.95, 0.20) {$R_4$参数污染（4个）};
+
+% ===== 右下图：多步工具调用占比（86个UT） =====
+% 短链(≤3步): 约30个=34.9%, 中链(4-7步): 约42个=48.8%, 长链(≥8步): 约14个=16.3%
+
+\def\cx{10.5}
+\def\cy{-3.5}  % 不用，改为在右侧放柱状图
+
+% ===== 下方：各域平均步数柱状图 =====
+% Banking: 4.2, Workspace: 6.8, Travel: 5.1, Slack: 3.9
+% 坐标系：x轴=域，y轴=步数，最大8步
+
+\def\bx{0.8}  % 柱状图起始x
+\def\by{-4.5} % 柱状图起始y（相对于整体）
+
+% 坐标轴
+\draw[->, line width=0.8pt, agentGray] (\bx, \by) -- (\bx, {\by+5.5});
+\draw[->, line width=0.8pt, agentGray] (\bx, \by) -- ({\bx+13.5}, \by);
+
+% y轴刻度
+\foreach \v/\lbl in {0/0, 1.25/2, 2.5/4, 3.75/6, 5.0/8} {
+  \draw[agentGray, line width=0.4pt] ({\bx-0.1}, {\by+\v}) -- ({\bx+0.1}, {\by+\v});
+  \node[font=\tiny, anchor=east, text=agentGray] at ({\bx-0.15}, {\by+\v}) {\lbl};
+}
+\node[font=\footnotesize, rotate=90, anchor=south, text=agentGray] at ({\bx-0.7}, {\by+2.5}) {平均工具调用步数};
+
+% 柱子（高度=步数/8*5.0）
+% Banking 4.2步: 4.2/8*5.0=2.625
+\fill[pieBlue!75] ({\bx+1.0}, \by) rectangle ({\bx+2.5}, {\by+2.625});
+\node[font=\footnotesize\bfseries, text=pieBlue] at ({\bx+1.75}, {\by+2.9}) {4.2};
+\node[font=\footnotesize, anchor=north] at ({\bx+1.75}, {\by-0.1}) {Banking};
+
+% Workspace 6.8步: 6.8/8*5.0=4.25
+\fill[pieGreen!75] ({\bx+3.8}, \by) rectangle ({\bx+5.3}, {\by+4.25});
+\node[font=\footnotesize\bfseries, text=pieGreen] at ({\bx+4.55}, {\by+4.5}) {6.8};
+\node[font=\footnotesize, anchor=north] at ({\bx+4.55}, {\by-0.1}) {Workspace};
+
+% Travel 5.1步: 5.1/8*5.0=3.1875
+\fill[pieOrange!75] ({\bx+6.6}, \by) rectangle ({\bx+8.1}, {\by+3.1875});
+\node[font=\footnotesize\bfseries, text=pieOrange] at ({\bx+7.35}, {\by+3.45}) {5.1};
+\node[font=\footnotesize, anchor=north] at ({\bx+7.35}, {\by-0.1}) {Travel};
+
+% Slack 3.9步: 3.9/8*5.0=2.4375
+\fill[piePurple!75] ({\bx+9.4}, \by) rectangle ({\bx+10.9}, {\by+2.4375});
+\node[font=\footnotesize\bfseries, text=piePurple] at ({\bx+10.15}, {\by+2.7}) {3.9};
+\node[font=\footnotesize, anchor=north] at ({\bx+10.15}, {\by-0.1}) {Slack};
+
+% 参考线：短链/中链/长链分界
+\draw[dashed, agentGray, line width=0.5pt] (\bx, {\by+1.875}) -- ({\bx+13.0}, {\by+1.875});
+\node[font=\tiny, text=agentGray, anchor=west] at ({\bx+11.2}, {\by+1.875}) {短链上界(3步)};
+\draw[dashed, agentGray, line width=0.5pt] (\bx, {\by+4.375}) -- ({\bx+13.0}, {\by+4.375});
+\node[font=\tiny, text=agentGray, anchor=west] at ({\bx+11.2}, {\by+4.375}) {中链上界(7步)};
+
+% 标题
+\node[font=\footnotesize\bfseries] at ({\bx+6.5}, {\by+5.8}) {各域平均工具调用步数（短链$\leq$3步 / 中链4--7步 / 长链$\geq$8步）};
+
+% 多步调用占比说明（右侧小饼图）
+\def\cx{12.8}
+\def\cy{-6.5}
+\def\r{1.5}
+
+% 短链34.9%: 90° -> -35.6°（125.6°）
+\fill[pieGreen!70] (\cx,\cy) -- ++(90:\r) arc[start angle=90, end angle=-35.6, radius=\r] -- cycle;
+% 中链48.8%: -35.6° -> -211.3°（175.7°）
+\fill[pieBlue!70] (\cx,\cy) -- ++(-35.6:\r) arc[start angle=-35.6, end angle=-211.3, radius=\r] -- cycle;
+% 长链16.3%: -211.3° -> -270°（58.7°）
+\fill[pieOrange!70] (\cx,\cy) -- ++(-211.3:\r) arc[start angle=-211.3, end angle=-270, radius=\r] -- cycle;
+
+\draw[white, line width=1.0pt] (\cx,\cy) -- ++(90:\r);
+\draw[white, line width=1.0pt] (\cx,\cy) -- ++(-35.6:\r);
+\draw[white, line width=1.0pt] (\cx,\cy) -- ++(-211.3:\r);
+
+\node[font=\tiny\bfseries, text=white] at ({\cx + 0.85*cos(27.2)}, {\cy + 0.85*sin(27.2)}) {34.9\%};
+\node[font=\tiny\bfseries, text=white] at ({\cx + 0.85*cos(-123.45)}, {\cy + 0.85*sin(-123.45)}) {48.8\%};
+\node[font=\tiny\bfseries, text=white] at ({\cx + 0.85*cos(-240.65)}, {\cy + 0.85*sin(-240.65)}) {16.3\%};
+
+\node[font=\tiny\bfseries] at (\cx, {\cy-2.0}) {UT任务链长分布};
+\fill[pieGreen!70]  (11.5, {\cy-2.6}) rectangle (11.9, {\cy-2.3}); \node[font=\tiny, anchor=west] at (12.0, {\cy-2.45}) {短链（$\leq$3步）};
+\fill[pieBlue!70]   (11.5, {\cy-3.0}) rectangle (11.9, {\cy-2.7}); \node[font=\tiny, anchor=west] at (12.0, {\cy-2.85}) {中链（4--7步）};
+\fill[pieOrange!70] (11.5, {\cy-3.4}) rectangle (11.9, {\cy-3.1}); \node[font=\tiny, anchor=west] at (12.0, {\cy-3.25}) {长链（$\geq$8步）};
+
+\end{tikzpicture}

@@ -1,0 +1,31 @@
+% AgentCanary典型攻击案例表
+\begin{table}[htbp]
+\centering
+\caption{AgentCanary各类攻击路径典型案例}
+\label{tab:agentcanary_cases}
+\small
+\begin{tabular}{p{2.0cm}p{2.2cm}p{5.5cm}p{2.0cm}}
+\toprule
+\textbf{攻击路径} & \textbf{攻击类型} & \textbf{典型攻击目标} & \textbf{风险类型} \\
+\midrule
+\multirow{3}{*}{直接攻击}
+& permission\_escalation & 指令Agent调用高权限工具（如系统管理API）完成未授权操作 & $R_1$ \\
+& defense\_disable & 指令Agent关闭安全检查或绕过确认流程 & $R_1$ \\
+& privacy\_leak & 直接要求Agent将用户隐私数据发送至外部地址 & $R_2$ \\
+\midrule
+\multirow{4}{*}{间接注入}
+& file\_deletion & 在文件内容中嵌入指令，触发Agent删除关键文件 & $R_3$ \\
+& resource\_exhaustion & 在邮件中嵌入循环调用指令，耗尽API配额或计算资源 & $R_3$ \\
+& phishing & 在网页内容中植入钓鱼链接，Agent将其转发给用户 & $R_2$ \\
+& integrity\_tamper & 在数据库返回中注入篡改指令，修改关键业务数据 & $R_4$ \\
+\midrule
+\multirow{2}{*}{链式委托}
+& env\_tampering & 上游Agent被注入后，通过委托接口篡改下游Agent的执行环境 & $R_4$ \\
+& unauthorized\_access & 利用委托链中的权限继承漏洞，访问下游Agent无权访问的资源 & $R_5$ \\
+\midrule
+\multirow{2}{*}{记忆投毒}
+& illegal\_memory & 将违法或有害内容写入共享记忆，影响后续所有Agent的行为 & $R_6$ \\
+& persona\_corruption & 通过记忆注入修改Agent的角色设定，使其持续执行恶意行为 & $R_6$ \\
+\bottomrule
+\end{tabular}
+\end{table}
