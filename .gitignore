@@ -333,3 +333,4 @@ TSWLatexianTemp*
 *.aux
 *.bbl
 *.pdf
+*.gz

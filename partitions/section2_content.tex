@@ -70,7 +70,7 @@
   \label{eq:risk_score}
 \end{equation}
 
-其中$\sigma(\cdot)$为Sigmoid函数，$\theta$为可学习权重向量，$b$为偏置项，$R_\theta(C) \in [0,1]$。该公式的含义是：工具越敏感、调用链越深、权限越扩散、敏感数据暴露越严重、不可逆操作越多、任务必要性偏差越大，则风险越高；人工确认覆盖率作为保护因子，其权重方向为负（在$\theta$中对应分量取负号）。
+其中，$\sigma(\cdot)$为Sigmoid函数，$\theta$为可学习权重向量，$b$为偏置项，$R_\theta(C) \in [0,1]$。该公式的含义是：工具越敏感、调用链越深、权限越扩散、敏感数据暴露越严重、不可逆操作越多、任务必要性偏差越大，则风险越高；人工确认覆盖率作为保护因子，其权重方向为负（在$\theta$中对应分量取负号）。
 
 各项风险因子与防御语义的对应关系如表~\ref{tab:risk_factors}所示。
 
@@ -129,7 +129,7 @@
   \label{eq:loss}
 \end{equation}
 
-其中$\Omega$为正负样本对集合，$m$为排序间隔，$\lambda_1, \lambda_2$为正则化系数。工程实现可退化为带先验正则的逻辑回归，保证可实现性。
+其中，$\Omega$为正负样本对集合，$m$为排序间隔，$\lambda_1, \lambda_2$为正则化系数。工程实现可退化为带先验正则的逻辑回归，保证可实现性。
 
 \textbf{第四步，验证集阈值校准。}在验证集上搜索最优阈值$\tau_0 < \tau_1 < \tau_2 < \tau_3$，并报告ECE（期望校准误差）和Brier Score，验证风险分数的概率可解释性。
 
@@ -150,7 +150,7 @@
   \label{eq:guard_action}
 \end{equation}
 
-其中$\mathcal{A} = \{\text{Allow, Log, Mask, AskConfirm, Block+Rollback}\}$，$Cost(a)$为动作执行代价，$UtilityLoss(a)$为对任务完成率的影响，$ResidualRisk(C, a)$为施加动作$a$后的残余风险，$\tau$为可接受残余风险上界，$\mu$为效用-安全权衡系数。该公式将防御动作选择形式化为约束优化问题，使防御决策可解释、可审计。
+其中，$\mathcal{A} = \{\text{Allow, Log, Mask, AskConfirm, Block+Rollback}\}$，$Cost(a)$为动作执行代价，$UtilityLoss(a)$为对任务完成率的影响，$ResidualRisk(C, a)$为施加动作$a$后的残余风险，$\tau$为可接受残余风险上界，$\mu$为效用-安全权衡系数。该公式将防御动作选择形式化为约束优化问题，使防御决策可解释、可审计。
 
 \textbf{风险度量算法。}算法~\ref{alg:risk_eval}给出了研究点一的完整计算流程。
 
@@ -281,7 +281,7 @@
   \hat{p}_{\text{cls}}^{\text{GBDT}} = \sigma\!\left(\sum_{k=1}^{K} \eta \cdot h_k(\mathbf{f}(G_t))\right)
   \label{eq:gbdt_cls}
 \end{equation}
-其中 $h_k$ 为第 $k$ 棵回归树，$\eta$ 为学习率。GBDT 能够自动捕获特征间的非线性交互（如“权限跳变次数高 $\wedge$ 无确认”的组合风险），在特征维度较低时通常优于线性模型。
+其中，$h_k$ 为第 $k$ 棵回归树，$\eta$ 为学习率。GBDT 能够自动捕获特征间的非线性交互（如“权限跳变次数高 $\wedge$ 无确认”的组合风险），在特征维度较低时通常优于线性模型。
 
 \textbf{与现有基于图方法的区别。}现有工作（如 FIDES~\cite{costa2025fides}、CaMeL~\cite{debenedetti2025camel}）大多采用全量污点追踪或图神经网络（GNN/GAT）进行检测，具有训练数据需求量大、推理延迟高、在标注稀缺场景下泛化性弱的局限。本方法以有限维类型化路径特征替代端到端图表示学习，在标注数据有限时更稳健，且特征含义与攻击语义直接对应，便于安全工程师审计和调整；GAT 作为可选增强模块，在数据充足时替换分类器以进一步提升对隐蔽路径的召回率，实现“轻量优先、按需增强”的工程策略。
 
@@ -303,7 +303,7 @@
   \label{eq:graph_score}
 \end{equation}
 
-其中$S_{\text{rule}}$为规则命中加权得分，$S_{\text{cls}}$为分类器风险概率，$S_{\text{llm}}$为LLM终审置信度（未激活时$S_{\text{llm}}=S_{\text{cls}}$），$R_\theta(C)$为研究点一输出的序列级校准风险分数。第四项的引入使图检测能够利用序列级先验，在标注数据稀缺时提升对高风险轨迹的早期预警能力。
+其中，$S_{\text{rule}}$为规则命中加权得分，$S_{\text{cls}}$为分类器风险概率，$S_{\text{llm}}$为LLM终审置信度（未激活时$S_{\text{llm}}=S_{\text{cls}}$），$R_\theta(C)$为研究点一输出的序列级校准风险分数。第四项的引入使图检测能够利用序列级先验，在标注数据稀缺时提升对高风险轨迹的早期预警能力。
 
 \textbf{TTED算法流程。}算法~\ref{alg:tted}给出了三级升级判定检测机制的完整流程。
 
@@ -336,7 +336,7 @@
   \label{eq:min_intervention}
 \end{equation}
 
-其中$\mathcal{A} = \{\text{Allow, Log, Mask, AskConfirm, Block+Rollback}\}$，$\lambda_s, \lambda_u, \lambda_c$分别为安全、效用和代价的权衡系数。防御输出包含完整的可审计信息：
+其中，$\mathcal{A} = \{\text{Allow, Log, Mask, AskConfirm, Block+Rollback}\}$，$\lambda_s, \lambda_u, \lambda_c$分别为安全、效用和代价的权衡系数。防御输出包含完整的可审计信息：
 
 \begin{equation}
   Defense(G_t) = \{action,\ reason,\ evidence\_path,\ affected\_tool,\ recovery\_plan\}
