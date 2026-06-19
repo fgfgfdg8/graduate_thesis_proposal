@@ -1,39 +1,7 @@
 \section{预期的成果}
-
-\subsection{成果一：威胁感知的工具调用链风险校准与分级防御策略（TARC-Guard）}
-
 \begin{enumerate}
-  \item \textbf{统一日志模式与任务集。}完成面向工具增强型LLM Agent的统一日志模式设计（含\texttt{src}/\texttt{sink}/\texttt{confirm}字段），形成覆盖文件管理、邮件办公、数据库查询、日程管理、代码执行和IoT控制六类工具场景的低成本任务集，包含600条以上工具调用链样例，覆盖$R_0$至$R_6$全部风险类型。
-
-  \item \textbf{七维风险因子体系与校准评分框架。}实现工具敏感度、权限扩散度、调用深度、不可逆操作比例、敏感数据暴露度、人工确认覆盖率和任务必要性偏差（$N_{\text{need}}$）七个可解释因子的自动计算，以及校准风险评分函数$R_\theta(C) = \sigma(b + \theta^\top \Phi(C))$和因子贡献分解输出。通过“威胁先验+弱监督+约束优化”四步整定策略学习权重，并报告ECE和Brier Score验证概率可解释性。
-
-  \item \textbf{L0--L4分级防御策略与防御动作优化。}实现L0--L4五级风险等级划分和防御动作优化公式（式~\ref{eq:guard_action}），输出分级防御建议（Allow/Log/Mask/AskConfirm/Block+Rollback）。通过对比实验（与单步权限检查、敏感工具计数等基线对比）和消融实验（各因子独立贡献分析）验证框架有效性。
+  \item 理论上，针对基于大语言模型的智能体系统，设计并完善基于威胁感知的工具调用链风险度量与分级防御和基于行为轨迹图的工具调用威胁归因与自适应防御算法。
+  \item 实验上，搭建大语言模型智能体工具调用链安全评估攻防实验平台，设计对比实验和消融实验，验证本研究设计方案的有效性。
+  \item 应用上，实现可视化的大语言模型智能体工具调用链威胁归因防御与防御原型系统。
+  \item 学术上，完成毕业论文，并撰写、发表会议论文一篇。
 \end{enumerate}
-
-\subsection{成果二：基于行为轨迹图的工具滥用威胁归因与自适应防御方法（TraceGraph-Guard）}
-
-\begin{enumerate}
-  \item \textbf{带防御节点的异构行为轨迹图建模方法。}提出适用于LLM Agent执行过程的异构行为轨迹图表示，节点集合新增防御节点$V_{\text{guard}}$，边集合新增防御边$E_{\text{defend}}$，将自然语言任务、计划、工具调用、工具参数、返回结果、记忆写入、最终输出和防御动作统一到一个可查询的图结构中，并实现确定性图构建算法。
-
-  \item \textbf{三级升级判定检测机制（TTED）与图规则库。}构建面向A1--A6六类攻击的8条核心图规则（Rule-1至Rule-8），结合类型化路径特征+轻量分类器（GAT可选增强）和LLM终审实现三级检测。图级综合风险评分融合序列先验：$M(G_t) = \lambda_1 S_{\text{rule}} + \lambda_2 S_{\text{cls}} + \lambda_3 S_{\text{llm}} + \lambda_4 R_\theta(C)$。在AgentDojo和AgentCanary基准上完成与代理基线方法的对比实验，验证图检测相对于序列方法的优势。
-
-  \item \textbf{风险路径定位、反事实归因与最小干预防御。}实现含$-\eta \cdot confirm(p)$保护项的Top-K风险路径定位算法、基于反事实消融的节点/边归因方法，以及最小干预防御公式（式~\ref{eq:min_intervention}），输出包含异常类型、风险路径、关键节点、防御动作和恢复计划的完整证据链报告$Defense(G_t)$。通过PathRecall@K、Hit@K、MRR、DSR（防御成功率）和UPR（效用保持率）等指标定量验证归因准确性和防御有效性。
-\end{enumerate}
-
-\subsection{成果三：可插拔Defense Guard中间层原型系统}
-
-基于整体研究内容，设计并实现Defense Guard可插拔中间层原型系统，系统包含七大核心模块：
-
-\begin{enumerate}
-  \item \textbf{Trace Collector（轨迹采集模块）：}采集或读取Agent执行日志，规范化为统一模式（含\texttt{src}/\texttt{sink}/\texttt{confirm}字段），支持多种Agent框架的日志格式。
-  \item \textbf{TARC-Guard Engine（风险校准引擎）：}计算七维风险因子，输出校准风险分数$R_\theta(C)$、因子贡献分解和L0--L4分级防御动作建议。
-  \item \textbf{Graph Builder（图构建模块）：}将日志转换为带$V_{\text{guard}}$/$E_{\text{defend}}$的异构行为轨迹图，支持可视化输出。
-  \item \textbf{TTED Detector（三级检测模块）：}依次执行图规则拦截、类型化路径特征分类器和LLM终审，输出图级综合风险评分$M(G_t)$。
-  \item \textbf{Attribution Analyzer（归因分析模块）：}输出Top-K风险路径、节点/边归因贡献分解，生成可解释归因报告。
-  \item \textbf{Defense Guard（防御执行模块）：}根据最小干预防御公式选择防御动作，通过注入\texttt{defense\_constraint}属性实现Pre-call/In-call/Post-call/Evidence Guard四阶段防御。
-  \item \textbf{Audit Report Generator（审计报告生成模块）：}生成包含归因路径、防御动作和恢复计划的完整证据链报告$Defense(G_t)$，支持命令行和批量处理。
-\end{enumerate}
-
-\subsection{学术论文}
-
-基于研究内容与实验结果，计划撰写并发表会议论文一篇。

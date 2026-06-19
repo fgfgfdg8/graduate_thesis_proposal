@@ -1,5 +1,11 @@
 \documentclass{article}
 \usepackage[UTF8, fontset=windows]{ctex} % 支持中文
+\usepackage{titlesec}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+% 让 \paragraph 独占一行并加粗（类似于 subsubsection 的样式）
+\titleformat{\paragraph}[hang]{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 \usepackage[dvipsnames,svgnames,x11names]{xcolor} % 显式加载xcolor，启用扩展颜色模型
 \usepackage{graphicx} % Required for inserting images
 % SVG图片支持：在XeLaTeX下transparent包不兼容，使用svg时需设置inkscapelatex=false
@@ -13,6 +19,8 @@
 \usepackage{tikz} % TikZ绘图
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric, shapes.misc, fit, calc, backgrounds} % TikZ库
 \usepackage{enumitem} % itemize/enumerate选项支持（leftmargin等）
+% enumerate/itemize全局行距：与正文一致
+\setlist{nosep} % 去除列表项间额外间距（itemsep=0, parsep=0），行距由\setstretch统一控制
 \input{figures/tikz_styles.tex} % 统一颜色与TikZ样式定义
 % 饼图/柱状图专用颜色（需在tikz_styles加载后立即重声明，确保xcolor注册）
 \definecolor{pieBlue}{HTML}{1565C0}
