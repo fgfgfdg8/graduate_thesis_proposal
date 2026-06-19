@@ -10,11 +10,11 @@
 
 为使后续方法定义、公式推导和实验设计有明确依据，本研究首先建立统一的威胁模型。
 
-\textbf{攻击者能力假设}：攻击者不能修改Guard代码，不能控制可信工具实现，但可通过用户输入、外部文档、网页内容、工具返回结果（observation）、共享记忆或低权限下游Agent影响工具调用链中的参数、数据流和执行决策。
+\textbf{攻击者能力假设}：攻击者不能修改防御代码，不能控制可信工具实现，但可通过用户输入、外部文档、网页内容、工具返回结果（observation）、共享记忆或低权限下游Agent影响工具调用链中的参数、数据流和执行决策。
 
 \textbf{攻击成立条件}：攻击不依赖模型逐字执行恶意指令，而是以工具调用链的语义后果违反用户意图、权限边界或数据流约束为判定依据——即使每一步调用在局部看来合法，只要链级组合效果产生违规后果，攻击即成立。
 
-本研究将攻击类型形式化为六类攻击链（A1--A6），覆盖工具调用链的全部主要威胁场景，如表~\ref{tab:attack_types}所示。
+在本研究中，将攻击类型形式化为六类攻击链，覆盖工具调用链的全部主要威胁场景，如表~\ref{tab:attack_types}所示。
 
 \input{tables/attack_types}
 
@@ -136,11 +136,13 @@
 
 \textbf{第四步，验证集阈值校准。}在验证集上搜索最优阈值$\tau_0 < \tau_1 < \tau_2 < \tau_3$，并报告ECE（期望校准误差）和Brier Score，验证风险分数的概率可解释性。
 
-\textbf{可解释性设计。}每个风险分数均输出因子贡献分解，说明风险主要来自哪类威胁因子：
+\textbf{风险因子贡献分解。}每个风险分数均输出因子贡献分解，说明风险主要来自哪类威胁因子：
 
 \begin{equation}
   contrib_j(C) = \frac{\theta_j \Phi_j(C)}{\sum_k |\theta_k \Phi_k(C)| + \epsilon}
 \end{equation}
+
+其中，$contrib_j(C)$表示第$j$类风险因子对总风险分数的贡献比例，$\theta_j$为该因子的权重，$\Phi_j(C)$为该因子的值。该设计旨在让防御系统清晰了解风险来源，增强风险评估的透明度和可解释性。
 
 \textbf{分级防御策略。}风险分数$R_\theta(C)$通过阈值$\tau_0 < \tau_1 < \tau_2 < \tau_3$映射为五个风险等级，每个等级对应一类防御动作，如表~\ref{tab:risk_levels}所示。
 
@@ -155,7 +157,7 @@
 
 其中，$\mathcal{A} = \{\text{Allow, Log, Mask, AskConfirm, Block+Rollback}\}$，$Cost(a)$为动作执行代价，$UtilityLoss(a)$为对任务完成率的影响，$ResidualRisk(C, a)$为施加动作$a$后的残余风险，$\tau$为可接受残余风险上界，$\mu$为效用-安全权衡系数。该公式将防御动作选择形式化为约束优化问题，使防御决策可解释、可审计。
 
-\textbf{风险度量算法。}算法~\ref{alg:risk_eval}给出了研究点一的完整计算流程。
+\textbf{风险度量算法。}算法~\ref{alg:risk_eval}给出了研究点一的完整流程。
 
 \input{algorithms/risk_eval}
 
@@ -251,7 +253,7 @@
 \end{equation}
 其中，$h_k$ 为第 $k$ 棵回归树，$\eta$ 为学习率。GBDT 能够自动捕获特征间的非线性交互（如“权限跳变次数高 $\wedge$ 无确认”的组合风险），在特征维度较低时通常优于线性模型。
 
-\textbf{与现有基于图方法的区别。}现有工作（如 FIDES~\cite{costa2025fides}、CaMeL~\cite{debenedetti2025camel}）大多采用全量污点追踪或图神经网络（GNN/GAT）进行检测，具有训练数据需求量大、推理延迟高、在标注稀缺场景下泛化性弱的局限。本方法以有限维类型化路径特征替代端到端图表示学习，在标注数据有限时更稳健，且特征含义与攻击语义直接对应，便于安全工程师审计和调整；GAT 作为可选增强模块，在数据充足时替换分类器以进一步提升对隐蔽路径的召回率，实现“轻量优先、按需增强”的工程策略。
+\textbf{与现有基于图方法的区别。}现有工作（如 FIDES~\cite{costa2025fides}、CaMeL~\cite{debenedetti2025camel}）大多采用全量污点追踪或图神经网络（GNN/GAT）进行检测，具有训练数据需求量大、推理延迟高、在标注稀缺场景下泛化性弱的局限。本方法以有限维类型化路径特征替代端到端图表示学习，在标注数据有限时更稳健，且特征含义与攻击语义直接对应，便于安全工程师审计和调整；GAT作为可选增强模块，在数据充足时替换分类器以进一步提升对隐蔽路径的召回率，实现“轻量优先、按需增强”的工程策略。
 
 \textbf{Typed-Path Classifier 算法流程。}图~\ref{fig:tpc_flow} 给出了第二级分类器的完整流程框图。
 
@@ -394,13 +396,12 @@
 \input{tables/agentdojo_it}
 \input{tables/agentdojo_ut}
 
-\todo{修正AgentDojo分析图格式错位。}
-图~\ref{fig:agentdojo_piechart}从两个维度对AgentDojo数据集进行统计分析。左图展示了各域任务对占比：Workspace域贡献最多（198对，34.9\%），Banking次之（144对，25.4\%），Travel（140对，24.7\%）与Banking接近，Slack最少（85对，15.0\%）。中图展示了27个IT的风险类型分布：$R_2$（数据外传）占比最高（约37\%），其次是$R_3$（不可逆操作，约33\%），$R_1$（越权操作）和$R_4$（参数污染）各约15\%；高风险类型（$R_2$+$R_3$）合计约70\%，表明AgentDojo侧重于考察“输出管控”和“操作安全”两类高影响风险。下图展示了各域平均工具调用步数及UT任务链长分布：Workspace域平均6.8步（中链为主），Banking域4.2步，Travel域5.1步，Slack域3.9步（短链为主）；整体而言，短链（$\leq$3步）占34.9\%，中链（4--7步）占48.8\%，长链（$\geq$8步）占16.3\%，覆盖三类轨迹长度，有利于验证TTED在不同轨迹复杂度下的检测稳定性。
+图~\ref{fig:agentdojo_piechart}从两个维度对AgentDojo数据集进行统计分析。上方并列展示各域任务对占比、27个IT的风险类型分布以及UT任务链长分布：Workspace域贡献最多（198对，34.9\%），Banking次之（144对，25.4\%），Travel（140对，24.7\%）与Banking接近，Slack最少（85对，15.0\%）；风险类型中$R_2$（数据外传）占比最高（约37\%），其次是$R_3$（不可逆操作，约33\%），$R_1$（越权操作）和$R_4$（参数污染）各约15\%；短链（$\leq$3步）占34.9\%，中链（4--7步）占48.8\%，长链（$\geq$8步）占16.3\%。下方展示各域平均工具调用步数：Workspace域平均6.8步（中链为主），Banking域4.2步，Travel域5.1步，Slack域3.9步（短链为主），覆盖三类轨迹长度，有利于验证TTED在不同轨迹复杂度下的检测稳定性。
 
 \begin{figure}[htbp]
   \centering
   \resizebox{\textwidth}{!}{\input{figures/fig_agentdojo_piechart.tikz}}
-  \caption{AgentDojo数据集分布分析：各域任务对占比（左）、IT风险类型分布（中）与各域平均工具调用步数及链长分布（右）}
+  \caption{AgentDojo数据集分布分析：任务对、IT风险类型与链长分布（上）及各域平均工具调用步数（下）}
   \label{fig:agentdojo_piechart}
 \end{figure}
 
@@ -410,7 +411,6 @@
 \input{tables/agentcanary_cases}
 \input{tables/agentcanary_risk_mapping}
 
-\todo{修正AgentCanary分析图格式错位。}
 图~\ref{fig:agentcanary_piechart}对AgentCanary数据集进行统计分析。左图展示了攻击路径类型分布：间接注入（Indirect）占据主导（181条，65.1\%），体现了真实场景中通过工具返回内容实施攻击的高频性；直接攻击（Direct）占16.5\%，链式委托（Chain）占11.2\%，记忆投毒（Memory）占7.2\%。中图展示了任务风险类型分布：$R_2$（数据外传）和$R_3$（不可逆操作）合计约57\%，与AgentDojo的分布趋势一致，验证了两基准在风险覆盖上的互补性。下图展示了12个主流模型在无防御基线下的ASR分布：整体ASR区间为8.8\%（claude-opus-4-6，绿色低风险区）至67.7\%（GLM-4.7-Flash，红色高风险区），平均ASR约40.6\%；在50\%以上高风险区的模型共4个，说明多数主流模型在无防御配置下均面临显著安全威胁，为本研究提供了充分的攻击轨迹样本来源。
 
 \begin{figure}[htbp]

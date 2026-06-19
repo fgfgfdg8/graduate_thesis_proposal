@@ -334,3 +334,6 @@ TSWLatexianTemp*
 *.bbl
 *.pdf
 *.gz
+
+tmp/
+tmp/*

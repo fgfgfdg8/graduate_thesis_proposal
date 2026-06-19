@@ -5,7 +5,7 @@
 \Require Execution log $\mathcal{L}$, tool registry $\mathcal{T}$, task specification $q$, prior weight $\theta_0$
 \Ensure Calibrated risk score $R_\theta(C)$, contribution vector $\mathbf{contrib}$, guard action $a^*$
 \State Parse $\mathcal{L}$ into event sequence $C = \langle e_1, \ldots, e_T \rangle$ with fields $\{src_t, sink_t, confirm_t, perm_t\}$
-\State \textbf{// Step 1: Compute 7-dim risk feature vector}
+\State \textbf{// Step 1: Compute risk feature vector}
 \State $S_{\text{tool}} \leftarrow \frac{1}{T}\sum_{t=1}^{T} \mathcal{T}[tool_t].\text{sensitivity}$
 \State $D_{\text{call}} \leftarrow \max_{t}\,\text{depth}(e_t)$
 \State $P_{\text{diff}} \leftarrow |Perm(C) \setminus Perm_{\text{req}}(q)| / (|Perm(C) \cup Perm_{\text{req}}(q)| + \epsilon)$

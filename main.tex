@@ -15,6 +15,7 @@
 \usepackage{amssymb} % 数学符号支持(\mathbb等)
 \usepackage{multirow} % 表格合并行
 \usepackage{booktabs} % 三线表
+\usepackage{array} % 固定宽度表格列
 \usepackage{tabularx} % 自适应宽度表格
 \usepackage{tikz} % TikZ绘图
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric, shapes.misc, fit, calc, backgrounds} % TikZ库
@@ -36,30 +37,35 @@
 \usepackage{url} % gbt7714生成的.bbl需要\DeclareUrlCommand等命令
 \usepackage{todonotes} % \todo{}批注支持
 \usepackage[numbers,sort&compress]{natbib} % 数字编号引用，压缩连续编号
-\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=3cm]{geometry}
+\usepackage[a4paper, top=2.1054cm, bottom=2.1054cm, left=1.6054cm, right=1.6054cm]{geometry}
 \usepackage{pdflscape} % 横向页面支持
 \usepackage{microtype} % 微字型调整，减少溢出
 \usepackage{setspace}  % 行距控制
-% 正文行距设置：三种方式任选其一（取消注释即可生效）
-% \singlespacing        % 单倍行距（约1.0×）
-% \onehalfspacing       % 1.5倍行距（约1.5×，常用于学术报告）
-% \doublespacing        % 双倍行距（约2.0×）
-\setstretch{1.0}        % 自定义倍数：当前1.4×，可直接修改此数值
+\setstretch{1.0}
+\usepackage{afterpage} % 延迟开启正文续页外框
+\newlength{\FrameContentInset}
+\setlength{\FrameContentInset}{3pt}
+\newcommand{\FrameTabularWidth}{\dimexpr\textwidth+2\FrameContentInset\relax}
+\newcommand{\FrameTableIndent}{\hspace*{-\FrameContentInset}}
+\newcommand{\FrameLeft}{1.5cm}
+\newcommand{\FrameRight}{1.5cm}
+\newcommand{\FrameTop}{2cm}
+\newcommand{\FrameBottom}{2cm}
 % 版心矩形框：仅标示文本区边缘，不含页眉页脚区域
 \usepackage{atbegshi}
+\newif\ifshowtextframe
+\showtextframefalse
 \AtBeginShipout{%
-  \AtBeginShipoutUpperLeft{%
-    \begin{tikzpicture}[remember picture, overlay]
-      \draw[black, line width=0.6pt]
-        ([xshift=\dimexpr\oddsidemargin+1in-10pt\relax,
-           yshift=-\dimexpr\topmargin+1in+\headheight+\headsep-10pt\relax]
-          current page.north west)
-        rectangle
-        ([xshift=\dimexpr\oddsidemargin+1in+\textwidth+10pt\relax,
-           yshift=-\dimexpr\topmargin+1in+\headheight+\headsep+\textheight+10pt\relax]
-          current page.north west);
-    \end{tikzpicture}%
-  }%
+  \ifshowtextframe
+    \AtBeginShipoutUpperLeft{%
+      \begin{tikzpicture}[remember picture, overlay]
+        \draw[black, line width=0.3pt]
+          ([xshift=\FrameLeft, yshift=-\FrameTop]current page.north west)
+          rectangle
+          ([xshift=-\FrameRight, yshift=\FrameBottom]current page.south east);
+      \end{tikzpicture}%
+    }%
+  \fi
 }
 % 禁止字符/公式溢出页边距：严格遵守换行规则
 \sloppy                        % 优先宽松行间距以避免文字溢出
@@ -82,17 +88,49 @@
 % \date{2026年5月}
 \date{}
 
+\newCJKfontfamily{\fzxiaobiaosong}[
+  Path={fonts/},
+  UprightFont={FZXiaoBiaoSong.TTF}
+]{方正小标宋体简体}
+
+\newcommand{\ThesisTitle}{面向大语言模型智能体工具调用链的威胁归因与防御方法研究}
+\newcommand{\StudentID}{220245477}
+\newcommand{\CollegeName}{网络空间安全学院}
+\newcommand{\MajorName}{网络空间安全}
+\newcommand{\StudentName}{吴丰艺}
+\newcommand{\DegreeType}{工学硕士}
+\newcommand{\AdvisorName}{陈浩}
+\newcommand{\EntranceDate}{2024 年 9 月}
+\newcommand{\ProposalDate}{2026 年 5 月 30 日}
+\newcommand{\ResearchDirection}{软件安全，智能系统安全}
+
+\newcommand{\coverfield}[2]{%
+  \noindent{\zihao{4}\songti\makebox[4.6cm][s]{#1}}\quad
+  {\zihao{4}\songti\underline{\makebox[6.4cm][c]{#2}}}\par\vspace{0.72cm}
+}
+
+\newcommand{\verticalcell}[1]{\shortstack[c]{#1}}
+\newcommand{\sigspace}{\makebox[3.2cm][l]{}}
+\newcommand{\drawProposalFirstPageContentFrame}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \coordinate (proposalLeftTop) at ([xshift=\FrameLeft, yshift=-\FrameTop]current page.north west);
+    \coordinate (proposalRightTop) at ([xshift=-\FrameRight, yshift=-\FrameTop]current page.north east);
+    \coordinate (proposalLeftBottom) at ([xshift=\FrameLeft, yshift=\FrameBottom]current page.south west);
+    \coordinate (proposalRightBottom) at ([xshift=-\FrameRight, yshift=\FrameBottom]current page.south east);
+    \draw[black, line width=0.4pt]
+      (proposalLeftTop |- proposalTableTop) -- (proposalLeftBottom);
+    \draw[black, line width=0.4pt]
+      (proposalRightTop |- proposalTableTop) -- (proposalRightBottom);
+    \draw[black, line width=0.4pt]
+      (proposalLeftBottom) -- (proposalRightBottom);
+  \end{tikzpicture}%
+}
+
 \begin{document}
 
-\begin{center}
-\textbf{开题报告内容}
-
-\resizebox{\textwidth}{!}{（包括：立题依据及价值、研究内容及方法、可行性分析、预期的成果、预计的困难及解决办法）}
-\end{center}
-
-\begin{center}
-  {\LARGE 面向大语言模型智能体工具调用链的威胁归因与防御方法研究\par}
-\end{center}
+\pagenumbering{gobble}
+\input{partitions/section0_cover}
+\afterpage{\globaldefs=1\leftskip=0pt\rightskip=0pt\showtextframetrue\globaldefs=0}
 
 \input{partitions/section1_basis}
 \input{partitions/section2_content}
@@ -101,5 +139,9 @@
 \input{partitions/section5_outcomes}
 \input{partitions/section6_references}
 \input{partitions/section7_sign}
+\clearpage
+\showtextframefalse
+\input{partitions/section8_workplan}
+\input{partitions/section9_revier_comments}
 
 \end{document}
