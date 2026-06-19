@@ -1,11 +1,11 @@
-\documentclass{article}
+\documentclass{article} % 使用基础 article 文档类，版式细节在下方手动控制
 \usepackage[UTF8, fontset=windows]{ctex} % 支持中文
-\usepackage{titlesec}
-\setcounter{secnumdepth}{4}
-\setcounter{tocdepth}{4}
+\usepackage{titlesec} % 自定义章节标题格式
+\setcounter{secnumdepth}{4} % 编号深度到 paragraph 层级
+\setcounter{tocdepth}{4} % 目录深度到 paragraph 层级
 % 让 \paragraph 独占一行并加粗（类似于 subsubsection 的样式）
-\titleformat{\paragraph}[hang]{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
-\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\titleformat{\paragraph}[hang]{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{} % paragraph 标题使用普通字号、粗体、悬挂编号
+\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex} % paragraph 标题左对齐，并设置标题前后间距
 \usepackage[dvipsnames,svgnames,x11names]{xcolor} % 显式加载xcolor，启用扩展颜色模型
 \usepackage{graphicx} % Required for inserting images
 % SVG图片支持：在XeLaTeX下transparent包不兼容，使用svg时需设置inkscapelatex=false
@@ -24,37 +24,37 @@
 \setlist{nosep} % 去除列表项间额外间距（itemsep=0, parsep=0），行距由\setstretch统一控制
 \input{figures/tikz_styles.tex} % 统一颜色与TikZ样式定义
 % 饼图/柱状图专用颜色（需在tikz_styles加载后立即重声明，确保xcolor注册）
-\definecolor{pieBlue}{HTML}{1565C0}
-\definecolor{pieGreen}{HTML}{2E7D32}
-\definecolor{pieOrange}{HTML}{EF6C00}
-\definecolor{piePurple}{HTML}{6A1B9A}
-\definecolor{pieRed}{HTML}{C62828}
-\definecolor{pieTeal}{HTML}{00695C}
-\definecolor{pieYellow}{HTML}{F57F17}
-\definecolor{pieGray}{HTML}{546E7A}
+\definecolor{pieBlue}{HTML}{1565C0} % 图表蓝色
+\definecolor{pieGreen}{HTML}{2E7D32} % 图表绿色
+\definecolor{pieOrange}{HTML}{EF6C00} % 图表橙色
+\definecolor{piePurple}{HTML}{6A1B9A} % 图表紫色
+\definecolor{pieRed}{HTML}{C62828} % 图表红色
+\definecolor{pieTeal}{HTML}{00695C} % 图表青绿色
+\definecolor{pieYellow}{HTML}{F57F17} % 图表黄色
+\definecolor{pieGray}{HTML}{546E7A} % 图表灰色
 \usepackage{algorithm} % 伪代码算法块
 \usepackage{algpseudocode} % 伪代码排版（支持\Comment）
 \usepackage{url} % gbt7714生成的.bbl需要\DeclareUrlCommand等命令
 \usepackage{todonotes} % \todo{}批注支持
 \usepackage[numbers,sort&compress]{natbib} % 数字编号引用，压缩连续编号
-\usepackage[a4paper, top=2.1054cm, bottom=2.1054cm, left=1.6054cm, right=1.6054cm]{geometry}
+\usepackage[a4paper, top=2.1054cm, bottom=2.1054cm, left=1.6054cm, right=1.6054cm]{geometry} % 页面内容区比物理外框内缩 3pt；外框实际位于上下2cm、左右1.5cm
 \usepackage{pdflscape} % 横向页面支持
 \usepackage{microtype} % 微字型调整，减少溢出
 \usepackage{setspace}  % 行距控制
-\setstretch{1.0}
+\setstretch{1.0} % 全局使用单倍行距
 \usepackage{afterpage} % 延迟开启正文续页外框
-\newlength{\FrameContentInset}
-\setlength{\FrameContentInset}{3pt}
-\newcommand{\FrameTabularWidth}{\dimexpr\textwidth+2\FrameContentInset\relax}
-\newcommand{\FrameTableIndent}{\hspace*{-\FrameContentInset}}
-\newcommand{\FrameLeft}{1.5cm}
-\newcommand{\FrameRight}{1.5cm}
-\newcommand{\FrameTop}{2cm}
-\newcommand{\FrameBottom}{2cm}
+\newlength{\FrameContentInset} % 正文/表格内容相对外框的内缩距离
+\setlength{\FrameContentInset}{3pt} % 框内文字与外框之间保留 3pt 空隙
+\newcommand{\FrameTabularWidth}{\dimexpr\textwidth+2\FrameContentInset\relax} % 带边框表格向左右扩展到物理外框边缘
+\newcommand{\FrameTableIndent}{\hspace*{-\FrameContentInset}} % 表格左移 3pt，使表格框线贴合外框
+\newcommand{\FrameLeft}{1.5cm} % 正文外框左边距
+\newcommand{\FrameRight}{1.5cm} % 正文外框右边距
+\newcommand{\FrameTop}{2cm} % 正文外框上边距
+\newcommand{\FrameBottom}{2cm} % 正文外框下边距
 % 版心矩形框：仅标示文本区边缘，不含页眉页脚区域
-\usepackage{atbegshi}
-\newif\ifshowtextframe
-\showtextframefalse
+\usepackage{atbegshi} % 在每页 shipout 时叠加绘制外框
+\newif\ifshowtextframe % 控制是否显示正文续页外框
+\showtextframefalse % 默认不显示外框，进入正文后再开启
 \AtBeginShipout{%
   \ifshowtextframe
     \AtBeginShipoutUpperLeft{%
@@ -80,37 +80,37 @@
 \makeatletter
 \g@addto@macro\UrlBreaks{\do\/\do\-\do\_\do\.\do\@\do\&\do\#}
 \makeatother
-\urlstyle{same}
+\urlstyle{same} % URL 使用正文同款字体，避免参考文献样式突兀
 \bibliographystyle{gbt7714-numerical} % GB/T 7714-2015数字编号样式
 
-\title{面向大语言模型智能体工具调用链的威胁归因与防御方法研究}
+\title{面向大语言模型智能体工具调用链的威胁归因与防御方法研究} % 文档元信息标题
 % \author{吴丰艺}
 % \date{2026年5月}
-\date{}
+\date{} % 不在正文自动生成日期
 
-\newCJKfontfamily{\fzxiaobiaosong}[
-  Path={fonts/},
-  UprightFont={FZXiaoBiaoSong.TTF}
+\newCJKfontfamily{\fzxiaobiaosong}[ % 封面标题和“填表须知”专用方正小标宋字体
+  Path={fonts/}, % 字体文件所在目录
+  UprightFont={FZXiaoBiaoSong.TTF} % 方正小标宋简体字体文件
 ]{方正小标宋体简体}
 
-\newcommand{\ThesisTitle}{面向大语言模型智能体工具调用链的威胁归因与防御方法研究}
-\newcommand{\StudentID}{220245477}
-\newcommand{\CollegeName}{网络空间安全学院}
-\newcommand{\MajorName}{网络空间安全}
-\newcommand{\StudentName}{吴丰艺}
-\newcommand{\DegreeType}{工学硕士}
-\newcommand{\AdvisorName}{陈浩}
-\newcommand{\EntranceDate}{2024 年 9 月}
-\newcommand{\ProposalDate}{2026 年 5 月 30 日}
-\newcommand{\ResearchDirection}{软件安全，智能系统安全}
+\newcommand{\ThesisTitle}{面向大语言模型智能体工具调用链的威胁归因与防御方法研究} % 开题报告论文题目
+\newcommand{\StudentID}{220245477} % 首页学号
+\newcommand{\CollegeName}{网络空间安全学院} % 院系名称
+\newcommand{\MajorName}{网络空间安全} % 学科专业
+\newcommand{\StudentName}{吴丰艺} % 研究生姓名
+\newcommand{\DegreeType}{工学硕士} % 学科门类与学位级别
+\newcommand{\AdvisorName}{陈浩} % 导师姓名
+\newcommand{\EntranceDate}{2024 年 9 月} % 入学年月
+\newcommand{\ProposalDate}{2026 年 5 月 30 日} % 开题报告日期
+\newcommand{\ResearchDirection}{软件安全，智能系统安全} % 研究方向
 
 \newcommand{\coverfield}[2]{%
-  \noindent{\zihao{4}\songti\makebox[4.6cm][s]{#1}}\quad
-  {\zihao{4}\songti\underline{\makebox[6.4cm][c]{#2}}}\par\vspace{0.72cm}
+  \noindent{\zihao{4}\songti\makebox[4.6cm][s]{#1}}\quad % 封面字段名：四号宋体、分散对齐
+  {\zihao{4}\songti\underline{\makebox[6.4cm][c]{#2}}}\par\vspace{0.72cm} % 封面字段值：四号宋体、居中下划线
 }
 
-\newcommand{\verticalcell}[1]{\shortstack[c]{#1}}
-\newcommand{\sigspace}{\makebox[3.2cm][l]{}}
+\newcommand{\verticalcell}[1]{\shortstack[c]{#1}} % 表格左侧竖向换行单元格
+\newcommand{\sigspace}{\makebox[3.2cm][l]{}} % 签名区域预留空白
 \newcommand{\drawProposalFirstPageContentFrame}{%
   \begin{tikzpicture}[remember picture, overlay]
     \coordinate (proposalLeftTop) at ([xshift=\FrameLeft, yshift=-\FrameTop]current page.north west);
