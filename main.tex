@@ -1,5 +1,10 @@
 \documentclass{article} % 使用基础 article 文档类，版式细节在下方手动控制
 \usepackage[UTF8, fontset=windows]{ctex} % 支持中文
+\usepackage{fontspec} % 启用系统字体
+% 或手动设置字体（更灵活）
+% \setCJKmainfont{SimSun} % 宋体
+% \setCJKsansfont{SimHei} % 黑体
+% \setCJKmonofont{FangSong} % 仿宋
 \usepackage{titlesec} % 自定义章节标题格式
 \setcounter{secnumdepth}{4} % 编号深度到 paragraph 层级
 \setcounter{tocdepth}{4} % 目录深度到 paragraph 层级
@@ -20,6 +25,7 @@
 \usepackage{tikz} % TikZ绘图
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric, shapes.misc, fit, calc, backgrounds} % TikZ库
 \usepackage{enumitem} % itemize/enumerate选项支持（leftmargin等）
+\usepackage{siunitx} % 数字单位支持
 % enumerate/itemize全局行距：与正文一致
 \setlist{nosep} % 去除列表项间额外间距（itemsep=0, parsep=0），行距由\setstretch统一控制
 \input{figures/tikz_styles.tex} % 统一颜色与TikZ样式定义
@@ -32,8 +38,7 @@
 \definecolor{pieTeal}{HTML}{00695C} % 图表青绿色
 \definecolor{pieYellow}{HTML}{F57F17} % 图表黄色
 \definecolor{pieGray}{HTML}{546E7A} % 图表灰色
-\usepackage{algorithm} % 伪代码算法块
-\usepackage{algpseudocode} % 伪代码排版（支持\Comment）
+\usepackage[ruled,linesnumbered]{algorithm2e} % 伪代码算法块
 \usepackage{url} % gbt7714生成的.bbl需要\DeclareUrlCommand等命令
 \usepackage{todonotes} % \todo{}批注支持
 \usepackage[numbers,sort&compress]{natbib} % 数字编号引用，压缩连续编号
@@ -41,9 +46,46 @@
 \usepackage{pdflscape} % 横向页面支持
 \usepackage{microtype} % 微字型调整，减少溢出
 \usepackage{setspace}  % 行距控制
-\setstretch{1.0} % 全局使用单倍行距
+\setstretch{1.25} % 全局使用行距倍数
 \usepackage{afterpage} % 延迟开启正文续页外框
-\newlength{\FrameContentInset} % 正文/表格内容相对外框的内缩距离
+\usepackage{hyperref} % 超链接引用支持
+% hyperref 超链接颜色设置
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,
+    urlcolor=black,
+    citecolor=black
+}
+% 为 \autoref 设置中文前缀 (等同于 hyperref 的 crefname)
+\renewcommand{\figureautorefname}{图}
+\renewcommand{\tableautorefname}{表}
+\renewcommand{\equationautorefname}{式}
+\renewcommand{\sectionautorefname}{节}
+\renewcommand{\subsectionautorefname}{小节}
+\renewcommand{\chapterautorefname}{章}
+% 如果还有其他自定义的计数器，如 theorem
+\renewcommand{\theoremautorefname}{定理} 
+\usepackage[noabbrev,nameinlink]{cleveref} % 智能交叉引用，在 hyperref 之后加载
+% 中文引用前缀设置
+\crefname{equation}{式}{式}
+\crefname{figure}{图}{图}
+\crefname{table}{表}{表}
+\crefname{theorem}{定理}{定理}
+ % 智能 \autoref：对已定义的标签（图表、公式等交叉引用）使用原始 \autoref，
+ % 对未定义的标签（文献引用键）自动回退到 \cite（natbib 数字编号引用），
+ % 从而使 \autoref 同时支持交叉引用和文献引用两种用法。
+ \makeatletter
+ \let\origautoref\autoref
+ \renewcommand{\autoref}[1]{%
+   \@ifundefined{r@#1}{%
+     \cite{#1}%
+   }{%
+     \origautoref{#1}%
+   }%
+ }
+ \makeatother
+ \newlength{\FrameContentInset} % 正文/表格内容相对外框的内缩距离
 \setlength{\FrameContentInset}{3pt} % 框内文字与外框之间保留 3pt 空隙
 \newcommand{\FrameTabularWidth}{\dimexpr\textwidth+2\FrameContentInset\relax} % 带边框表格向左右扩展到物理外框边缘
 \newcommand{\FrameTableIndent}{\hspace*{-\FrameContentInset}} % 表格左移 3pt，使表格框线贴合外框
@@ -59,7 +101,7 @@
   \ifshowtextframe
     \AtBeginShipoutUpperLeft{%
       \begin{tikzpicture}[remember picture, overlay]
-        \draw[black, line width=0.3pt]
+        \draw[black, line width=0.5pt]
           ([xshift=\FrameLeft, yshift=-\FrameTop]current page.north west)
           rectangle
           ([xshift=-\FrameRight, yshift=\FrameBottom]current page.south east);
@@ -81,9 +123,23 @@
 \g@addto@macro\UrlBreaks{\do\/\do\-\do\_\do\.\do\@\do\&\do\#}
 \makeatother
 \urlstyle{same} % URL 使用正文同款字体，避免参考文献样式突兀
+\usepackage[autostyle=false]{csquotes} % 引号样式控制
+\DeclareQuoteStyle{cjk}
+  {\symbol{"201C}}   % 中文左双引号 "
+  {\symbol{"201D}}   % 中文右双引号 "
+  {\symbol{"2018}}   % 中文左单引号 '
+  {\symbol{"2019}}   % 中文右单引号 '
+\setquotestyle{cjk}
+% 让正文中 ``...'' 和 `...' 自动渲染为中文上下引号
+\AtBeginDocument{%
+  \renewcommand{\textquotedblleft}{\symbol{"201C}}%
+  \renewcommand{\textquotedblright}{\symbol{"201D}}%
+  \renewcommand{\textquoteleft}{\symbol{"2018}}%
+  \renewcommand{\textquoteright}{\symbol{"2019}}%
+}
 \bibliographystyle{gbt7714-numerical} % GB/T 7714-2015数字编号样式
 
-\title{面向大语言模型智能体工具调用链的威胁归因与防御方法研究} % 文档元信息标题
+\title{面向大语言模型智能体工具调用链的安全威胁归因与防御方法研究} % 文档元信息标题
 % \author{吴丰艺}
 % \date{2026年5月}
 \date{} % 不在正文自动生成日期
@@ -93,7 +149,7 @@
   UprightFont={FZXiaoBiaoSong.TTF} % 方正小标宋简体字体文件
 ]{方正小标宋体简体}
 
-\newcommand{\ThesisTitle}{面向大语言模型智能体工具调用链的威胁归因与防御方法研究} % 开题报告论文题目
+\newcommand{\ThesisTitle}{面向大语言模型智能体工具调用链的安全威胁归因与防御方法研究} % 开题报告论文题目
 \newcommand{\StudentID}{220245477} % 首页学号
 \newcommand{\CollegeName}{网络空间安全学院} % 院系名称
 \newcommand{\MajorName}{网络空间安全} % 学科专业
@@ -101,7 +157,7 @@
 \newcommand{\DegreeType}{工学硕士} % 学科门类与学位级别
 \newcommand{\AdvisorName}{陈浩} % 导师姓名
 \newcommand{\EntranceDate}{2024 年 9 月} % 入学年月
-\newcommand{\ProposalDate}{2026 年 5 月 30 日} % 开题报告日期
+\newcommand{\ProposalDate}{2026 年 6 月 30 日} % 开题报告日期
 \newcommand{\ResearchDirection}{软件安全，智能系统安全} % 研究方向
 
 \newcommand{\coverfield}[2]{%
@@ -132,16 +188,19 @@
 \input{partitions/section0_cover}
 \afterpage{\globaldefs=1\leftskip=0pt\rightskip=0pt\showtextframetrue\globaldefs=0}
 
-\input{partitions/section1_basis}
-\input{partitions/section2_content}
-\input{partitions/section3_feasibility}
-\input{partitions/section4_difficulties}
-\input{partitions/section5_outcomes}
-\input{partitions/section6_references}
-\input{partitions/section7_sign}
+\input{partitions/section1_background}
+\input{partitions/section2_related_work}
+\input{partitions/section3_content}
+\input{partitions/section4_research_goals}
+\input{partitions/section5_technical_approach}
+\input{partitions/section6_feasibility}
+\input{partitions/section7_difficulties}
+\input{partitions/section8_outcomes}
+\input{partitions/section9_references}
+\input{partitions/section10_sign}
 \clearpage
 \showtextframefalse
-\input{partitions/section8_workplan}
-\input{partitions/section9_revier_comments}
+\input{partitions/section11_workplan}
+\input{partitions/section12_reviewer_comments}
 
 \end{document}

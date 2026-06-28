@@ -1,0 +1,45 @@
+﻿\section{研究背景与意义}
+
+\subsection{研究背景}
+近年来，大语言模型（Large Language Model，LLM）正逐步从被动的文本生成模型演化为能够主动进行任务规划、工具调用、环境交互和多轮反馈修正的智能体（Agent）。据Precedence Research统计，2025年全球AI Agent市场规模已达79.2亿美元，预计至2035年将增长至2946.6亿美元，年均复合增长率高达43.57\%\cite{precedence2025aiagents}；Gartner预测，到2028年将有33\%的生成式AI交互采用Agent式自主决策模式\cite{gartner2025agentic}。产业层面，OpenAI Agents SDK与Codex、Anthropic Claude Code、Google Gemini Agent、微软Copilot Studio等国际产品与阿里巴巴百炼、字节跳动Coze、智谱AI AutoGLM等国内平台共同构筑了百舸争流的市场格局；开源社区中LangChain\cite{langchain}、MetaGPT\cite{hong2024metagpt}、CrewAI、AutoGen\cite{wu2024autogen}等框架的广泛应用，标志着Agent技术已从学术原型迈向大规模部署阶段，逐步深入办公自动化、软件工程、网络安全运维及数据分析等关键领域\cite{wang2024survey,xi2025rise}。这一趋势与《新一代人工智能发展规划》\cite{govcn2017aiplan}中关于人工智能安全与可信的战略部署高度契合，使得Agent安全研究兼具学术前沿性与产业紧迫性。
+
+从技术演进脉络看，LLM从文本生成器向智能体的角色跃迁经历了三个关键节点：Transformer架构\cite{vaswani2017attention}奠定了序列建模的计算基础，GPT-3\cite{brown2020language}验证了大规模预训练模型的少样本泛化能力，InstructGPT\cite{ouyang2022training}通过指令微调与基于人类反馈的强化学习（RLHF）实现了模型行为与人类意图的对齐。在此基础上，GPT-4\cite{openai2023gpt4}首次原生支持函数调用（Function Calling）机制，使LLM能够直接生成结构化的工具调用请求并解析返回结果，标志着LLM从文本生成器向任务执行器的技术转变。在Agent形态层面，Weng\cite{weng2023agent}提出了Agent = 大模型 + 规划 + 工具调用 + 记忆的架构公式（如\autoref{fig:agent-overview}所示），奠定了LLM Agent的形态基础；Xi等\cite{xi2025rise}进一步将Agent抽象为Brain-Perception-Action三组件框架，将工具调用定位为Agent感知环境并作用于环境的核心执行通道；Wang等\cite{wang2024survey}指出LLM Agent区别于传统软件智能体的关键在于以自然语言为统一接口，通过提示词驱动推理与行动，而非依赖预编程规则。在交互范式上，CoT\cite{bosma2022chainofthought}、ReAct\cite{yao2023react}、Reflexion\cite{shinn2023reflexion}等范式的提出共同奠定了现代LLM Agent的交互基础。这些工作使工具调用成为LLM Agent区别于传统语言模型的核心能力标志，也让Agent具有了影响并改变外部环境的能力。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{\includegraphics{figures/agent-overview.png}}
+  \caption{Lilian Weng\cite{weng2023agent}提出的Agent开发公式}
+  \label{fig:agent-overview}
+\end{figure}
+
+然而，工具调用能力的引入在显著拓展Agent任务边界的同时，也将传统语言模型的安全问题从封闭的文本域推向了开放的交互域。传统LLM安全（如越狱攻击与有害内容生成）发生于提示词与生成文本之间，其攻击面限定在自然语言层面；而工具调用型Agent的安全风险与之有本质不同：Agent不仅理解指令，更能通过工具执行代码、访问文件系统、操控数据库乃至操作物理设备。自动程序从“规则驱动”到“语言驱动”的范式转变，使智能体的行为由语义而非语法决定，传统的访问控制与权限管理机制面临根本性的适用性挑战\cite{chu2026systematic}。这一安全风险的首次系统性暴露可追溯至Greshake等\cite{greshake2023nowwhat}于2023年揭示的间接提示注入攻击。该攻击威胁表现为攻击者将恶意指令嵌入网页、邮件或文档等外部数据中，当Agent通过工具读取这些数据时，恶意指令便注入Agent的推理上下文，从而劫持其后续行为，从根本上暴露了工具调用场景中“数据与指令边界模糊”这一结构性安全缺陷。此后，攻击向量迅速从内容注入向工具全生命周期扩散：在工具选择与权限维度，攻击者可劫持工具选择决策\cite{shi2026pitoolselection}或诱导Agent请求远超任务所需的权限\cite{zhang2026evaluatingprivilege}；在供应链维度，技能后门与MCP服务器投毒\cite{tie2026badskill}、多工具路径的组合性漏洞\cite{wu2026chainfuzzer}进一步表明，针对LLM Agent攻击可通过多步工具调用链在单步均合法的掩护下实现恶意目标。工具滥用与投毒已构成Agent安全的独立核心威胁面，且多向量组合攻击的威胁等级远超单点攻击\cite{deng2025agentsunderthreat,dehghantanha2026sokattacksurfaceagentic}。
+
+面对上述威胁，学界先后探索了三类递进的防御范式：架构级信息流隔离\cite{debenedetti2025camel,costa2025fides}，步骤级动态拦截\cite{mou2026toolsafe,an2025ipiguard}以及协议强制与事后审计\cite{uppala2026prompts,wang2026fromagenttraces}。然而，虽然上述工作在攻击发现与单点防御方面取得了重要进展，但是它们存在三个结构性不足：其一，当前防御范式以“安全/不安全”的二元判定为主导，缺乏对工具调用链执行过程的细粒度、可解释风险度量。具体而言，单次工具调用的安全风险由工具敏感性、权限边界、调用深度、操作不可逆性及人工确认介入程度等多维因素共同决定，二元分类无法区分“高风险但可逆”与“中等风险但不可逆”两种本质不同的威胁情境，亦无法为运维人员提供可操作的归因信息。其二，多数防御方案在单步工具调用层面操作，对跨步骤风险的路径级组合效应缺乏感知能力。现有研究表明，许多Agent漏洞需要多次工具调用的路径方能触发\cite{wu2026chainfuzzer}，并且子任务单独良性但组合后形成有害行为的分解攻击难以被单步检测机制捕获\cite{kothamasu2026hidden}。其三，现有防御普遍聚焦于“阻止攻击发生”而忽视了“感知攻击发生并追溯根源”的能力，缺乏面向Agent工具调用链威胁的感知与防御一体化框架。
+
+综合上述背景，工具调用链的安全风险感知、量化与归因已成为Agent安全领域亟待深入研究的课题。针对上述三个结构性缺口，本研究致力于提出一种面向LLM Agent工具调用链的可解释风险度量与威胁归因方法：将工具敏感性、权限边界、调用深度、操作不可逆性和人工确认介入程度等要素纳入统一的风险度量框架，对工具调用链的组合性威胁进行分级量化；在此基础上，借鉴系统安全领域的溯源图思想\cite{inam2023sok,gao2021threatraptor,cheng2024kairos}，构建适应Agent执行语义的异构轨迹图表示，实现跨步骤风险路径识别与可解释威胁归因，为LLM Agent工具调用链的可解释安全性保障提供理论支撑与工程实践指导。
+
+\subsection{研究意义}
+
+\subsubsection{理论意义}
+
+\begin{enumerate}
+  \item 本研究从工具调用链出发，将Agent安全问题由“输入输出文本安全”扩展到“过程级行为安全”，提出可解释风险度量体系，将工具敏感性、权限边界、调用深度、不可逆性和人工确认等因素纳入统一框架，对工具调用链的组合性威胁风险进行分级量化和防御；在单工具调用链风险度量的基础上，进一步将Agent执行过程中的工具上下文元素之间的依赖关系进行形式化图表达，为工调用链风险检测和归因提供结构化基础，有助于弥补现有研究中“重防御结果、轻过程感知”的不足。
+
+  \item 本研究将系统安全领域的溯源图思想迁移至LLM Agent场景，提出适应Agent执行语义的异构轨迹图表示，为Agent可观测性和执行溯源研究提供新的方法论视角，从而为Agent安全从“攻防对抗”向“过程审计、威胁归因”的防御范式演进提供一种可能的思路，以弥补现有工作在跨步骤风险路径识别、可解释威胁归因和最小干预防御方面的局限性。
+\end{enumerate}
+
+\subsubsection{实用价值}
+
+\begin{enumerate}
+  \item 从框架贡献角度看，本研究构建的低成本可复现任务集与评估框架，可为后续Agent安全研究提供标准化的实验基座，降低研究门槛，促进该方向的可复现性和可比较性。
+  
+  \item 从工程落地角度看，本研究旨在设计一个轻量级、可接入现有LLM Agent系统的的可插拔审计模块，接收Agent执行日志，输出工具调用链风险分数、异常模式、关键风险路径和归因报告。对于企业办公Agent、数据分析Agent、代码执行Agent和Agentic IoT原型系统而言，该审计模块可以作为部署前评估、运行时监控和事后审计的轻量组件，回应了OWASP LLM Top 10威胁\cite{owasp2025llmtop10}对工具调用安全审计工具的明确需求。
+\end{enumerate}
+
+\subsubsection{与国家及行业发展战略的契合度}
+
+\begin{enumerate}
+  \item 契合《新一代人工智能发展规划》中关于“人工智能安全”的战略部署，为AI系统的安全评估与风险防控提供关键技术支撑。
+  \item 响应《网络安全法》和《数据安全法》对关键信息基础设施安全保护的要求，为LLM Agent在金融、政务等敏感领域的安全部署提供风险度量与审计方法。
+  \item 服务于国家人工智能标准化总体组关于“人工智能可信特征”标准的研究，为LLM Agent工具调用链的安全性与可解释性评测以及对应的风险防御提供方法论参考。
+\end{enumerate}

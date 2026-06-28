@@ -1,0 +1,177 @@
+% ASB数据集分布图：上方三张饼图，下方柱状图
+% 场景分组：Professional（Finance/Legal/Medical/Education/Counseling/E-commerce，6域×5=30任务，58.8%）
+%          Engineering & Tech（Aerospace/Autonomous/System Admin，3域×5=15任务，29.4%）
+%          Academic（Academic Search，6任务，11.8%）
+% 攻击类型：DPI/OPI/Memory/Mixed/PoT 各占20%
+% 攻击工具：Stealthy 200(50%) / Disruptive 200(50%)
+% 下方：13个模型平均ASR分布条形图
+\begin{tikzpicture}[x=1cm, y=1cm]
+
+\def\pieR{1.75}
+\def\legendFont{\scriptsize}
+\def\titleFont{\scriptsize\bfseries}
+\def\percentFont{\scriptsize\bfseries}
+
+% ===== 上：三张饼图 =====
+\node[font=\footnotesize\bfseries, anchor=center] at (7.0,7.0) {ASB数据集场景分布、攻击类型与攻击工具分布};
+
+% --- 饼图1：场景分组占比 ---
+\def\cx{2.2}
+\def\cy{3.85}
+% Professional Services: 30/51=58.8% => 90° to -121.8° (211.8°)
+% Engineering & Tech: 15/51=29.4% => -121.8° to -227.6° (105.8°)
+% Academic: 6/51=11.8% => -227.6° to -270° (42.4°)
+\fill[pieBlue!80] (\cx,\cy) -- ++(90:\pieR) arc[start angle=90, end angle=-121.8, radius=\pieR] -- cycle;
+\fill[pieGreen!80] (\cx,\cy) -- ++(-121.8:\pieR) arc[start angle=-121.8, end angle=-227.6, radius=\pieR] -- cycle;
+\fill[pieOrange!80] (\cx,\cy) -- ++(-227.6:\pieR) arc[start angle=-227.6, end angle=-270, radius=\pieR] -- cycle;
+\foreach \a in {90,-121.8,-227.6} {
+  \draw[white, line width=0.9pt] (\cx,\cy) -- ++(\a:\pieR);
+}
+\node[font=\percentFont, text=white] at ({\cx + 0.95*cos(-15.9)}, {\cy + 0.95*sin(-15.9)}) {58.8\%};
+\node[font=\percentFont, text=white] at ({\cx + 1.00*cos(-174.7)}, {\cy + 1.00*sin(-174.7)}) {29.4\%};
+\node[font=\percentFont, text=white] at ({\cx + 1.05*cos(-248.8)}, {\cy + 1.05*sin(-248.8)}) {11.8\%};
+\node[font=\titleFont] at (\cx,6.0) {场景域分组};
+\fill[pieBlue!80]   (0.15,1.55) rectangle (0.40,1.75); \node[font=\legendFont, anchor=west] at (0.47,1.65) {Professional 30};
+\fill[pieGreen!80]  (0.15,1.20) rectangle (0.40,1.40); \node[font=\legendFont, anchor=west] at (0.47,1.30) {Engineering \& Tech 15};
+\fill[pieOrange!80] (2.70,1.55) rectangle (2.95,1.75); \node[font=\legendFont, anchor=west] at (3.02,1.65) {Academic 6};
+
+% --- 饼图2：攻击类型分布（5类等权） ---
+\def\cx{7.0}
+\def\cy{3.85}
+% DPI: 90° to 18° (72°)
+% OPI: 18° to -54° (72°)
+% Memory: -54° to -126° (72°)
+% Mixed: -126° to -198° (72°)
+% PoT: -198° to -270° (72°)
+\fill[pieRed!80]    (\cx,\cy) -- ++(90:\pieR) arc[start angle=90, end angle=18, radius=\pieR] -- cycle;
+\fill[pieBlue!80]   (\cx,\cy) -- ++(18:\pieR) arc[start angle=18, end angle=-54, radius=\pieR] -- cycle;
+\fill[pieOrange!80] (\cx,\cy) -- ++(-54:\pieR) arc[start angle=-54, end angle=-126, radius=\pieR] -- cycle;
+\fill[piePurple!80] (\cx,\cy) -- ++(-126:\pieR) arc[start angle=-126, end angle=-198, radius=\pieR] -- cycle;
+\fill[pieTeal!80]   (\cx,\cy) -- ++(-198:\pieR) arc[start angle=-198, end angle=-270, radius=\pieR] -- cycle;
+\foreach \a in {90,18,-54,-126,-198} {
+  \draw[white, line width=0.9pt] (\cx,\cy) -- ++(\a:\pieR);
+}
+\node[font=\percentFont, text=white] at ({\cx + 1.00*cos(54)}, {\cy + 1.00*sin(54)}) {20\%};
+\node[font=\percentFont, text=white] at ({\cx + 1.00*cos(-18)}, {\cy + 1.00*sin(-18)}) {20\%};
+\node[font=\percentFont, text=white] at ({\cx + 1.00*cos(-90)}, {\cy + 1.00*sin(-90)}) {20\%};
+\node[font=\percentFont, text=white] at ({\cx + 1.00*cos(-162)}, {\cy + 1.00*sin(-162)}) {20\%};
+\node[font=\percentFont, text=white] at ({\cx + 1.00*cos(-234)}, {\cy + 1.00*sin(-234)}) {20\%};
+\node[font=\titleFont] at (\cx,6.0) {攻击类型分布};
+\fill[pieRed!80]    (5.00,1.55) rectangle (5.25,1.75); \node[font=\legendFont, anchor=west] at (5.32,1.65) {DPI};
+\fill[pieBlue!80]   (5.00,1.20) rectangle (5.25,1.40); \node[font=\legendFont, anchor=west] at (5.32,1.30) {OPI};
+\fill[pieOrange!80] (6.45,1.55) rectangle (6.70,1.75); \node[font=\legendFont, anchor=west] at (6.67,1.65) {Memory};
+\fill[piePurple!80] (7.75,1.55) rectangle (8.00,1.75); \node[font=\legendFont, anchor=west] at (8.07,1.65) {Mixed};
+\fill[pieTeal!80]   (7.75,1.20) rectangle (8.00,1.40); \node[font=\legendFont, anchor=west] at (8.07,1.30) {PoT};
+
+% --- 饼图3：攻击工具类型 ---
+\def\cx{12.0}
+\def\cy{3.85}
+% Stealthy: 200/400=50% => 90° to -90° (180°)
+% Disruptive: 200/400=50% => -90° to -270° (180°)
+\fill[pieGreen!70] (\cx,\cy) -- ++(90:\pieR) arc[start angle=90, end angle=-90, radius=\pieR] -- cycle;
+\fill[pieRed!70] (\cx,\cy) -- ++(-90:\pieR) arc[start angle=-90, end angle=-270, radius=\pieR] -- cycle;
+\foreach \a in {90,-90} {
+  \draw[white, line width=0.9pt] (\cx,\cy) -- ++(\a:\pieR);
+}
+\node[font=\percentFont, text=white] at ({\cx + 1.00*cos(0)}, {\cy + 1.00*sin(0)}) {50\%};
+\node[font=\percentFont, text=white] at ({\cx + 1.00*cos(-180)}, {\cy + 1.00*sin(-180)}) {50\%};
+\node[font=\titleFont] at (\cx,6.0) {攻击工具类型};
+\fill[pieGreen!70]  (10.30,1.55) rectangle (10.55,1.75); \node[font=\legendFont, anchor=west] at (10.62,1.65) {Stealthy 200};
+\fill[pieRed!70]    (10.30,1.20) rectangle (10.55,1.40); \node[font=\legendFont, anchor=west] at (10.62,1.30) {Disruptive 200};
+
+% ===== 下：柱状图 =====
+\node[font=\footnotesize\bfseries, anchor=center] at (7.0,0.35) {ASB 13个主流模型平均攻击成功率（ASR）分布};
+\def\bx{0.8}
+\def\by{-5.8}
+\def\bh{5.0}
+\draw[->, line width=0.8pt, agentGray] (\bx,\by) -- (\bx,{\by+\bh+0.6});
+\draw[->, line width=0.8pt, agentGray] (\bx,\by) -- ({\bx+13.0},\by);
+\foreach \v/\lbl in {0/0, 1.25/25, 2.5/50, 3.75/75, 5.0/100} {
+  \draw[agentGray, line width=0.35pt, dashed] (\bx,{\by+\v}) -- ({\bx+12.6},{\by+\v});
+  \node[font=\tiny, anchor=east, text=agentGray] at ({\bx-0.10},{\by+\v}) {\lbl};
+}
+\node[font=\scriptsize, rotate=90, anchor=south, text=agentGray] at ({\bx-0.65},{\by+\bh/2}) {平均ASR (\%)};
+
+% 50%参考线
+\draw[pieRed, line width=0.7pt, dashed] (\bx,{\by+2.5}) -- ({\bx+12.6},{\by+2.5});
+\node[font=\tiny, text=pieRed, anchor=west] at ({\bx+12.6},{\by+2.5}) {50\%};
+
+% 平均ASR参考线
+% \draw[pieBlue, line width=0.5pt, dashed] (\bx,{\by+46.91/100*\bh}) -- ({\bx+12.6},{\by+46.91/100*\bh});
+% \node[font=\tiny, text=pieBlue, anchor=west] at ({\bx+12.6},{\by+46.91/100*\bh}) {46.9\%};
+
+\def\bw{0.78}
+\def\bs{0.95}
+
+% Models sorted by ASR (ascending)
+% Mixtral-8x7B: 19.01
+\fill[pieGreen!80] ({\bx+0*\bs+0.15}, \by) rectangle ({\bx+0*\bs+0.15+\bw}, {\by+19.01/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+0*\bs+0.15+\bw/2}, {\by-0.15}) {Mixtral};
+\node[font=\tiny\bfseries, text=pieGreen] at ({\bx+0*\bs+0.15+\bw/2}, {\by+19.01/100*\bh+0.22}) {19.0\%};
+
+% LLaMA3-8B: 20.26
+\fill[pieGreen!80] ({\bx+1*\bs+0.15}, \by) rectangle ({\bx+1*\bs+0.15+\bw}, {\by+20.26/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+1*\bs+0.15+\bw/2}, {\by-0.15}) {LLaMA3-8B};
+\node[font=\tiny\bfseries, text=pieGreen] at ({\bx+1*\bs+0.15+\bw/2}, {\by+20.26/100*\bh+0.22}) {20.3\%};
+
+% Qwen2-7B: 31.06
+\fill[pieOrange!80] ({\bx+2*\bs+0.15}, \by) rectangle ({\bx+2*\bs+0.15+\bw}, {\by+31.06/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+2*\bs+0.15+\bw/2}, {\by-0.15}) {Qwen2-7B};
+\node[font=\tiny\bfseries, text=pieOrange] at ({\bx+2*\bs+0.15+\bw/2}, {\by+31.06/100*\bh+0.22}) {31.1\%};
+
+% LLaMA3.1-8B: 35.13
+\fill[pieOrange!80] ({\bx+3*\bs+0.15}, \by) rectangle ({\bx+3*\bs+0.15+\bw}, {\by+35.13/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+3*\bs+0.15+\bw/2}, {\by-0.15}) {LLaMA3.1-8B};
+\node[font=\tiny\bfseries, text=pieOrange] at ({\bx+3*\bs+0.15+\bw/2}, {\by+35.13/100*\bh+0.22}) {35.1\%};
+
+% Gemma2-9B: 48.01
+\fill[pieOrange!80] ({\bx+4*\bs+0.15}, \by) rectangle ({\bx+4*\bs+0.15+\bw}, {\by+48.01/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+4*\bs+0.15+\bw/2}, {\by-0.15}) {Gemma2-9B};
+\node[font=\tiny\bfseries, text=pieOrange] at ({\bx+4*\bs+0.15+\bw/2}, {\by+48.01/100*\bh+0.22}) {48.0\%};
+
+% LLaMA3.1-70B: 50.97
+\fill[pieRed!80] ({\bx+5*\bs+0.15}, \by) rectangle ({\bx+5*\bs+0.15+\bw}, {\by+50.97/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+5*\bs+0.15+\bw/2}, {\by-0.15}) {LLaMA3.1-70B};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+5*\bs+0.15+\bw/2}, {\by+50.97/100*\bh+0.22}) {51.0\%};
+
+% Qwen2-72B: 53.70
+\fill[pieRed!80] ({\bx+6*\bs+0.15}, \by) rectangle ({\bx+6*\bs+0.15+\bw}, {\by+53.70/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+6*\bs+0.15+\bw/2}, {\by-0.15}) {Qwen2-72B};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+6*\bs+0.15+\bw/2}, {\by+53.70/100*\bh+0.22}) {53.7\%};
+
+% GPT-3.5: 54.16
+\fill[pieRed!80] ({\bx+7*\bs+0.15}, \by) rectangle ({\bx+7*\bs+0.15+\bw}, {\by+54.16/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+7*\bs+0.15+\bw/2}, {\by-0.15}) {GPT-3.5};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+7*\bs+0.15+\bw/2}, {\by+54.16/100*\bh+0.22}) {54.2\%};
+
+% Gemma2-27B: 54.34
+\fill[pieRed!80] ({\bx+8*\bs+0.15}, \by) rectangle ({\bx+8*\bs+0.15+\bw}, {\by+54.34/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+8*\bs+0.15+\bw/2}, {\by-0.15}) {Gemma2-27B};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+8*\bs+0.15+\bw/2}, {\by+54.34/100*\bh+0.22}) {54.3\%};
+
+% LLaMA3-70B: 54.84
+\fill[pieRed!80] ({\bx+9*\bs+0.15}, \by) rectangle ({\bx+9*\bs+0.15+\bw}, {\by+54.84/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+9*\bs+0.15+\bw/2}, {\by-0.15}) {LLaMA3-70B};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+9*\bs+0.15+\bw/2}, {\by+54.84/100*\bh+0.22}) {54.8\%};
+
+% Claude3.5: 56.44
+\fill[pieRed!80] ({\bx+10*\bs+0.15}, \by) rectangle ({\bx+10*\bs+0.15+\bw}, {\by+56.44/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+10*\bs+0.15+\bw/2}, {\by-0.15}) {Claude3.5};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+10*\bs+0.15+\bw/2}, {\by+56.44/100*\bh+0.22}) {56.4\%};
+
+% GPT-4o: 64.41
+\fill[pieRed!80] ({\bx+11*\bs+0.15}, \by) rectangle ({\bx+11*\bs+0.15+\bw}, {\by+64.41/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+11*\bs+0.15+\bw/2}, {\by-0.15}) {GPT-4o};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+11*\bs+0.15+\bw/2}, {\by+64.41/100*\bh+0.22}) {64.4\%};
+
+% GPT-4o-mini: 67.55
+\fill[pieRed!80] ({\bx+12*\bs+0.15}, \by) rectangle ({\bx+12*\bs+0.15+\bw}, {\by+67.55/100*\bh});
+\node[font=\tiny, rotate=60, anchor=east] at ({\bx+12*\bs+0.15+\bw/2}, {\by-0.15}) {4o-mini};
+\node[font=\tiny\bfseries, text=pieRed] at ({\bx+12*\bs+0.15+\bw/2}, {\by+67.55/100*\bh+0.22}) {67.6\%};
+
+% 颜色图例
+\fill[pieGreen!80]  (0.60,{\by-2.18}) rectangle (1.00,{\by-1.88}); \node[font=\tiny, anchor=west] at (1.15,{\by-2.03}) {低风险（ASR$<$25\%）};
+\fill[pieOrange!80] (4.50,{\by-2.18}) rectangle (4.90,{\by-1.88}); \node[font=\tiny, anchor=west] at (5.05,{\by-2.03}) {中风险（25\%$\leq$ASR$<$50\%）};
+\fill[pieRed!80]    (8.80,{\by-2.18}) rectangle (9.20,{\by-1.88}); \node[font=\tiny, anchor=west] at (9.35,{\by-2.03}) {高风险（ASR$\geq$50\%）};
+
+\end{tikzpicture}

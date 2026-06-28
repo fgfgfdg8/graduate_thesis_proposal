@@ -7,7 +7,7 @@
 \def\percentFont{\scriptsize\bfseries}
 
 % ===== 上：三张饼图 =====
-\node[font=\footnotesize\bfseries, anchor=center] at (7.0,7.0) {任务对、风险类型与链长分布};
+\node[font=\footnotesize\bfseries, anchor=center] at (7.0,7.0) {AgentDojo数据集任务对、风险类型与链长分布};
 
 % --- 饼图1：各域任务对占比 ---
 \def\cx{2.2}
@@ -25,7 +25,7 @@
 \node[font=\percentFont, text=white] at ({\cx + 1.00*cos(-243)}, {\cy + 1.00*sin(-243)}) {15.0\%};
 \node[font=\titleFont] at (\cx,6.0) {各域任务对};
 \fill[pieBlue!80]   (0.20,1.55) rectangle (0.45,1.75); \node[font=\legendFont, anchor=west] at (0.52,1.65) {Banking 144};
-\fill[pieGreen!80]  (0.20,1.20) rectangle (0.45,1.40); \node[font=\legendFont, anchor=west] at (0.52,1.30) {Workspace 198};
+\fill[pieGreen!80]  (0.20,1.20) rectangle (0.45,1.40); \node[font=\legendFont, anchor=west] at (0.50,1.30) {Workspace 198};
 \fill[pieOrange!80] (2.35,1.55) rectangle (2.60,1.75); \node[font=\legendFont, anchor=west] at (2.67,1.65) {Travel 140};
 \fill[piePurple!80] (2.35,1.20) rectangle (2.60,1.40); \node[font=\legendFont, anchor=west] at (2.67,1.30) {Slack 85};
 
@@ -67,7 +67,7 @@
 \fill[pieOrange!70] (12.35,1.55) rectangle (12.60,1.75); \node[font=\legendFont, anchor=west] at (12.67,1.65) {长链 $\geq$8};
 
 % ===== 下：柱状图 =====
-\node[font=\footnotesize\bfseries, anchor=center] at (7.0,0.35) {各域平均工具调用步数};
+\node[font=\footnotesize\bfseries, anchor=center] at (7.0,0.35) {AgentDojo各域平均工具调用步数};
 \def\bx{1.0}
 \def\by{-5.6}
 \draw[->, line width=0.8pt, agentGray] (\bx,\by) -- (\bx,{\by+5.3});
@@ -95,8 +95,8 @@
 \node[font=\scriptsize, anchor=north] at ({\bx+10.2},{\by-0.12}) {Slack};
 
 \draw[dashed, agentGray, line width=0.45pt] (\bx,{\by+1.875}) -- ({\bx+12.1},{\by+1.875});
-\node[font=\tiny, text=agentGray, anchor=west] at ({\bx+10.95},{\by+1.875}) {3步};
+% \node[font=\tiny, text=agentGray, anchor=west] at ({\bx+10.95},{\by+1.875}) {3步};
 \draw[dashed, agentGray, line width=0.45pt] (\bx,{\by+4.375}) -- ({\bx+12.1},{\by+4.375});
-\node[font=\tiny, text=agentGray, anchor=west] at ({\bx+10.95},{\by+4.375}) {7步};
+% \node[font=\tiny, text=agentGray, anchor=west] at ({\bx+10.95},{\by+4.375}) {7步};
 
 \end{tikzpicture}

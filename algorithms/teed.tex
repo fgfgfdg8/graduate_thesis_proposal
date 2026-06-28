@@ -1,38 +1,38 @@
 \begin{algorithm}[htbp]
 \caption{TraceGraph-Guard: Three-Tier Escalation Detection (TTED)}
 \label{alg:tted}
-\begin{algorithmic}[1]
-\Require Trajectory graph $G_t=(V_t,E_t,X_t,R_t)$, risk score $R_\theta(C)$, thresholds $\theta_{lo}=0.35$, $\theta_{hi}=0.65$
-\Ensure Verdict $\hat{y}\in\{0,1\}$, composite score $M(G_t)$, explanation $\mathcal{E}$
-\State \textbf{// Tier-1: Graph Rule Gate} \hfill $O(|V_t|+|E_t|)$
-\State $\text{hits} \leftarrow \emptyset$
-\For{each rule $\rho \in \{\text{Rule-1},\ldots,\text{Rule-8}\}$} \Comment{see Table~\ref{tab:graph_rules}}
-  \If{$\rho$ matches a subgraph pattern in $G_t$}
-    \State $\text{hits} \leftarrow \text{hits} \cup \{(\rho.\text{type},\, \rho.\text{evidence\_path})\}$
-  \EndIf
-\EndFor
-\If{$\text{hits} \neq \emptyset$}
-  \State $S_{\text{rule}} \leftarrow \max_{\rho\in\text{hits}}\,\rho.\text{weight}$;\; $\hat{y}\leftarrow 1$;\; $\mathcal{E}\leftarrow\text{hits}$
-  \State $M(G_t) \leftarrow \lambda_1 S_{\text{rule}} + \lambda_4 R_\theta(C)$
-  \State \Return $\hat{y},\,M(G_t),\,\mathcal{E}$
-\EndIf
-\State \textbf{// Tier-2: Typed-Path Classifier}
-\State $\mathbf{f}(G_t) \leftarrow$ ExtractPathFeatures$(G_t)$ \Comment{path-type seq., perm-jump, cross-domain count, confirm-gap}
-\State $\hat{p}_{\text{cls}} \leftarrow \text{Classifier}(\mathbf{f}(G_t))$ \Comment{LR or GBDT; see Eq.~\eqref{eq:lr_cls}/\eqref{eq:gbdt_cls}}
-\If{$\hat{p}_{\text{cls}} \geq \theta_{hi}$}
-  \State $S_{\text{cls}} \leftarrow \hat{p}_{\text{cls}}$;\; $\hat{y}\leftarrow 1$;\; $\mathcal{E}\leftarrow\text{TopKPaths}(G_t,\,\mathbf{f})$
-  \State $M(G_t) \leftarrow \lambda_2 S_{\text{cls}} + \lambda_4 R_\theta(C)$
-  \State \Return $\hat{y},\,M(G_t),\,\mathcal{E}$
-\ElsIf{$\hat{p}_{\text{cls}} < \theta_{lo}$}
-  \State \Return $\hat{y}\leftarrow 0,\; M(G_t)\leftarrow\hat{p}_{\text{cls}},\; \mathcal{E}\leftarrow\emptyset$
-\EndIf
-\State \textbf{// Tier-3: LLM-as-a-Judge} \Comment{activated for $\approx$10--15\% of samples}
-\State $\mathcal{P}^* \leftarrow\text{TopKPaths}(G_t,\,\mathbf{f})$
-\State $\text{prompt} \leftarrow\text{BuildJudgePrompt}(G_t,\,\mathcal{P}^*,\,\hat{p}_{\text{cls}})$ \Comment{structured risk narrative}
-\State $(S_{\text{llm}},\,\text{reason})\leftarrow\text{LLM}(\text{prompt})$ \Comment{score $\in[0,1]$, chain-of-thought reason}
-\State $\hat{y}\leftarrow\mathbb{I}[S_{\text{llm}}>0.5]$
-\State $M(G_t) \leftarrow \lambda_2\hat{p}_{\text{cls}} + \lambda_3 S_{\text{llm}} + \lambda_4 R_\theta(C)$
-\State $\mathcal{E}\leftarrow(\mathcal{P}^*,\,\text{reason})$
-\State \Return $\hat{y},\,M(G_t),\,\mathcal{E}$
-\end{algorithmic}
+\KwIn{Trajectory graph $G_t=(V_t,E_t,X_t,R_t)$, risk score $R_\theta(C)$, thresholds $\theta_{lo}=0.35$, $\theta_{hi}=0.65$}
+\KwOut{Verdict $\hat{y}\in\{0,1\}$, composite score $M(G_t)$, explanation $\mathcal{E}$}
+\tcp{Tier-1: Graph Rule Gate \hfill $O(|V_t|+|E_t|)$}
+$\text{hits} \leftarrow \emptyset$\;
+\For{each rule $\rho \in \{\text{Rule-1},\ldots,\text{Rule-8}\}$ \tcp{see Table~\ref{tab:graph_rules}}}{
+  \If{$\rho$ matches a subgraph pattern in $G_t$}{
+    $\text{hits} \leftarrow \text{hits} \cup \{(\rho.\text{type},\, \rho.\text{evidence\_path})\}$\;
+  }
+}
+\If{$\text{hits} \neq \emptyset$}{
+  $S_{\text{rule}} \leftarrow \max_{\rho\in\text{hits}}\,\rho.\text{weight}$;\; $\hat{y}\leftarrow 1$;\; $\mathcal{E}\leftarrow\text{hits}$\;
+  $M(G_t) \leftarrow \lambda_1 S_{\text{rule}} + \lambda_4 R_\theta(C)$\;
+  \Return{$\hat{y},\,M(G_t),\,\mathcal{E}$}
+}
+\tcp{Tier-2: Typed-Path Classifier}
+$\mathbf{f}(G_t) \leftarrow$ ExtractPathFeatures$(G_t)$ \tcp{path-type seq., perm-jump, cross-domain count, confirm-gap}
+$\hat{p}_{\text{cls}} \leftarrow \text{Classifier}(\mathbf{f}(G_t))$ \tcp{LR or GBDT; see Eq.~\eqref{eq:lr_cls}/\eqref{eq:gbdt_cls}}
+\If{$\hat{p}_{\text{cls}} \geq \theta_{hi}$}{
+  $S_{\text{cls}} \leftarrow \hat{p}_{\text{cls}}$;\; $\hat{y}\leftarrow 1$;\; $\mathcal{E}\leftarrow\text{TopKPaths}(G_t,\,\mathbf{f})$\;
+  $M(G_t) \leftarrow \lambda_2 S_{\text{cls}} + \lambda_4 R_\theta(C)$\;
+  \Return{$\hat{y},\,M(G_t),\,\mathcal{E}$}
+}
+\ElseIf{$\hat{p}_{\text{cls}} < \theta_{lo}$}{
+  \Return{$\hat{y}\leftarrow 0,\; M(G_t)\leftarrow\hat{p}_{\text{cls}},\; \mathcal{E}\leftarrow\emptyset$}
+}
+\tcp{Tier-3: LLM-as-a-Judge}
+\tcp{activated for $\approx$10--15\% of samples}
+$\mathcal{P}^* \leftarrow\text{TopKPaths}(G_t,\,\mathbf{f})$\;
+$\text{prompt} \leftarrow\text{BuildJudgePrompt}(G_t,\,\mathcal{P}^*,\,\hat{p}_{\text{cls}})$ \tcp{structured risk narrative}
+$(S_{\text{llm}},\,\text{reason})\leftarrow\text{LLM}(\text{prompt})$ \tcp{score $\in[0,1]$, chain-of-thought reason}
+$\hat{y}\leftarrow\mathbb{I}[S_{\text{llm}}>0.5]$\;
+$M(G_t) \leftarrow \lambda_2\hat{p}_{\text{cls}} + \lambda_3 S_{\text{llm}} + \lambda_4 R_\theta(C)$\;
+$\mathcal{E}\leftarrow(\mathcal{P}^*,\,\text{reason})$\;
+\Return{$\hat{y},\,M(G_t),\,\mathcal{E}$}
 \end{algorithm}

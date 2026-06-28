@@ -1,0 +1,24 @@
+\section{研究目标}
+
+\todo{写明研究目标}
+
+\subsection{研究目标}
+
+\begin{enumerate}
+  \item 设计并实现面向工具调用链的统一日志模式，支持多框架Agent的日志规范化；
+  \item 定义七维威胁感知风险因子体系，并构建可校准的综合风险评分函数$R_\theta(C)$，实现风险分数的概率可解释性；
+  \item 提出“威胁先验+弱监督+约束优化”的权重整定策略，适应不同部署场景下风险因子重要性的差异；
+  \item 设计基于风险等级的分级防御策略，并将防御动作选择形式化为约束优化问题，实现最小干预原则；
+  \item 实现可插拔的TARC-Guard模块，能够对Agent执行日志输出风险分数、风险因子评分和分级防御动作建议，并验证其在多个Agent框架和攻击场景下的有效性。
+\end{enumerate}
+
+\subsection{研究目标}
+
+研究点二的目标包括：
+\begin{enumerate}
+  \item 提出适用于LLM Agent执行过程的异构行为轨迹图建模方法（含$V_{\text{guard}}$和$E_{\text{defend}}$）；
+  \item 构建基于三级升级判定机制的工具调用链威胁检测算法；
+  \item 提出基于风险路径与反事实消融的可解释归因方法；
+  \item 提出最小干预防御公式，实现“检测—归因—防御”完整闭环；
+  \item 在AgentDojo和AgentCanary基准上完成对比实验、消融实验和案例分析，验证DSR和UPR两个评价指标。
+\end{enumerate}

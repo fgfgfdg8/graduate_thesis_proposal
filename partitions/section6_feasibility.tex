@@ -8,7 +8,7 @@
 
 研究点一的风险校准模型具有明确的可解释指标，七个风险因子均可从日志中直接计算，不依赖不可解释的黑盒评分。权限扩散度$P_{\text{diff}}$基于集合论直接计算实际权限与必要权限的偏差；不可逆操作比例$I_{\text{irrev}}$和敏感数据暴露度$E_{\text{leak}}$的计算均基于事件属性的统计汇总；任务必要性偏差$N_{\text{need}}$通过对比实际调用工具集合与任务必要工具集合计算；人工确认覆盖率$H_{\text{cov}}$作为保护因子，其方向为负。
 
-校准风险分数$R_\theta(C) = \sigma(b + \theta^\top \Phi(C))$采用带约束的逻辑回归实现，通过“威胁先验初始化—弱监督标签生成—约束优化校准—验证集阈值搜索”四步整定策略学习权重，无复杂优化开销。L0--L4分级防御策略通过在验证集上搜索最优阈值组$\tau_0 < \tau_1 < \tau_2 < \tau_3$确定，防御动作优化公式（式~\ref{eq:guard_action}）在有限动作空间$|\mathcal{A}|=5$上枚举即可求解。
+校准风险分数$R_\theta(C) = \sigma(b + \theta^\top \Phi(C))$采用带约束的逻辑回归实现，通过“威胁先验初始化—弱监督标签生成—约束优化校准—验证集阈值搜索”四步整定策略学习权重，无复杂优化开销。L0--L4分级防御策略通过在验证集上搜索最优阈值组$\tau_0 < \tau_1 < \tau_2 < \tau_3$确定，防御动作优化公式（式\cite{eq:guard_action}）在有限动作空间$|\mathcal{A}|=5$上枚举即可求解。
 
 在信号获取可行性上，所有指标均可从统一日志模式中程序化提取：工具敏感度可从预定义工具注册表获取；权限扩散度可通过对比任务必要权限与实际调用权限集合计算；不可逆操作比例可通过事件\texttt{irreversible}字段统计；敏感数据暴露度可通过数据标签（\texttt{pii}、\texttt{credential}）和外部输出标志（\texttt{external\_sink}）组合判断；任务必要性偏差可通过任务描述中的工具调用需求集合计算。全部信号在黑盒设置下技术可行，不需要访问模型内部状态。
 
@@ -18,9 +18,9 @@
 
 行为轨迹图的构建规则：每个任务生成意图节点（$V_{\text{intent}}$），每个计划生成计划节点（$V_{\text{plan}}$），每个工具调用生成工具节点（$V_{\text{tool}}$），工具参数与返回结果生成数据节点（$V_{\text{data}}$），防御动作生成防御节点（$V_{\text{guard}}$）；若某个参数来自前序观察或记忆，则增加\texttt{derive}边；若某个结果被写入外部通道，则增加\texttt{send}边；若防御动作作用于某工具节点，则增加\texttt{defend}边（$E_{\text{defend}}$）。该构建过程完全确定性，无随机性，技术可靠。
 
-TTED第二级采用类型化路径特征+轻量分类器（逻辑回归或梯度提升树），无图神经网络训练成本，在标注数据有限时更稳健；GAT作为可选增强，在数据充足时替换分类器。图分数公式（式~\ref{eq:graph_score}）第四项引入$R_\theta(C)$作为序列先验，使图检测在标注数据稀缺时仍能利用序列级风险信号。
+TTED第二级采用类型化路径特征+轻量分类器（逻辑回归或梯度提升树），无图神经网络训练成本，在标注数据有限时更稳健；GAT作为可选增强，在数据充足时替换分类器。图分数公式（式\cite{eq:graph_score}）第四项引入$R_\theta(C)$作为序列先验，使图检测在标注数据稀缺时仍能利用序列级风险信号。
 
-反事实消融归因的可行性在于：图规模可控（每条轨迹通常不超过20个节点），消融计算可以直接枚举关键节点，不需要训练复杂解释器。最小干预防御公式（式~\ref{eq:min_intervention}）在有限动作空间$|\mathcal{A}|=5$上枚举即可求解，无需复杂优化算法。闭环验证的可行性在于数据构造时同步记录真实风险触发节点和风险路径，形成\texttt{gold\_path}与\texttt{gold\_node}标签，可用于验证归因准确性。
+反事实消融归因的可行性在于：图规模可控（每条轨迹通常不超过20个节点），消融计算可以直接枚举关键节点，不需要训练复杂解释器。最小干预防御公式（式\cite{eq:min_intervention}）在有限动作空间$|\mathcal{A}|=5$上枚举即可求解，无需复杂优化算法。闭环验证的可行性在于数据构造时同步记录真实风险触发节点和风险路径，形成\texttt{gold\_path}与\texttt{gold\_node}标签，可用于验证归因准确性。
 
 \subsection{实验可行性分析}
 
@@ -30,8 +30,6 @@ TTED第二级采用类型化路径特征+轻量分类器（逻辑回归或梯度
   \item \textbf{数据可行性。}实验所用Agent轨迹基于AgentDojo\cite{balunovic2024agentdojo}（4域，567测试对）、AgentCanary\cite{li2026agentcanary}（278任务，24攻击类型）两个面向真实部署场景的公开基准构建。AgentDojo通过Docker容器化工具环境提供真实可执行任务，AgentCanary内置Tracee内核审计支持系统级调用日志采集，两者合计845条轨迹，覆盖$R_0$至$R_6$全部风险类型。此外，可通过模拟文件、邮件、数据库等工具的合成数据进行合成数据集扩充，以覆盖边缘场景。上述数据集已验证可支撑主实验、消融实验、路径定位实验和归因实验的完整评估。
 
   \item \textbf{对比基线可行性。}本研究拟采用的14个代理基线方法\cite{yao2023react,schick2023toolformer,patil2024gorilla,qin2024toolllm,balunovic2024agentdojo,xie2024osworld,bonatti2025windows,krawiecka2025extending,debenedetti2025camel,costa2025fides,abdelnabi2025firewalls,dong2026pear,wang2026aligning,he2025sentinelagent}，涵盖了2021—2026年有关方向的代表性研究思想，且均可在本研究提出的统一的日志与风险度量框架模式上实现，包括权限控制（StaticWhitelist\cite{yao2023react,schick2023toolformer}、RBAC-ABAC\cite{shi2025progent}）、信息流（TaintLite\cite{costa2025fides}）、运行时监控（RuntimeAnomaly\cite{he2025sentinelagent}）、动态防火墙（DynamicLLM-Firewall\cite{abdelnabi2025firewalls}）、授权图（AuthGraph-DualGraph\cite{wang2026aligning}）等，覆盖多元、比较翔实，具有坚实的研究基础支撑。
-  
-  \item \textbf{工程可行性。}工程实现方面，可以基于现有的成熟开源库进行整体实现：图构建使用\texttt{networkx}，图可视化和报告生成使用\texttt{matplotlib}或\texttt{graphviz}，使用\texttt{pandas/jsonlines}处理日志，\texttt{scikit-learn}实现轻量分类器（逻辑回归/梯度提升树），GAT部分可选用\texttt{PyTorch Geometric}实现。核心模块保持解耦，优先保证代码可读性和可维护性。TARC-Guard的权重整定退化为带先验正则的逻辑回归，无复杂优化需求；TraceGraph-Guard的三级检测中，第一级为规则匹配（$O(|V|+|E|)$），第二级为轻量分类器（无GPU需求），第三级LLM调用仅对约15\%边界样本激活，整体推理开销可控。防御中间层通过在轨迹图边上注入\texttt{defense\_constraint}属性实现，无需修改现有Agent框架。度量指标方面，TARC-Guard的七维风险因子均可从统一日志模式中直接计算；TraceGraph-Guard的路径归因指标（PathRecall@K、Hit@K、MRR）基于\texttt{gold\_path}和\texttt{gold\_node}标签进行计算，技术上完全可行。
 
 \end{enumerate}
 
@@ -44,3 +42,5 @@ TTED第二级采用类型化路径特征+轻量分类器（逻辑回归或梯度
 \subsubsection{先期实验结果}
 
 先期实验结果表明，本研究提出的方法（TARC-Guard和TraceGraph-Guard）在三个合成数据集上的表现均优于所有14个代理基线方法，主要实验结果如下：研究点一（TARC-Guard序列级风险校准）在F1、AUROC、Recall@10\%等指标上优于StaticWhitelist、RBAC-ABAC、TaintLite等序列检测基线，ECE和Brier Score验证了风险分数的概率可解释性；研究点二（TraceGraph-Guard轨迹图归因）在路径归因PathRecall@3和Hit@3等指标上优于无图规则模型，验证了图建模对跨步骤风险识别的有效性；防御中间层在DSR（防御成功率）和UPR（效用保持率）上均优于全量阻断基线，验证了最小干预防御的优势。上述结果为开题提供了方法可行性的初步验证。
+
+\todo{补充先期实验结果图}

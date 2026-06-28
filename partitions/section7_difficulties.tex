@@ -7,7 +7,7 @@
 
   \item \textbf{行为轨迹图构建的完整性与$V_{\text{guard}}$/$E_{\text{defend}}$接入。}不同Agent执行框架的日志字段存在缺失或不一致，可能导致构建的轨迹图缺失部分依赖边，影响检测和归因的准确性；同时，防御节点$V_{\text{guard}}$和防御边$E_{\text{defend}}$需要与Defense Guard中间层的实际动作保持一致，存在接口对齐挑战。拟设计鲁棒的图构建规则：对于缺失字段，采用默认值填充并标注不确定性；对于参数来源不明的情况，增加“unknown\_source”节点；$V_{\text{guard}}$在Pre-call/In-call/Post-call 防御动作触发时自动注入，$E_{\text{defend}}$指向被防御的工具节点，保持接口一致性。
 
-  \item \textbf{最小干预防御动作选择的效用-安全权衡。}防御动作优化公式（式~\ref{eq:min_intervention}）中$\lambda_s, \lambda_u, \lambda_c$的权衡系数设定直接影响DSR（防御成功率）与UPR（效用保持率）的平衡；不同场景下最优权衡系数不同，难以统一设定。拟在AgentDojo和AgentCanary验证集上进行网格搜索，绘制DSR-UPR帕累托前沿曲线，选取帕累托最优点对应的权衡系数；同时提供场景自适应接口，允许用户根据业务需求调整$\lambda_s$（安全优先）或$\lambda_u$（效用优先）。
+  \item \textbf{最小干预防御动作选择的效用-安全权衡。}防御动作优化公式（式\cite{eq:min_intervention}）中$\lambda_s, \lambda_u, \lambda_c$的权衡系数设定直接影响DSR（防御成功率）与UPR（效用保持率）的平衡；不同场景下最优权衡系数不同，难以统一设定。拟在AgentDojo和AgentCanary验证集上进行网格搜索，绘制DSR-UPR帕累托前沿曲线，选取帕累托最优点对应的权衡系数；同时提供场景自适应接口，允许用户根据业务需求调整$\lambda_s$（安全优先）或$\lambda_u$（效用优先）。
 
   \item \textbf{图规则库覆盖完备性验证。}8条核心规则（Rule-1至Rule-8）能否覆盖A1--A6六类攻击的全部变体，以及规则组合是否存在误报，需要系统性验证。拟通过消融实验分别测试每条规则的精确率和召回率贡献；对于规则未覆盖的样本，分析其路径模式并补充规则或交由第二级分类器处理；同时统计第一级规则在AgentDojo和AgentCanary上的激活比例，验证规则库的实际覆盖范围。
 \end{enumerate}

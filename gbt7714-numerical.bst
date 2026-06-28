@@ -91,7 +91,7 @@ FUNCTION {load.config}
   #1 'show.doi :=
   #1 'show.preprint :=
   #0 'show.note :=
-  #1 'show.english.translation :=
+   #0 'show.english.translation :=
   #1 'end.with.period :=
   #1 'lowercase.word.after.colon :=
 }

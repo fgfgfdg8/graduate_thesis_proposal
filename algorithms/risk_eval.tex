@@ -1,30 +1,27 @@
 \begin{algorithm}[htbp]
 \caption{TARC-Guard: Tool-Chain Risk Calibration}
 \label{alg:risk_eval}
-\begin{algorithmic}[1]
-\Require Execution log $\mathcal{L}$, tool registry $\mathcal{T}$, task specification $q$, prior weight $\theta_0$
-\Ensure Calibrated risk score $R_\theta(C)$, contribution vector $\mathbf{contrib}$, guard action $a^*$
-\State Parse $\mathcal{L}$ into event sequence $C = \langle e_1, \ldots, e_T \rangle$ with fields $\{src_t, sink_t, confirm_t, perm_t\}$
-\State \textbf{// Step 1: Compute risk feature vector}
-\State $S_{\text{tool}} \leftarrow \frac{1}{T}\sum_{t=1}^{T} \mathcal{T}[tool_t].\text{sensitivity}$
-\State $D_{\text{call}} \leftarrow \max_{t}\,\text{depth}(e_t)$
-\State $P_{\text{diff}} \leftarrow |Perm(C) \setminus Perm_{\text{req}}(q)| / (|Perm(C) \cup Perm_{\text{req}}(q)| + \epsilon)$
-\State $E_{\text{leak}} \leftarrow \sum_{p \in \mathcal{P}_{\text{sens}\to\text{sink}}} \omega(p) \cdot \mathbb{I}[\text{ext}(\text{sink}_p)] \;/\; (|Data_{\text{sens}}|+\epsilon)$
-\State $I_{\text{irrev}} \leftarrow \frac{1}{T}\sum_{t=1}^{T} irr(e_t)$
-\State $H_{\text{cov}} \leftarrow \sum_t \mathbb{I}[risk(e_t)>\theta_h]\cdot confirm(e_t)\;/\;(\sum_t \mathbb{I}[risk(e_t)>\theta_h]+\epsilon)$
-\State $N_{\text{need}} \leftarrow 1 - |\{tool_t \mid tool_t \in Tools_{\text{req}}(q)\}| / T$
-\State $\Phi(C) \leftarrow [S_{\text{tool}},\,D_{\text{call}},\,P_{\text{diff}},\,E_{\text{leak}},\,I_{\text{irrev}},\,H_{\text{cov}},\,N_{\text{need}}]$
-\State \textbf{// Step 2: Calibrated risk score (logistic with learned $\theta$)}
-\State $R_\theta(C) \leftarrow \sigma(b + \theta^\top \Phi(C))$ \Comment{$\theta$ initialized from $\theta_0$, refined by Eq.~\eqref{eq:loss}}
-\State $contrib_j \leftarrow \theta_j \Phi_j(C) / (\sum_k |\theta_k \Phi_k(C)| + \epsilon)$ for each $j$
-\State \textbf{// Step 3: Map risk score to L0--L4 guard action}
-\If{$R_\theta(C) < \tau_0$} $a^* \leftarrow$ Allow
-\ElsIf{$R_\theta(C) < \tau_1$} $a^* \leftarrow$ Log
-\ElsIf{$R_\theta(C) < \tau_2$} $a^* \leftarrow$ Mask
-\ElsIf{$R_\theta(C) < \tau_3$} $a^* \leftarrow$ AskConfirm
-\Else{} $a^* \leftarrow$ Block+Rollback
-\EndIf
-\State Verify $ResidualRisk(C, a^*) \leq \tau$; if violated, escalate to next level \Comment{Eq.~\eqref{eq:guard_action}}
-\State \Return $R_\theta(C)$, $\mathbf{contrib}$, $a^*$
-\end{algorithmic}
+\KwIn{Execution log $\mathcal{L}$, tool registry $\mathcal{T}$, task specification $q$, prior weight $\theta_0$}
+\KwOut{Calibrated risk score $R_\theta(C)$, contribution vector $\mathbf{contrib}$, guard action $a^*$}
+Parse $\mathcal{L}$ into event sequence $C = \langle e_1, \ldots, e_T \rangle$ with fields $\{src_t, sink_t, confirm_t, perm_t\}$\;
+\tcp{Step 1: Compute risk feature vector}
+$S_{\text{tool}} \leftarrow \frac{1}{T}\sum_{t=1}^{T} \mathcal{T}[tool_t].\text{sensitivity}$\;
+$D_{\text{call}} \leftarrow \max_{t}\,\text{depth}(e_t)$\;
+$P_{\text{diff}} \leftarrow |Perm(C) \setminus Perm_{\text{req}}(q)| / (|Perm(C) \cup Perm_{\text{req}}(q)| + \epsilon)$\;
+$E_{\text{leak}} \leftarrow \sum_{p \in \mathcal{P}_{\text{sens}\to\text{sink}}} \omega(p) \cdot \mathbb{I}[\text{ext}(\text{sink}_p)] \;/\; (|Data_{\text{sens}}|+\epsilon)$\;
+$I_{\text{irrev}} \leftarrow \frac{1}{T}\sum_{t=1}^{T} irr(e_t)$\;
+$H_{\text{cov}} \leftarrow \sum_t \mathbb{I}[risk(e_t)>\theta_h]\cdot confirm(e_t)\;/\;(\sum_t \mathbb{I}[risk(e_t)>\theta_h]+\epsilon)$\;
+$N_{\text{need}} \leftarrow 1 - |\{tool_t \mid tool_t \in Tools_{\text{req}}(q)\}| / T$\;
+$\Phi(C) \leftarrow [S_{\text{tool}},\,D_{\text{call}},\,P_{\text{diff}},\,E_{\text{leak}},\,I_{\text{irrev}},\,H_{\text{cov}},\,N_{\text{need}}]$\;
+\tcp{Step 2: Calibrated risk score (logistic with learned $\theta$)}
+$R_\theta(C) \leftarrow \sigma(b + \theta^\top \Phi(C))$ \tcp{$\theta$ initialized from $\theta_0$, refined by Eq.~\eqref{eq:loss}}
+$contrib_j \leftarrow \theta_j \Phi_j(C) / (\sum_k |\theta_k \Phi_k(C)| + \epsilon)$ for each $j$\;
+\tcp{Step 3: Map risk score to L0--L4 guard action}
+\If{$R_\theta(C) < \tau_0$}{$a^* \leftarrow$ Allow\;}
+\ElseIf{$R_\theta(C) < \tau_1$}{$a^* \leftarrow$ Log\;}
+\ElseIf{$R_\theta(C) < \tau_2$}{$a^* \leftarrow$ Mask\;}
+\ElseIf{$R_\theta(C) < \tau_3$}{$a^* \leftarrow$ AskConfirm\;}
+\Else{$a^* \leftarrow$ Block+Rollback\;}
+Verify $ResidualRisk(C, a^*) \leq \tau$; if violated, escalate to next level \tcp{Eq.~\eqref{eq:guard_action}}
+\Return{$R_\theta(C)$, $\mathbf{contrib}$, $a^*$}
 \end{algorithm}

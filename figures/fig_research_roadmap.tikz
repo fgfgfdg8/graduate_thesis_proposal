@@ -90,7 +90,7 @@
 \node[tracknode] (n16) at (\xA,\yVI)
   {WorfBench~\cite{qiao2025worfbench}\\CogAgent~\cite{hong2024cogagent}\\工作流\&GUI评测};
 \node[tracknode] (n17) at (\xA,\yVII)
-  {PEAR~\cite{dong2026pear}~Zou等~\cite{zou2025security}\\综述~\cite{wang2024survey_agents,xi2025rise}\\真实场景安全缺口};
+  {PEAR~\cite{dong2026pear}~Zou等~\cite{zou2025security}\\综述~\cite{wang2024survey,xi2025rise}\\真实场景安全缺口};
 
 % ===== 列2：安全威胁与防御机制 =====
 \node[tracknode] (n21) at (\xB,\yI)
@@ -122,7 +122,7 @@
 \node[tracknode] (n36) at (\xC,\yVI)
   {AgentVigil~\cite{wang2025agentvigil}\\AirgapAgent~\cite{bagdasarian2024airgapagent}\\在线监控\&隔离};
 \node[tracknode] (n37) at (\xC,\yVII)
-  {Wang综述~\cite{wang2026agenttraces}\\de Witt等~\cite{dewitt2026openchallenges}\\AgentTrace~\cite{wang2026agenttrace}\\ChainFuzzer~\cite{wu2026chainfuzzer}\\归因挑战\&根因定位};
+  {Wang综述~\cite{wang2026fromagenttraces}\\de Witt等~\cite{dewitt2026openchallenges}\\AgentTrace~\cite{wang2026agenttrace}\\ChainFuzzer~\cite{wu2026chainfuzzer}\\归因挑战\&根因定位};
 
 % ===== 列4：风险度量与可解释评估 =====
 \node[tracknode] (n41) at (\xD,\yI)
