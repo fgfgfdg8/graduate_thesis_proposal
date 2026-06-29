@@ -1,0 +1,53 @@
+\begin{algorithm}[htbp]
+\caption{TraceGraph-Guard: Agent Tool-Call Guard Main Loop}
+\label{alg:guard_main_loop}
+\KwIn{User query $q$, tool registry $\mathcal{T}$, guard config $\Theta$}
+\KwOut{Guard report $\mathcal{R}$ (audit events, risk counts, top attribution, graph)}
+\SetKwFunction{NextStepId}{NextStepId}
+\SetKwFunction{EvalPreCall}{EvaluatePreCall}
+\SetKwFunction{ChooseArgs}{ChooseArgs}
+\SetKwFunction{ProcResult}{ProcessToolResult}
+\SetKwFunction{RecEvent}{RecordEvent}
+\SetKwFunction{BuildPkt}{BuildEvidencePkt}
+\SetKwFunction{Sanitize}{SanitizeArgs}
+\SetKwFunction{MaskPII}{MaskPII}
+\SetKwFunction{Neutralize}{NeutralizeInstr}
+
+$guard.\text{audit\_events} \leftarrow []$; $guard.\text{step\_id} \leftarrow 0$\;
+$guard.\text{taint\_store} \leftarrow \text{TaintStore}()$\;
+$guard.\text{graph} \leftarrow \text{TraceGraph}()$\;
+$guard.\text{judge} \leftarrow \text{BuildJudge}(\Theta.\text{provider})$ if $\Theta.\text{enable\_llm\_judge}$ else $\bot$\;
+
+\For{each agent tool-call $\langle tool\_name, args \rangle$}{
+  $step\_id \leftarrow$ \NextStepId{}\;
+  \tcp{Pre-call risk evaluation}
+  $decision \leftarrow$ \EvalPreCall{$q,\, tool\_name,\, args$}\;
+  \If{$\Theta.\text{gray\_low} \leq decision.\text{score} \leq \Theta.\text{gray\_high} \land guard.\text{judge} \neq \bot$}{
+    $packet \leftarrow$ \BuildPkt{$tool\_name,\, args,\, decision$}\;
+    $decision \leftarrow guard.\text{judge}.\text{adjudicate}(packet,\, decision)$\;
+  }
+  
+  \tcp{Argument sanitization}
+  $eff\_args \leftarrow$ \ChooseArgs{$args,\, decision$}\;
+  \If{$decision.\text{action} \in \{\text{SANITIZE},\, \text{MASK}\}$}{
+    $eff\_args \leftarrow$ \Sanitize{$args$} \tcp{recursive PII masking}
+  }
+  
+  \tcp{Action dispatch}
+  \uIf{$decision.\text{action} \in \{\text{BLOCK},\, \text{ASK\_CONFIRM},\, \text{ROLLBACK},\, \text{QUARANTINE}\}$}{
+    $content \leftarrow guard.\text{blocked\_message}(tool\_name,\, decision)$\;
+    \RecEvent{$step\_id,\, tool\_name,\, args,\, decision,\, content$}\;
+  }
+  \uElseIf{$decision.\text{action} = \text{SANDBOX}$}{
+    $content \leftarrow guard.\text{sandbox\_message}(tool\_name,\, decision)$\;
+    \RecEvent{$step\_id,\, tool\_name,\, args,\, decision,\, content$}\;
+  }
+  \Else{
+    \tcp{Execute real tool call with (possibly sanitized) args}
+    $(result,\, error) \leftarrow runtime.\text{run\_function}(tool\_name,\, eff\_args)$\;
+    $filtered \leftarrow$ \ProcResult{$step\_id,\, tool\_name,\, result,\, error$}\;
+    \RecEvent{$step\_id,\, tool\_name,\, eff\_args,\, decision,\, filtered$}\;
+  }
+}
+\Return{$guard.\text{export\_report}()$}\;
+\end{algorithm}

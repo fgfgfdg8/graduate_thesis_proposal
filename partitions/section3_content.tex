@@ -244,7 +244,7 @@
 \end{equation}
 其中，$h_k$ 为第 $k$ 棵回归树，$\eta$ 为学习率。GBDT 能够自动捕获特征间的非线性交互（如“权限跳变次数高 $\wedge$ 无确认”的组合风险），在特征维度较低时通常优于线性模型。
 
-\textbf{与现有基于图方法的区别。}现有工作（如 FIDES~\cite{costa2025fides}、CaMeL~\cite{debenedetti2025camel}）大多采用全量污点追踪或图神经网络（GNN/GAT）进行检测，具有训练数据需求量大、推理延迟高、在标注稀缺场景下泛化性弱的局限。本方法以有限维类型化路径特征替代端到端图表示学习，在标注数据有限时更稳健，且特征含义与攻击语义直接对应，便于安全工程师审计和调整；GAT作为可选增强模块，在数据充足时替换分类器以进一步提升对隐蔽路径的召回率，实现“轻量优先、按需增强”的工程策略。
+\textbf{与现有基于图方法的区别。}现有工作（如 FIDES\cite{costa2025fides}、CaMeL\cite{debenedetti2025camel}）大多采用全量污点追踪或图神经网络（GNN/GAT）进行检测，具有训练数据需求量大、推理延迟高、在标注稀缺场景下泛化性弱的局限。本方法以有限维类型化路径特征替代端到端图表示学习，在标注数据有限时更稳健，且特征含义与攻击语义直接对应，便于安全工程师审计和调整；GAT作为可选增强模块，在数据充足时替换分类器以进一步提升对隐蔽路径的召回率，实现“轻量优先、按需增强”的工程策略。
 
 \textbf{Typed-Path Classifier 算法流程。}\autoref{fig:tpc_flow} 给出了第二级分类器的完整流程框图。
 
@@ -295,7 +295,7 @@
 
 其中，$\epsilon$为一个较小的平滑项。系统优先关注归因分数排名靠前的节点/边，指导后续的防御动作选择。
 
-\textbf{最小干预防御（Minimum-Intervention Defense）。}现有检测方法往往仅限于“输出告警”~\cite{wang2025agentarmor,liu2026auditing}或“输出单步根因定位”~\cite{wang2026agenttrace}，但均未给出可操作的防御动作。为弥补这一局限，本研究提出将反事实归因结果直接映射为运行时防御动作，遵循最小干预原则：
+\textbf{最小干预防御（Minimum-Intervention Defense）。}现有检测方法往往仅限于“输出告警”\cite{wang2025agentarmor,liu2026auditing}或“输出单步根因定位”\cite{wang2026agenttrace}，但均未给出可操作的防御动作。为弥补这一局限，本研究提出将反事实归因结果直接映射为运行时防御动作，遵循最小干预原则：
 
 \begin{equation}
   a_t^* = \arg\min_{a \in \mathcal{A}} \left\{\lambda_s \cdot ResidualRisk(G_t, a) + \lambda_u \cdot UtilityLoss(a) + \lambda_c \cdot Cost(a)\right\}

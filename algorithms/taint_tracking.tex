@@ -1,0 +1,45 @@
+\begin{algorithm}[htbp]
+\caption{TaintStore: Taint Tracking \& Propagation}
+\label{alg:taint_tracking}
+\KwIn{Taint store $\mathcal{S} = \{\text{records}\}$, tool output $o$, source kind $\kappa$}
+\KwOut{Updated $\mathcal{S}$, argument taint score $\tau_{\text{arg}} \in [0,1]$}
+\SetKwFunction{Observe}{Observe}
+\SetKwFunction{ArgTaint}{ArgTaintScore}
+\SetKwFunction{Hash}{Hash}
+\SetKwFunction{ExtractPII}{ExtractPII}
+\SetKwFunction{IsInjection}{IsInjection}
+\SetKwFunction{Overlap}{TextOverlap}
+
+\tcp{Observe: record taint from tool output}
+\SetKwFunction{TObserve}{Observe($step\_id,\, tool,\, \kappa,\, o,\, force$)}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\TObserve}{
+  $text \leftarrow \text{flatten}(o)$\;
+  \If{$text = \emptyset$}{\Return{$\bot$}}
+  $pii \leftarrow$ \ExtractPII{$text$}\;
+  $inj \leftarrow$ \IsInjection{$text$}\;
+  \If{$\neg force \land pii = \emptyset \land \neg inj \land \kappa \notin \{\text{web\_read},\,\text{email\_read},\,\text{memory\_read},\,\text{file\_read}\}$}{
+    \Return{$\bot$}
+  }
+  $snippets \leftarrow$ top-$k$ lines of $text$, each truncated to 96 chars\;
+  $rec \leftarrow \{\text{step\_id},\,\text{tool},\,\kappa,\,\text{Hash}(text),\,pii,\,inj,\,snippets\}$\;
+  $\mathcal{S}.\text{records} \leftarrow \mathcal{S}.\text{records} \cup \{rec\}$\;
+  \Return{$rec$}
+}
+
+\tcp{ArgTaintScore: compute taint of tool arguments}
+\SetKwFunction{TArgTaint}{ArgTaintScore($args$)}
+\Fn{\TArgTaint}{
+  $text \leftarrow \text{flatten}(args)$\;
+  \If{$text = \emptyset \lor \mathcal{S}.\text{records} = \emptyset$}{\Return{0.0}}
+  $\tau \leftarrow 0.0$\;
+  \If{\ExtractPII{$text$} $\neq \emptyset$}{$\tau \leftarrow \max(\tau,\, 0.70)$}
+  \If{\IsInjection{$text$}}{$\tau \leftarrow \max(\tau,\, 0.50)$}
+  $all\_snips \leftarrow \bigcup_{rec \in \mathcal{S}.\text{records}[-8:]} rec.\text{snippets}$\;
+  $\tau \leftarrow \max(\tau,\,$ \Overlap{$text,\, all\_snips$}$)$\;
+  \If{$\exists\, rec \in \mathcal{S}.\text{records}[-3:] \text{ s.t. } rec.\text{injection\_like} \land \tau > 0$}{
+    $\tau \leftarrow \max(\tau,\, 0.75)$ \tcp{recent injection amplification}
+  }
+  \Return{$\min(1.0,\, \tau)$}
+}
+\end{algorithm}

@@ -1,8 +1,10 @@
 \begin{algorithm}[htbp]
-\caption{TraceGraph-Guard: Three-Tier Escalation Detection (TTED)}
+\caption{TraceGraph-Guard: 三级升级判定检测机制 (TTED)}
 \label{alg:tted}
-\KwIn{Trajectory graph $G_t=(V_t,E_t,X_t,R_t)$, risk score $R_\theta(C)$, thresholds $\theta_{lo}=0.35$, $\theta_{hi}=0.65$}
+\KwIn{Trajectory graph $G_t=(V_t,E_t,X_t,R_t)$, TARC-Guard risk score $R_\theta(C)$, thresholds $\theta_{lo}=0.35$, $\theta_{hi}=0.65$}
 \KwOut{Verdict $\hat{y}\in\{0,1\}$, composite score $M(G_t)$, explanation $\mathcal{E}$}
+\SetKwFunction{ExtractPathFeat}{ExtractPathFeatures}
+\SetKwFunction{BuildJudgePrompt}{BuildJudgePrompt}
 \tcp{Tier-1: Graph Rule Gate \hfill $O(|V_t|+|E_t|)$}
 $\text{hits} \leftarrow \emptyset$\;
 \For{each rule $\rho \in \{\text{Rule-1},\ldots,\text{Rule-8}\}$ \tcp{see Table~\ref{tab:graph_rules}}}{
@@ -26,13 +28,19 @@ $\hat{p}_{\text{cls}} \leftarrow \text{Classifier}(\mathbf{f}(G_t))$ \tcp{LR or 
 \ElseIf{$\hat{p}_{\text{cls}} < \theta_{lo}$}{
   \Return{$\hat{y}\leftarrow 0,\; M(G_t)\leftarrow\hat{p}_{\text{cls}},\; \mathcal{E}\leftarrow\emptyset$}
 }
-\tcp{Tier-3: LLM-as-a-Judge}
-\tcp{activated for $\approx$10--15\% of samples}
+\tcp{Tier-3: LLM-as-a-Judge (activated for $\approx$10--15\% of samples)}
+\tcp{Build sanitized evidence packet --- no raw untrusted content}
 $\mathcal{P}^* \leftarrow\text{TopKPaths}(G_t,\,\mathbf{f})$\;
-$\text{prompt} \leftarrow\text{BuildJudgePrompt}(G_t,\,\mathcal{P}^*,\,\hat{p}_{\text{cls}})$ \tcp{structured risk narrative}
-$(S_{\text{llm}},\,\text{reason})\leftarrow\text{LLM}(\text{prompt})$ \tcp{score $\in[0,1]$, chain-of-thought reason}
-$\hat{y}\leftarrow\mathbb{I}[S_{\text{llm}}>0.5]$\;
-$M(G_t) \leftarrow \lambda_2\hat{p}_{\text{cls}} + \lambda_3 S_{\text{llm}} + \lambda_4 R_\theta(C)$\;
+$packet \leftarrow \{\text{tool\_name},\, \text{sanitized\_args\_preview}[\text{:800}],\, \text{risk\_score},\, \text{risk\_vector},\, \text{risk\_types},\, \text{recent\_taint}[\text{:5}]\}$\;
+$\text{prompt} \leftarrow$ \BuildJudgePrompt{$G_t,\,\mathcal{P}^*,\,\hat{p}_{\text{cls}}$} \tcp{structured risk narrative}
+$(S_{\text{llm}},\,\text{reason})\leftarrow\text{LLM}(\text{prompt})$ \tcp{JSON: $\{\text{action},\,\text{confidence},\,\text{rationale}\}$}
+\tcp{Constraint: only modify action if $R_\theta(C) < 0.82$ \& action is non-destructive}
+\If{$R_\theta(C) < 0.82 \land S_{\text{llm}}.\text{action} \in \{\text{ALLOW},\,\text{LOG},\,\text{SANITIZE},\,\text{MASK},\,\text{ASK\_CONFIRM}\}$}{
+  Update $action$ from LLM output\;
+}
+\Else{Keep original action from Tier-1/Tier-2\;}
+$\hat{y}\leftarrow\mathbb{I}[S_{\text{llm}}.\text{confidence}>0.5]$\;
+$M(G_t) \leftarrow \lambda_2\hat{p}_{\text{cls}} + \lambda_3 S_{\text{llm}}.\text{confidence} + \lambda_4 R_\theta(C)$\;
 $\mathcal{E}\leftarrow(\mathcal{P}^*,\,\text{reason})$\;
 \Return{$\hat{y},\,M(G_t),\,\mathcal{E}$}
 \end{algorithm}

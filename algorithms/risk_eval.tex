@@ -1,27 +1,65 @@
 \begin{algorithm}[htbp]
-\caption{TARC-Guard: Tool-Chain Risk Calibration}
+\caption{TARC-Guard: 工具调用链风险校准与分级防御 (RiskEngine.compute)}
 \label{alg:risk_eval}
-\KwIn{Execution log $\mathcal{L}$, tool registry $\mathcal{T}$, task specification $q$, prior weight $\theta_0$}
-\KwOut{Calibrated risk score $R_\theta(C)$, contribution vector $\mathbf{contrib}$, guard action $a^*$}
-Parse $\mathcal{L}$ into event sequence $C = \langle e_1, \ldots, e_T \rangle$ with fields $\{src_t, sink_t, confirm_t, perm_t\}$\;
-\tcp{Step 1: Compute risk feature vector}
-$S_{\text{tool}} \leftarrow \frac{1}{T}\sum_{t=1}^{T} \mathcal{T}[tool_t].\text{sensitivity}$\;
-$D_{\text{call}} \leftarrow \max_{t}\,\text{depth}(e_t)$\;
-$P_{\text{diff}} \leftarrow |Perm(C) \setminus Perm_{\text{req}}(q)| / (|Perm(C) \cup Perm_{\text{req}}(q)| + \epsilon)$\;
-$E_{\text{leak}} \leftarrow \sum_{p \in \mathcal{P}_{\text{sens}\to\text{sink}}} \omega(p) \cdot \mathbb{I}[\text{ext}(\text{sink}_p)] \;/\; (|Data_{\text{sens}}|+\epsilon)$\;
-$I_{\text{irrev}} \leftarrow \frac{1}{T}\sum_{t=1}^{T} irr(e_t)$\;
-$H_{\text{cov}} \leftarrow \sum_t \mathbb{I}[risk(e_t)>\theta_h]\cdot confirm(e_t)\;/\;(\sum_t \mathbb{I}[risk(e_t)>\theta_h]+\epsilon)$\;
-$N_{\text{need}} \leftarrow 1 - |\{tool_t \mid tool_t \in Tools_{\text{req}}(q)\}| / T$\;
-$\Phi(C) \leftarrow [S_{\text{tool}},\,D_{\text{call}},\,P_{\text{diff}},\,E_{\text{leak}},\,I_{\text{irrev}},\,H_{\text{cov}},\,N_{\text{need}}]$\;
-\tcp{Step 2: Calibrated risk score (logistic with learned $\theta$)}
-$R_\theta(C) \leftarrow \sigma(b + \theta^\top \Phi(C))$ \tcp{$\theta$ initialized from $\theta_0$, refined by Eq.~\eqref{eq:loss}}
-$contrib_j \leftarrow \theta_j \Phi_j(C) / (\sum_k |\theta_k \Phi_k(C)| + \epsilon)$ for each $j$\;
-\tcp{Step 3: Map risk score to L0--L4 guard action}
-\If{$R_\theta(C) < \tau_0$}{$a^* \leftarrow$ Allow\;}
-\ElseIf{$R_\theta(C) < \tau_1$}{$a^* \leftarrow$ Log\;}
-\ElseIf{$R_\theta(C) < \tau_2$}{$a^* \leftarrow$ Mask\;}
-\ElseIf{$R_\theta(C) < \tau_3$}{$a^* \leftarrow$ AskConfirm\;}
-\Else{$a^* \leftarrow$ Block+Rollback\;}
-Verify $ResidualRisk(C, a^*) \leq \tau$; if violated, escalate to next level \tcp{Eq.~\eqref{eq:guard_action}}
-\Return{$R_\theta(C)$, $\mathbf{contrib}$, $a^*$}
+\KwIn{User query $q$, tool name $t$, args $\mathbf{a}$, call depth $d$, taint store $\mathcal{S}$}
+\KwOut{GuardDecision: action, risk score $R \in [0,1]$, risk level, risk vector, reasons, evidence}
+\tcp{Step 1: Lookup tool metadata (config.py \texttt{lookup\_tool\_meta})}
+$meta \leftarrow \mathcal{T}[t]$ via regex pattern matching; if unknown, use default (sensitivity=0.35)\;
+\tcp{Step 2: Compute 8-dim risk feature vector $\Phi$ (risk.py \texttt{RiskEngine.compute})}
+$S_{\text{tool}} \leftarrow meta.\text{sensitivity}$\;
+$D_{\text{call}} \leftarrow \min(1.0,\, d / 10.0)$\;
+$Perm_{\text{req}} \leftarrow \text{InferRequiredPermissions}(q)$ \tcp{keyword-based + negation logic}
+$P_{\text{diff}} \leftarrow |meta.\text{permissions} \setminus Perm_{\text{req}}| \,/\, (|meta.\text{permissions} \cup Perm_{\text{req}}| + \epsilon)$\;
+\tcp{Data exposure: layer-1 for external\_sink, layer-2 for is\_sink}
+$pii \leftarrow \text{ExtractPII}(\text{flatten}(\mathbf{a}))$\;
+$\tau_{\text{arg}} \leftarrow \mathcal{S}.\text{ArgTaintScore}(\mathbf{a})$ \tcp{see Alg.~\ref{alg:taint_tracking}}
+$inj \leftarrow \text{IsInjection}(\text{flatten}(\mathbf{a}))$\;
+$confirmed \leftarrow \text{ConfirmedByUser}(q,\, \mathbf{a})$ \tcp{16 markers, zh+en}
+\If{$meta.\text{category} \in \{\text{bank\_transfer},\, \text{bank\_schedule\_write},\,\ldots\}$}{
+	$\mathbf{a}_{\text{exp}} \leftarrow$ filter to text fields only (subject, memo, ...) \tcp{avoid IBAN/amount false positives}
+}
+\Else{$\mathbf{a}_{\text{exp}} \leftarrow \mathbf{a}$}
+$E_{\text{leak}} \leftarrow 0.0$\;
+\If{$meta.\text{external\_sink} \land (\text{PII in } \mathbf{a}_{\text{exp}} \lor \mathcal{S}.\text{ArgTaintScore}(\mathbf{a}_{\text{exp}}) \geq 0.55)$}{$E_{\text{leak}} \leftarrow 1.0$}
+\ElseIf{$meta.\text{is\_sink} \land (\text{PII in } \mathbf{a}_{\text{exp}})$}{$E_{\text{leak}} \leftarrow 0.65$}
+$I_{\text{irrev}} \leftarrow 1.0$ if $meta.\text{irreversible}$ else $0.0$\;
+$H_{\text{no\_confirm}} \leftarrow 0.0$\;
+\If{$(meta.\text{requires\_confirmation} \lor meta.\text{external\_sink} \lor meta.\text{irreversible}) \land \neg confirmed$}{
+	$H_{\text{no\_confirm}} \leftarrow 1.0$ if $meta.\text{external\_sink} \lor meta.\text{irreversible}$ else $0.5$\;
+}
+$N_{\text{need}} \leftarrow P_{\text{diff}}$; if $meta.\text{category}=\text{unknown}$, $N_{\text{need}} \leftarrow \max(N_{\text{need}},\, 0.4)$\;
+$\Phi \leftarrow [S_{\text{tool}},\,D_{\text{call}},\,P_{\text{diff}},\,E_{\text{leak}},\,I_{\text{irrev}},\,\min(1.0,\,\tau_{\text{arg}}),\,H_{\text{no\_confirm}},\,N_{\text{need}}]$\;
+\tcp{Step 3: Risk type classification (A1--A7)}
+$\mathcal{R} \leftarrow \emptyset$\;
+\If{$meta.\text{external\_sink} \land E_{\text{leak}} \geq 0.65$}{$\mathcal{R} \mathrel{\cup}= \{\text{A1}\}$}
+\If{$P_{\text{diff}} \geq 0.5$}{$\mathcal{R} \mathrel{\cup}= \{\text{A2}\}$}
+\If{$meta.\text{irreversible} \land \neg confirmed$}{$\mathcal{R} \mathrel{\cup}= \{\text{A3}\}$}
+\If{$\tau_{\text{arg}} \geq 0.55 \lor inj$}{$\mathcal{R} \mathrel{\cup}= \{\text{A4}\}$}
+\If{$\text{delegate} \in meta.\text{permissions}$}{$\mathcal{R} \mathrel{\cup}= \{\text{A5}\}$}
+\If{$meta.\text{category} = \text{memory\_write} \land (\tau_{\text{arg}} > 0.2 \lor inj)$}{$\mathcal{R} \mathrel{\cup}= \{\text{A6}\}$}
+\If{$inj$}{$\mathcal{R} \mathrel{\cup}= \{\text{A7}\}$}
+\tcp{Step 4: Weighted risk score + hard-rule floor}
+$R \leftarrow \sum_j w_j \cdot \Phi_j$ \tcp{linear weighted score, $w$ from config}
+\If{$\text{A1} \in \mathcal{R}$}{$R \leftarrow \max(R,\, 0.90)$}
+\If{$\text{A6} \in \mathcal{R}$}{$R \leftarrow \max(R,\, 0.82)$}
+\If{$\text{A3} \in \mathcal{R}$}{$R \leftarrow \max(R,\, 0.78)$}
+\If{$\text{A4} \in \mathcal{R} \land S_{\text{tool}} \geq 0.8$}{$R \leftarrow \max(R,\, 0.80)$}
+$R \leftarrow \min(1.0,\, \max(0.0,\, R))$\;
+\tcp{Step 5: Risk level mapping (L0\_SAFE $\to$ L4\_CRITICAL)}
+\uIf{$R < 0.35$}{$level \leftarrow \text{L0\_SAFE}$}
+\uElseIf{$R < 0.70$}{$level \leftarrow \text{L2\_GRAY}$}
+\uElseIf{$R < 0.82$}{$level \leftarrow \text{L3\_HIGH}$}
+\Else{$level \leftarrow \text{L4\_CRITICAL}$}
+\tcp{Step 6: Action selection (priority chain, \texttt{\_select\_action})}
+\uIf{$R \geq 0.82$}{\uIf{$\text{A6} \in \mathcal{R}$}{$action \leftarrow \text{Quarantine}$}\Else{$action \leftarrow \text{Block}$}}
+\uElseIf{$\text{A1} \in \mathcal{R}$}{$action \leftarrow \text{Block}$}
+\uElseIf{$\text{A3} \in \mathcal{R}$}{$action \leftarrow \text{AskConfirm}$ if mode=block else $\text{Log}$}
+\uElseIf{$\text{A4} \in \mathcal{R} \land S_{\text{tool}} \geq 0.8$}{$action \leftarrow \text{Sandbox}$ if \texttt{code\_exec} else $\text{Sanitize}$}
+\uElseIf{$0.35 \leq R < 0.70$}{$action \leftarrow \text{Log}$}
+\Else{$action \leftarrow \text{Allow}$}
+\tcp{Step 7: Sanitize args if needed}
+\If{$action \in \{\text{Sanitize},\, \text{Mask}\}$}{$\mathbf{a}_{\text{san}} \leftarrow$ recursive \texttt{mask\_pii} on $\mathbf{a}$ (6 PII patterns)}
+\tcp{Step 8: Build evidence packet}
+$evidence \leftarrow \{\text{tool},\, meta.\text{category},\, Perm_{\text{req}},\, meta.\text{permissions},\, pii,\, \mathcal{S}.\text{recent\_evidence}(3)\}$\;
+\Return{GuardDecision($action$, $R$, $level$, $\Phi$, $\mathcal{R}$, reasons, $\mathbf{a}_{\text{san}}$, $evidence$)}
 \end{algorithm}

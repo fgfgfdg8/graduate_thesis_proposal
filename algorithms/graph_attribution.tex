@@ -1,0 +1,57 @@
+\begin{algorithm}[htbp]
+\caption{TraceGraph: Event-to-Graph Construction \& Counterfactual Attribution}
+\label{alg:graph_attribution}
+\KwIn{Audit event $e = (step\_id,\, tool\_name,\, args,\, decision)$, graph $G$}
+\KwOut{Updated $G$, top-$k$ attribution ranking}
+\SetKwFunction{AddAudit}{AddAuditEvent}
+\SetKwFunction{TopAttr}{TopAttribution}
+
+\tcp{AddAuditEvent: update trace graph from one audit event}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\AddAudit{$e$}}{
+  $e\_id \leftarrow$ ``event:$\{e.\text{step\_id}\}$''\;
+  $tool\_id \leftarrow$ ``tool:$\{e.\text{tool\_name}\}$''\;
+  $guard\_id \leftarrow$ ``guard:$\{e.\text{step\_id}\}:\{e.\text{decision}.\text{action}\}$''\;
+  
+  \tcp{Add nodes}
+  $G.\text{add\_node}(e\_id,\, \text{``event''},\, \text{risk\_score}=e.\text{decision}.\text{risk\_score})$\;
+  $G.\text{add\_node}(tool\_id,\, \text{``tool''},\, \text{tool\_name}=e.\text{tool\_name})$\;
+  $G.\text{add\_node}(guard\_id,\, \text{``guard\_action''},\, \text{action}=e.\text{decision}.\text{action})$\;
+  
+  \tcp{Add edges: call, defend, temporal}
+  $G.\text{add\_edge}(e\_id,\, tool\_id,\, \text{``call''})$\;
+  $G.\text{add\_edge}(e\_id,\, guard\_id,\, \text{``defend''})$\;
+  \If{$G.\text{last\_event\_node} \neq \bot$}{
+    $G.\text{add\_edge}(G.\text{last\_event\_node},\, e\_id,\, \text{``temporal''})$\;
+  }
+  $G.\text{last\_event\_node} \leftarrow e\_id$\;
+  
+  \tcp{Per-risk-type nodes and edges}
+  \For{each $rt \in e.\text{decision}.\text{risk\_types}$}{
+    $rt\_id \leftarrow$ ``risk:$\{rt\}$''\;
+    $G.\text{add\_node}(rt\_id,\, \text{``risk\_type''},\, \text{risk\_type}=rt)$\;
+    $G.\text{add\_edge}(e\_id,\, rt\_id,\, \text{``has\_risk''})$\;
+  }
+  
+  \tcp{Per-argument nodes}
+  \For{each $(k,v) \in e.\text{args}$}{
+    $arg\_id \leftarrow$ ``arg:$\{e.\text{step\_id}\}:\{k\}$''\;
+    $G.\text{add\_node}(arg\_id,\, \text{``argument''},\, \text{key}=k,\, \text{preview}=\text{str}(v)[:120])$\;
+    $G.\text{add\_edge}(arg\_id,\, e\_id,\, \text{``arg\_of''})$\;
+  }
+}
+
+\tcp{TopAttribution: counterfactual-style contribution ranking}
+\Fn{\TopAttr{$\{e_1,\ldots,e_N\},\, k$}}{
+  $rows \leftarrow []$\;
+  \For{each event $e_i$}{
+    $bonus \leftarrow 0.0$\;
+    \If{$\text{A1\_SENSITIVE\_EXFILTRATION} \in e_i.\text{decision}.\text{risk\_types}$}{$bonus \mathrel{+}= 0.2$}
+    \If{$\text{A3\_IRREVERSIBLE\_WITHOUT\_CONFIRM} \in e_i.\text{decision}.\text{risk\_types}$}{$bonus \mathrel{+}= 0.1$}
+    \If{$\text{A4\_TAINTED\_ARGUMENT} \in e_i.\text{decision}.\text{risk\_types}$}{$bonus \mathrel{+}= 0.1$}
+    $contrib \leftarrow \min(1.0,\, e_i.\text{decision}.\text{risk\_score} + bonus)$\;
+    $rows \leftarrow rows \cup \{(e_i.\text{step\_id},\, e_i.\text{tool\_name},\, contrib)\}$\;
+  }
+  \Return{$\text{sort}(rows,\, \text{key}=contrib,\, \text{reverse}=True)[:k]$}\;
+}
+\end{algorithm}
