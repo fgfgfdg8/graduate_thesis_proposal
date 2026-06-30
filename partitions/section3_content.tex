@@ -1,11 +1,11 @@
 \section{研究内容及方法}
 \todo{理解现有demo代码后再完善研究内容和方法，增加研究点一和研究点二的关系图，增加研究点一和研究点二的技术路线图}
 
-本研究围绕"如何构建面向LLM Agent工具调用链的可插拔、可解释的威胁归因与分级防御方法"这一核心问题，提出两个相互关联但贡献边界明确的研究点：研究点一："基于威胁感知的Agent工具调用链风险度量与分级防御策略（TARC-Guard）"，研究点二："基于行为轨迹图的Agent工具调用链威胁归因与自适应防御方法（TraceGraph-Guard）"。
+本研究围绕“如何构建面向LLM Agent工具调用链的可插拔、可解释的威胁归因与分级防御方法”这一核心问题，提出两个相互关联但贡献边界明确的研究点：\textbf{研究点一}：“基于威胁感知的Agent工具调用链风险度量与分级防御策略”，\textbf{研究点二}：“基于行为轨迹图的Agent工具调用链威胁归因与自适应防御方法”。
 
-两个研究点的关系可概括为"先进行威胁感知与风险度量、再路径定位与归因驱动防御"：研究点一回答"Agent工具调用链的组合威胁风险有多大、如何校准为可解释等级、如何在工具执行前触发分级防御"；研究点二回答"风险由哪条攻击路径构成、关键节点位于何处、应选择哪个最小干预防御动作"。研究点一为研究点二提供统一日志模式、风险因子集合、攻击链标签、污点追踪存储和实验基座；研究点二在研究点一的序列风险分数基础上构建行为轨迹图、执行三级升级判定检测、完成反事实归因，并将归因结果直接映射为运行时防御动作，形成"威胁建模—风险校准—轨迹检测—威胁归因—分级防御"的完整闭环。
+两个研究点的关系可概括为“先进行威胁感知与风险度量、再路径定位与归因驱动防御”：研究点一回答“Agent工具调用链的组合威胁风险有多大、如何校准为可解释等级、如何在工具执行前触发分级防御”；研究点二回答“风险由哪条攻击路径构成、关键节点位于何处、应选择哪个最小干预防御动作”。研究点一为研究点二提供统一日志模式、风险因子集合、攻击链标签、污点追踪存储和实验基座；研究点二在研究点一的序列风险分数基础上构建行为轨迹图、执行三级升级判定检测、完成反事实归因，并将归因结果直接映射为运行时防御动作，形成“威胁建模—风险校准—轨迹检测—威胁归因—分级防御”的完整闭环。
 
-本研究整体遵循"日志规范化—威胁感知风险校准—行为轨迹图建模—三级威胁检测—威胁归因—最小干预防御"的技术路线。研究点一负责威胁感知与前置防御，在工具调用链序列层面输出校准后的风险分数并触发分级防御；研究点二负责路径定位与归因驱动防御，在图结构层面识别跨步骤攻击路径并将归因结果映射为最小干预防御动作。整体研究框架如\autoref{fig:framework}所示。
+本研究整体遵循“日志规范化—威胁感知风险校准—行为轨迹图建模—三级威胁检测—威胁归因—最小干预防御”的技术路线。研究点一负责威胁感知与前置防御，在工具调用链序列层面输出校准后的风险分数并触发分级防御；研究点二负责路径定位与归因驱动防御，在图结构层面识别跨步骤攻击路径并将归因结果映射为最小干预防御动作。整体研究框架如\autoref{fig:framework}所示。
 
 \todo{研究框架图矢量图重绘}
 
@@ -24,7 +24,7 @@
 
 \textbf{攻击成立条件}：若攻击者对目标Agent系统施加的攻击导致工具调用链实际执行后产生的语义后果违反用户意图、权限边界或数据流约束，视为攻击成功，不依赖模型逐字执行恶意指令。即使每一步调用在局部看来合法，只要链级组合效果产生违规后果，攻击即成立。
 
-\textbf{防御者能力假设}：防御者能够观察工具调用事件、参数、返回结果和部分上下文，能够在工具调用前、中、后执行权限检查、脱敏（Sanitize/Mask）、确认（AskConfirm）、沙箱执行（Sandbox）、回滚（Rollback）、阻断（Block）和隔离（Quarantine）等动作。
+\textbf{防御者能力假设}：防御者能够观察工具调用事件、参数、返回结果和部分上下文，能够在工具调用前、中、后执行权限检查（Permission Check）、脱敏（Sanitize/Mask）、确认（AskConfirm）、沙箱执行（Sandbox）、回滚（Rollback）、阻断（Block）和隔离（Quarantine）等动作。
 
 在本研究中，将攻击类型形式化为六类攻击链，覆盖工具调用链的全部主要威胁场景，如\autoref{tab:attack_types}所示。
 
@@ -34,24 +34,25 @@
 
 \textbf{防御目标}：在危险工具执行前预警并按风险等级选择放行（Allow）、脱敏（Mask）、人工确认（AskConfirm）、沙箱（Sandbox）、阻断（Block）等动作；在工具执行后对污染结果进行隔离或回滚，并生成包含归因路径的证据链报告。
 
-\subsection{研究点一：基于威胁感知的Agent工具调用链风险度量与分级防御策略（TARC-Guard）}
+\subsection{研究点一：基于威胁感知的Agent工具调用链风险度量与分级防御策略}
 
 \subsubsection{研究内容}
 
 本研究点拟建立一套基于威胁感知的Agent工具调用链风险度量与分级防御策略（Threat-Aware Risk Calibration Guard，TARC-Guard）。其核心思想是：把Agent执行过程中的工具调用序列转化为可计算的风险向量，通过威胁先验、弱监督标签和阈值校准得到可解释的风险分数，再将风险等级映射为分级防御动作。本研究点的研究对象不是单一的提示词注入攻击或单轮工具调用，而是面向通用的基于工具调用的LLM Agent在完成多步骤任务时的组合型威胁。
 
-\textbf{Agent轨迹统一日志模式设计。}由于不同LLM Agent框架（如AgentDojo、AgentCanary、LangChain等）对执行轨迹的记录方式不一致，导致后续风险度量难以复用。为解决此问题，拟采用事件日志模式作为统一中间表示，将Prompt、Plan、Tool Call、Parameters、Observation、Permission、Source、Sink、Memory Write、Guard Action和Final Answer等字段显式记录：
+\textbf{Agent轨迹归一化模式。}由于不同LLM Agent框架对执行轨迹的记录方式不一致，导致后续风险度量难以复用。本研究拟采用事件日志模式作为统一中间表示：
 
 \begin{equation}
   \begin{aligned}
-    \text{Log} = \{&Task,\ AgentID,\ Step,\ Role,\ Input,\ Plan,\\
+    \text{Log} = \{&Task,\ AgentID,\ Role,\ StepID,\ Input,\ Plan,\\
                    &Tool,\ Args,\ Output,\ Src,\ Sink,\\
                    &Permission,\ Confirm,\ Parent,\ Timestamp\}
   \end{aligned}
   \label{eq:log_schema}
 \end{equation}
 
-该模式不依赖任一特定Agent框架，不同框架生成的日志可通过前端解析器统一化，为可插拔Guard模块提供标准化输入。在TraceGraph-Guard原型实现中，此模式由\texttt{ToolCallRecord}（schema.py）和\texttt{AuditEvent}结构化表示。
+\todo{分层说明需要这么多字段的理由}
+该轨迹归一化模式不依赖特定Agent框架，不同Agent框架生成的日志可通过前端解析器统一化，为风险度量与分级防御模块提供标准化输入。
 
 \textbf{工具调用链形式化定义。}设某次Agent执行任务的工具调用链为：
 
@@ -60,7 +61,7 @@
   \label{eq:tool_chain}
 \end{equation}
 
-其中，$id_t$表示会话或Agent标识，$a_t$表示当前动作类型，$tool_t$表示调用工具，$args_t$表示工具参数，$src_t$表示参数数据来源（可信/不可信），$sink_t$表示工具输出接收方（内部/外部），$perm_t$表示工具调用所需权限，$confirm_t$表示是否经过人工确认，$\tau_t$表示时间戳。相比原有定义，新增$src_t$和$sink_t$字段，使数据流向在序列层面即可被追踪，为A1（敏感数据外传）和A4（参数来源污染）的检测提供直接依据。
+其中，$id_t$表示会话或Agent标识，$a_t$表示当前动作类型，$tool_t$表示调用工具，$args_t$表示工具参数，$src_t$表示参数数据来源（可信/不可信），$sink_t$表示工具输出接收方（内部/外部），$perm_t$表示工具调用所需权限，$confirm_t$表示是否经过人工确认，$\tau_t$表示时间戳。
 
 \textbf{工具清单与元数据体系。}为实现对工具的安全属性进行细粒度描述，原型系统定义了\texttt{ToolMeta}数据结构（config.py），每条记录通过正则模式匹配工具名称，包含以下安全元数据：
 
@@ -77,7 +78,7 @@
 
 当前清单覆盖21类工具（含文件读写、邮件收发、消息发送、Web读写、日历读写、数据库读写、银行操作、代码执行、内存读写和Agent委托），并支持通过正则扩展新的工具类别。
 
-\textbf{威胁感知风险因子体系。}工具调用链的组合威胁风险由七类风险因子加权刻画，每类因子对应具体的威胁后果，而非抽象的"风险较高"。定义工具调用链$C$的风险向量为：
+\textbf{威胁感知风险因子体系。}工具调用链的组合威胁风险由七类风险因子加权刻画，每类因子对应具体的威胁后果，而非抽象的“风险较高”。定义工具调用链$C$的风险向量为：
 
 \begin{equation}
   \Phi(C) = \left[S_{\text{tool}}(C),\; D_{\text{call}}(C),\; P_{\text{diff}}(C),\; E_{\text{leak}}(C),\; I_{\text{irrev}}(C),\; H_{\text{cov}}(C),\; N_{\text{need}}(C)\right]
@@ -153,7 +154,7 @@
   \label{eq:task_need}
 \end{equation}
 
-\textbf{权重整定：威胁先验+弱监督+约束优化。}固定权重方案无法适应不同部署场景下各风险维度重要性的差异，且难以回答"权重为何如此设定"的追问。本研究采用"威胁先验初始化—弱监督标签生成—约束优化校准—验证集阈值搜索"四步整定策略：
+\textbf{权重整定：威胁先验+弱监督+约束优化。}固定权重方案无法适应不同部署场景下各风险维度重要性的差异，且难以回答“权重为何如此设定”的追问。本研究采用“威胁先验初始化—弱监督标签生成—约束优化校准—验证集阈值搜索”四步整定策略：
 
 \textbf{第一步，威胁先验初始化。}根据威胁后果的不可恢复程度设置先验权重$\theta_0$：敏感数据暴露（$E_{\text{leak}}$，0.22）和参数污点（$\text{taint}$，0.18）后果难以恢复，先验权重最高；权限扩散（$P_{\text{diff}}$，0.15）次之；工具敏感度（$S_{\text{tool}}$，0.12）和不可逆操作（$I_{\text{irrev}}$，0.12）再次之；人工确认覆盖率（$H_{\text{cov}}$，0.10）和任务必要性偏差（$N_{\text{need}}$，0.06）为保护因子和辅助指标；调用深度（$D_{\text{call}}$，0.05）权重最低。
 
@@ -203,7 +204,7 @@
 
 其中，$\mathcal{A} = \{\text{Allow, Log, Mask, Sanitize, AskConfirm, Sandbox, Block, Rollback, Quarantine}\}$（由schema.py \texttt{GuardAction}枚举定义），$Cost(a)$为动作执行代价，$UtilityLoss(a)$为对任务完成率的影响，$ResidualRisk(C, a)$为施加动作$a$后的残余风险，$\tau$为可接受残余风险上界，$\mu$为效用-安全权衡系数。
 
-\textbf{Sanitize动作的深度实现。}SANITIZE是TARC-Guard中唯一的"不阻断执行但遮盖敏感信息"的防御动作。其触发条件为：触发A4（TAINTED\_ARGUMENT）且工具敏感度$\geq 0.8$且工具类别非\texttt{code\_exec}。执行流程如下：
+\textbf{Sanitize动作的深度实现。}SANITIZE是TARC-Guard中唯一的“不阻断执行但遮盖敏感信息”的防御动作。其触发条件为：触发A4（TAINTED\_ARGUMENT）且工具敏感度$\geq 0.8$且工具类别非\texttt{code\_exec}。执行流程如下：
 
 \begin{enumerate}[leftmargin=2em,itemsep=0pt]
   \item \textbf{参数递归脱敏}（risk.py \texttt{sanitize\_args()}）：遍历\texttt{args}的所有嵌套结构（dict/list递归），对每个字符串值调用\texttt{mask\_pii()}用\texttt{[MASKED\_PII]}替换6种PII类型（email、phone、身份证、银行卡、API密钥、证件号），保留数字/布尔值原样。
@@ -214,7 +215,7 @@
 
 此双重防护（入参脱敏 + 输出脱敏）确保PII不会通过工具调用链传播，同时污点追踪在脱敏前记录完整证据，保证后续步骤的\texttt{arg\_taint\_score()}能正确匹配。
 
-\textbf{风险度量算法。}\autoref{alg:risk_eval}给出了TARC-Guard的完整风险校准与动作选择流程。
+\textbf{总体算法。}\autoref{alg:risk_eval}给出了TARC-Guard的完整风险校准与动作选择流程。
 
 \input{algorithms/risk_eval}
 
@@ -222,23 +223,23 @@
 
 \textbf{问题一：工具调用链如何统一建模。}不同Agent框架对执行轨迹的记录方式不一致，导致后续度量难以复用。拟采用事件日志Schema作为统一中间表示（\autoref{eq:log_schema}），将prompt、plan、tool call、parameters、observation、permission、source、sink、memory write、guard action和final answer等字段显式记录。该Schema不依赖特定框架，可由AgentDojo、AgentCanary或自定义Python工具链生成。原型中由\texttt{ToolCallRecord}和\texttt{AuditEvent}承载。
 
-\textbf{问题二：风险因子如何定义。}权限扩散度刻画实际工具调用权限集合与任务必要权限集合之间的偏差（\autoref{eq:perm_diff}）；敏感数据暴露度衡量敏感对象被传递至外部工具、低权限Agent或共享记忆的程度（\autoref{eq:data_leak}）；人工确认覆盖率度量高风险事件是否经过人工确认（\autoref{eq:human_confirm}）。任务必要权限通过\texttt{infer\_required\_permissions()}基于关键词推断，并采用否定逻辑避免误判（如"查看邮件"不应被推断为需要\texttt{email.send}权限）。
+\textbf{问题二：风险因子如何定义。}权限扩散度刻画实际工具调用权限集合与任务必要权限集合之间的偏差（\autoref{eq:perm_diff}）；敏感数据暴露度衡量敏感对象被传递至外部工具、低权限Agent或共享记忆的程度（\autoref{eq:data_leak}）；人工确认覆盖率度量高风险事件是否经过人工确认（\autoref{eq:human_confirm}）。任务必要权限通过\texttt{infer\_required\_permissions()}基于关键词推断，并采用否定逻辑避免误判（如“查看邮件”不应被推断为需要\texttt{email.send}权限）。
 
-\textbf{问题三：指标权重如何整定。}固定权重容易被质疑为主观设定，因此本课题拟采用"威胁先验 + 弱监督标签 + 约束优化"的三阶段方案（\autoref{eq:loss}）。若实验周期紧张，工程实现可退化为带非负约束的Logistic Regression或Ridge Logistic Regression，并在验证集上进行阈值校准。
+\textbf{问题三：指标权重如何整定。}固定权重容易被质疑为主观设定，因此本课题拟采用“威胁先验 + 弱监督标签 + 约束优化”的三阶段方案（\autoref{eq:loss}）。若实验周期紧张，工程实现可退化为带非负约束的Logistic Regression或Ridge Logistic Regression，并在验证集上进行阈值校准。
 
 \textbf{问题四：如何将评分转化为防御动作。}研究点一不只输出风险分数，而是将风险分数、风险类型和工具类别共同映射为防御动作（\autoref{eq:guard_action}）。防御动作集合定义为$\mathcal{A} = \{\text{Allow, Log, Mask, Sanitize, AskConfirm, Sandbox, Block, Rollback, Quarantine}\}$。
 
-\textbf{问题五：如何形成独立实验。}研究点一将单独设计风险度量主实验、权重整定实验、风险校准实验、分级防御实验和开销实验。主实验验证风险分数是否能够区分正常链和攻击链；权重整定实验验证"先验 + 弱监督"优于固定权重；分级防御实验验证评分结果是否能够降低攻击成功率并控制任务效用损失。
+\textbf{问题五：如何形成独立实验。}研究点一将单独设计风险度量主实验、权重整定实验、风险校准实验、分级防御实验和开销实验。主实验验证风险分数是否能够区分正常链和攻击链；权重整定实验验证“先验 + 弱监督”优于固定权重；分级防御实验验证评分结果是否能够降低攻击成功率并控制任务效用损失。
 
 \subsubsection{研究目标}
 
-研究点一的目标为：构建一套面向工具增强型LLM Agent的统一日志Schema；定义工具调用链风险度量指标体系和综合风险评分函数；提出"威胁先验 + 弱监督标签 + 阈值校准"的权重整定方案；实现风险等级到分级防御动作的映射策略；完成主实验、权重整定实验、消融实验和开销实验，使其能够独立支撑学位论文一章。研究点一完成后，应产出一个可运行的Risk Engine、一个统一日志转换器Trace Collector、一个分级防御策略表Guard Policy Table，以及一组在AgentDojo/AgentCanary真实benchmark上的实验结果。
+研究点一的目标为：构建一套面向工具增强型LLM Agent的统一日志Schema；定义工具调用链风险度量指标体系和综合风险评分函数；提出“威胁先验 + 弱监督标签 + 阈值校准”的权重整定方案；实现风险等级到分级防御动作的映射策略；完成主实验、权重整定实验、消融实验和开销实验，使其能够独立支撑学位论文一章。研究点一完成后，应产出一个可运行的Risk Engine、一个统一日志转换器Trace Collector、一个分级防御策略表Guard Policy Table，以及一组在AgentDojo/AgentCanary真实benchmark上的实验结果。
 
-\subsection{研究点二：基于行为轨迹图的Agent工具调用链威胁归因与自适应防御方法（TraceGraph-Guard）}
+\subsection{研究点二：基于行为轨迹图的Agent工具调用链威胁归因与自适应防御方法}
 
 \subsubsection{研究内容}
 
-本研究点在研究点一的日志模式、风险因子、攻击链标签和污点追踪存储基础上，进一步把Agent执行过程建模为异构行为轨迹图，并提出基于轨迹图的工具调用链威胁归因与防御策略（TraceGraph-Guard）。与序列度量相比，图模型能够更自然地表达多源数据流向、多工具调用依赖、多Agent委托关系和跨步骤语义关联。研究点二遵循"行为轨迹图建模—规则+分类器三级检测—反事实归因—最小干预防御"的研究路线。
+本研究点在研究点一的日志模式、风险因子、攻击链标签和污点追踪存储基础上，进一步把Agent执行过程建模为异构行为轨迹图，并提出基于轨迹图的工具调用链威胁归因与防御策略（TraceGraph-Guard）。与序列度量相比，图模型能够更自然地表达多源数据流向、多工具调用依赖、多Agent委托关系和跨步骤语义关联。研究点二遵循“行为轨迹图建模—规则+分类器三级检测—反事实归因—最小干预防御”的研究路线。
 
 \textbf{Agent行为轨迹图定义。}定义带时序的Agent行为轨迹图为：
 
@@ -263,9 +264,11 @@
 
 节点特征$X_t$包括节点类型嵌入、工具敏感度、权限标签、信任标签（可信/不可信输入源）和时间戳；边特征$R_t$包括边类型、数据类型、是否跨权限域和是否跨外部边界。
 
-\textbf{轻量级图结构实现。}在原型实现中（graph.py \texttt{TraceGraph}），轨迹图采用轻量级设计，避免硬依赖\texttt{networkx}，适合硕士论文原型。节点类型包括\texttt{event}（工具调用事件）、\texttt{tool}（工具节点，去重）、\texttt{guard\_action}（防御动作节点）、\texttt{risk\_type}（风险类型节点，去重）和\texttt{argument}（参数节点）。边类型包括\texttt{call}（event$\to$tool调用关系）、\texttt{defend}（event$\to$guard\_action防御关系）、\texttt{temporal}（event$\to$event时序关系）、\texttt{has\_risk}（event$\to$risk\_type风险关联）和\texttt{arg\_of}（argument$\to$event参数归属）。
+\todo{形式化定义Agent行为轨迹的异质图构造，并给出示例图。}
 
-\textbf{三级升级判定检测机制（Three-Tier Escalation Detection, TTED）。}如图\autoref{fig:tted_arch}所示，TTED机制遵循"先拦截、再分类、最后仲裁"的升级策略。在此基础上，工具调用链威胁检测问题可表述为图分类或路径异常检测问题。给定行为轨迹图$G$，检测器$f$输出该轨迹是否存在工具滥用或攻击风险：
+% \textbf{轻量级图结构实现。}在原型实现中（graph.py \texttt{TraceGraph}），轨迹图采用轻量级设计，避免硬依赖\texttt{networkx}，适合硕士论文原型。节点类型包括\texttt{event}（工具调用事件）、\texttt{tool}（工具节点，去重）、\texttt{guard\_action}（防御动作节点）、\texttt{risk\_type}（风险类型节点，去重）和\texttt{argument}（参数节点）。边类型包括\texttt{call}（event$\to$tool调用关系）、\texttt{defend}（event$\to$guard\_action防御关系）、\texttt{temporal}（event$\to$event时序关系）、\texttt{has\_risk}（event$\to$risk\_type风险关联）和\texttt{arg\_of}（argument$\to$event参数归属）。
+
+\textbf{三级升级判定检测机制（Three-Tier Escalation Detection, TTED）。}如图\autoref{fig:tted_arch}所示，TTED机制遵循“先拦截、再分类、最后仲裁”的升级策略。在此基础上，工具调用链威胁检测问题可表述为图分类或路径异常检测问题。给定行为轨迹图$G$，检测器$f$输出该轨迹是否存在工具滥用或攻击风险：
 
 \begin{equation}
   \hat{y} = f(G; \Theta), \quad \hat{y} \in \{0, 1\}
@@ -294,7 +297,7 @@
 
 该路径满足Rule-1触发条件（敏感数据节点直接经$E_{\text{send}}$边流向外部sink），立即判定A1（敏感数据外传），触发Block动作。同步地，Rule-4检测到$v_{\text{update\_account}} \in E_{\text{call}}$且$\nexists\,e \in E_{\text{confirm}}$指向该节点，触发A3判定，动作升级为AskConfirm。
 
-\textbf{拦截有效性分析。}此案例中，攻击成功的关键在于：（1）$v_{\text{iban}}$是从工具返回结果（不可信observation）中派生的，而非来自用户原始输入；（2）攻击路径跨越两步工具调用（read$\to$derive$\to$send），在单步权限检查中不可见。Rule-1通过追踪$E_{\text{derive}}$和$E_{\text{send}}$的组合语义，能够捕获此类"间接外传"模式。相比之下，现有的单步白名单方法仅检查\texttt{send\_email}工具是否在允许列表中（它确实在列表中），因此完全无法拦截此攻击。
+\textbf{拦截有效性分析。}此案例中，攻击成功的关键在于：（1）$v_{\text{iban}}$是从工具返回结果（不可信observation）中派生的，而非来自用户原始输入；（2）攻击路径跨越两步工具调用（read$\to$derive$\to$send），在单步权限检查中不可见。Rule-1通过追踪$E_{\text{derive}}$和$E_{\text{send}}$的组合语义，能够捕获此类“间接外传”模式。相比之下，现有的单步白名单方法仅检查\texttt{send\_email}工具是否在允许列表中（它确实在列表中），因此完全无法拦截此攻击。
 
 \textbf{第二级：类型化路径特征+轻量分类器（Typed-Path Classifier）。}对规则未命中的样本，提取路径类型序列、节点权限跳变次数、数据流跨域次数和步骤间确认间隔等有限维特征向量$\mathbf{f}(G_t)$，输入轻量二分类器输出风险概率$\hat{p}_{\text{cls}} \in [0,1]$。
 
@@ -322,7 +325,7 @@
 \end{equation}
 其中，$h_k$为第$k$棵回归树，$\eta$为学习率。GBDT能够自动捕获特征间的非线性交互，在特征维度较低时通常优于线性模型。
 
-\textbf{与现有基于图方法的区别。}现有工作（如FIDES\cite{costa2025fides}、CaMeL\cite{debenedetti2025camel}）大多采用全量污点追踪或图神经网络（GNN/GAT）进行检测，具有训练数据需求量大、推理延迟高、在标注稀缺场景下泛化性弱的局限。本方法以有限维类型化路径特征替代端到端图表示学习，在标注数据有限时更稳健，且特征含义与攻击语义直接对应，便于安全工程师审计和调整；GAT作为可选增强模块，在数据充足时替换分类器以进一步提升对隐蔽路径的召回率，实现"轻量优先、按需增强"的工程策略。
+\textbf{与现有基于图方法的区别。}现有工作（如FIDES\cite{costa2025fides}、CaMeL\cite{debenedetti2025camel}）大多采用全量污点追踪或图神经网络（GNN/GAT）进行检测，具有训练数据需求量大、推理延迟高、在标注稀缺场景下泛化性弱的局限。本方法以有限维类型化路径特征替代端到端图表示学习，在标注数据有限时更稳健，且特征含义与攻击语义直接对应，便于安全工程师审计和调整；GAT作为可选增强模块，在数据充足时替换分类器以进一步提升对隐蔽路径的召回率，实现“轻量优先、按需增强”的工程策略。
 
 \textbf{Typed-Path Classifier算法流程。}\autoref{fig:tpc_flow}给出了第二级分类器的完整流程框图。
 
@@ -333,7 +336,7 @@
   \label{fig:tpc_flow}
 \end{figure}
 
-\textbf{第三级：LLM-as-a-Judge。}对$\hat{p}_{\text{cls}} \in [0.35, 0.65]$的模糊样本，将风险路径的结构化描述（路径类型序列、关键节点属性、跨域次数、确认状态）格式化为评判提示（judge prompt），输入LLM进行多维度打分，输出风险判定及链式推理说明。LLM在此扮演"评判者"而非"决策者"角色：其输出$S_{\text{llm}} \in [0,1]$作为第三个信号融入图级综合评分，最终判定仍由阈值规则给出，避免LLM幻觉直接影响防御动作。LLM仅在约10\%--15\%的边界样本上被激活，避免全量高成本调用。
+\textbf{第三级：LLM-as-a-Judge。}对$\hat{p}_{\text{cls}} \in [0.35, 0.65]$的模糊样本，将风险路径的结构化描述（路径类型序列、关键节点属性、跨域次数、确认状态）格式化为评判提示（judge prompt），输入LLM进行多维度打分，输出风险判定及链式推理说明。LLM在此扮演“评判者”而非“决策者”角色：其输出$S_{\text{llm}} \in [0,1]$作为第三个信号融入图级综合评分，最终判定仍由阈值规则给出，避免LLM幻觉直接影响防御动作。LLM仅在约10\%--15\%的边界样本上被激活，避免全量高成本调用。
 
 \textbf{证据约束型LLM判别器设计。}原型中的LLM判别器（llm\_judge.py）具有以下关键约束：
 \begin{itemize}[leftmargin=2em,itemsep=0pt]
@@ -375,7 +378,7 @@
   \label{eq:attribution}
 \end{equation}
 
-其中，$G_t \setminus v$表示从图中删除节点$v$及其相关边，或将其特征屏蔽为"无信息"；$G_t \setminus e$表示删除边$e$。归因分数越高的节点/边被认为对风险贡献越大，是潜在的威胁来源。
+其中，$G_t \setminus v$表示从图中删除节点$v$及其相关边，或将其特征屏蔽为“无信息”；$G_t \setminus e$表示删除边$e$。归因分数越高的节点/边被认为对风险贡献越大，是潜在的威胁来源。
 
 对归因分数进行归一化以便跨节点比较：
 
@@ -386,7 +389,7 @@
 
 其中，$\epsilon$为一个较小的平滑项。系统优先关注归因分数排名靠前的节点/边，指导后续的防御动作选择。
 
-\textbf{最小干预防御（Minimum-Intervention Defense）。}现有检测方法往往仅限于"输出告警"\cite{wang2025agentarmor,liu2026auditing}或"输出单步根因定位"\cite{wang2026agenttrace}，但均未给出可操作的防御动作。为弥补这一局限，本研究提出将反事实归因结果直接映射为运行时防御动作，遵循最小干预原则：
+\textbf{最小干预防御（Minimum-Intervention Defense）。}现有检测方法往往仅限于“输出告警”\cite{wang2025agentarmor,liu2026auditing}或“输出单步根因定位”\cite{wang2026agenttrace}，但均未给出可操作的防御动作。为弥补这一局限，本研究提出将反事实归因结果直接映射为运行时防御动作，遵循最小干预原则：
 
 \begin{equation}
   a_t^* = \arg\min_{a \in \mathcal{A}} \left\{\lambda_s \cdot ResidualRisk(G_t, a) + \lambda_u \cdot UtilityLoss(a) + \lambda_c \cdot Cost(a)\right\}
@@ -400,7 +403,7 @@
   \label{eq:defense_output}
 \end{equation}
 
-防御优先级由归因分数$\widetilde{Attr}(z)$排序决定，归因贡献最大的节点/边对应的防御动作优先执行，避免"全量拦截"导致的任务效用断崖。
+防御优先级由归因分数$\widetilde{Attr}(z)$排序决定，归因贡献最大的节点/边对应的防御动作优先执行，避免“全量拦截”导致的任务效用断崖。
 
 \textbf{行为轨迹图构建与归因算法。}\autoref{alg:graph_attribution}给出了轨迹图构建与反事实归因的完整流程。
 
@@ -414,7 +417,7 @@
 
 \textbf{问题一：轨迹图如何构建。}拟将AgentDojo和AgentCanary的执行日志统一转换为节点和边集合。节点包括用户意图、计划步骤、工具、参数、观测结果、状态、记忆、输出和防御动作；边包括时序边、调用边、依赖边、数据流边、确认边、委托边和防御边。原型中由\texttt{TraceGraph.add\_audit\_event()}方法在每次工具调用后增量构建（\autoref{alg:graph_attribution}），该设计既保留工具调用序列，又表达数据流和权限流。
 
-\textbf{问题二：检测算法如何设计。}考虑工程复杂度与可解释性，研究点二不将GAT作为唯一主算法，而采用"图规则 + Typed Path Feature + 轻量分类器 + 灰区LLM判别"的三级升级机制（\autoref{alg:tted}）。图表征向量定义为：
+\textbf{问题二：检测算法如何设计。}考虑工程复杂度与可解释性，研究点二不将GAT作为唯一主算法，而采用“图规则 + Typed Path Feature + 轻量分类器 + 灰区LLM判别”的三级升级机制（\autoref{alg:tted}）。图表征向量定义为：
 
 \begin{equation}
   \mathbf{x}_G = [n_{\text{tool}},\, n_{\text{sens}},\, n_{\text{sink}},\, depth_{\max},\, path_{\text{sens}},\, edge_{\text{cross}},\, I_{\text{irrev}},\, H_{\text{cov}},\, R_\theta(C)]
@@ -425,7 +428,7 @@
 
 \textbf{问题三：风险路径如何定位。}拟从图中搜索敏感数据节点到外部Sink节点、低权限Agent节点或不可逆工具节点的候选路径，并根据路径中的工具敏感度、权限跨越、确认缺失和风险节点权重计算路径得分（\autoref{eq:path_score}）。
 
-\textbf{问题四：如何实现归因解释。}归因目标不是简单说明"有风险"，而是回答风险由哪些节点和路径贡献。拟采用路径贡献度和反事实删除相结合的轻量方法（\autoref{eq:attribution}）。原型实现采用贡献度排序方法（graph.py \texttt{top\_attribution()}），计算效率为$O(N \log N)$（$N$为审计事件数），比黑盒LLM解释更可控，也更容易与防御动作绑定。
+\textbf{问题四：如何实现归因解释。}归因目标不是简单说明“有风险”，而是回答风险由哪些节点和路径贡献。拟采用路径贡献度和反事实删除相结合的轻量方法（\autoref{eq:attribution}）。原型实现采用贡献度排序方法（graph.py \texttt{top\_attribution()}），计算效率为$O(N \log N)$（$N$为审计事件数），比黑盒LLM解释更可控，也更容易与防御动作绑定。
 
 \textbf{问题五：如何接入LLM判别器。}LLM判别器仅作为灰区判别模块。输入不是原始网页、PDF或邮件全文，而是脱敏后的evidence packet，包括任务摘要、工具名、参数摘要、source/sink、风险因子、候选路径和规则命中情况。输出为结构化JSON，包括risk\_type、decision、reason、required\_action和confidence。原型中由\texttt{OpenAIJSONJudge}（llm\_judge.py）实现，支持OpenAI兼容API。
 
@@ -433,7 +436,7 @@
 
 \subsubsection{研究目标}
 
-研究点二的目标为：建立从统一日志Schema到异构行为轨迹图的转换方法；定义面向工具滥用的图规则库和路径特征集合；实现"图规则 + 轻量模型 + 灰区LLM判别"的检测机制；提出风险子图定位和责任路径归因方法；将归因结果映射为最小干预防御动作，并在AgentDojo和AgentCanary上验证其防御效果。研究点二完成后应形成可投稿会议论文的主体内容，包括方法定义、算法流程、实验设计、对比结果、消融分析、案例研究和系统开销评估。
+研究点二的目标为：建立从统一日志Schema到异构行为轨迹图的转换方法；定义面向工具滥用的图规则库和路径特征集合；实现“图规则 + 轻量模型 + 灰区LLM判别”的检测机制；提出风险子图定位和责任路径归因方法；将归因结果映射为最小干预防御动作，并在AgentDojo和AgentCanary上验证其防御效果。研究点二完成后应形成可投稿会议论文的主体内容，包括方法定义、算法流程、实验设计、对比结果、消融分析、案例研究和系统开销评估。
 
 \subsection{Defense Guard原型系统与综合实验方案}
 
@@ -471,4 +474,4 @@ AgentDojo banking预实验已完成四组实验（Qwen3.7-Max / Qwen3-Max在igno
 
 \subsubsection{研究目标}
 
-原型系统的研究目标为：完成从真实benchmark轨迹输入到统一日志生成、风险评分、行为图构建、威胁归因、分级防御和审计报告输出的完整流程；形成可运行代码、实验脚本、可视化图表和案例报告；为学位论文章节"原型系统实现与综合实验"提供材料。
+原型系统的研究目标为：完成从真实benchmark轨迹输入到统一日志生成、风险评分、行为图构建、威胁归因、分级防御和审计报告输出的完整流程；形成可运行代码、实验脚本、可视化图表和案例报告；为学位论文章节“原型系统实现与综合实验”提供材料。
