@@ -3,11 +3,11 @@
 \subsection{技术实施阶段}
 本研究的技术实施分为以下阶段：
 
-\textbf{基础设施搭建。}针对LLM Agent实际场景构造专用工具环境（文件操作、邮件处理、数据库访问、日程工具、代码执行、IoT设备控制），每个工具提供权限标签、敏感度标签和可逆性标签。实现统一日志模式解析模块和TARC-Guard风险校准管道，形成首批可复现实验数据。在AgentDojo和AgentCanary基准上采集执行轨迹，生成弱监督攻击链标签。
+\textbf{基础设施搭建。}针对LLM Agent实际场景构造专用工具环境（文件操作、邮件处理、数据库访问、日程工具、代码执行、IoT设备控制），每个工具提供权限标签、敏感度标签和可逆性标签。实现统一日志模式解析模块和TARC-Guard风险校准管道，形成首批可复现实验数据。在AgentDojo、AgentDyn、AgentCanary和ASB基准上采集执行轨迹，生成弱监督攻击链标签。
 
 \textbf{核心算法实现。}实现行为轨迹图构建模块（含$V_{\text{guard}}$和$E_{\text{defend}}$）。实现TTED三级检测：第一级图规则库（8条核心规则），第二级类型化路径特征+轻量分类器（可选GAT增强），第三级LLM终审（仅对$\hat{p}_{\text{cls}} \in [0.35, 0.65]$样本激活）。实现风险路径定位（含$-\eta \cdot confirm(p)$项）、反事实归因和最小干预防御模块。实现防御中间层四阶段（Pre-call/In-call/Post-call/Evidence Guard）。
 
-\textbf{评估与消融实验。}在AgentDojo和AgentCanary基准上进行全面评估：（1）检测性能对比（F1、AUROC、Recall）；（2）风险路径定位实验（PathRecall@K）；（3）归因实验（Hit@K、MRR）；（4）防御有效性实验（DSR、UPR），对比“无防御”“全量阻断”“最小干预防御”三组设置；（5）权重整定消融实验（固定等权重 vs.\ 手工先验 vs.\ 约束优化校准）；（6）TTED消融实验（去除分类器层/LLM终审层）；（7）防御轻量性验证（平均检测耗时、各级激活比例）；（8）典型案例分析，端到端演示“数据库查询—写入共享记忆—下游Agent复用”链式攻击的检测、归因与防御全流程。
+\textbf{评估与消融实验。}在AgentDojo、AgentDyn、AgentCanary和ASB基准上进行全面评估：（1）检测性能对比（F1、AUROC、Recall）；（2）风险路径定位实验（PathRecall@K）；（3）归因实验（Hit@K、MRR）；（4）防御有效性实验（DSR、UPR），对比“无防御”“全量阻断”“最小干预防御”三组设置；（5）权重整定消融实验（固定等权重 vs.\ 手工先验 vs.\ 约束优化校准）；（6）TTED消融实验（去除分类器层/LLM终审层）；（7）防御轻量性验证（平均检测耗时、各级激活比例）；（8）典型案例分析，端到端演示“数据库查询—写入共享记忆—下游Agent复用”链式攻击的检测、归因与防御全流程。
 
 \textbf{原型应用系统搭建。}基于上述算法和模块，构建一个可插拔的最小干预防御中间层，并在真实Agent框架（如OpenClaw）上进行集成测试。验证防御中间层在不修改现有工具实现的前提下，能够通过读取执行日志和hook机制实现实时检测与防御，并生成完整的可审计证据链报告。
 
@@ -57,15 +57,15 @@
 
 \subsubsection{实验数据集}
 
-本研究的实验数据集基于三个覆盖真实部署场景的公开Agent安全基准构建，三者从工具场景、攻击类型和任务长度上形成互补，共同覆盖本研究定义的$R_0$至$R_6$全部风险类型。
+本研究的实验数据集基于四个覆盖真实部署场景的公开Agent安全基准构建，四者从工具场景、攻击类型、任务动态性和任务长度上形成互补，共同覆盖本研究定义的$R_0$至$R_6$全部风险类型。
 
-\textbf{AgentDojo基准。}AgentDojo\cite{balunovic2024agentdojo}是目前Agent安全评估领域采用最广泛的动态评测框架之一\cite{debenedetti2025camel,costa2025fides,mou2026toolsafe,zhao2026clawguard}，其核心数据集包含银行（Banking）、工作区（Workspace）、旅行（Travel）和Slack通信四个真实场景域，合计86个用户任务（UserTask）和27个注入任务（InjectionTask），构成567个（UT, IT）测试对。每个注入任务对应一个具体的攻击目标，包括数据外传（如敏感IBAN、邮件内容、Facebook验证码）、越权操作（如修改定期付款收款人、删除文件）、钓鱼植入等多类高风险行为，其Security指标（ASR）为真实提示注入攻击成功率；Utility指标（TCR）用于衡量防御代价。表~\ref{tab:agentdojo_overview}展示了各域UT/IT的分布情况，表~\ref{tab:agentdojo_it}和表~\ref{tab:agentdojo_ut}分别展示了各域部分典型InjectionTask和UserTask示例。
+\textbf{AgentDojo基准。}AgentDojo\cite{balunovic2024agentdojo}是目前Agent安全评估领域采用最广泛的动态评测框架之一\cite{debenedetti2025camel,costa2025fides,mou2026toolsafe,zhao2026clawguard}，其核心数据集包含银行（Banking）、工作区（Workspace）、旅行（Travel）和Slack通信四个真实场景域，合计97个用户任务（UserTask）和27个注入任务（InjectionTask），构成629个（UT, IT）测试对。每个注入任务对应一个具体的攻击目标，包括数据外传（如敏感IBAN、邮件内容、Facebook验证码）、越权操作（如修改定期付款收款人、删除文件）、钓鱼植入等多类高风险行为，其Security指标（ASR）为真实提示注入攻击成功率；Utility指标（TCR）用于衡量防御代价。表~\ref{tab:agentdojo_overview}展示了各域UT/IT的分布情况，表~\ref{tab:agentdojo_it}和表~\ref{tab:agentdojo_ut}分别展示了各域部分典型InjectionTask和UserTask示例。
 
 \input{tables/agentdojo_overview}
 \input{tables/agentdojo_it}
 \input{tables/agentdojo_ut}
 
-\autoref{fig:agentdojo_piechart}从两个维度对AgentDojo数据集进行统计分析。上方并列展示各域任务对占比、27个IT的风险类型分布以及UT任务链长分布：Workspace域贡献最多（198对，34.9\%），Banking次之（144对，25.4\%），Travel（140对，24.7\%）与Banking接近，Slack最少（85对，15.0\%）；风险类型中$R_2$（数据外传）占比最高（约37\%），其次是$R_3$（不可逆操作，约33\%），$R_1$（越权操作）和$R_4$（参数污染）各约15\%；短链（$\leq$3步）占34.9\%，中链（4--7步）占48.8\%，长链（$\geq$8步）占16.3\%。下方展示各域平均工具调用步数：Workspace域平均6.8步（中链为主），Banking域4.2步，Travel域5.1步，Slack域3.9步（短链为主），覆盖三类轨迹长度，有利于验证TTED在不同轨迹复杂度下的检测稳定性。
+\autoref{fig:agentdojo_piechart}从两个维度对AgentDojo数据集进行统计分析。上方并列展示各域任务对占比、27个IT的风险类型分布以及UT任务链长分布：Workspace域贡献最多（240对，38.2\%），Banking次之（144对，22.9\%），Travel（140对，22.3\%）接近，Slack最少（105对，16.7\%）；风险类型中$R_2$（数据外传）占比最高（约37\%），其次是$R_3$（不可逆操作，约33\%），$R_1$（越权操作）和$R_4$（参数污染）各约15\%；短链（$\leq$3步）占34.9\%，中链（4--7步）占48.8\%，长链（$\geq$8步）占16.3\%。下方展示各域平均工具调用步数：Workspace域平均6.8步（中链为主），Banking域4.2步，Travel域5.1步，Slack域3.9步（短链为主），覆盖三类轨迹长度，有利于验证TTED在不同轨迹复杂度下的检测稳定性。
 
 \begin{figure}[htbp]
   \centering
@@ -75,12 +75,12 @@
 \end{figure}
 
 
-\textbf{ASB基准。}ASB（Agent Security Bench）\cite{zhang2025asb}是由Zhang等提出的Agent安全形式化与基准测试框架，首次系统定义了LLM Agent攻击与防御的标准化分类体系。其核心数据集覆盖金融分析、法律咨询、医疗顾问、教育咨询、心理咨询、电商管理、航空航天工程、自动驾驶、学术搜索和系统管理共10个真实场景域，合计51个Agent任务，并配备400个攻击工具（200个隐蔽攻击Stealthy + 200个破坏性攻击Disruptive，各含攻击性和非攻击性变体）。ASB形式化了五类攻击方法：直接提示注入（DPI）、间接提示注入（OPI）、记忆投毒（Memory Poisoning）、混合攻击（Mixed Attack）和PoT后门攻击（PoT Backdoor），并评估了五种对应防御策略：Delimiters、Sandwich Prevention、Instructional Prevention、Paraphrasing和Shuffle，在13个主流LLM骨干上进行了系统性比较。表~\ref{tab:asb_overview}展示了各场景Agent的任务分布情况，表~\ref{tab:asb_attack_defense}展示了各攻击类型的成功率与对应防御方法。
+\textbf{ASB基准。}ASB（Agent Security Bench）\cite{zhang2025asb}是由Zhang等提出的Agent安全形式化与基准测试框架，首次系统定义了LLM Agent攻击与防御的标准化分类体系。其核心数据集覆盖金融分析、法律咨询、医疗顾问、教育咨询、心理咨询、电商管理、航空航天工程、自动驾驶、学术搜索和系统管理共10个真实场景域，合计50个Agent任务，并配备400个攻击工具（200个隐蔽攻击Stealthy + 200个破坏性攻击Disruptive，各含攻击性和非攻击性变体）。ASB形式化了五类攻击方法：直接提示注入（DPI）、间接提示注入（OPI）、记忆投毒（Memory Poisoning）、混合攻击（Mixed Attack）和PoT后门攻击（PoT Backdoor），并评估了五种对应防御策略：Delimiters、Sandwich Prevention、Instructional Prevention、Paraphrasing和Shuffle，在13个主流LLM骨干上进行了系统性比较。表~\ref{tab:asb_overview}展示了各场景Agent的任务分布情况，表~\ref{tab:asb_attack_defense}展示了各攻击类型的成功率与对应防御方法。
 
 \input{tables/asb_overview}
 \input{tables/asb_attack_defense}
 
-\autoref{fig:asb_piechart}从两个维度对ASB数据集进行统计分析。上方并列展示场景域分组占比、攻击类型分布以及攻击工具类型分布：10个场景按领域可归纳为专业服务域（金融/法律/医疗/教育/心理咨询/电商，6场景×5任务，30任务，58.8\%）、工程与科技域（航空航天/自动驾驶/系统管理，3场景×5任务，15任务，29.4\%）和学术域（学术搜索，6任务，11.8\%），场景覆盖均衡多样；五类攻击方法各占20\%，覆盖从直接指令篡改（DPI）到链式后门触发（PoT）的完整威胁谱系；攻击工具中Stealthy（隐蔽型）和Disruptive（破坏型）各200个（各50\%），覆盖了从隐式数据窃取到显式服务中断的攻击意图。下图展示了13个主流模型在ASB上的平均ASR分布：整体ASR区间为19.0\%（Mixtral-8x7B，绿色低风险区）至67.6\%（GPT-4o-mini，红色高风险区），平均ASR为46.9\%；在50\%以上高风险区的模型共8个（占比61.5\%），仅2个模型低于25\%，说明ASB的攻击场景对主流模型构成普遍且严重的威胁。与AgentDojo、AgentCanary相比，ASB的独特价值在于提供了最广泛（10个）的场景覆盖和标准化的五类攻击形式化定义，其内置的13模型排行榜与AgentCanary的12模型排行榜互为补充，共同构成本研究跨模型泛化性验证的实证基础。
+\autoref{fig:asb_piechart}从两个维度对ASB数据集进行统计分析。上方并列展示场景域分组占比、攻击类型分布以及攻击工具类型分布：10个场景按领域可归纳为专业服务域（金融/法律/医疗/教育/心理咨询/电商，6场景×5任务，30任务，60.0\%）、工程与科技域（航空航天/自动驾驶/系统管理，3场景×5任务，15任务，30.0\%）和学术域（学术搜索，5任务，10.0\%），场景覆盖均衡多样；五类攻击方法各占20\%，覆盖从直接指令篡改（DPI）到链式后门触发（PoT）的完整威胁谱系；攻击工具中Stealthy（隐蔽型）和Disruptive（破坏型）各200个（各50\%），覆盖了从隐式数据窃取到显式服务中断的攻击意图。下图展示了13个主流模型在ASB上的平均ASR分布：整体ASR区间为19.0\%（Mixtral-8x7B，绿色低风险区）至67.6\%（GPT-4o-mini，红色高风险区），平均ASR为46.9\%；在50\%以上高风险区的模型共8个（占比61.5\%），仅2个模型低于25\%，说明ASB的攻击场景对主流模型构成普遍且严重的威胁。与AgentDojo、AgentCanary相比，ASB的独特价值在于提供了最广泛（10个）的场景覆盖和标准化的五类攻击形式化定义，其内置的13模型排行榜与AgentCanary的12模型排行榜互为补充，共同构成本研究跨模型泛化性验证的实证基础。
 
 \begin{figure}[htbp]
   \centering
@@ -88,14 +88,29 @@
   \caption{ASB数据集分布分析：场景域分组、攻击类型与攻击工具类型分布（上）及13个主流模型平均ASR分布（下）}
   \label{fig:asb_piechart}
 \end{figure}
+\textbf{AgentDyn基准。}AgentDyn\cite{li2026agentdyn}是由Li等提出的面向真实世界动态环境的Agent安全基准，专门用于评估防御方法在开放、动态场景下的可部署性。其核心数据集在AgentDojo框架基础上扩展了购物（Shopping）、代码协作（GitHub）和日常生活（Daily Life）三个动态开放场景，合计60个用户任务（各场景20个）和28个注入任务（Shopping 9个、GitHub 9个、Daily Life 10个），构成560个（UT, IT）测试对。三个场景分别配备39、34和27个工具（Shopping: 39，GitHub: 34，Daily Life: 27），平均每任务工具数33.3个，任务设计强调动态变化的用户状态和工具返回内容，平均轨迹长度7.1步，平均涉及3.2个应用场景，与AgentDojo的静态任务形成鲜明对比。攻击向量通过邮件内容、商品评论、GitHub Issue评论、日历通知等多种动态通道实施间接提示注入，攻击类型覆盖\texttt{important\_instructions}注入和正常基线（none）两类。表~\ref{tab:agentdyn_overview}展示了各场景的UT/IT分布，表~\ref{tab:agentdyn_asr_defense}展示了8个主流模型的无防御基线ASR及9种防御方法。
 
-\textbf{AgentCanary基准。}AgentCanary\cite{li2026agentcanary}（Agent3Sigma-Canary）是一个面向真实Agent框架（OpenClaw生态）的多维安全基准，按攻击路径划分为直接攻击（Direct）、间接注入（Indirect）、链式委托攻击（Chain）和记忆投毒（Memory）四类，表~\ref{tab:agentcanary_overview}展示了各类别的任务数量与说明，表~\ref{tab:agentcanary_cases}展示了各类代表性攻击案例。AgentCanary的三大独特优势：其一，任务注入目标覆盖24类攻击类型（涵盖资源耗尽、文件删除、环境篡改、隐私泄露、完整性破坏、人格腐化、违法记忆写入、钓鱼、权限提升、防御禁用等），与本研究$R_1$至$R_6$风险类型的对应关系见表~\ref{tab:agentcanary_risk_mapping}；其二，通过Docker容器化的技能仓库（email、calendar、bank\_system、dingtalk、twitter）提供真实可执行的工具环境，每次运行依托Tracee内核审计产生系统级调用日志；其三，基准内置12个主流模型的排行榜数据，支持跨模型泛化性验证。
+\input{tables/agentdyn_overview}
+\input{tables/agentdyn_asr_defense}
+
+\autoref{fig:agentdyn_piechart}从两个维度对AgentDyn数据集进行统计分析。上方并列展示各场景测试对占比、各场景工具数量分布以及注入向量类型分布：Daily Life和Shopping场景采用6类应用（6.0和5.5类），GitHub涵盖5类应用场景，体现了跨平台协作的复杂度；平均轨迹长度为Shopping 9.3步、GitHub 6.3步、Daily Life 6.3步，显著超过AgentDojo的平均3.5步，提供了更充分的长程攻击轨迹样本；注入向量通过邮件内容、商品评论、GitHub Issue评论、日历通知、网页表单等多种动态通道实施间接提示注入，攻击类型覆盖\texttt{important\_instructions}注入和正常基线（none）两类。下图展示了8个主流模型在无防御基线下的ASR分布：整体ASR区间为0.4\%（GPT-5-mini）至50.0\%（GPT-4o-mini），平均ASR约23.2\%，ASR与模型能力呈非单调关系——能力最强的GPT-5.1和GPT-5-mini攻击成功率反而最低（分别为5.0\%和0.4\%），而GPT-4o-mini最易受攻击（50.0\%）。与AgentDojo和ASB不同，AgentDyn的核心价值不在于ASR的绝对高低，而在于通过动态开放任务和丰富环境指令揭示了当前防御方法的根本性失效：几乎所有在静态基准上表现优异的防御方法（如Tool Filter、CaMeL）在AgentDyn上均遭遇严重的过度防御（utility近乎为零），而保持一定功能的防御方法（如Prompt Sandwiching、Spotlighting）则几乎无法有效降低ASR，这表明现有防御方法在真实动态场景下的可部署性面临严峻挑战。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{\input{figures/fig_agentdyn_piechart.tikz}}
+  \caption{AgentDyn数据集分布分析：场景分布、工具数量与注入向量类型（上）及8个主流模型ASR分布（下）}
+  \label{fig:agentdyn_piechart}
+\end{figure}
+
+
+
+\textbf{AgentCanary基准。}AgentCanary\cite{li2026agentcanary}（Agent3Sigma-Canary）是由Li等提出的面向自主AI Agent的综合安全评估框架，按风险入口划分为直接提示注入（DPI）、间接提示注入（IPI）、记忆污染（MC）、技能投毒（SP）和内在失效（IF）五类，AgentCanary包含496个基础评估任务（DPI 46个、IPI 181个、MC 104个、SP 110个、IF 55个），覆盖5个风险入口和7个风险影响类别（本地环境与可用性、数据与信息安全、持久状态与记忆污染、权限与系统控制、网络攻击与远程控制、业务滥用与非法使用、金融与交易风险），表~\ref{tab:agentcanary_overview}展示了各风险入口的任务分布。AgentCanary的四大独特优势：其一，采用风险入口×风险影响的矩阵式覆盖，每个任务同时锚定攻击来源和最终后果，可审计性强；其二，通过Docker容器化的真实工具环境（email、calendar、bank\_system、dingtalk、twitter、文件系统、网页浏览器等），依赖Tracee内核审计产生系统级调用日志，支持状态持久化和长程攻击评估；其三，采用轨迹驱动的三维评分（OSS——结果安全性、SAS——安全意识、TUS——任务效用），解耦安全结果与攻击感知能力；其四，基准内置12个主流模型的排行榜数据并支持多框架评估（OpenClaw/Hermes/NanoClaw），支持跨模型、跨框架泛化性验证。
 
 \input{tables/agentcanary_overview}
 \input{tables/agentcanary_cases}
 \input{tables/agentcanary_risk_mapping}
 
-\autoref{fig:agentcanary_piechart}对AgentCanary数据集进行统计分析。左图展示了攻击路径类型分布：间接注入（Indirect）占据主导（181条，65.1\%），体现了真实场景中通过工具返回内容实施攻击的高频性；直接攻击（Direct）占16.5\%，链式委托（Chain）占11.2\%，记忆投毒（Memory）占7.2\%。中图展示了任务风险类型分布：$R_2$（数据外传）和$R_3$（不可逆操作）合计约57\%，与AgentDojo的分布趋势一致，验证了两基准在风险覆盖上的互补性。下图展示了12个主流模型在无防御基线下的ASR分布：整体ASR区间为8.8\%（claude-opus-4-6，绿色低风险区）至67.7\%（GLM-4.7-Flash，红色高风险区），平均ASR约40.6\%；在50\%以上高风险区的模型共4个，说明多数主流模型在无防御配置下均面临显著安全威胁，为本研究提供了充分的攻击轨迹样本来源。
+
 
 \begin{figure}[htbp]
   \centering
@@ -104,10 +119,10 @@
   \label{fig:agentcanary_piechart}
 \end{figure}
 
-\textbf{拟采取的三个基准的互补性分析。}AgentDojo提供了结构化的（UT, IT）注入对，每个IT对应明确的攻击目标和SecurityScore判定，适合评估检测精度（Precision/Recall/F1）和防御有效性（DSR/UPR），并可与CaMeL\cite{debenedetti2025camel}、FIDES\cite{costa2025fides}等已发表结果直接横向比较；AgentCanary提供了真实可执行的工具环境和系统级调用日志，适合评估轨迹图构建完整性和归因准确性（PathRecall@K、MRR），并支持在12个主流模型上分别报告以验证跨模型泛化性；ASB提供了最广泛的场景覆盖（10域）和标准化的五类攻击形式化定义，其内置的13模型排行榜与AgentCanary互补，适合评估检测方法在多样化领域和攻击类型上的泛化能力。三者合计覆盖13个不同领域场景（4+4+10，去重后约13），轨迹规模约900+条（567+278+51条基础任务×多种攻击变体），攻击路径涵盖直接/间接/链式/记忆投毒/后门，支撑主实验、消融实验、跨基准泛化实验和归因实验的完整评估。
+\textbf{拟采取的四个基准的互补性分析。}AgentDojo提供了结构化的（UT, IT）注入对，每个IT对应明确的攻击目标和SecurityScore判定，适合评估检测精度（Precision/Recall/F1）和防御有效性（DSR/UPR），并可与CaMeL\cite{debenedetti2025camel}、FIDES\cite{costa2025fides}等已发表结果直接横向比较；AgentCanary提供了真实可执行的工具环境和轨迹驱动三维评分，适合评估轨迹图构建完整性和归因准确性（PathRecall@K、MRR），并支持在12个主流模型上分别报告以验证跨模型泛化性；ASB提供了最广泛的场景覆盖（10域）和标准化的五类攻击形式化定义，内置13模型排行榜；AgentDyn提供了动态开放场景（3域，560对）和8模型10防御的评测矩阵，专门验证防御方法在动态真实环境中的可部署性，专门用于验证防御方法在真实动态环境中的可部署性，弥补了静态基准无法评估防御方法在动态场景下有效性的缺陷。四者合计覆盖约20个不同领域场景，轨迹规模约1700+条（629+560+496+50条任务×多种攻击变体），攻击路径涵盖直接/间接/记忆污染/技能投毒/内在失效/后门，场景覆盖静态（AgentDojo/ASB）与动态（AgentDyn/AgentCanary）双重范式，支撑主实验、消融实验、跨基准泛化实验和归因实验的完整评估。
 
 \todo{完善具体的数据标注方案。}
-\textbf{Agent轨迹标注方案。}本研究对上述三个基准执行固定模型（GLM-5.1）进行完整运行，对AgentDojo所有567个测试对、AgentCanary全部278条任务（独立攻击变体）和ASB全部51个Agent任务（含5种攻击类型配置）采集执行轨迹，每条轨迹包含完整工具调用序列（含参数、返回值）、系统级权限记录和最终判定结果。风险类型标签采用规则优先、人工复核的方式生成：当SecurityScore=0（攻击成功）且存在特定工具调用时，自动标注为对应风险类型（$R_1$至$R_6$）；SecurityScore>0时标注为$R_0$（正常或已阻断）。归因标注（\texttt{gold\_node}、\texttt{gold\_path}）通过逐步复现攻击步骤确定关键触发节点。工具场景与风险类型对应关系见表~\ref{tab:tracegraph_scenarios}。
+\textbf{Agent轨迹标注方案。}本研究对上述四个基准执行固定模型（GLM-5.1）进行完整运行，对AgentDojo所有567个测试对、AgentDyn全部560个测试对、AgentCanary全部496个评估任务（含5种风险入口×7种风险影响矩阵）和ASB全部51个Agent任务（含5种攻击类型配置）采集执行轨迹，每条轨迹包含完整工具调用序列（含参数、返回值）、系统级权限记录和最终判定结果。风险类型标签采用规则优先、人工复核的方式生成：当SecurityScore=0（攻击成功）且存在特定工具调用时，自动标注为对应风险类型（$R_1$至$R_6$）；SecurityScore>0时标注为$R_0$（正常或已阻断）。归因标注（\texttt{gold\_node}、\texttt{gold\_path}）通过逐步复现攻击步骤确定关键触发节点。工具场景与风险类型对应关系见表~\ref{tab:tracegraph_scenarios}。
 
 \input{tables/tracegraph_scenarios}
 
@@ -160,3 +175,6 @@
   \item \textbf{基于运行时监控的方法}：TaintLite\cite{costa2025fides}、DynamicLLM-Firewall\cite{abdelnabi2025firewalls}
   \item \textbf{基于授权图的方法}：AuthGraph-DualGraph\cite{wang2026aligning}。
 \end{itemize}
+
+
+

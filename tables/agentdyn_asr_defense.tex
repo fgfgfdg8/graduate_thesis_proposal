@@ -1,0 +1,26 @@
+% AgentDyn防御方法与模型ASR表
+\begin{table}[htbp]
+\centering
+\caption{AgentDyn各模型无防御基线ASR与防御方法概览}
+\label{tab:agentdyn_asr_defense}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{模型} & \textbf{ASR} & \textbf{Utility（无攻击）} & \textbf{典型防御方法} \\
+\midrule
+GPT-4o-mini & 50.0\% & -- & \multirow{8}*{\parbox{5.5cm}{Prompt Sandwiching、Spotlighting、\\
+                                                          Tool Filter、ProtectAI、PIGuard、\\
+                                                          PromptGuard2、Meta SecAlign、\\
+                                                          CaMeL、Progent、DRIFT（10种）}} \\
+GPT-4o & 37.8\% & 53.3\% & \\
+Gemini-2.5-Flash & 37.6\% & -- & \\
+Qwen3-235B & 22.7\% & 23.3\% & \\
+Gemini-2.5-Pro & 20.6\% & 51.7\% & \\
+Llama-3.3-70B & 11.9\% & 10.0\% & \\
+GPT-5.1 & 5.0\% & -- & \\
+GPT-5-mini & 0.4\% & -- & \\
+\midrule
+\textbf{平均} & \textbf{23.2\%} & -- & 10种防御方法覆盖8个模型 \\
+\bottomrule
+\end{tabular}
+\end{table}
