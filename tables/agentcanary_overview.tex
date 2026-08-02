@@ -1,19 +1,20 @@
-% AgentCanary数据集概览表
+% AgentCanary数据集概览表（基于原论文 2606.10484v1 Section 4）
 \begin{table}[htbp]
 \centering
-\caption{AgentCanary数据集各类攻击路径概览}
+\caption{AgentCanary数据集各风险入口概览}
 \label{tab:agentcanary_overview}
 \small
-\begin{tabular}{p{2.8cm}ccp{6.0cm}}
+\begin{tabular}{p{2.8cm}ccp{5.5cm}}
 \toprule
-\raggedright\arraybackslash\textbf{攻击路径类型} & \multicolumn{1}{l}{\textbf{任务数}} & \multicolumn{1}{l}{\textbf{占比}} & \raggedright\arraybackslash\textbf{说明} \\
+\raggedright\arraybackslash\textbf{风险入口类型} & \textbf{任务数} & \textbf{占比} & \raggedright\arraybackslash\textbf{说明} \\
 \midrule
-直接攻击（Direct） & 46 & 16.5\% & 攻击者直接通过用户指令注入恶意目标，无需中间媒介 \\
-间接注入（Indirect） & 181 & 65.1\% & 攻击内容嵌入外部工具返回结果（邮件、文件、网页等），触发Agent执行恶意操作 \\
-链式委托攻击（Chain） & 31 & 11.2\% & 通过多Agent委托链传播攻击，下游Agent被上游污染指令驱动 \\
-记忆投毒（Memory） & 20 & 7.2\% & 将恶意内容写入共享记忆或向量数据库，影响后续任务执行 \\
+间接提示注入（IPI） & 181 & 36.5\% & 攻击内容嵌入邮件、网页、日历等外部载体，Agent完成正常任务时触发 \\
+技能投毒（SP） & 110 & 22.2\% & 第三方技能/插件被植入恶意逻辑，Agent调用时激活隐藏行为 \\
+记忆污染（MC） & 104 & 21.0\% & 持久记忆或状态被预先污染，包含恶意规则、虚假偏好或触发条件 \\
+内在失效（IF） & 55 & 11.1\% & 无外部攻击者，Agent因歧义、过度授权或不可逆操作产生不安全行为 \\
+直接提示注入（DPI） & 46 & 9.3\% & 攻击者通过用户交互通道直接发出恶意指令，测试Agent安全推理能力 \\
 \midrule
-\textbf{合计} & \textbf{278} & \textbf{100\%} & 覆盖$R_1$至$R_6$全部风险类型，24种攻击场景 \\
+\textbf{合计} & \textbf{496} & \textbf{100\%} & 覆盖5个风险入口和7个风险影响类别的矩阵式评估 \\
 \bottomrule
 \end{tabular}
 \end{table}

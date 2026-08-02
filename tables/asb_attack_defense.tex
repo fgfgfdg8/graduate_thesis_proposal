@@ -1,4 +1,5 @@
 % ASB各攻击类型与防御方法对应表
+% 数据来源：ASB论文 (2410.02644v4) Table 5
 \begin{table}[htbp]
 \centering
 \caption{ASB攻击类型、成功率与防御方法概览}
@@ -9,7 +10,7 @@
 \textbf{攻击类型} & \textbf{平均ASR} & \textbf{平均RR} & \textbf{对应防御方法} \\
 \midrule
 直接提示注入（DPI） & 72.68\% & 6.53\% & Delimiters / Paraphrasing / Instructional Prevention \\
-间接提示注入（OPI） & 27.55\% & 8.61\% & Delimiters / Sandwich Prevention / Instructional Prevention \\
+间接提示注入（IPI） & 27.55\% & 8.61\% & Delimiters / Sandwich Prevention / Instructional Prevention \\
 记忆投毒（Memory Poisoning） & 7.92\% & 4.63\% & PPL Detection / LLM-based Defense \\
 混合攻击（Mixed Attack） & 84.30\% & 3.22\% & 组合防御 \\
 PoT后门攻击（PoT Backdoor） & 42.12\% & 5.42\% & Shuffling / Paraphrasing \\

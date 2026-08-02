@@ -74,6 +74,19 @@
   \label{fig:agentdojo_piechart}
 \end{figure}
 
+\textbf{AgentDyn基准。}AgentDyn\cite{li2026agentdyn}是由Li等提出的面向真实世界动态环境的Agent安全基准，专门用于评估防御方法在开放、动态场景下的可部署性。其核心数据集在AgentDojo框架基础上扩展了购物（Shopping）、代码协作（GitHub）和日常生活（Daily Life）三个动态开放场景，合计60个用户任务（各场景20个）和28个注入任务（Shopping 9个、GitHub 9个、Daily Life 10个），构成560个（UT, IT）测试对。三个场景分别配备39、34和27个工具（Shopping: 39，GitHub: 34，Daily Life: 27），平均每任务工具数33.3个，任务设计强调动态变化的用户状态和工具返回内容，平均轨迹长度7.1步，平均涉及3.2个应用场景，与AgentDojo的静态任务形成鲜明对比。攻击向量通过邮件内容、商品评论、GitHub Issue评论、日历通知等多种动态通道实施间接提示注入，攻击类型覆盖\texttt{important\_instructions}注入和正常基线（none）两类。表~\ref{tab:agentdyn_overview}展示了各场景的UT/IT分布，表~\ref{tab:agentdyn_asr_defense}展示了8个主流模型的无防御基线ASR及9种防御方法。
+
+\input{tables/agentdyn_overview}
+\input{tables/agentdyn_asr_defense}
+
+\autoref{fig:agentdyn_piechart}从两个维度对AgentDyn数据集进行统计分析。上方并列展示各场景测试对占比、各场景工具数量分布以及注入向量类型分布：Daily Life和Shopping场景采用6类应用（6.0和5.5类），GitHub涵盖5类应用场景，体现了跨平台协作的复杂度；平均轨迹长度为Shopping 9.3步、GitHub 6.3步、Daily Life 6.3步，显著超过AgentDojo的平均3.5步，提供了更充分的长程攻击轨迹样本。下图展示了8个主流模型在无防御基线下的ASR分布：整体ASR区间为0.4\%（GPT-5-mini）至50.0\%（GPT-4o-mini），平均ASR约23.2\%，ASR与模型能力呈非单调关系——能力最强的GPT-5.1和GPT-5-mini攻击成功率反而最低（分别为5.0\%和0.4\%），而GPT-4o-mini最易受攻击（50.0\%）。与AgentDojo和ASB不同，AgentDyn的核心价值不在于ASR的绝对高低，而在于通过动态开放任务和丰富环境指令揭示了当前防御方法的根本性失效：几乎所有在静态基准上表现优异的防御方法（如Tool Filter、CaMeL）在AgentDyn上均遭遇严重的过度防御（utility近乎为零），而保持一定功能的防御方法（如Prompt Sandwiching、Spotlighting）则几乎无法有效降低ASR，这表明现有防御方法在真实动态场景下的可部署性面临严峻挑战。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{\input{figures/fig_agentdyn_piechart.tikz}}
+  \caption{AgentDyn数据集分布分析：场景分布、工具数量与注入向量类型（上）及8个主流模型ASR分布（下）}
+  \label{fig:agentdyn_piechart}
+\end{figure}
 
 \textbf{ASB基准。}ASB（Agent Security Bench）\cite{zhang2025asb}是由Zhang等提出的Agent安全形式化与基准测试框架，首次系统定义了LLM Agent攻击与防御的标准化分类体系。其核心数据集覆盖金融分析、法律咨询、医疗顾问、教育咨询、心理咨询、电商管理、航空航天工程、自动驾驶、学术搜索和系统管理共10个真实场景域，合计50个Agent任务，并配备400个攻击工具（200个隐蔽攻击Stealthy + 200个破坏性攻击Disruptive，各含攻击性和非攻击性变体）。ASB形式化了五类攻击方法：直接提示注入（DPI）、间接提示注入（OPI）、记忆投毒（Memory Poisoning）、混合攻击（Mixed Attack）和PoT后门攻击（PoT Backdoor），并评估了五种对应防御策略：Delimiters、Sandwich Prevention、Instructional Prevention、Paraphrasing和Shuffle，在13个主流LLM骨干上进行了系统性比较。表~\ref{tab:asb_overview}展示了各场景Agent的任务分布情况，表~\ref{tab:asb_attack_defense}展示了各攻击类型的成功率与对应防御方法。
 
@@ -88,21 +101,6 @@
   \caption{ASB数据集分布分析：场景域分组、攻击类型与攻击工具类型分布（上）及13个主流模型平均ASR分布（下）}
   \label{fig:asb_piechart}
 \end{figure}
-\textbf{AgentDyn基准。}AgentDyn\cite{li2026agentdyn}是由Li等提出的面向真实世界动态环境的Agent安全基准，专门用于评估防御方法在开放、动态场景下的可部署性。其核心数据集在AgentDojo框架基础上扩展了购物（Shopping）、代码协作（GitHub）和日常生活（Daily Life）三个动态开放场景，合计60个用户任务（各场景20个）和28个注入任务（Shopping 9个、GitHub 9个、Daily Life 10个），构成560个（UT, IT）测试对。三个场景分别配备39、34和27个工具（Shopping: 39，GitHub: 34，Daily Life: 27），平均每任务工具数33.3个，任务设计强调动态变化的用户状态和工具返回内容，平均轨迹长度7.1步，平均涉及3.2个应用场景，与AgentDojo的静态任务形成鲜明对比。攻击向量通过邮件内容、商品评论、GitHub Issue评论、日历通知等多种动态通道实施间接提示注入，攻击类型覆盖\texttt{important\_instructions}注入和正常基线（none）两类。表~\ref{tab:agentdyn_overview}展示了各场景的UT/IT分布，表~\ref{tab:agentdyn_asr_defense}展示了8个主流模型的无防御基线ASR及9种防御方法。
-
-\input{tables/agentdyn_overview}
-\input{tables/agentdyn_asr_defense}
-
-\autoref{fig:agentdyn_piechart}从两个维度对AgentDyn数据集进行统计分析。上方并列展示各场景测试对占比、各场景工具数量分布以及注入向量类型分布：Daily Life和Shopping场景采用6类应用（6.0和5.5类），GitHub涵盖5类应用场景，体现了跨平台协作的复杂度；平均轨迹长度为Shopping 9.3步、GitHub 6.3步、Daily Life 6.3步，显著超过AgentDojo的平均3.5步，提供了更充分的长程攻击轨迹样本；注入向量通过邮件内容、商品评论、GitHub Issue评论、日历通知、网页表单等多种动态通道实施间接提示注入，攻击类型覆盖\texttt{important\_instructions}注入和正常基线（none）两类。下图展示了8个主流模型在无防御基线下的ASR分布：整体ASR区间为0.4\%（GPT-5-mini）至50.0\%（GPT-4o-mini），平均ASR约23.2\%，ASR与模型能力呈非单调关系——能力最强的GPT-5.1和GPT-5-mini攻击成功率反而最低（分别为5.0\%和0.4\%），而GPT-4o-mini最易受攻击（50.0\%）。与AgentDojo和ASB不同，AgentDyn的核心价值不在于ASR的绝对高低，而在于通过动态开放任务和丰富环境指令揭示了当前防御方法的根本性失效：几乎所有在静态基准上表现优异的防御方法（如Tool Filter、CaMeL）在AgentDyn上均遭遇严重的过度防御（utility近乎为零），而保持一定功能的防御方法（如Prompt Sandwiching、Spotlighting）则几乎无法有效降低ASR，这表明现有防御方法在真实动态场景下的可部署性面临严峻挑战。
-
-\begin{figure}[htbp]
-  \centering
-  \resizebox{\textwidth}{!}{\input{figures/fig_agentdyn_piechart.tikz}}
-  \caption{AgentDyn数据集分布分析：场景分布、工具数量与注入向量类型（上）及8个主流模型ASR分布（下）}
-  \label{fig:agentdyn_piechart}
-\end{figure}
-
-
 
 \textbf{AgentCanary基准。}AgentCanary\cite{li2026agentcanary}（Agent3Sigma-Canary）是由Li等提出的面向自主AI Agent的综合安全评估框架，按风险入口划分为直接提示注入（DPI）、间接提示注入（IPI）、记忆污染（MC）、技能投毒（SP）和内在失效（IF）五类，AgentCanary包含496个基础评估任务（DPI 46个、IPI 181个、MC 104个、SP 110个、IF 55个），覆盖5个风险入口和7个风险影响类别（本地环境与可用性、数据与信息安全、持久状态与记忆污染、权限与系统控制、网络攻击与远程控制、业务滥用与非法使用、金融与交易风险），表~\ref{tab:agentcanary_overview}展示了各风险入口的任务分布。AgentCanary的四大独特优势：其一，采用风险入口×风险影响的矩阵式覆盖，每个任务同时锚定攻击来源和最终后果，可审计性强；其二，通过Docker容器化的真实工具环境（email、calendar、bank\_system、dingtalk、twitter、文件系统、网页浏览器等），依赖Tracee内核审计产生系统级调用日志，支持状态持久化和长程攻击评估；其三，采用轨迹驱动的三维评分（OSS——结果安全性、SAS——安全意识、TUS——任务效用），解耦安全结果与攻击感知能力；其四，基准内置12个主流模型的排行榜数据并支持多框架评估（OpenClaw/Hermes/NanoClaw），支持跨模型、跨框架泛化性验证。
 
@@ -112,17 +110,19 @@
 
 
 
+\autoref{fig:agentcanary_piechart}对AgentCanary数据集进行统计分析。左图展示了风险入口类型分布：间接提示注入（IPI）占据主导（181个任务，36.5\%），体现了真实场景中通过外部内容实施攻击的高频性；技能投毒（SP）占22.2\%（110个），记忆污染（MC）占21.0\%（104个），内在失效（IF）占11.1\%（55个），直接提示注入（DPI）占9.3\%（46个）。中图展示了风险影响类别分布：本地环境与可用性影响（I类）和数据与信息安全影响（II类）占比较高，与AgentDojo的$R_2$/$R_3$分布趋势一致，而持久状态与记忆污染（III类）和权限与系统控制（IV类）影响体现了AgentCanary独有的长程、状态化威胁覆盖。下图展示了12个主流模型在OpenClaw框架下的总体安全性评分（Overall Score）：评分区间为37.9（GLM-4.7-Flash）至83.9（Claude Opus 4.6），仅3个模型超过65分，说明多数模型在真实可执行的Agent安全评估中面临严峻挑战。AgentCanary的关键创新在于将传统ASR单一指标分解为OSS（结果安全）、SAS（安全意识）和TUS（任务效用）三维评分，揭示了安全结果与攻击感知之间的系统性脱耦（如多个模型在IPI场景中OSS>90但SAS<50的"沉默服从"现象），为本研究的归因分析提供了独特的多维度评估视角。
+
 \begin{figure}[htbp]
   \centering
   \resizebox{\textwidth}{!}{\input{figures/fig_agentcanary_piechart.tikz}}
-  \caption{AgentCanary数据集分布分析：攻击路径类型占比（左）、任务风险类型分布（中）与12个主流模型ASR分布（下）}
+  \caption{AgentCanary数据集分布分析：风险入口类型分布（左）、风险影响类别分布（中）与12个主流模型总体安全性评分分布（下）}
   \label{fig:agentcanary_piechart}
 \end{figure}
 
 \textbf{拟采取的四个基准的互补性分析。}AgentDojo提供了结构化的（UT, IT）注入对，每个IT对应明确的攻击目标和SecurityScore判定，适合评估检测精度（Precision/Recall/F1）和防御有效性（DSR/UPR），并可与CaMeL\cite{debenedetti2025camel}、FIDES\cite{costa2025fides}等已发表结果直接横向比较；AgentCanary提供了真实可执行的工具环境和轨迹驱动三维评分，适合评估轨迹图构建完整性和归因准确性（PathRecall@K、MRR），并支持在12个主流模型上分别报告以验证跨模型泛化性；ASB提供了最广泛的场景覆盖（10域）和标准化的五类攻击形式化定义，内置13模型排行榜；AgentDyn提供了动态开放场景（3域，560对）和8模型10防御的评测矩阵，专门验证防御方法在动态真实环境中的可部署性，专门用于验证防御方法在真实动态环境中的可部署性，弥补了静态基准无法评估防御方法在动态场景下有效性的缺陷。四者合计覆盖约20个不同领域场景，轨迹规模约1700+条（629+560+496+50条任务×多种攻击变体），攻击路径涵盖直接/间接/记忆污染/技能投毒/内在失效/后门，场景覆盖静态（AgentDojo/ASB）与动态（AgentDyn/AgentCanary）双重范式，支撑主实验、消融实验、跨基准泛化实验和归因实验的完整评估。
 
 \todo{完善具体的数据标注方案。}
-\textbf{Agent轨迹标注方案。}本研究对上述四个基准执行固定模型（GLM-5.1）进行完整运行，对AgentDojo所有567个测试对、AgentDyn全部560个测试对、AgentCanary全部496个评估任务（含5种风险入口×7种风险影响矩阵）和ASB全部51个Agent任务（含5种攻击类型配置）采集执行轨迹，每条轨迹包含完整工具调用序列（含参数、返回值）、系统级权限记录和最终判定结果。风险类型标签采用规则优先、人工复核的方式生成：当SecurityScore=0（攻击成功）且存在特定工具调用时，自动标注为对应风险类型（$R_1$至$R_6$）；SecurityScore>0时标注为$R_0$（正常或已阻断）。归因标注（\texttt{gold\_node}、\texttt{gold\_path}）通过逐步复现攻击步骤确定关键触发节点。工具场景与风险类型对应关系见表~\ref{tab:tracegraph_scenarios}。
+\textbf{Agent轨迹标注方案。}本研究对上述四个基准执行固定模型（GLM-5.1）进行完整运行，对AgentDojo所有629个测试对、AgentDyn全部560个测试对、AgentCanary全部496个评估任务（含5种风险入口×7种风险影响矩阵）和ASB全部50个Agent任务（含5种攻击类型配置）采集执行轨迹，每条轨迹包含完整工具调用序列（含参数、返回值）、系统级权限记录和最终判定结果。风险类型标签采用规则优先、人工复核的方式生成：当SecurityScore=0（攻击成功）且存在特定工具调用时，自动标注为对应风险类型（$R_1$至$R_6$）；SecurityScore>0时标注为$R_0$（正常或已阻断）。归因标注（\texttt{gold\_node}、\texttt{gold\_path}）通过逐步复现攻击步骤确定关键触发节点。工具场景与风险类型对应关系见表~\ref{tab:tracegraph_scenarios}。
 
 \input{tables/tracegraph_scenarios}
 
