@@ -157,7 +157,7 @@
 
 \paragraph{对比实验设计}
 \todo{完善具体的对比实验设计组合}
-% Baseline-1为单步权限检查；Baseline-2为敏感工具计数；Baseline-3为序列级风险评分（不构建图）；Baseline-4为无归因图检测（图特征分类，不输出风险路径和反事实贡献）；Baseline-5为全量阻断（Block-All，专门验证“归因驱动”优先级排序相对于“全量阻断”在UPR上的优势）。此外，还将与RBAC-ABAC\cite{shi2025progent}、TaintLite\cite{costa2025fides}、CaMeL\cite{debenedetti2025camel}、FIDES\cite{costa2025fides}、DynamicLLM-Firewall\cite{abdelnabi2025firewalls}、AuthGraph-DualGraph\cite{wang2026aligning}等代表性工作进行对比。
+% Baseline-1为单步权限检查；Baseline-2为敏感工具计数；Baseline-3为序列级风险评分（不构建图）；Baseline-4为无归因图检测（图特征分类，不输出风险路径和反事实贡献）；Baseline-5为全量阻断（Block-All，专门验证“归因驱动”优先级排序相对于“全量阻断”在UPR上的优势）。此外，还将与RBAC-ABAC\cite{shi2025progent}、TaintLite\cite{costa2025fides}、CaMeL\cite{debenedetti2025camel}、FIDES\cite{costa2025fides}、DynamicLLM-Firewall\cite{abdelnabi2025firewalls}、AuthGraph-DualGraph\cite{wang2026authgraph}等代表性工作进行对比。
 
 \textbf{本研究的对比及消融实验。}
 \begin{itemize}[leftmargin=2em,itemsep=0pt]
@@ -173,8 +173,5 @@
   \item \textbf{基于权限权限控制的方法}
 ：StaticWhitelist\cite{yao2023react,schick2023toolformer}、RBAC-ABAC\cite{shi2025progent}
   \item \textbf{基于运行时监控的方法}：TaintLite\cite{costa2025fides}、DynamicLLM-Firewall\cite{abdelnabi2025firewalls}
-  \item \textbf{基于授权图的方法}：AuthGraph-DualGraph\cite{wang2026aligning}。
+  \item \textbf{基于授权图的方法}：AuthGraph-DualGraph\cite{wang2026authgraph}。
 \end{itemize}
-
-
-

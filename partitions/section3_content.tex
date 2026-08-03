@@ -268,7 +268,7 @@
 
 % \textbf{轻量级图结构实现。}在原型实现中（graph.py \texttt{TraceGraph}），轨迹图采用轻量级设计，避免硬依赖\texttt{networkx}，适合硕士论文原型。节点类型包括\texttt{event}（工具调用事件）、\texttt{tool}（工具节点，去重）、\texttt{guard\_action}（防御动作节点）、\texttt{risk\_type}（风险类型节点，去重）和\texttt{argument}（参数节点）。边类型包括\texttt{call}（event$\to$tool调用关系）、\texttt{defend}（event$\to$guard\_action防御关系）、\texttt{temporal}（event$\to$event时序关系）、\texttt{has\_risk}（event$\to$risk\_type风险关联）和\texttt{arg\_of}（argument$\to$event参数归属）。
 
-\textbf{三级升级判定检测机制（Three-Tier Escalation Detection, TTED）。}如图\autoref{fig:tted_arch}所示，TTED机制遵循“先拦截、再分类、最后仲裁”的升级策略。在此基础上，工具调用链威胁检测问题可表述为图分类或路径异常检测问题。给定行为轨迹图$G$，检测器$f$输出该轨迹是否存在工具滥用或攻击风险：
+\textbf{三级升级判定检测机制（Three-Tier Escalation Detection, TTED）。}TTED机制遵循“先拦截、再分类、最后仲裁”的升级策略。在此基础上，工具调用链威胁检测问题可表述为图分类或路径异常检测问题。给定行为轨迹图$G$，检测器$f$输出该轨迹是否存在工具滥用或攻击风险：
 
 \begin{equation}
   \hat{y} = f(G; \Theta), \quad \hat{y} \in \{0, 1\}

@@ -1,10 +1,10 @@
-﻿\section{研究背景与意义}
+\section{研究背景与意义}
 
 \subsection{研究背景}
 
 近年来，随着深度学习、自然语言处理等技术的飞速突破，大语言模型（Large Language Model，LLM）正从单纯依赖统计规律生成连贯文本的被动工具，逐步演化为具备主动任务规划、工具调用、环境交互及多轮反馈修正能力的智能体（Agent）。据Precedence Research权威统计，2025年全球AI Agent市场规模已飙升至79.2亿美元，且预计至2035年将爆发式增长至2946.6亿美元，年均复合增长率高达43.57\%\cite{precedence2025aiagents}。Gartner的预测指出，到2028年，将有33\%的生成式AI交互彻底摒弃传统的问答模式，转而采用Agent式的自主决策模式\cite{gartner2025agentic}。在产业实践层面，国际科技巨头与国内领军企业已形成百舸争流的竞争格局：OpenAI的Codex、Anthropic的Claude Code、Google的Gemini Agent以及微软的Copilot Studio等产品的推出引领了国际上的Agent市场化范式；与此同时，阿里巴巴百炼、字节跳动Coze、智谱AI AutoGLM等国内平台也迅速崛起，共同推动Agent技术从理论走向落地应用。在开源生态中，LangChain\cite{langchain}、MetaGPT\cite{hong2024metagpt}、CrewAI、AutoGen\cite{wu2024autogen}等开发框架的广泛应用，极大地降低了Agent开发门槛，标志着该技术已从学术实验室的原型阶段迈向大规模商业部署阶段，并深度渗透至办公自动化、软件工程、网络安全运维及复杂数据分析等关键业务领域\cite{wang2024survey,xi2025rise}。
 
-从技术演进逻辑来看，LLM从文本生成器向智能体的角色迈进经历了数个具有里程碑意义的关键节点。2017年，Transformer架构\cite{vaswani2017attention}的提出奠定了序列建模的高效计算基础；2020年，GPT-3\cite{brown2020language}的出现验证了大规模预训练模型在少样本场景下具有极强的泛化能力；2022年的InstructGPT\cite{ouyang2022training}通过指令微调与基于人类反馈的强化学习，成功实现了模型行为与人类意图的初步对齐。而2023年GPT-4\cite{openai2023gpt4}的发布则首次原生支持函数调用机制，使LLM能够直接生成符合语法规范的结构化工具调用请求并解析返回结果，这标志着LLM从单纯的“文本生成器”向具备实际操作能力的“任务执行器”实现了质的转变。在Agent形态层面，Weng\cite{weng2023agent}提出了著名的架构公式：Agent = 大模型 + 规划 + 工具调用 + 记忆（如\autoref{fig:agent-overview}所示），这一公式清晰界定了现代LLM Agent的四大核心支柱。LLM Agent区别于传统软件智能体的关键在于，它以自然语言作为统一的交互接口，通过灵活的提示词驱动复杂的推理过程与实际行动，而非依赖僵硬的预编程规则\cite{wang2024survey}。在此框架下，工具调用成为了Agent感知和作用于外部世界的核心执行通道。在交互范式上，Chain-of-Thoughts\cite{bosma2022chainofthought}（CoT）和ReAct\cite{yao2023react}实现了模型推理与行动的交替循环，Reflexion\cite{shinn2023reflexion}则引入了自我反思机制，让Agent在反思中实现任务推进和自我进化。这些范式的迭代不仅奠定了现代LLM Agent的交互基础，更使工具调用成为了其区别于传统语言模型的核心能力标志。正是这种能力，让Agent具备了影响并改变外部环境的实质性力量，使其无限接近于一个类似人类的智能系统，能够自主从环境中获取信息、与复杂环境进行实时交互、根据反馈进行反思并持续改进。
+从技术演进逻辑来看，LLM从文本生成器向智能体的角色迈进经历了数个具有里程碑意义的关键节点。2017年，Transformer架构\cite{vaswani2017attention}的提出奠定了序列建模的高效计算基础；2020年，GPT-3\cite{brown2020language}的出现验证了大规模预训练模型在少样本场景下具有极强的泛化能力；2022年的InstructGPT\cite{ouyang2022training}通过指令微调与基于人类反馈的强化学习，成功实现了模型行为与人类意图的初步对齐。而2023年GPT-4\cite{openai2023gpt4}的发布则首次原生支持函数调用机制，使LLM能够直接生成符合语法规范的结构化工具调用请求并解析返回结果，这标志着LLM从单纯的“文本生成器”向具备实际操作能力的“任务执行器”实现了质的转变。在Agent形态层面，Weng\cite{weng2023agent}提出了著名的架构公式：Agent = 大模型 + 规划 + 工具调用 + 记忆（如\autoref{fig:agent-overview}所示），这一公式清晰界定了现代LLM Agent的四大核心支柱。LLM Agent区别于传统软件智能体的关键在于，它以自然语言作为统一的交互接口，通过灵活的提示词驱动复杂的推理过程与实际行动，而非依赖僵硬的预编程规则\cite{wang2024survey}。在此框架下，工具调用成为了Agent感知和作用于外部世界的核心执行通道。在交互范式上，Chain-of-Thoughts\cite{wei2022chain}（CoT）和ReAct\cite{yao2023react}实现了模型推理与行动的交替循环，Reflexion\cite{shinn2023reflexion}则引入了自我反思机制，让Agent在反思中实现任务推进和自我进化。这些范式的迭代不仅奠定了现代LLM Agent的交互基础，更使工具调用成为了其区别于传统语言模型的核心能力标志。正是这种能力，让Agent具备了影响并改变外部环境的实质性力量，使其无限接近于一个类似人类的智能系统，能够自主从环境中获取信息、与复杂环境进行实时交互、根据反馈进行反思并持续改进。
 
 \begin{figure}[htbp]
   \centering
@@ -25,4 +25,3 @@
   \item 本研究将系统安全领域的溯源图思想迁移至LLM Agent场景，提出适应Agent执行语义的异构轨迹图表示，为Agent可观测性和执行溯源研究提供新的方法论视角，从而为Agent安全从“攻防对抗”向“过程审计、威胁归因”的防御范式演进提供一种可能的思路，以弥补现有工作在跨步骤风险路径识别、可解释威胁归因和最小干预防御方面的局限性。
   \item 本研究旨在设计一个轻量级的位于LLM Agent执行层和工具层之间的风险审计与防御编排层，通过跟踪不可信数据、工具权限、敏感数据流和不可逆副作用，对 Agent 的每一步工具调用进行细粒度风险评估，并根据风险类型执行阻断、净化、模拟执行、请求确认、回滚或阻断等防御动作，为Agent系统部署前评估、运行时监控和事后审计提供一种可能的方案。
 \end{enumerate}
-
