@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+\centering
+\caption{运行轨迹图防御方法的可执行阻断原语}
+\label{tab:cut_primitives}
+\small
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{阻断原语} & \raggedright\arraybackslash\textbf{作用语义} & \raggedright\arraybackslash\textbf{可用前提} \\
+\midrule
+参数来源边失效 & 使某条来源原子到关键参数的绑定边失效；存在已验证的等价可信取值时确定性重绑定，否则要求重新取值 & 该绑定边为硬边且对应来源原子具备可核验的替代取值或重取路径 \\
+观测隔离与回退 & 隔离已定位的字段或观测结果，并回退到其进入前、且此后未产生副作用的消息检查点 & 该观测结果进入上下文后尚未触发任何已提交效果 \\
+路径限定的操作节点门控 & 仅阻断当前受威胁的高影响操作节点，不整体禁用对应工具 & 该操作节点可被单独寻址且门控不影响同一工具的其他调用路径 \\
+环境检查点恢复 & 将任务环境与消息上下文恢复至指定检查点 & 适配层持有可验证的任务本地环境克隆，且检查点之后不存在越界副作用 \\
+\bottomrule
+\end{tabularx}
+\end{table}

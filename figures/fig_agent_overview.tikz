@@ -1,0 +1,105 @@
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+\begin{tikzpicture}[
+    >=latex,
+    font=\sffamily,
+    % 基础框样式
+    box/.style={
+        draw=black!70,
+        thick,
+        fill=black!5,
+        inner sep=6pt,
+        minimum height=0.8cm,
+        align=center
+    },
+    % Agent 核心框样式
+    agent/.style={
+        box,
+        fill=red!15,
+        font=\sffamily\bfseries
+    },
+    % 左侧工具函数框样式（等宽字体）
+    toolbox/.style={
+        box,
+        font=\ttfamily\bfseries
+    },
+    % 实线箭头样式
+    line/.style={
+        draw=black!70,
+        thick,
+        ->
+    },
+    % 虚线箭头样式
+    dashedline/.style={
+        draw=black!40,
+        thick,
+        dashed,
+        ->
+    }
+]
+
+% ================= 节点定义 =================
+
+% 1. 中心节点 Agent
+\node[agent, minimum width=2.0cm] (agent) {Agent};
+
+% 2. Agent 四周的主节点
+\node[box, above=1.5cm of agent, minimum width=2.2cm] (memory) {Memory};
+\node[box, below=1.5cm of agent, minimum width=2.2cm] (action) {Action};
+\node[box, left=2.2cm of agent, minimum width=2.2cm] (tools) {Tools};
+\node[box, right=2.2cm of agent, minimum width=2.2cm] (planning) {Planning};
+
+% 3. Memory 顶部子节点
+\node[box, above left=1.2cm and 0.1cm of memory] (stm) {Short-term memory};
+\node[box, above right=1.2cm and 0.1cm of memory] (ltm) {Long-term memory};
+
+% 4. Planning 右侧子节点
+\node[box, right=1.8cm of planning, yshift=1.3cm, anchor=west] (reflection) {Reflection};
+\node[box, right=1.8cm of planning, yshift=0.43cm, anchor=west] (critics) {Self-critics};
+\node[box, right=1.8cm of planning, yshift=-0.43cm, anchor=west] (cot) {Chain of thoughts};
+\node[box, right=1.8cm of planning, yshift=-1.3cm, anchor=west] (subgoal) {Subgoal decomposition};
+
+% 5. Tools 左侧子节点
+\node[toolbox, left=1.8cm of tools, yshift=1.7cm, anchor=east] (cal) {Calendar()};
+\node[toolbox, left=1.8cm of tools, yshift=0.85cm, anchor=east] (calc) {Calculator()};
+\node[toolbox, left=1.8cm of tools, yshift=0.0cm, anchor=east] (code) {CodeInterpreter()};
+\node[toolbox, left=1.8cm of tools, yshift=-0.85cm, anchor=east] (search) {Search()};
+\node[box, left=1.8cm of tools, yshift=-1.7cm, anchor=east] (more) {...more};
+
+
+% ================= 连线绘制 =================
+
+% 主干连接
+\draw[line, <->] (agent) -- (memory);
+\draw[line] (agent) -- (action);
+\draw[line] (agent) -- (tools);
+\draw[line] (agent) -- (planning);
+
+% Memory 分支线
+\coordinate (mem_fork) at ($(memory.north) + (0, 0.6cm)$);
+\draw[thick, black!70] (memory.north) -- (mem_fork);
+\draw[line] (mem_fork) -| (stm.south);
+\draw[line] (mem_fork) -| (ltm.south);
+
+% Planning 分支线
+\coordinate (plan_fork) at ($(planning.east) + (0.8cm, 0)$);
+\draw[thick, black!70] (planning.east) -- (plan_fork);
+\draw[line] (plan_fork) |- (reflection.west);
+\draw[line] (plan_fork) |- (critics.west);
+\draw[line] (plan_fork) |- (cot.west);
+\draw[line] (plan_fork) |- (subgoal.west);
+
+% Tools 分支线
+\coordinate (tool_fork) at ($(tools.west) + (-0.8cm, 0)$);
+\draw[thick, black!70] (tools.west) -- (tool_fork);
+\draw[line] (tool_fork) |- (cal.east);
+\draw[line] (tool_fork) |- (calc.east);
+\draw[line] (tool_fork) |- (code.east);
+\draw[line] (tool_fork) |- (search.east);
+\draw[line] (tool_fork) |- (more.east);
+
+% 虚线连接 (逻辑控制线)
+\draw[dashedline] (memory.east) -- ++(3.08cm,0) -| (planning.north);
+\draw[dashedline] (memory.east) -- ++(6.98cm,0) -| (reflection.north);
+\draw[dashedline] (tools.south) |- (action.west);
+
+\end{tikzpicture}

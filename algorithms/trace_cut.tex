@@ -1,0 +1,30 @@
+\begin{algorithm}[htbp]
+\caption{待决调用的在线证据图检测与阻断（\textsc{HandlePendingCall}）}
+\label{alg:trace_cut}
+\KwIn{工具调用提案 $\text{proposal}$，会话证据图 $G_t=(V_t, E_t^H, E_t^S, \sigma_t)$}
+\KwOut{真实执行结果，或阻断/恢复后的安全继续结果}
+$a \leftarrow \text{ResolveAndCanonicalizeWithoutExecution}(\text{proposal})$\;
+\If{路由/schema/适配层中介失败}{\Return{按\texttt{MEDIATION\_GAP}回执拒绝}}
+将 $a$ 及其硬边/软边证据并入 $G_t$\;
+$\mathcal{P}_t \leftarrow \text{QueryP1P2}(G_t, a)$ \tcp{按\autoref{eq:p1_rule}、\autoref{eq:p2_rule}枚举当前已闭合的路径证据包}
+\If{结构条件已闭合但仅缺注入证据}{
+  以脱敏证据触发一次隔离检测，更新 $\mathcal{P}_t$\;
+  \If{检测结果不确定且 $\mathcal{P}_t=\varnothing$}{保持当前操作节点门控并返回\texttt{INJECTION\_EVIDENCE\_INCOMPLETE}回执}
+}
+\uIf{$\mathcal{P}_t = \varnothing$}{
+  $\text{result} \leftarrow \text{InvokeRealFunctionOnce}(a)$\;
+  记录效果、环境差异与证据信封（早于结果格式化）\;
+  \Return{原格式化结果}\;
+}
+\Else{
+  冻结当前待决高影响操作节点\;
+  $\mathcal{C}_t \leftarrow \text{CapabilityProbe}(\text{GenerateCutCandidates}(\mathcal{P}_t))$ \tcp{见\autoref{tab:cut_primitives}，仅保留可真实物化的候选}
+  $X^* \leftarrow \arg\min^{\text{lex}}_{X \subseteq \mathcal{C}_t} K(X)$ \textbf{s.t.} $\text{Executable}_t(X)=1,\ \forall p \in \mathcal{P}_t: \text{Cover}_t(X,p)=1$\;
+  \If{存在多条证据包或多个可执行候选，且预算允许}{
+    对至多两个低扰动候选运行一次有界在线分支验证，依据 $Z_c$ 结果调整候选优先级（不释放原门控）\;
+  }
+  $\text{receipt} \leftarrow \text{MaterializePlanOnRealBranch}(X^*)$\;
+  \uIf{$\text{receipt}$ 无效或重新查询后 $\mathcal{P}_t$ 非空}{保持路径限定的操作节点门控并返回阻断结果}
+  \Else{对恢复或重绑定后产生的新动作重新调用本算法进行完整中介}
+}
+\end{algorithm}

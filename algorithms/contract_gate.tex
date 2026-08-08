@@ -1,0 +1,42 @@
+\begin{algorithm}[htbp]
+\caption{任务契约构造（\textsc{BuildContract}）与调用前中介（\textsc{Mediate}）}
+\label{alg:contract_gate}
+\KwIn{可信用户请求 $q_t$，冻结的效果清单 $M$，工具调用提案 $\text{proposal}$，运行时状态 $\text{state}$}
+\KwOut{授权闭包状态、防御动作，以及在\textsc{Allow}时的真实执行结果}
+\SetKwFunction{FBuild}{BuildContract}\SetKwFunction{FMed}{Mediate}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\FBuild{$q_t$, $M$}}{
+  $\text{atoms} \leftarrow \text{DeterministicExtract}(q_t)$ \tcp{EFFECT/VALUE/SOURCE/CONSTRAINT/BINDING 五类原子候选}
+  $\text{candidates} \leftarrow \text{atoms} \cup \text{OneShotLLMCandidate}(q_t)$ \tcp{至多一次隔离结构化候选生成，不读取外部观测}
+  $(R_t, S_t, \text{buildStatus}) \leftarrow \text{ValidateGroundNormalize}(\text{candidates}, M)$\;
+  \tcp{每条规则须回指同一请求片段、通过注册解析器并匹配 $M$ 中的 route/effect，不得跨候选或跨规则补字段}
+  $K_t \leftarrow (q_t,\, M,\, R_t,\, S_t,\, L_t,\, d_t)$ \tcp{$L_t$为规则余量与恢复预算，$d_t$为默认策略}
+  \Return{$K_t$}\;
+}
+\Fn{\FMed{$\text{proposal}$, $K_t$, $\text{state}$}}{
+  $a_t \leftarrow \text{ResolveRouteAndNormalize}(\text{proposal})$ \tcp{路由解析+嵌套调用独立中介+参数规范化后的最终有效动作}
+  \If{manifest/schema/adapter/契约完整性前提失败}{\Return{\textsc{Block} 并记录完整性回执}}
+  \ForEach{$r \in R_t$}{
+    $\text{Match}(r, a_t) \leftarrow \text{RouteOK} \land \text{EffectOK} \land \text{ArgOK} \land \text{OriginOK} \land \text{UseOK} \land \text{ConfirmOK}$\;
+  }
+  \uIf{$\exists r: \text{Match}(r, a_t)$}{
+    $\text{status} \leftarrow \texttt{AUTHORIZED}$\;
+  }
+  \uElseIf{唯一缺口为来源取值、精确调用确认或受限子集}{
+    $\text{status} \leftarrow \texttt{UNRESOLVED}$\;
+  }
+  \Else{
+    $\text{status} \leftarrow \texttt{UNAUTHORIZED}$\;
+  }
+  $\text{action} \leftarrow \text{MapStatusAndReason}(\text{status}, \text{witness}, \text{state})$ \tcp{见\autoref{tab:contract_actions}}
+  \uIf{$\text{action} = \textsc{Allow}$}{
+    $\text{result} \leftarrow \text{InvokeRealFunctionOnce}(a_t)$\;
+    更新规则余量与一跳来源绑定状态\;
+    \Return{$\text{result}$ 及绑定 $a_t$ 摘要与 $K_t$ 版本的执行回执}\;
+  }
+  \Else{
+    施加 \textsc{CapabilityDecline} / \textsc{RollbackInfo} / \textsc{AskConfirm} / \textsc{Block} 之一\;
+    任何新提案必须重新调用 \FMed{}\;
+  }
+}
+\end{algorithm}

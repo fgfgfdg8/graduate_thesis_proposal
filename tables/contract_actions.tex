@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\caption{任务契约动作门控方法的判定条件与动作映射}
+\label{tab:contract_actions}
+\small
+\begin{tabularx}{\textwidth}{p{1.9cm}X>{\centering\arraybackslash}p{2.4cm}X}
+\toprule
+\textbf{授权闭包状态} & \raggedright\arraybackslash\textbf{主要判定条件} & \textbf{防御动作} & \raggedright\arraybackslash\textbf{允许的后续行为} \\
+\midrule
+\texttt{AUTHORIZED} & 全部谓词通过 & \textsc{Allow} & 真实执行一次并留存绑定动作摘要与契约版本的执行回执 \\
+\texttt{UNRESOLVED} & 缺少允许来源值、存在同类效果的其他可用规则，或契约构造结果为受限子集 & \textsc{CapabilityDecline} & 拒绝当前调用并披露契约已允许的边界，触发有界重规划 \\
+\texttt{UNRESOLVED} & 唯一硬缺口是可定位外部信息来源与参数不匹配，且该信息尚未产生副作用 & \textsc{RollbackInfo} & 裁剪该信息及其后消息，标记后重规划，不声称已恢复环境状态 \\
+\texttt{UNRESOLVED} & 其余谓词均满足，唯一缺口是绑定当前动作摘要的精确调用确认 & \textsc{AskConfirm} & 审批仅对当前动作摘要与契约版本生效，确认超时、版本或摘要不匹配则终止该路径 \\
+\texttt{UNAUTHORIZED} & 副作用类别、路由或关键参数与全部规则冲突，或规则余量耗尽、完整性前提失败 & \textsc{Block} & 不执行当前调用，终止当前任务路径 \\
+\bottomrule
+\end{tabularx}
+\end{table}

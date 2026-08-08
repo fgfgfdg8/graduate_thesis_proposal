@@ -1,0 +1,41 @@
+% fig_system_design.tikz - 原型应用系统设计框图（黑白学术框图风格）
+\begin{tikzpicture}[
+  node distance=6mm and 8mm,
+  font=\scriptsize,
+  box/.style={draw=black, thick, rounded corners=2pt, fill=white, align=center, text width=32mm, minimum height=10mm, inner sep=2pt},
+  drvbox/.style={draw=black, very thick, rounded corners=2pt, fill=black!8, align=center, text width=104mm, minimum height=9mm, inner sep=2pt},
+  dbbox/.style={draw=black, thick, rounded corners=2pt, fill=black!5, align=center, text width=104mm, minimum height=10mm, inner sep=2pt},
+  arr/.style={-{Stealth[length=1.8mm,width=1.6mm]}, thick, black}
+]
+
+% 顶层驱动模块
+\node[drvbox] (drv) {在线运行实验模块\\指定AgentDyn评测套件/攻击/防御方法组合并驱动运行};
+
+% 第二层：三个执行模块
+\node[box, below=8mm of drv, xshift=-36mm] (m2) {任务契约防御模块\\（对应研究点一）};
+\node[box, below=8mm of drv] (m3) {运行轨迹图防御模块\\（对应研究点二）};
+\node[box, below=8mm of drv, xshift=36mm] (m4) {基线对比实验模块\\（接入现有防御方法）};
+
+% 第三层：数据库模块
+\node[dbbox, below=10mm of m3] (db) {数据库模块：关系型数据库（Agent执行日志）+ 图数据库（轨迹图结构日志）};
+
+% 第四层：日志审计模块
+\node[box, below=8mm of db, xshift=-24mm] (audit) {日志审计模块\\统计安全性/效用/成本指标};
+
+% 第五层：可视化模块
+\node[box, below=8mm of db, xshift=24mm] (vis) {可视化模块\\实验对比总览 / 攻防轨迹可视化 / 图结构可视化};
+
+% 箭头
+\draw[arr] (drv.south) -- ++(0,-3mm) -| (m2.north);
+\draw[arr] (drv.south) -- (m3.north);
+\draw[arr] (drv.south) -- ++(0,-3mm) -| (m4.north);
+
+\draw[arr] (m2.south) |- ($(m2.south)+(0,-4mm)$) -| (db.north);
+\draw[arr] (m3.south) -- (db.north);
+\draw[arr] (m4.south) |- ($(m4.south)+(0,-4mm)$) -| (db.north);
+
+\draw[arr] (db.south) -- ++(0,-3mm) -| (audit.north);
+\draw[arr] (audit.east) -- (vis.west) node[midway, above, font=\tiny, fill=white, inner sep=1pt] {审计结果};
+\draw[arr] (db.south) -- ++(0,-3mm) -| (vis.north);
+
+\end{tikzpicture}
