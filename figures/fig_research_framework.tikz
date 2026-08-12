@@ -28,11 +28,11 @@
 \node[box, below=4mm of l5] (l6) {防御动作映射};
 
 \node[box, below=3mm of Rtitle] (r1) {工具调用与观测结果};
-\node[box, below=4mm of r1] (r2) {增量证据图构建\\（硬边/软边）};
-\node[box, below=4mm of r2] (r3) {两条在线路径规则检测\\P1: 可达高危参数\quad P2: 累积效果};
-\node[box, below=4mm of r3] (r4) {路径证据包物化};
-\node[box, below=4mm of r4] (r5) {阻断候选能力探测\\字典序最小覆盖规划};
-\node[box, below=4mm of r5] (r6) {阻断物化与环境恢复};
+\node[box, below=4mm of r1] (r2) {来源原子与出现记录\\增量证据图构建};
+\node[box, below=4mm of r2] (r3) {精确值、持久值、授权目标与\\语义对象路径识别};
+\node[box, below=4mm of r3] (r4) {有界冲突证据包};
+\node[box, below=4mm of r4] (r5) {按需语义调解\\ALLOW / REWRITE / REPLAN};
+\node[box, below=4mm of r5] (r6) {证据闭包校验、检查点恢复\\与污染来源隔离};
 
 % 中部关系注记
 \node[note, right=4mm of l3, xshift=6mm, yshift=-2mm] (relnote) {};
