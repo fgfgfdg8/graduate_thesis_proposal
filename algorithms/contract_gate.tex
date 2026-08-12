@@ -16,13 +16,20 @@
 \Fn{\FMed{$\text{proposal}$, $K_t$, $\text{state}$}}{
   $a_t \leftarrow \text{ResolveRouteAndNormalize}(\text{proposal})$ \tcp{路由解析+嵌套调用独立中介+参数规范化后的最终有效动作}
   \If{manifest/schema/adapter/契约完整性前提失败}{\Return{\textsc{Block} 并记录完整性回执}}
+  $\text{Prov} \leftarrow \text{DeterministicProvenance}(a_t, \text{state})$\;
+  $\Omega_t \leftarrow \text{SelectUnresolvedHighImpact}(a_t, \text{Prov}, M, L_t)$\;
+  $\text{Dep} \leftarrow \varnothing$\;
+  \If{$\Omega_t \neq \varnothing$ 且启用SCAV}{
+    $\text{Dep} \leftarrow \text{LocalArgumentIntervention}(\Omega_t, a_t, K_t, \text{state})$ \tcp{冻结路由与非目标参数，仅遮蔽候选来源跨度；不调用工具}
+  }
+  $\text{originEvidence} \leftarrow \text{CombineEvidence}(\text{Prov}, \text{Dep})$ \tcp{依赖证据不得修改契约或允许来源集合}
   \ForEach{$r \in R_t$}{
-    $\text{Match}(r, a_t) \leftarrow \text{RouteOK} \land \text{EffectOK} \land \text{ArgOK} \land \text{OriginOK} \land \text{UseOK} \land \text{ConfirmOK}$\;
+    $\text{Match}(r, a_t) \leftarrow \text{RouteOK} \land \text{EffectOK} \land \text{ArgOK} \land \text{OriginOK}(r,a_t,\text{originEvidence}) \land \text{UseOK} \land \text{ConfirmOK}$\;
   }
   \uIf{$\exists r: \text{Match}(r, a_t)$}{
     $\text{status} \leftarrow \texttt{AUTHORIZED}$\;
   }
-  \uElseIf{唯一缺口为来源取值、精确调用确认或受限子集}{
+  \uElseIf{唯一缺口为来源依赖仍未决、来源取值、精确调用确认或受限子集}{
     $\text{status} \leftarrow \texttt{UNRESOLVED}$\;
   }
   \Else{

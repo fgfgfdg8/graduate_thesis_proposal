@@ -23,8 +23,8 @@
 \node[box, below=3mm of Ltitle] (l1) {可信用户请求};
 \node[box, below=4mm of l1] (l2) {任务契约构造\\（版本化契约 $K_t$）};
 \node[box, below=4mm of l2] (l3) {最终有效动作解析};
-\node[box, below=4mm of l3] (l4) {六谓词确定性门控匹配};
-\node[box, below=4mm of l4] (l5) {授权闭包状态判定};
+\node[box, below=4mm of l3] (l4) {确定性来源检查与\\选择性参数依赖消歧};
+\node[box, below=4mm of l4] (l5) {六谓词门控与\\授权闭包状态判定};
 \node[box, below=4mm of l5] (l6) {防御动作映射};
 
 \node[box, below=3mm of Rtitle] (r1) {工具调用与观测结果};
