@@ -1,0 +1,82 @@
+% fig_mdt_architecture.tikz - MDT模型架构图（ML顶会风格彩色模块图）
+\begin{tikzpicture}[
+  node distance=4mm and 6mm,
+  font=\small,
+  % 颜色定义
+  cInput/.style={},
+  cText/.style={},
+  cGraph/.style={},
+  cFuse/.style={},
+  cOutput/.style={},
+  cTrain/.style={},
+  cGrayC/.style={},
+  % 主模块样式
+  inputbox/.style={draw=#1, fill=#1!8, rounded corners=4pt, line width=0.9pt,
+    align=center, minimum height=11mm, inner sep=4pt, font=\small},
+  procbox/.style={draw=#1, fill=#1!12, rounded corners=4pt, line width=0.9pt,
+    align=center, minimum height=11mm, inner sep=4pt, font=\small},
+  outbox/.style={draw=#1, fill=#1!15, rounded corners=4pt, line width=0.9pt,
+    align=center, minimum height=13mm, inner sep=4pt, font=\small\bfseries},
+  sublabel/.style={font=\scriptsize, align=center, text=#1},
+  grouplabel/.style={font=\small\bfseries, align=center, text=#1},
+  arr/.style={-{Stealth[length=2.0mm,width=1.8mm]}, line width=0.8pt, #1},
+  darr/.style={-{Stealth[length=2.0mm,width=1.8mm]}, line width=0.8pt, #1, dashed},
+]
+
+% ========== 颜色定义 ==========
+\definecolor{cBlue}{HTML}{1565C0}
+\definecolor{cGreen}{HTML}{2E7D32}
+\definecolor{cPurple}{HTML}{6A1B9A}
+\definecolor{cOrange}{HTML}{EF6C00}
+\definecolor{cRed}{HTML}{C62828}
+\definecolor{cTeal}{HTML}{00695C}
+\definecolor{cGray}{HTML}{546E7A}
+
+% ========== 第一层：输入 ==========
+\node[inputbox=cBlue, text width=30mm] (src_text) {源节点文本\\{\scriptsize\texttt{type/tool/args/result}}};
+\node[inputbox=cBlue, text width=30mm, right=8mm of src_text] (tgt_text) {目标节点文本\\{\scriptsize\texttt{type/tool/slot/value}}};
+\node[inputbox=cBlue, text width=30mm, right=8mm of tgt_text] (edge_attr) {边属性\\{\scriptsize\texttt{relation/evidence/}\\\texttt{time\_diff/role}}};
+\node[inputbox=cBlue, text width=42mm, right=8mm of edge_attr] (cone) {证据锥子图$S_t(e)$\\{\scriptsize 硬祖先+软候选+契约+控制流}};
+
+% 输入组标签
+\node[grouplabel=cBlue, above=4mm of $(src_text.north)!0.5!(cone.north)$] (input_label) {候选边$e$的多源输入};
+
+% ========== 第二层：编码器 ==========
+\node[procbox=cGreen, text width=34mm, below=12mm of $(src_text.south)!0.5!(tgt_text.south)$] (slm) {共享SLM编码器\\{\scriptsize DeBERTa-v3 / ModernBERT}};
+\node[procbox=cPurple, text width=42mm, below=12mm of cone] (gnn) {图编码器\\{\scriptsize GAT / 关系图网络}};
+
+% 编码器输出
+\node[sublabel=cGreen, below=2mm of slm] (slm_out) {$h_{src}^T$\quad$h_{dst}^T$};
+\node[sublabel=cPurple, below=2mm of gnn] (gnn_out) {$h_e^G$};
+
+% 箭头：输入→编码器
+\draw[arr=cBlue] (src_text.south) -- ++(0,-3mm) -| (slm.north west);
+\draw[arr=cBlue] (tgt_text.south) -- ++(0,-3mm) -| (slm.north east);
+\draw[arr=cBlue] (cone.south) -- (gnn.north);
+
+% ========== 第三层：特征融合 ==========
+\node[procbox=cOrange, text width=60mm, below=18mm of $(slm.south)!0.5!(gnn.south)$] (fusion) {向量拼接与特征融合\\{\scriptsize $[h_{src}^T;\, h_{dst}^T;\, h_e^G;\, x_e]$}};
+
+% 箭头：编码器→融合
+\draw[arr=cGreen] (slm_out.south) -- ++(0,-4mm) -| (fusion.north west);
+\draw[arr=cGray] (edge_attr.south) -- ++(0,-25mm) -| (fusion.north);
+\draw[arr=cPurple] (gnn_out.south) -- ++(0,-4mm) -| (fusion.north east);
+
+% ========== 第四层：评分与输出 ==========
+\node[procbox=cOrange, text width=35mm, below=10mm of fusion] (mlp) {MLP评分器$MLP_\psi$};
+\node[outbox=cRed, text width=50mm, below=10mm of mlp] (output) {可疑度分数$s_t(e)$\\$\downarrow$\\Top-$K$候选可疑边排序};
+
+\draw[arr=cOrange] (fusion.south) -- (mlp.north);
+\draw[arr=cOrange] (mlp.south) -- (output.north);
+
+% ========== 右侧：训练信号 ==========
+\node[procbox=cTeal, text width=32mm, right=10mm of mlp] (loss) {成对排序损失\\$\mathcal{L}_{rank}$\\{\scriptsize + 自监督 $\mathcal{L}_{ssl}$}};
+\node[inputbox=cTeal, text width=32mm, above=6mm of loss] (labels) {分层监督标签\\{\scriptsize L2/L3/L4 + 契约合成}};
+
+\draw[arr=cTeal] (labels.south) -- (loss.north);
+\draw[darr=cTeal] (loss.west) -- (mlp.east);
+
+% ========== 底部标注 ==========
+\node[sublabel=cRed, below=3mm of output, text width=80mm] {排序结果指导研究点一的审查预算分配\\与安全审计人员的攻击路径快速定位};
+
+\end{tikzpicture}

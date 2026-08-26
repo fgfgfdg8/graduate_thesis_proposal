@@ -2,13 +2,13 @@
 
 \subsection{研究目标}
 
-本研究面向LLM Agent工具调用链的间接提示注入攻击威胁，从“工具调用动作发生前的规范性授权”与“工具调用链条中的证据性响应”两个互补的防御时相出发，提出两个研究点，组成一个递进的防御体系。
+本研究面向LLM Agent工具调用链的间接提示注入攻击威胁，围绕"在线确定性防御"与"学习式智能溯源"两个互补的防御维度，提出两个研究点，组成一个递进的防御体系。
 
-\textbf{研究点一：基于Agent任务契约的攻击检测与防御方法}面向Agent每一步工具调用行为，校验“该动作在规范意义上是否应被允许”，在注入攻击下Agent工具调用动作真正产生副作用前，进行任务契约校验门控，并作最小权限防御。
+\textbf{研究点一：基于Agent执行轨迹图分级证据判据的IPI防御}面向Agent运行时每一步工具调用行为，将执行轨迹建模为异构证据图，通过确定性边推导与契约规则检查，在注入攻击下Agent工具调用动作真正产生副作用前，进行可复核的运行时安全检查与处置。
 
-\textbf{研究点二：基于Agent运行轨迹图的在线攻击检测与主动防御方法}面向攻击已经跨越多个工具调用步骤、或规范授权前置约束被绕过之后的场景，检测“攻击风险如何跨步骤传播、攻击路径位于何处，以及应当如何在副作用发生前调解当前调用并恢复受影响状态”。
+\textbf{研究点二：基于图-语义联合表示的攻击定位与溯源方法}面向研究点一中确定性规则无法唯一消歧的候选影响边，利用图结构与轻量语义的联合表示，对当前执行前缀中的候选边进行可疑度排序，识别最应优先审查的可疑攻击子图，为审查预算的优先分配提供依据。
 
-在防御时序上，二者形成前后递进的互补关系：研究点一降低未授权的危险动作的发生概率，降低研究点二需要处理的风险轨迹规模，研究点二则补充覆盖跨步骤、多跳传播类风险，为即将或已经发生的攻击行为提供路径级的定位、危害控制与任务恢复能力。本研究的整体研究路线如\autoref{fig:framework}所示。
+在防御层次上，二者形成互补关系：研究点一通过确定性推导和契约规则在线处置明确可判定的安全违规，研究点二则针对证据不完备区域，利用学习式模型定位最可疑的候选依赖边并引导审查资源分配，二者共同覆盖从确定性防御到不确定性溯源的完整安全分析链路。本研究的整体研究路线如\autoref{fig:framework}所示。
 
 \begin{figure}[htbp]
   \centering
@@ -24,241 +24,248 @@
 
 \textbf{攻击者能力假设。}根据真实Agent运行场景，本研究假设攻击者不能篡改可信用户请求所在的宿主通道，不能直接修改Agent的规划器、工具实现或本研究的防御逻辑，也不能获知防御模块的内部实现；但攻击者可以通过邮件、网页、文件、工具返回值（如记忆检索、知识库检索等）等外部内容注入非用户授权的控制性指令或诱导信息，并借助Agent对这些内容的读取与推理，跨一个或多个步骤影响工具选择、关键参数、持久状态或最终的外部副作用动作。
 
-\textbf{防御者能力假设。}防御者能够访问Agent的运行时状态、工具调用记录与返回值、Agent环境状态，具备对调用前中介与调用中/后证据采集的完整控制权；但防御者不能在Agent运行时直接修改Agent的工具实现，也不能获知攻击者的内部决策过程。防御者不能假设Agent所使用的LLM模型内部注意力或隐藏状态可见，也不能直接修改模型权重。
+\textbf{防御者能力假设。}防御者能够访问Agent的运行时状态、工具调用记录与返回值、Agent环境状态，具备对调用前中介与运行时证据采集的完整控制权；但防御者不能在Agent运行时直接修改Agent的工具实现，也不能获知攻击者的内部决策过程。防御者不能假设Agent所使用的LLM模型内部注意力或隐藏状态可见，也不能直接修改模型权重。
 
-\subsection{研究点一：基于Agent运行时任务契约的动态工具调用授权机制}
+\subsection{研究点一：基于Agent任务契约授权与轨迹图溯源的IPI防御}
 
-\subsubsection{威胁模型与防御目标}
+\subsubsection{研究动机与防御目标}
 
-本研究点在上述共享假设基础上做进一步细化：
-\begin{enumerate}
-  \item 唯一的授权来源是可信用户请求（以下称\emph{可信请求}）及其后续由同一可信信道产生的明确修改或审批。
-  \item 邮件、网页、文件、工具描述与工具返回值等外部内容可以在既有任务契约限定范围内提供事实性输入，但不能自主产生新的动作授权或扩大关键参数的允许来源集合。
-  \item 本研究点的防御目标是在Agent工具调用动作即将被真实执行前，依据当前用户任务对应的规范授权范围，判定该工具调用动作（包括工具及参数）在规范意义上是否应被允许；若判定为不应被允许，则在不扩大既有授权边界的前提下，选择合适的干预方式，使任务尽可能继续完成。
-\end{enumerate}
+现有研究已表明，将Agent运行轨迹组织为具有控制流和数据流语义的图结构是可行的\cite{wang2025agentarmor}，参数级来源追踪对安全检查具有重要价值\cite{fan2026granularity,zhang2026agentsentry}。然而，真实Agent运行时通常只直接记录工具调用、参数、返回值和状态快照，跨工具别名变换、对象版本传播及语义分支影响并不总以显式依赖边形式呈现。与此同时，将Agent自报的来源信息直接作为安全真值会引入循环信任，而对每一步调用LLM或反事实验证器又具有较高的运行开销。
+
+为应对上述挑战，本研究点的核心思路是：\textbf{（1）}将Agent执行轨迹建模为具有证据分级的异构图，区分"直接观测""确定性推导""软控制候选"和"未解析关系"四类边，在同一图表示中保持证据边界；\textbf{（2）}以任务契约语义而非简单的"任意污点可达"作为图规则判据，使不可信信息可以在契约允许范围内提供事实性输入，但不能自主授权高影响参数；\textbf{（3）}采用确定性优先、按需语义补边的策略，仅在确定性规则无法消歧且涉及高影响调用时才调用LLM辅助推理，控制运行开销。
+
+本研究点的防御目标是：在Agent工具调用即将产生真实副作用前，利用执行轨迹图中的证据分级边和任务契约规则，判定当前调用是否违反信息流约束；若判定为违规或存在高影响不确定关系，则选择合适的处置方式（阻断、最小改写或重规划），在保障安全性的同时尽可能维持用户任务的正常执行。
 
 \subsubsection{问题形式化}
 
-在Agent运行过程中的第$t$步，定义版本化任务契约为
-
+\paragraph{执行轨迹与最终物化动作}
+定义截至时刻$t$的可观测执行轨迹为
 \begin{equation}
-  K_t = (q_t,\ M,\ R_t,\ S_t,\ L_t,\ d_t)
-  \label{eq:task_contract}
+  \tau_{\le t} = (q_0, m_0, c_1, r_1, \sigma_1, \ldots, m_t, c_t, r_t, \sigma_t)
+  \label{eq:trajectory}
 \end{equation}
+其中$q_0$为任务开始时冻结的可信用户请求，$m_i$为第$i$步Agent消息，$c_i$为工具调用，$r_i$为返回值，$\sigma_i$为调用后的环境状态引用。当前待执行工具调用的最终物化动作定义为$M_t=(n_t, \alpha_t, \iota_t, h_t)$，其中$n_t$为规范化工具函数键，$\alpha_t$为通过Schema校验的参数JSON，$\iota_t$为工具调用标识，$h_t$为绑定摘要。安全检查的对象是该物化动作，而非LLM生成的原始文本。
 
-其中，$q_t$为当前可信请求及其来源摘要；$M$为按“运行时适配层标识+工具名+函数签名哈希”冻结的效果清单（Effect Manifest），记录每个可执行路由对应的副作用类别、参数角色、高影响参数集合、来源/汇聚类型与规范化解析方式；$R_t$为原子级整调用规则集合；$S_t$为当前允许的一跳直接来源绑定集合；$L_t$为各规则的剩余使用次数、来源消歧次数与有界恢复预算；$d_t$为默认策略，规定只读且无副作用的观察类调用可以继续执行，其余未被规则闭包覆盖的调用一律失败关闭。
-
-每条规则的形式为
-
+\paragraph{统一执行轨迹图}
+定义增量异构图为
 \begin{equation}
-  r = (\text{selector},\ \text{effect},\ C_r,\ P_r,\ \text{confirm},\ \text{maxUses})
-  \label{eq:contract_rule}
+  G_t = (V_t, E_t, X_t^V, X_t^E, C)
+  \label{eq:unified_graph}
 \end{equation}
+其中$V_t$为截至时刻$t$的节点集合，$E_t$为依赖关系边集合，$X_t^V$和$X_t^E$分别为节点与边属性，$C$为冻结的任务契约与工具策略。节点集合覆盖八类异构节点：\texttt{TaskContract}等契约节点$V_t^C$、\texttt{AgentStep}步骤节点$V_t^A$、\texttt{SourceArtifact}来源节点$V_t^S$、\texttt{ToolCall}调用节点$V_t^T$、\texttt{ArgumentSlot}参数槽节点$V_t^P$、\texttt{ToolResult}结果节点$V_t^R$、\texttt{EntityVersion}实体版本节点$V_t^Q$和\texttt{Effect}效果节点$V_t^F$。边的语义类型集合$\mathcal{R}$包含结构关系（\texttt{EMITS\_CALL}、\texttt{CONTAINS\_ARGUMENT}等）、数据流关系（\texttt{EXACT\_VALUE\_FROM}、\texttt{STRUCTURED\_ALIAS\_FROM}等）、控制流关系（\texttt{MAY\_CONTROL}、\texttt{BRANCH\_NOVELTY}等）、状态关系（\texttt{READS}、\texttt{WRITES}等）和授权关系（\texttt{ALLOWS\_FLOW}、\texttt{PROTECTS\_ARGUMENT}等）五类。
 
-其中$\text{selector}$绑定效果清单中的规范路由，$\text{effect}$为该规则允许的副作用类别，$C_r$为参数值约束集合（仅允许精确值、集合、区间与“一跳来源约束”四类，不支持任意复杂谓词），$P_r$为与来源约束参数对应的一跳直接来源限定，$\text{confirm}$标记该规则是否要求绑定当前动作摘要的精确调用确认，$\text{maxUses}$为该规则在当前契约版本内的最大可用次数。规则内部的全部条件取逻辑与（AND），不同规则之间取逻辑或（OR），且禁止跨规则拼接出一个从未被任一规则整体授权的调用，以避免“参数各自合法但整体越权”的拼接式授权漏洞。
-
-研究点一检查的对象不是大语言模型生成的原始调用提案文本，而是路由解析、嵌套调用独立中介与参数规范化之后的\emph{最终有效动作}：
-
+\paragraph{边属性的两个正交维度}
+本研究提出以"构造方式"与"证据等级"两个正交维度描述每条边的可信程度。对任意边$e$，定义：
 \begin{equation}
-  a_t = (\text{route}_t,\ \text{effect}_t,\ \text{args}_t,\ \text{origins}_t,\ \text{digest}_t)
-  \label{eq:effective_action}
+  d(e) \in \{\texttt{OBSERVED}, \texttt{INFERRED}\}, \qquad
+  \ell(e) \in \{\texttt{HARD}, \texttt{SOFT}, \texttt{UNKNOWN}\}
+  \label{eq:edge_attr}
 \end{equation}
+其中$d(e)$表示边的构造方式，\texttt{OBSERVED}表示运行时日志直接记录，\texttt{INFERRED}表示由规则或模型补全；$\ell(e)$表示证据等级，\texttt{HARD}表示关系可由确定性证据回放，\texttt{SOFT}表示存在可解释但非唯一的候选支持，\texttt{UNKNOWN}表示证据不足以确定关系。例如，\texttt{OBSERVED+HARD}对应日志直接记录的工具调用参数绑定，\texttt{INFERRED+HARD}对应同一结构化对象内唯一键映射的确定性推导，\texttt{OBSERVED+SOFT}对应外部文本中出现的工具调用指示（但Agent是否采纳未知）。这一正交表示使得安全检查可以根据证据强度采取不同的处置策略。
 
-其中$\text{route}_t$为适配层解析后的规范运行时身份，$\text{effect}_t$为效果清单对该动作标注的副作用类别，$\text{args}_t$为最终规范化参数映射，$\text{origins}_t$为关键参数对应的一跳直接来源引用与候选来源证据，$\text{digest}_t$为对上述字段生成的规范动作摘要，用于跨阶段一致性校验。
+\paragraph{任务契约}
+定义任务契约$C = (A_C, E_C, O_C, F_C, V_C, N_C, T_C, H_C)$，其中$A_C$为允许调用的工具集合，$E_C$为允许产生的效果类别，$O_C$为允许作用的目标对象，$F_C$为来源类别到参数角色的允许信息流关系，$V_C$为各参数槽的允许值域，$N_C$为数值边界，$T_C$为时间约束，$H_C$为版本化批准策略。契约由运行前冻结的可信用户请求和工具目录编译生成，外部来源、工具返回和Agent自身输出不能修改契约。受保护对象集合$Z_C = Z_C^{arg} \cup Z_C^{state} \cup Z_C^{effect}$覆盖受保护参数槽、持久状态和高影响效果三类。
 
-为避免将“某来源影响了参数”直接等同于“该来源有权决定参数”，本研究将规范授权、运行时来源证据与干预依赖证据分别表示。任务契约$K_t$给出规则$r$对参数$p$允许的来源集合$P_r(p)$；确定性来源分析对候选来源$s$与参数$p$输出
+\subsubsection{算法设计}
 
+\paragraph{自动边构建规则}
+运行时首先从日志直接创建\texttt{OBSERVED+HARD}的结构边（如\texttt{AgentStep→ToolCall}、\texttt{ToolCall→ArgumentSlot}等），随后运行四类无需LLM的确定性推导器生成\texttt{INFERRED+HARD}边：（1）\textbf{精确值匹配}（\textsc{EXACT-VALUE}）：参数叶值与此前消息或工具结果在类型规范化后完全一致；（2）\textbf{结构化别名}（\textsc{STRUCTURED-ALIAS}）：名称、ID、邮箱等位于同一结构化对象或经审核唯一键映射中；（3）\textbf{对象版本传播}（\textsc{OBJECT-VERSION}）：前一调用产生的对象版本被后续调用通过稳定ID读取或修改；（4）\textbf{状态差分}（\textsc{STATE-DIFF}）：调用前后状态快照在可寻址叶节点发生变化，可绑定到当前调用回执。硬边生成条件为$HardDerive(u,v,r)=1 \iff Verify_r(u,v,R)=\texttt{PASS}$，即独立确定性验证器能唯一重放该关系。对于确定性规则无法唯一恢复的边，则生成\texttt{SOFT/UNKNOWN}候选边保留于图中。
+
+\paragraph{SAST风格图检查规则}
+在确定性边构建完成后，对当前待执行的物化动作运行五类图检查规则（见\autoref{tab:contract_actions}），以任务契约而非简单污点可达性作为判定依据。以\texttt{FLOW-ORIGIN}规则为例，其命中条件为
 \begin{equation}
-  \text{Prov}_t(s,p) \in \{\texttt{SUPPORTED},\ \texttt{REFUTED},\ \texttt{UNRESOLVED}\}.
-  \label{eq:provenance_state}
+  Match_{flow}(G_t, C, u, z) = 1 \iff
+  Path_H(G_t, u, z) = 1 \land Protected_C(z) = 1 \land FlowAllowed_C(u, z) = 0
+  \label{eq:flow_origin}
 \end{equation}
-
-当$p$属于效果清单标注的高影响参数、确定性来源结果为\texttt{UNRESOLVED}、候选来源集合可由当前运行证据有限定位且剩余预算允许时，触发选择性因果参数依赖验证（Selective Causal Argument-dependence Verification，SCAV）。其触发集合定义为
-
-\begin{equation}
-  \Omega_t = \{(s,p) \mid p \in H_M(\text{route}_t),\ \text{Prov}_t(s,p)=\texttt{UNRESOLVED},\ s \in C_t(p),\ |C_t(p)|\le m,\ L_t^{\mathrm{scav}}>0\}.
-  \label{eq:scav_trigger}
-\end{equation}
-
-SCAV在隔离且无工具权限的语义分析环境中冻结工具路由与非目标参数，仅对候选来源$s$对应的确定性文本跨度或结构化取值进行遮蔽，并重新生成目标参数$p$。令原上下文与干预上下文下的目标参数投影分别为$\hat v_p$与$\hat v_p^{\neg s}$，定义局部敏感度$I_t(s,p)=d_p(\hat v_p,\hat v_p^{\neg s})$，其中$d_p$依据字符串、数值或结构化参数类型选择相应距离函数。只有当原上下文投影能够复现实际参数、干预前后差异超过参数类型对应阈值且重复投影满足稳定性条件时，才将$\text{Dep}_t(s,p)$记为\texttt{SUPPORTED}；其余结果分别记为\texttt{NOT\_SUPPORTED}、\texttt{UNSTABLE}或\texttt{INCOMPLETE}。该过程只补充来源依赖证据，不修改$K_t$、$R_t$或$P_r(p)$。
-
-综合来源证据定义正向依赖见证
-
-\begin{equation}
-  \text{Witness}_t(s,p) := [\text{Prov}_t(s,p)=\texttt{SUPPORTED}] \lor [\text{Prov}_t(s,p)=\texttt{UNRESOLVED} \land \text{Dep}_t(s,p)=\texttt{SUPPORTED}].
-  \label{eq:source_witness}
-\end{equation}
-
-对需要来源约束的高影响参数，$\text{OriginOK}$要求存在允许来源的正向见证、不存在禁止来源的正向见证，且不存在仍会实质影响当前判定的未决来源：
-
-\begin{equation}
-  \begin{aligned}
-    \text{OriginOK}(r,a_t)=\bigwedge_{p \in H_r}\big[&\left(\exists s\in P_r(p):\text{Witness}_t(s,p)\right)\\
-    &\land\neg\left(\exists s\notin P_r(p):\text{Witness}_t(s,p)\right)\\
-    &\land\neg\text{MaterialUnresolved}_t(p)\big].
-  \end{aligned}
-  \label{eq:origin_ok}
-\end{equation}
-
-对规则$r$与动作$a_t$，定义匹配谓词
-
-\begin{equation}
-  \text{Match}(r, a_t) = \text{RouteOK} \land \text{EffectOK} \land \text{ArgOK} \land \text{OriginOK} \land \text{UseOK} \land \text{ConfirmOK}
-  \label{eq:match_predicate}
-\end{equation}
-
-六个子谓词依次检查路由选择器匹配、副作用类别匹配、参数约束满足、一跳来源满足、规则剩余次数非零与确认条件满足；任一子谓词不满足，都不允许借助其他规则的局部字段拼接补齐。契约允许的动作集合为
-
-\begin{equation}
-  \mathcal{A}(K_t) = \{a \mid \exists\, r \in R_t : \text{Match}(r, a)\}
-  \label{eq:authorized_set}
-\end{equation}
-
-授权闭包只产生三种状态：动作属于$\mathcal{A}(K_t)$时记为\texttt{AUTHORIZED}；动作尚不属于$\mathcal{A}(K_t)$，但唯一缺口是允许来源的依赖证据仍未决、尚未取得允许来源取值或精确调用确认时记为\texttt{UNRESOLVED}（\texttt{UNRESOLVED}不等价于允许）；路由、副作用类别、关键参数与全部规则冲突，或已获得禁止来源影响高影响参数的正向见证，或效果清单、契约完整性前提失败时记为\texttt{UNAUTHORIZED}。SCAV只改变来源证据的完备程度，不会将契约未授权的动作转换为授权动作。三种状态依据具体判定原因进一步映射为五级防御动作，如\autoref{tab:contract_actions}所示。
+即来源节点$u$通过全硬边路径到达受保护节点$z$，且契约明确禁止该信息流。
 
 \input{tables/contract_actions}
 
+\paragraph{聚合决策}
+系统对规则命中结果按以下优先级进行聚合决策。硬证据违规优先触发阻断：$\exists q \in Q_H(G_t,C),\,q=\texttt{VIOLATION} \Rightarrow Decision_t = \texttt{BLOCK}$。没有硬违规但存在高影响不确定关系时，选择\texttt{REWRITE}（当来源距离较近且存在可用检查点）或\texttt{REPLAN}（当来源距离较远或无干净检查点）。仅在不存在硬违规和软候选、且动作获得契约授权时才自动放行。各处置动作的具体语义见\autoref{tab:cut_primitives}。
+
+\input{tables/tracegraph_cut_primitives}
+
+\paragraph{选择性LLM隐式边推理}
+LLM仅在同时满足以下条件时调用：当前动作是高影响调用，至少一个受保护参数或控制候选为\texttt{UNKNOWN/SOFT}，且确定性规则均无法消歧。LLM输出受Schema约束，只能生成\texttt{INFERRED+SOFT}边；若LLM提示存在别名或结构映射，确定性验证器从原始字段独立重算，验证通过后生成新的\texttt{INFERRED+HARD}边，而非采信LLM输出。LLM调用次数作为观测量完整报告，不以成本上限提前放行未解析的高影响动作。
+
+\paragraph{处置与恢复机制}
+对于阻断的调用，系统根据证据类型选择恢复策略：\texttt{REWRITE}在隔离环境中对最近的不可信来源进行净化后局部重执行；\texttt{REPLAN}通过无工具权限的语义调解器选择回退、撤回（仅当工具目录登记逆操作且逆操作通过安全检查时）或中止；已经发生且无逆操作的真实世界效果不宣称可回滚。恢复后产生的任何新调用均重新进入完整检查流程。完整算法流程如\autoref{alg:contract_gate}所示。
+
+\input{algorithms/contract_gate}
+
 \subsubsection{优化目标}
 
-对一次任务执行轨迹$\tau$，令$\text{Exec}(\tau)$为实际进入真实工具函数、并保留执行时刻契约版本索引的动作集合，令$\text{utility\_pass}$表示任务效用评测通过，$\text{attack\_success}$表示注入攻击目标被观测到实现。定义\emph{同授权安全完成率}指标：
-
+研究点一的优化目标为在可用观测下同时控制安全性、效用、证据保真度与成本。定义\emph{同授权安全完成率}指标：
 \begin{equation}
   \text{SASC}(\tau) = \mathbb{1}\Big[\text{utility\_pass}=1 \,\land\, \text{attack\_success}=0 \,\land\, \forall a_t \in \text{Exec}(\tau):\ a_t \in \mathcal{A}(K_t)\Big]
   \label{eq:sasc}
 \end{equation}
-
-其中每个实际执行动作均按其执行时刻有效的契约版本判定，以避免后续授权变化反向改写历史判定。研究点一的优化目标不是在线求解一个全局数值优化器，而是在预先注册的有限干预策略集合$\Pi$中，依据经验证据选择策略：
-
-\begin{equation}
-  \pi^{*} = \arg\max_{\pi \in \Pi} \widehat{\Pr}[\text{SASC}_\pi = 1]
-  \quad \text{s.t.} \quad
-  \text{UCB}_{1-\alpha}\big(\Pr[\text{Unsafe}_\pi = 1]\big) \le \epsilon,\quad \text{Cost}_\pi \le B
-  \label{eq:policy_selection}
-\end{equation}
-
-其中$\text{Unsafe}$表示存在实际执行动作不属于其执行时刻的$\mathcal{A}(K_t)$或攻击成功，$\epsilon$为预先注册的最大可接受不安全率，$B$为调用次数、token消耗与时延构成的综合预算上界，$\text{UCB}_{1-\alpha}$为置信度$1-\alpha$下的二项比例单侧置信上界。该准则用于组织和比较安全性、效用与成本三方面的经验证据，而非训练一个运行时自适应的全局策略。
-
-在该优化目标下，本研究重点考察选择性来源消歧对安全性、效用与成本的联合影响。在冻结任务契约、共享调用前状态与匹配预算的条件下，比较确定性来源检查后直接保守确认或阻断、仅对$\Omega_t$运行SCAV，以及对全部候选来源持续运行反事实分析三种策略，测量其对$\text{SASC}$、未授权提交、良性干预比例与token及时延开销的影响。该比较用于验证选择性干预能否在不扩大授权集合的前提下，减少来源未决造成的任务中断，并控制语义分析成本。
-
-在此基础上，进一步设置拒绝反馈披露粒度子实验：在共享的拒绝机会、相同的调用前状态、冻结的任务契约与匹配预算下，仅改变面向规划器可见的反馈内容，分别返回固定通用拒绝、预先注册的违规大类或当前契约已经允许的动作边界提示，测量其对$\text{SASC}$、实际发生的未授权提交次数与预算内攻击自适应成功率的条件效应。三档反馈均不暴露具体取值、内部阈值或检测器判据，也不代替Agent执行替代动作。
-
-\subsubsection{算法设计}
-
-研究点一的核心流程由契约构造与调用前中介两个函数组成：契约构造函数在任务开始时从可信请求中提取原子候选证据并验证编译为规则集合；调用前中介函数在每次工具调用提案到达真实执行边界前，将提案解析为最终有效动作，先执行确定性来源检查，再仅对触发集合$\Omega_t$中的高影响参数运行SCAV，随后综合规范授权、来源证据与局部依赖证据核验六个子谓词，并依据判定结果选择\autoref{tab:contract_actions}中的防御动作。任何被拒绝提案触发的重规划、确认或参数重新获取所产生的新提案，都必须重新进入调用前中介函数。完整算法流程如\autoref{alg:contract_gate}所示。
-
-\input{algorithms/contract_gate}
+其中每个实际执行动作均按其执行时刻有效的契约版本判定。在预先注册的有限干预策略集合$\Pi$中，依据经验证据选择使$\text{SASC}$最大化的策略，同时约束不安全率的置信上界不超过预注册阈值$\epsilon$、综合成本不超过预算$B$。
 
 \subsubsection{理论依据和适用条件}
 
-在效果清单与契约构造正确、全部声明的调用入口（含普通调用、嵌套调用与延迟提交路径）均被中介、直接来源记录未被篡改、SCAV局部投影满足复现与稳定性条件且执行回执有效的前提下，研究点一的方法具备以下性质：
-
+在统一图构造正确、全部声明的调用入口均被中介、确定性推导器通过独立验证且执行回执有效的前提下，本研究点具备以下性质：
 \begin{enumerate}
-  \item \emph{相对契约的执行授权可靠性}：每个实际执行动作在真实调用前都经过基于最终规范化状态的门控，并具有绑定同一动作摘要与契约版本的有效执行回执，因此实际提交动作属于执行时刻的契约授权集合。
-  \item \emph{授权不放大}：若契约由$K_t$更新为新版本$K_{t+1}$，则新增的可授权动作集合只能来自同一可信信道产生的新请求或审批；确定性来源检查与SCAV均只能补充动作判定证据，不能修改规则或扩大允许来源集合。
-  \item \emph{选择性保守扩展}：对于确定性来源检查已经完成判定的动作，启用SCAV前后的授权结果保持一致；SCAV仅在$\Omega_t$所限定的高影响参数来源未决情形下参与判定。
-  \item \emph{局部依赖见证有效性}：当目标参数投影能够复现实际参数、非目标参数与工具路由保持冻结、遮蔽干预满足有效性且重复结果稳定时，$\text{Dep}_t(s,p)=\texttt{SUPPORTED}$构成候选来源$s$影响参数$p$的局部干预见证。
-  \item \emph{延迟提交的精确绑定}：对于分阶段暂存后再提交的动作，其在提交时刻核验的契约标识与动作摘要必须与暂存时刻记录的完全一致，否则该次提交失败关闭。
+  \item \emph{硬推导边的证据可追溯性}：系统只在确定性验证器返回\texttt{PASS}时才生成\texttt{INFERRED+HARD}边，任一硬推导边均能通过其证据引用回放到产生它的运行时事实。
+  \item \emph{已检测硬违规的提交前非执行}：若所有高影响调用都经过统一安全门、图规则查询发生在provider之前、且硬违规命中映射为\texttt{BLOCK}，则包含已检测硬违规路径的当前动作不会进入真实执行。
+  \item \emph{授权不放大}：确定性边推导和选择性LLM补边只能补充依赖证据，不能修改契约规则或扩大允许来源集合。
+  \item \emph{选择性语义开销}：语义补边和调解仅在高影响不确定关系出现时触发，其调用次数等于不确定事件数而非Agent总步骤数。
+  \item \emph{改写执行闭包}：若参数改写通过Schema验证与二次安全检查，则实际派发的改写动作不存在当前已枚举的硬冲突。
 \end{enumerate}
-若每个触发项最多进行$m_s$次稳定性投影，选择性来源消歧的运行开销满足$C_{\mathrm{TARC+SCAV}}\le C_{\mathrm{det}}+|\Omega_t|m_sC_{\mathrm{local}}$。本研究通过触发率、语义分析调用次数、token消耗与时延对该开销关系进行验证，并以契约构造状态、来源覆盖率与\texttt{UNRESOLVED}比例报告任务契约及来源证据的运行情况。
 
 \subsubsection{实现路径}
 
-主实验在AgentDyn脚手架上比较无防御基线、现有的工具过滤类与策略约束类防御方法（如Tool Filter、Progent、IPIGuard），并接入已有参数级来源约束与反事实调用归因方法作为局部强基线。在同一任务契约上设置确定性TARC、TARC+SCAV、来源未决时直接确认或阻断，以及持续反事实分析四组对照，比较选择性来源消歧的安全、效用与成本表现。反馈披露粒度子实验采用前述三档对照设计，三臂共享同一拒绝检查点、契约版本、修订预算与评测horizon；自适应压力测试在独立攻击子集上，于固定的查询预算、随机种子与攻击者可见反馈面下，比较静态攻击成功率与预算内自适应攻击成功率。消融实验依次移除一跳来源约束、移除SCAV并将来源未决项交由保守确认或阻断、将分层动作统一退化为\textsc{Block}，用以检验来源约束、选择性消歧与分层处置对$\text{SASC}$及成本的独立贡献。评估以“评测套件+用户任务”为独立分析单元，核心指标包括$\text{SASC}$、攻击成功指示、良性干预比例、契约覆盖率与\texttt{UNRESOLVED}比例、在具有可核验来源标注子集上的参数依赖定位精确率、召回率和F1值、SCAV触发率及\texttt{UNSTABLE}/\texttt{INCOMPLETE}比例、检查动作摘要与实际派发摘要的一致率，以及调用次数、token消耗与时延成本；统计检验采用配对bootstrap置信区间估计效应量，多重消融比较之间使用带Holm校正的符号检验控制多重比较误差。
+主实验在AgentDyn脚手架上比较无防御基线、工具过滤类防御方法（如Tool Filter）、策略约束类防御方法（如Progent、IPIGuard）以及本研究方法。在同一任务契约上设置确定性边推导、确定性+选择性LLM补边、边推导后直接保守阻断三组对照，比较安全性、效用与成本表现。消融实验依次移除结构化别名推导器、移除选择性LLM补边、将分层处置统一退化为阻断，以检验各组件的独立贡献。评估以"评测套件+用户任务"为独立分析单元，核心指标包括攻击成功率、用户任务完成率、同授权安全完成率、硬边精度与召回率、错误阻断率、LLM调用次数与token消耗。统计检验采用配对bootstrap置信区间估计效应量。
 
 \subsubsection{研究目标}
-此部分的研究目标是：构建基于Agent运行时任务契约的攻击检测与防御方法，形成规范授权、确定性来源证据与选择性参数依赖验证相分离的调用前门控流程，构建授权闭包三态与五级防御动作体系；在冻结契约与匹配预算下，验证选择性来源消歧对同授权安全完成率、未授权提交、参数依赖定位及运行成本的影响，并刻画拒绝反馈披露粒度对任务恢复与攻击自适应成功率的条件效应，降低攻击下受害Agent执行恶意工具调用的概率并提升用户任务的鲁棒性。
+此部分的研究目标是：构建统一的Agent执行轨迹证据图，形成"确定性边推导—证据分级—契约规则检查—聚合决策与处置"的在线安全检查闭环；通过区分构造方式与证据等级的正交边属性表示，使安全检查可按证据强度采取差异化处置；验证以契约语义为判据、确定性优先按需语义补边的策略在安全性、任务效用和运行成本三方面的表现，降低间接提示注入攻击下Agent执行恶意工具调用的概率并提升用户任务的鲁棒性。
 
-\subsection{研究点二：基于Agent运行轨迹图的在线攻击检测与主动防御方法}
+\subsection{研究点二：基于图-语义联合表示的攻击定位与溯源方法}
 
-\subsubsection{威胁模型与防御目标}
+\subsubsection{研究动机与防御目标}
 
-研究点二面向的场景是：注入影响已经进入Agent的运行时值或对象，并经过搜索、对象解析、状态写入或再次读取等步骤传播，最终影响当前待执行的高影响工具调用。与研究点一回答动作在规范意义上“是否获得授权”不同，本研究点回答攻击在事实意义上“从何处进入、经过哪些运行步骤、当前影响哪个参数，以及如何控制后续损失”。因此，TraceGraph以运行时来源证据为主要判据，可将研究点一输出的授权冲突作为补充证据，但不重新编译任务契约，也不把授权冲突本身等同于传播事实。
+研究点一在Agent在线执行链中通过确定性边推导与契约规则检查形成运行时安全检查闭环，但其面向的是"当前物化动作是否违反任务契约"的判定问题，输出的是逐动作的处置决策。在安全审计、攻击路径回溯和审查预算分配等场景中，还需要回答另一个互补问题：在截至当前时刻的完整Runtime前缀图中，哪些边最可能是攻击入口边（SOURCE），哪些边最可能是攻击目标边（SINK），以及二者之间是否存在可定位的场景关联。
 
-本研究点的防御目标是在真实副作用发生前定位外部来源到当前高影响参数的可复核运行路径，并在证据冲突出现时选择允许原调用、最小改写参数或要求重新规划；若污染影响已经经过可逆的中间状态，则利用同作用域检查点恢复环境与防御状态，若已经发生不可逆外部效果，则不伪称能够回滚，而是保留证据、隔离已定位来源并阻止其继续进入后续调用。
+为此，本研究点提出一种基于Runtime前缀图与边端点文本联合表示的攻击边定位方法。该方法从已完成的benchmark轨迹中独立构建Runtime前缀图和边文本表示，不读取研究点一的契约、候选边、规则见证或处置回执，以确保二者在输入层面的独立性。模型在每个前缀时间步对所有已观测边预测安全角色标签、输出危险Top-3边，以及在SINK出现后对其对应SOURCE边进行排序匹配。这些定位结果可以指导研究点一中审查资源的优先分配，也可以为安全审计人员提供直观的攻击传播路径视图。
+
+本研究点的防御目标是：仅使用截至时刻$t$已经存在的Runtime前缀图与边端点文本，稳定定位危险的SOURCE与SINK边，并在SINK出现后准确匹配其对应的SOURCE入口，为审查预算的优先分配和攻击路径的快速定位提供支持。
 
 \subsubsection{问题形式化}
 
-对每个任务执行实例，研究点二维护会话级增量证据图
-
+本研究点的核心任务定义为：给定截至时间步$t$的执行轨迹图与边文本，模型输出每条已观测边的安全角色概率、危险Top-3边以及Source--Sink匹配结果：
 \begin{equation}
-  G_t = (S_t,\ O_t,\ A_t,\ Q_t,\ \sigma_t)
-  \label{eq:trace_graph}
+  f_{\theta}\!\left(G_{\le t},\, M_{\le t}\right)
+  \longrightarrow
+  \left(
+  \left\{p_{\theta}(y_e \mid G_{\le t}, M_{\le t})\right\}_{e \in E_{\le t}},\;
+  Top3_t,\;
+  Match_t
+  \right)
+  \label{eq:mdt_task}
 \end{equation}
+其中$f_{\theta}$为参数为$\theta$的MDT模型，$G_{\le t}$为截至时间步$t$的完整Runtime前缀图，$M_{\le t}$为该前缀内所有可观测边的端点文本事件集合，$E_{\le t}$为前缀中已经发生的边集合，$y_e \in \{BENIGN, SOURCE, SINK\}$为边$e$的安全角色标签，$Top3_t$为当前得分最高的至多三条攻击相关边，$Match_t$为SINK已出现时对其对应SOURCE边的排序结果。该输出是统计定位结果，用于辅助攻击识别与追溯，用于为防御引擎的处置提供引导参考信号。
 
-其中，$S_t$为在工具观测中定位的来源原子集合，每个来源原子记录规范化取值、值类型、来源工具、来源步、作用域、信任级别与敏感类别；$O_t$为来源原子在后续工具参数或结果中的出现记录，每条记录包含步骤、工具、参数位置及\texttt{derived\_from}、\texttt{persists\_as}或\texttt{semantic\_query\_derivation}关系；$A_t$为语义对象到后续稳定标识符的别名关系，用于表达“商品描述经搜索解析为商品编号”等跨表示传播；$Q_t$为已经隔离的来源集合；$\sigma_t$为任务、执行尝试、工具谱与图版本标识。该表示与AgentDyn现有实现中的\texttt{ProvenanceSource}、\texttt{ProvenanceOccurrence}、别名表、隔离表和检查点目录一一对应，不使用单纯的时间相邻关系推断来源。
+一条含$T$个AgentStep的轨迹产生$T$个前缀样本$\mathcal{P}(\tau) = \{(G_{\le 1}, M_{\le 1}), \ldots, (G_{\le T}, M_{\le T})\}$。训练、验证和测试均不能将$t$之后的消息、工具调用、环境状态或最终结果回填到当前前缀。
 
-令$u\in S_t$为来源原子，$a_t$为当前待决调用，$p$为其参数路径。定义$\text{Match}_t(u,p)$表示参数值与$u$的规范化取值或经$A_t$登记的派生标识相同；$\text{Inj}(u)$表示来源观测包含可定位的注入指令证据；$\text{Trusted}(u,q)$表示该值已由可信用户请求$q$明确给出，或经可信来源证据确认；$\text{Sink}(a_t)$表示效果清单将该调用标为高影响或外部汇聚；$\text{InScope}(u,a_t)$表示二者属于同一执行作用域且距离未超过有界追踪窗口$W$。当前待决调用上的来源路径集合定义为
+\paragraph{Runtime图与边类型}
+MDT图只保留实际运行中可以重建的节点——\texttt{UserMessage}、\texttt{AgentStep}、\texttt{ToolCall}、\texttt{ToolResult}、\texttt{InformationSource}和\texttt{EnvironmentState}——不包含研究点一的契约、规则见证和恢复回执。边类型集合固定为六种Runtime关系：\texttt{USER\_CONTEXT}（用户输入到Agent步骤）、\texttt{EMITS\_CALL}（Agent步骤到工具调用）、\texttt{READ}（工具调用读取外部信息源）、\texttt{RETURN\_DATA}（信息源返回数据）、\texttt{CALL\_RESULT}（工具结果交付后续步骤）和\texttt{WRITE}（工具调用对环境状态产生写效果）。
 
+\paragraph{安全角色标签}
+每条边同时具有关系类型$r_e$与安全角色$y_e$两个正交标签。其中$y_e = \texttt{SOURCE}$表示该边从已实际读取的注入点把数据带入执行轨迹，$y_e = \texttt{SINK}$表示该边对应benchmark注入任务的高影响目标调用，$y_e = \texttt{BENIGN}$表示该边未被当前标签协议指定为攻击入口或攻击目标。
+
+\paragraph{强监督标签构造}
+主任务采用边级强监督学习。标签生成只使用benchmark已知配置、实际Runtime事件和一次性审核的工具/外部信息源目录，不调用LLM，也不需要逐轨迹人工标注。SOURCE标签由benchmark注入位置与实际Runtime读取事件共同确定——只配置了注入点但未被读取、或读取结果未交付给Agent时不生成SOURCE正标签：
 \begin{equation}
-  \mathcal{P}_t(a_t)=\left\{(u,O_t(u),p)\ \middle|\
-  \text{Inj}(u)\land\neg\text{Trusted}(u,q)\land
-  \text{InScope}(u,a_t)\land\text{Sink}(a_t)\land\text{Match}_t(u,p)\right\}.
-  \label{eq:trace_path}
+  Source_t(e) = 1 \iff Observed_t(e) = 1 \land InjectionPoint(e) = 1 \land Delivered_t(e) = 1
+  \label{eq:source_label}
 \end{equation}
-
-路径按来源值与汇聚类型划分为四类：普通规范化值传播（\texttt{TG-LATENT-001}）、凭据/财务/资源类敏感值向外部汇聚传播（\texttt{TG-LATENT-002}）、收件人、URL、账户或IBAN等授权目标被替换（\texttt{TG-LATENT-003}），以及语义对象经搜索或解析转化为稳定对象标识后到达汇聚（\texttt{TG-SEM-004}）。每条命中路径物化为\emph{路径证据包}，包含来源标识、来源工具与步骤、按序出现记录、关系类型、汇聚工具、参数路径、规则编号及是否发生截断。单跳与多跳路径使用同一数据结构，实验中按传播步数分层报告，以避免只在预设的多步攻击模板上评估。
-
-TraceGraph在路径证据之外接收工具接口完整性结果与研究点一产生的授权判定，形成冲突变量
-
+SINK标签由注入任务的目标调用描述、实际工具调用和工具影响目录共同确定：
 \begin{equation}
-  c_t=\mathbb{1}[\text{InvalidTool}(a_t)]\lor
-  \mathbb{1}[\text{AuthBlocked}(a_t)]\lor
-  \mathbb{1}[\mathcal{P}_t(a_t)\neq\varnothing].
-  \label{eq:trace_conflict}
+  Sink_t(e) = 1 \iff Observed_t(e) = 1 \land HighImpact(e) = 1 \land GoalCallMatch(e, I) = 1
+  \label{eq:sink_label}
 \end{equation}
+其中$I$为当前注入任务，$GoalCallMatch$表示实际调用与注入任务的目标函数及其固定参数约束匹配。对已出现matched SINK的轨迹，所有在该SINK之前已交付的当前场景注入SOURCE均进入Source--Sink正匹配集合，多源场景允许一个SINK对应多个SOURCE。
 
-当$c_t=0$时不调用额外语义模型；当$c_t=1$时，仅将可信用户目标、待决调用及Schema、授权冲突、路径证据和最近的有限决策摘要组成有界证据包，交给隔离的语义调解器。调解器的公开动作严格限定为\texttt{ALLOW}、\texttt{REWRITE}和\texttt{REPLAN}，具体语义如\autoref{tab:cut_primitives}所示。
-
-\input{tables/tracegraph_cut_primitives}
-
-\subsubsection{优化目标}
-
-设候选处置$z=(d,a'_t,r)$由调解决策$d\in\{\texttt{ALLOW},\texttt{REWRITE},\texttt{REPLAN}\}$、可能的有效动作$a'_t$与恢复结果$r$组成。$\mathcal{Z}_t$仅保留运行时可执行的候选：\texttt{REWRITE}必须保持工具名不变、参数通过工具Schema校验，并在重新执行授权与来源检查后不再保留硬冲突；\texttt{REPLAN}不执行当前调用，并按路径证据决定是否恢复检查点与隔离来源；\texttt{ALLOW}只允许覆盖可由有界证据包完整复核的监控器不确定性，未知工具、Schema失败或中介失败不得放行。定义$N_{\mathrm{res}}(z)$为处置后仍可到达当前汇聚的路径数，$N_{\mathrm{ext}}(z)$为无法恢复的外部效果数，$L_{\mathrm{task}}(z)$为对任务继续执行造成的扰动，$C_{\mathrm{def}}(z)$为额外模型调用、token与时延成本。研究点二的优化目标为
-
-\begin{equation}
-  z_t^{*}=\arg\min_{z\in\mathcal{Z}_t}^{\mathrm{lex}}
-  \left(N_{\mathrm{res}}(z),\ N_{\mathrm{ext}}(z),\ L_{\mathrm{task}}(z),\ C_{\mathrm{def}}(z)\right).
-  \label{eq:trace_action_selection}
-\end{equation}
-
-该目标首先控制残余风险与不可逆损失，再在安全候选之间减少任务扰动和防御成本。首版不求解任意图上的通用最小割，也不预测尚未发生的终局效用，而是在三个公开动作构成的有限候选集合中，以确定性接口、Schema和证据闭包检查约束语义调解结果。对于未触发冲突的调用，额外成本仅来自增量来源维护；对于触发冲突的调用，语义调解成本按需产生，因此单次任务的附加开销满足$C_{\mathrm{TG}}\le C_{\mathrm{prov}}+N_c C_{\mathrm{med}}+N_r C_{\mathrm{rec}}$，其中$N_c$和$N_r$分别为冲突调解次数与恢复尝试次数。
+\paragraph{边文本}
+边文本不使用生成式全轨迹摘要，而由两个端点的Runtime事件确定性序列化。例如，对\texttt{AgentStep}到\texttt{ToolCall}的边，文本包括当前可观测assistant内容、工具名和参数；对\texttt{InformationSource}到\texttt{ToolResult}之间的边，文本包括来源类型、工具名和实际返回文本。长程关系由完整$G_{\le t}$的图编码承担，端点文本负责补充结构无法表达的语义差异。模型输入明确排除：攻击名称、注入任务标识、benchmark路径、安全/效用分数、未来事件和Source/Sink标签等。
 
 \subsubsection{算法设计}
 
-研究点二在每次工具调用提案到达时，先进行工具名、参数与Schema检查，并分别生成授权证据和来源路径证据。若不存在冲突，则在调用前捕获与当前执行作用域绑定的环境、防御状态和工具谱系检查点，真实执行工具一次，并在格式化返回值之前记录调用参数与原始工具结果。若存在冲突，则构造有界证据包并按需调用语义调解器：\texttt{REWRITE}只允许最小修复参数，修复结果需通过Schema与二次证据闭包校验；\texttt{REPLAN}使当前调用不执行，并向Agent返回不包含攻击载荷的恢复提示；\texttt{ALLOW}仅处理接口有效且证据包可完整复核的监控器不确定性。对于未执行且命中来源路径的调用，系统依据路径中的最早可逆出现记录恢复同作用域检查点；若路径已包含外部汇聚，则记录\texttt{unrecoverable\_external\_effect}，隔离相关来源并保持后续调用中介。重写、重规划或恢复后产生的任何新调用均重新进入相同流程。完整算法如\autoref{alg:trace_cut}所示。
+本研究点的模型架构采用"自监督预训练+目标任务微调"的两阶段设计，整体架构如\autoref{fig:mdt_arch}所示。
 
-\input{algorithms/trace_cut}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_mdt_architecture.pdf}
+  \caption{研究点二的攻击边定位模型架构}
+  \label{fig:mdt_arch}
+\end{figure}
+
+\paragraph{统一多任务图自监督预训练}
+预训练数据只来自无注入攻击的AgentDyn/AgentDojo Runtime图，并按照目标实验的训练组隔离。一次前向传播共享同一个图编码器，联合优化三个辅助任务：（1）边类型预测——遮掩真实相邻节点之间的关系类型并预测$r_e$；（2）边存在性判别——区分真实边与按节点类型、时间顺序和工具族构造的困难非边；（3）上下文一致性判别——区分真实局部上下文与端点替换、时间逆序、错误工具-来源配对等结构化负例。联合预训练损失为：
+\begin{equation}
+  \mathcal{L}_{pre} = \lambda_{type}\mathcal{L}_{type} + \lambda_{exist}\mathcal{L}_{exist} + \lambda_{context}\mathcal{L}_{context},\quad \min_{\theta_G} \mathcal{L}_{pre}
+  \label{eq:pretrain_loss}
+\end{equation}
+其中$\theta_G$为图编码器参数。该预训练阶段使图编码器先学习Agent执行结构先验，再以强监督SOURCE/SINK标签进行目标任务微调。
+
+\paragraph{图-文本模型与模态融合}
+图编码器骨干网络候选有：关系感知的GAT/R-GCN、Graph Transformer与简单属性池化。文本编码器以DeBERTa-v3-base微调模型为初始化，并在MDT Runtime边文本上二次微调。对候选边$e=(u,v)$，先取得全前缀图中的端点表示和边文本表示，再以双向cross-attention或门控交互融合：
+\begin{equation}
+  h_{e,t} = Fusion_{\phi}\!\left(h^G_{u,t},\; h^G_{v,t},\; h^T_{e,t},\; h^G_{\le t}\right)
+  \label{eq:fusion}
+\end{equation}
+其中$h^G_{u,t}$和$h^G_{v,t}$分别为源端点与目标端点的图表示，$h^T_{e,t}$为边端点Runtime文本的语言模型表示，$h^G_{\le t}$为完整前缀图的全局结构上下文，$Fusion_{\phi}$为参数为$\phi$的融合模块。简单拼接仅作为消融基线。
+
+\subsubsection{训练与优化目标}
+
+目标任务阶段包含三个子任务的联合优化。
+
+\paragraph{任务一：攻击相关边分类}
+对当前前缀中的所有已观测边预测\texttt{BENIGN}、\texttt{SOURCE}或\texttt{SINK}：
+\begin{equation}
+  \mathcal{L}_{cls} = -\sum_{t}\sum_{e \in E_{\le t}} w_{y_e} \log p_{\theta}(y_e \mid G_{\le t}, M_{\le t})
+  \label{eq:cls_loss}
+\end{equation}
+其中$w_{y_e}$为类别权重，采样与权重按母轨迹归一化，避免长轨迹因产生更多前缀而支配训练。
+
+\paragraph{任务二：Source--Sink匹配}
+对每条SINK边，从此前已出现的SOURCE候选中排序对应source。多源正例采用集合式listwise损失：
+\begin{equation}
+  \mathcal{L}_{match} = -\sum_{k \in \mathcal{K}} \log \frac{\sum_{s \in \mathcal{S}_k^{+}} \exp score_{\theta}(s, k)}{\sum_{s \in \mathcal{S}_{\le t_k}} \exp score_{\theta}(s, k)}
+  \label{eq:match_loss}
+\end{equation}
+其中$\mathcal{K}$为训练集中已出现的SINK边集合，$\mathcal{S}_k^{+}$为与SINK $k$属于同一benchmark攻击场景且在其之前已交付的SOURCE正例集合，$\mathcal{S}_{\le t_k}$为截至$t_k$的全部source候选边。
+
+\paragraph{任务三：提前预警}
+只在SOURCE已实际出现后奖励提前发现，并对SOURCE出现前的误报赋予更大惩罚。设真实SOURCE首次出现于$t_s$，matched SINK出现于$t_k$：
+\begin{equation}
+  \mathcal{L}_{early} = \sum_{t=t_s}^{t_k-1} \omega_t \left[-\log(p^{src}_t + \epsilon)\right],\quad
+  \mathcal{L}_{fp} = \sum_{t<t_s} \max_{e \in E_{\le t}} p_{\theta}(SOURCE \mid e, G_{\le t}, M_{\le t})
+  \label{eq:early_loss}
+\end{equation}
+其中$\omega_t$为随$t$接近$t_k$而不减的时间权重，$p^{src}_t$为时间步$t$对真实SOURCE边集合给出的最大SOURCE概率。
+
+目标阶段总损失为：
+\begin{equation}
+  \mathcal{L}_{target} = \lambda_{cls}\mathcal{L}_{cls} + \lambda_{match}\mathcal{L}_{match} + \lambda_{early}\mathcal{L}_{early} + \lambda_{fp}\mathcal{L}_{fp} + \lambda_{miss}\mathcal{L}_{miss},\quad \lambda_{fp} > \lambda_{early}
+  \label{eq:total_loss}
+\end{equation}
+其中$\mathcal{L}_{miss}$为在SINK前最后一个前缀仍未识别SOURCE的漏报损失，$\lambda_{fp} > \lambda_{early}$表示SOURCE出现前的误报惩罚必须高于提前量收益，防止模型通过持续报警投机。
 
 \subsubsection{理论依据和适用条件}
 
-在来源抽取与规范化规则对被评估路径完整、所有受保护调用入口均经过中介、工具效果清单正确、检查点未被篡改且作用域一致的前提下，本研究点具备以下条件化性质：第一，\emph{路径证据可追溯性}，每条命中路径都能够回溯至具体来源值、来源工具与步骤、按序出现记录、汇聚工具及参数位置，不以时间邻接替代来源关系。第二，\emph{选择性语义开销}，语义调解器只在式\eqref{eq:trace_conflict}成立时调用，其调用次数等于冲突事件数，而非Agent总步骤数。第三，\emph{改写执行闭包}，若参数改写通过Schema验证与二次授权/来源检查，则实际派发的改写动作不存在当前已枚举的硬冲突。第四，\emph{同作用域恢复完整性}，当最早受影响步骤存在校验通过的检查点且其后不存在外部不可逆效果时，环境状态、防御图前沿、授权会话和工具谱系可共同恢复至该检查点。第五，\emph{隔离来源的非重新引入}，在后续调用均被中介且来源标识稳定的条件下，已写入隔离表的来源不会再次形成新的有效路径。上述性质针对当前证据覆盖范围成立，不据此声称对未抽取的隐式语义传播具有全局无干扰保证。
+本研究点具备以下条件化性质：
+\begin{enumerate}
+  \item \emph{前缀无未来泄漏}：样本构造器只读取时间戳不晚于$t$的事件和状态，标签泄漏字段在构图前删除，时刻$t$的模型输入不包含未来轨迹事件。
+  \item \emph{标签不等于因果归因}：SOURCE与SINK标签由benchmark注入位置、目标调用和真实事件确定，只能支持攻击入口/目标边定位与场景内匹配，不能推出反事实因果关系。
+  \item \emph{模态增量可验证}：实验先分别报告图结构特征、端点文本特征和联合模型各自在独立测试切片上的表现，验证图结构是否真正提供超越单步文本检测的信息增量。
+  \item \emph{候选规模校正}：主要结果按候选边数量和前缀长度分层报告排序效果与相对随机提升，避免小候选集合导致的虚高命中率。
+\end{enumerate}
 
-\clearpage
 \subsubsection{实现路径}
 
-本研究将在AgentDyn现有\texttt{tracegraph}运行入口上完成实现与实验。主实验在固定模型、任务、攻击、并发和预算条件下，比较无防御基线、检测型防御、策略约束型防御与TraceGraph在攻击成功率、用户任务完成率和安全任务完成率上的差异。过程级评估直接利用运行日志中的授权判定、路径编号、来源值类型、汇聚参数位置、调解动作、改写参数、检查点和恢复状态：归因定位审计将输出的来源与风险路径同AgentDyn可核验的注入位置及攻击目标比较，计算注入点包含率以及根因定位的精确率、召回率和F1值；处置评估报告调解触发率、\texttt{REWRITE}的Schema与证据闭包通过率、改写后任务完成率、\texttt{REPLAN}后任务恢复率、检查点恢复成功率、不可恢复外部效果数以及恢复后效用；成本评估报告来源维护、语义调解和恢复阶段的时延、调用次数与token消耗。
-
-消融实验控制为三组：移除语义对象别名关系，仅保留精确/规范化值传播，以验证跨表示路径的贡献；移除条件语义调解，将全部证据冲突统一转为\texttt{REPLAN}，以验证最小参数修复对效用的贡献；移除检查点恢复，仅保留调用前阻断与来源隔离，以验证可恢复执行对后续任务完成的贡献。对具备确定性环境快照的命中事件，可从同一检查点分别运行“保留来源影响”与“应用处置”两条隔离分支，报告当前决策边界内的局部阻断效应；该结果用于解释具体处置是否改变了危险调用，不扩张为总体因果结论。统计分析以“评测套件+用户任务”为聚类单元，主结果使用配对bootstrap置信区间估计效应量，必要的三组消融比较采用带Holm校正的配对检验。
+主实验基于AgentDyn历史轨迹独立构建Runtime前缀图和边文本表示，在训练集、校准集和测试集严格按场景组隔离的前提下进行模型训练与评测。数据进入目标训练的最小条件为$DataReady = ParseReady \land CatalogReady \land LabelReady \land LeakageFree \land SplitReady$，若该条件不满足则只交付解析器、图数据、标签覆盖审计和负结果。模型比较包括：PIGuard端点文本基线、纯图基线、属性池化基线、拼接融合基线以及本研究提出的图-文本联合模型。核心评测指标分为四组：（1）边分类——macro-F1、SOURCE/SINK AUCPR和Recall@3；（2）Source--Sink匹配——Top-1/Top-3 match recall和MRR；（3）提前预警——source前误报率、sink前召回率、DetectionDelay和LeadTime；（4）OOD泛化——按任务、攻击模板、来源、工具族和模型分组评测。消融实验依次移除自监督预训练、移除全局前缀图、替换图骨干和融合机制，以检验各组件贡献。
 
 \subsubsection{研究目标}
-
-此部分的研究目标是：构建与AgentDyn运行边界一致的增量来源证据图，形成“来源原子—传播出现—待决参数—高影响汇聚”的可复核路径表示；设计证据冲突条件下按需触发的\texttt{ALLOW}/\texttt{REWRITE}/\texttt{REPLAN}调解机制，以及与执行作用域绑定的检查点恢复和来源隔离机制；在不把规范授权与事实来源混为同一判据的前提下，验证跨步骤和跨表示攻击路径的定位准确性、处置后的安全任务完成率、恢复效果与运行成本，实现对工具调用链IPI攻击的证据性韧性控制。
+此部分的研究目标是：设计基于Runtime前缀图与边端点文本联合表示的攻击边定位模型，形成"自监督预训练—图-文本联合编码—边角色分类—Source--Sink匹配—提前预警"的攻击定位与溯源流程；建立基于benchmark强监督的标签构造协议和数据就绪门控机制；验证图-文本联合模型在不同前缀时间步、不同候选规模和跨任务/跨工具族OOD条件下的定位稳定性与溯源准确性，为审查预算的智能分配和攻击路径的快速定位提供支持。
 
 \subsection{原型应用系统}
 
-为验证上述两个研究点在真实Agent执行环境中的可用性，并为其他基线防御方法提供统一的对比实验环境，本研究拟设计并实现“LLM Agent间接提示注入攻击防御方法鲁棒性测试系统”。该系统围绕“在线攻击与防御方法运行—日志审计—统计分析—可视化呈现”的完整链路组织七个功能模块：
+为验证上述两个研究点在真实Agent执行环境中的可用性，并为其他基线防御方法提供统一的对比实验环境，本研究拟设计并实现"LLM Agent间接提示注入攻击防御方法鲁棒性测试系统"。该系统围绕"在线攻击与防御方法运行—日志审计—统计分析—可视化呈现"的完整链路组织七个功能模块：
 
 \begin{itemize}[leftmargin=2em,itemsep=0pt]
-  \item \textbf{任务契约防御模块}：对应研究点一，在工具调用真正派发前完成契约构造与调用前中介，输出授权闭包状态、防御动作与执行回执。
-  \item \textbf{运行轨迹图防御模块}：对应研究点二，维护会话级增量证据图，执行路径检测、证据条件调解与恢复，输出风险子图、路径证据包、调解决策与恢复回执。
+  \item \textbf{执行轨迹图防御模块}：对应研究点一，在工具调用真正派发前完成统一图构建、确定性边推导、契约规则检查和聚合决策，输出证据分级边、规则见证、处置动作与执行回执。
+  \item \textbf{攻击边定位与溯源模块}：对应研究点二，基于benchmark轨迹独立构建Runtime前缀图和边文本表示，对已观测边进行SOURCE/SINK安全角色分类和Source--Sink匹配，输出危险Top-3边、攻击路径定位和提前预警结果。
   \item \textbf{基线对比实验模块}：接入已有的工具过滤、策略约束与检测型防御方法，与上述两个模块在相同任务与攻击配置下并行运行，产出可直接比较的实验记录。
   \item \textbf{日志审计模块}：对实验产生的运行日志进行离线审计分析，计算安全性、效用与成本指标并输出统计结果，服务于可视化模块。
   \item \textbf{在线运行实验模块}：支持指定AgentDyn评测套件、攻击类型与防御方法组合，在线驱动实验运行并输出对应防御方法的鲁棒性测试结果。
-  \item \textbf{可视化模块}：提供Web前端界面，包括实验总览Dashboard、Agent执行轨迹的攻防过程可视化，以及运行轨迹图结构的可视化呈现。
-  \item \textbf{数据库模块}：包含关系型数据库，用于存放和管理实验产生的Agent执行日志，供日志审计模块与可视化模块查询使用；以及图数据库，用于存放运行轨迹图防御模块产生的图结构日志。
+  \item \textbf{可视化模块}：提供Web前端界面，包括实验总览Dashboard、Agent执行轨迹的攻防过程可视化，以及执行轨迹图与可疑边排序结果的可视化呈现。
+  \item \textbf{数据库模块}：包含关系型数据库，用于存放和管理实验产生的Agent执行日志，供日志审计模块与可视化模块查询使用；以及图数据库，用于存放执行轨迹图防御模块产生的图结构日志。
 \end{itemize}
 
-系统各模块之间的调用关系与数据流向如\autoref{fig:system_design}所示：在线运行实验模块驱动任务契约防御模块、运行轨迹图防御模块与基线对比实验模块在AgentDyn环境中执行，三者产生的执行日志统一写入数据库模块，日志审计模块从数据库读取数据完成统计分析，可视化模块进一步呈现审计结果与执行轨迹结构。
+系统各模块之间的调用关系与数据流向如\autoref{fig:system_design}所示：在线运行实验模块驱动执行轨迹图防御模块、可疑边排序与溯源模块与基线对比实验模块在AgentDyn环境中执行，三者产生的执行日志统一写入数据库模块，日志审计模块从数据库读取数据完成统计分析，可视化模块进一步呈现审计结果与执行轨迹结构。
 
 \begin{figure}[htbp]
   \centering

@@ -1,17 +1,17 @@
 \begin{table}[htbp]
 \centering
-\caption{任务契约动作门控方法的判定条件与动作映射}
+\caption{五类SAST风格图检查规则}
 \label{tab:contract_actions}
 \small
-\begin{tabularx}{\textwidth}{p{1.9cm}X>{\centering\arraybackslash}p{2.4cm}X}
+\begin{tabularx}{\textwidth}{p{2.6cm}X>{\centering\arraybackslash}p{1.8cm}>{\centering\arraybackslash}p{2.3cm}}
 \toprule
-\textbf{授权闭包状态} & \raggedright\arraybackslash\textbf{主要判定条件} & \textbf{防御动作} & \raggedright\arraybackslash\textbf{允许的后续行为} \\
+\textbf{规则类型} & \raggedright\arraybackslash\textbf{图模式描述} & \textbf{硬边命中} & \textbf{软/未知命中} \\
 \midrule
-\texttt{AUTHORIZED} & 全部谓词通过 & \textsc{Allow} & 真实执行一次并留存绑定动作摘要与契约版本的执行回执 \\
-\texttt{UNRESOLVED} & 缺少允许来源值、来源依赖验证返回\texttt{UNSTABLE}/\texttt{INCOMPLETE}、存在同类效果的其他可用规则，或契约构造结果为受限子集 & \textsc{CapabilityDecline} & 拒绝当前调用并披露契约已允许的边界，触发有界重规划 \\
-\texttt{UNAUTHORIZED} & 已定位的外部信息对高影响参数形成正向依赖见证，且该来源不属于规则允许集合，当前调用尚未产生副作用 & \textsc{RollbackInfo} & 裁剪该信息及其后消息，标记后重规划，不改变环境状态 \\
-\texttt{UNRESOLVED} & 其余谓词均满足，唯一缺口是绑定当前动作摘要的精确调用确认 & \textsc{AskConfirm} & 审批仅对当前动作摘要与契约版本生效，确认超时、版本或摘要不匹配则终止该路径 \\
-\texttt{UNAUTHORIZED} & 副作用类别、路由或关键参数与全部规则冲突，或规则余量耗尽、完整性前提失败 & \textsc{Block} & 不执行当前调用，终止当前任务路径 \\
+\texttt{FLOW-ORIGIN} & 禁止来源通过数据流路径到达受保护参数 & \textsc{Block} & \textsc{Rewrite/Replan} \\
+\texttt{TARGET-SUB} & 外部来源引入契约外收件人、账户、商品、URL或路径 & \textsc{Block} & \textsc{Rewrite/Replan} \\
+\texttt{CTRL-TO-EFFECT} & 契约未要求的新分支由外部来源支持并到达高影响写操作 & \textsc{Block} & \textsc{Rewrite/Replan} \\
+\texttt{SENSITIVE-EXFIL} & 敏感读取结果流向未授权的外部写入、邮件或发布工具 & \textsc{Block} & \textsc{Replan} \\
+\texttt{STATE-CONTAM} & 不可信来源写入持久状态，该状态随后到达受保护调用 & \textsc{Block} & \textsc{Replan} \\
 \bottomrule
 \end{tabularx}
 \end{table}

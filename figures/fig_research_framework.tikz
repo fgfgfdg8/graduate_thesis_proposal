@@ -1,4 +1,4 @@
-% fig_framework.tikz - 整体研究框架图（黑白学术框图风格）
+% fig_research_framework.tikz - 整体研究框架图
 \begin{tikzpicture}[
   node distance=5mm and 10mm,
   font=\scriptsize,
@@ -7,7 +7,8 @@
   colhead/.style={font=\bfseries\scriptsize, align=center},
   sysbox/.style={draw=black, very thick, rounded corners=2pt, fill=black!5, align=center, text width=118mm, minimum height=14mm, inner sep=3pt},
   note/.style={draw=black, dashed, rounded corners=2pt, fill=white, align=left, text width=30mm, font=\tiny, inner sep=2pt},
-  arr/.style={-{Stealth[length=1.8mm,width=1.6mm]}, thick, black}
+  arr/.style={-{Stealth[length=1.8mm,width=1.6mm]}, thick, black},
+  darr/.style={-{Stealth[length=1.8mm,width=1.6mm]}, thick, black, dashed}
 ]
 
 % 研究标题
@@ -17,25 +18,22 @@
 \coordinate (Lx) at ($(scope.south)+(-37mm,0)$);
 \coordinate (Rx) at ($(scope.south)+(37mm,0)$);
 
-\node[colhead, below=7mm of Lx, xshift=0mm] (Ltitle) {研究点一（调用前防御）};
-\node[colhead, below=7mm of Rx, xshift=0mm] (Rtitle) {研究点二（调用中/后响应）};
+\node[colhead, below=7mm of Lx, xshift=0mm] (Ltitle) {研究点一（TGG：在线证据图防御）};
+\node[colhead, below=7mm of Rx, xshift=0mm] (Rtitle) {研究点二（MDT：可疑边排序与溯源）};
 
-\node[box, below=3mm of Ltitle] (l1) {可信用户请求};
-\node[box, below=4mm of l1] (l2) {任务契约构造\\（版本化契约 $K_t$）};
-\node[box, below=4mm of l2] (l3) {最终有效动作解析};
-\node[box, below=4mm of l3] (l4) {确定性来源检查与\\选择性参数依赖消歧};
-\node[box, below=4mm of l4] (l5) {六谓词门控与\\授权闭包状态判定};
-\node[box, below=4mm of l5] (l6) {防御动作映射};
+\node[box, below=3mm of Ltitle] (l1) {运行时事件采集};
+\node[box, below=4mm of l1] (l2) {统一执行轨迹图构建\\（增量异构图$G_t$）};
+\node[box, below=4mm of l2] (l3) {确定性边推导\\（四类推导器）};
+\node[box, below=4mm of l3] (l4) {证据分级与\\候选边生成};
+\node[box, below=4mm of l4] (l5) {契约规则检查\\（五类SAST风格规则）};
+\node[box, below=4mm of l5] (l6) {聚合决策与处置};
 
-\node[box, below=3mm of Rtitle] (r1) {工具调用与观测结果};
-\node[box, below=4mm of r1] (r2) {来源原子与出现记录\\增量证据图构建};
-\node[box, below=4mm of r2] (r3) {精确值、持久值、授权目标与\\语义对象路径识别};
-\node[box, below=4mm of r3] (r4) {有界冲突证据包};
-\node[box, below=4mm of r4] (r5) {按需语义调解\\ALLOW / REWRITE / REPLAN};
-\node[box, below=4mm of r5] (r6) {证据闭包校验、检查点恢复\\与污染来源隔离};
-
-% 中部关系注记
-\node[note, right=4mm of l3, xshift=6mm, yshift=-2mm] (relnote) {};
+\node[box, below=3mm of Rtitle] (r1) {\texttt{SOFT/UNKNOWN}候选边};
+\node[box, below=4mm of r1] (r2) {边端点文本编码\\（SLM编码器）};
+\node[box, below=4mm of r2] (r3) {证据锥子图编码\\（图编码器）};
+\node[box, below=4mm of r3] (r4) {图-语义联合表示\\与特征融合};
+\node[box, below=4mm of r4] (r5) {MLP评分与\\Top-$K$可疑边排序};
+\node[box, below=4mm of r5] (r6) {审查预算分配与\\攻击路径定位};
 
 % 底部原型系统
 \node[sysbox, below=10mm of $(l6.south)!0.5!(r6.south)$] (sys) {原型应用系统：LLM Agent间接提示注入攻击防御方法鲁棒性测试系统};
@@ -59,6 +57,9 @@
 \draw[arr] (r3) -- (r4);
 \draw[arr] (r4) -- (r5);
 \draw[arr] (r5) -- (r6);
+
+% 研究点一到研究点二的接口箭头
+\draw[darr] (l4.east) -- ++(5mm,0) |- (r1.west);
 
 \draw[arr] (l6.south) -- ++(0,-3mm) -| (sys.north);
 \draw[arr] (r6.south) -- ++(0,-3mm) -| (sys.north);

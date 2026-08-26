@@ -1,49 +1,48 @@
 \begin{algorithm}[htbp]
-\caption{任务契约构造（\textsc{BuildContract}）与调用前中介（\textsc{Mediate}）}
+\caption{TGG统一在线安全检查算法（\textsc{TGGCheck}）}
 \label{alg:contract_gate}
-\KwIn{可信用户请求 $q_t$，冻结的效果清单 $M$，工具调用提案 $\text{proposal}$，运行时状态 $\text{state}$}
-\KwOut{授权闭包状态、防御动作，以及在\textsc{Allow}时的真实执行结果}
-\SetKwFunction{FBuild}{BuildContract}\SetKwFunction{FMed}{Mediate}
+\KwIn{当前物化动作$M_t$，运行时事件，图$G_{t-1}$，任务契约$C$}
+\KwOut{更新图$G_t$，规则见证，决策$Decision_t$}
+\SetKwFunction{FCheck}{TGGCheck}
 \SetKwProg{Fn}{Function}{:}{}
-\Fn{\FBuild{$q_t$, $M$}}{
-  $\text{atoms} \leftarrow \text{DeterministicExtract}(q_t)$ \tcp{EFFECT/VALUE/SOURCE/CONSTRAINT/BINDING 五类原子候选}
-  $\text{candidates} \leftarrow \text{atoms} \cup \text{OneShotLLMCandidate}(q_t)$ \tcp{至多一次隔离结构化候选生成，不读取外部观测}
-  $(R_t, S_t, \text{buildStatus}) \leftarrow \text{ValidateGroundNormalize}(\text{candidates}, M)$\;
-  \tcp{每条规则须回指同一请求片段、通过注册解析器并匹配 $M$ 中的 route/effect，不得跨候选或跨规则补字段}
-  $K_t \leftarrow (q_t,\, M,\, R_t,\, S_t,\, L_t,\, d_t)$ \tcp{$L_t$为规则余量与恢复预算，$d_t$为默认策略}
-  \Return{$K_t$}\;
-}
-\Fn{\FMed{$\text{proposal}$, $K_t$, $\text{state}$}}{
-  $a_t \leftarrow \text{ResolveRouteAndNormalize}(\text{proposal})$ \tcp{路由解析+嵌套调用独立中介+参数规范化后的最终有效动作}
-  \If{manifest/schema/adapter/契约完整性前提失败}{\Return{\textsc{Block} 并记录完整性回执}}
-  $\text{Prov} \leftarrow \text{DeterministicProvenance}(a_t, \text{state})$\;
-  $\Omega_t \leftarrow \text{SelectUnresolvedHighImpact}(a_t, \text{Prov}, M, L_t)$\;
-  $\text{Dep} \leftarrow \varnothing$\;
-  \If{$\Omega_t \neq \varnothing$ 且启用SCAV}{
-    $\text{Dep} \leftarrow \text{LocalArgumentIntervention}(\Omega_t, a_t, K_t, \text{state})$ \tcp{冻结路由与非目标参数，仅遮蔽候选来源跨度；不调用工具}
+\Fn{\FCheck{$M_t$, events, $G_{t-1}$, $C$}}{
+  \tcp{阶段一：增量图构建}
+  将\texttt{AgentStep}、\texttt{ToolCall}、\texttt{ArgumentSlot}等节点写入$G_t$\;
+  添加\texttt{OBSERVED+HARD}结构边\;
+  \tcp{阶段二：确定性边推导}
+  运行\textsc{EXACT-VALUE}、\textsc{STRUCTURED-ALIAS}、\textsc{OBJECT-VERSION}、\textsc{STATE-DIFF}推导器\;
+  对未解析参数与新分支生成\texttt{SOFT/UNKNOWN}候选边\;
+  \tcp{阶段三：契约规则检查}
+  查询五类图检查规则（见\autoref{tab:contract_actions}）\;
+  \uIf{$\exists$ 硬证据违规路径}{
+    $Decision_t \leftarrow \textsc{Block}$\;
+    签发阻断回执\;
   }
-  $\text{originEvidence} \leftarrow \text{CombineEvidence}(\text{Prov}, \text{Dep})$ \tcp{依赖证据不得修改契约或允许来源集合}
-  \ForEach{$r \in R_t$}{
-    $\text{Match}(r, a_t) \leftarrow \text{RouteOK} \land \text{EffectOK} \land \text{ArgOK} \land \text{OriginOK}(r,a_t,\text{originEvidence}) \land \text{UseOK} \land \text{ConfirmOK}$\;
-  }
-  \uIf{$\exists r: \text{Match}(r, a_t)$}{
-    $\text{status} \leftarrow \texttt{AUTHORIZED}$\;
-  }
-  \uElseIf{唯一缺口为来源依赖仍未决、来源取值、精确调用确认或受限子集}{
-    $\text{status} \leftarrow \texttt{UNRESOLVED}$\;
-  }
-  \Else{
-    $\text{status} \leftarrow \texttt{UNAUTHORIZED}$\;
-  }
-  $\text{action} \leftarrow \text{MapStatusAndReason}(\text{status}, \text{witness}, \text{state})$ \tcp{见\autoref{tab:contract_actions}}
-  \uIf{$\text{action} = \textsc{Allow}$}{
-    $\text{result} \leftarrow \text{InvokeRealFunctionOnce}(a_t)$\;
-    更新规则余量与一跳来源绑定状态\;
-    \Return{$\text{result}$ 及绑定 $a_t$ 摘要与 $K_t$ 版本的执行回执}\;
+  \uElseIf{不存在硬违规但存在高影响\texttt{SOFT/UNKNOWN}关系}{
+    \tcp{阶段四：选择性LLM补边}
+    批量调用LLM对未解析关系输出结构化\texttt{SOFT}边\;
+    确定性验证器独立重算，通过则生成新\texttt{HARD}边\;
+    重新查询规则\;
+    \uIf{补边后仍存在未解析高影响关系}{
+      \uIf{来源距离$\le 2$步且存在干净检查点}{
+        $Decision_t \leftarrow \textsc{Rewrite}$\;
+        隔离净化来源$\rightarrow$局部重执行\;
+      }
+      \Else{
+        $Decision_t \leftarrow \textsc{Replan}$\;
+        语义调解器选择\textsc{Rollback}/\textsc{Withdraw}/\textsc{Abort}\;
+      }
+    }
+    \Else{按补边后规则结果重新判定\;}
   }
   \Else{
-    施加 \textsc{CapabilityDecline} / \textsc{RollbackInfo} / \textsc{AskConfirm} / \textsc{Block} 之一\;
-    任何新提案必须重新调用 \FMed{}\;
+    \If{$Authorized_C(M_t)=1$}{
+      $Decision_t \leftarrow \textsc{Allow}$\;
+      $result \leftarrow \text{InvokeRealFunctionOnce}(M_t)$\;
+      记录\texttt{ToolResult}、\texttt{Effect}回执与状态差分\;
+      \Return{$result$及执行回执}\;
+    }
   }
+  恢复或阻断后的任何新动作重新调用\FCheck{}\;
 }
 \end{algorithm}

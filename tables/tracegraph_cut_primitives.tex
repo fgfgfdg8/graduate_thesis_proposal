@@ -1,15 +1,17 @@
 \begin{table}[htbp]
 \centering
-\caption{TraceGraph的证据条件调解动作与恢复语义}
+\caption{聚合决策的处置动作与恢复语义}
 \label{tab:cut_primitives}
 \small
 \begin{tabularx}{\textwidth}{lXX}
 \toprule
-\textbf{调解动作} & \raggedright\arraybackslash\textbf{作用语义} & \raggedright\arraybackslash\textbf{执行与恢复条件} \\
+\textbf{处置动作} & \raggedright\arraybackslash\textbf{作用语义} & \raggedright\arraybackslash\textbf{适用条件} \\
 \midrule
-\texttt{ALLOW} & 保留原始工具名和参数并执行一次，用于有界证据包能够完整复核的监控器不确定性 & 工具接口有效，调解输出通过严格结构校验；未知工具、Schema失败或中介失败不得放行 \\
-\texttt{REWRITE} & 保留必要工具，仅将冲突参数最小修复为可信目标或已验证取值 & 改写参数通过工具Schema和二次授权/来源检查；否则退化为\texttt{REPLAN} \\
-\texttt{REPLAN} & 当前调用不执行，向主Agent返回不包含攻击载荷的恢复提示，使新提案重新进入完整中介 & 若路径只经过可逆中间状态，则恢复最早受影响步骤前的同作用域检查点；若已有外部效果，则记录不可恢复状态并隔离来源 \\
+\texttt{BLOCK} & 阻断当前物化动作，终止当前任务路径 & 存在全硬边契约违规路径 \\
+\texttt{REWRITE} & 在隔离环境中对最近不可信来源进行净化后局部重执行，保留工具名不变仅最小修复参数 & 不可信来源距离较近（1--2步内）且来源后无写效果，改写参数通过Schema与二次安全检查 \\
+\texttt{REPLAN} & 当前调用不执行，通过语义调解器选择回退、撤回或中止，向Agent返回不含攻击载荷的恢复提示 & 来源距离较远、无干净检查点或改写校验失败；撤回仅当工具目录登记逆操作且逆操作通过安全检查时可用 \\
+\texttt{ABORT} & 中止当前任务，保留完整审计日志 & 调解器连续失败或检测到无进展的恢复循环 \\
+\texttt{ALLOW} & 允许当前物化动作进入真实工具执行，留存绑定动作摘要与契约版本的执行回执 & 不存在硬违规和软候选，且动作获得契约授权 \\
 \bottomrule
 \end{tabularx}
 \end{table}
