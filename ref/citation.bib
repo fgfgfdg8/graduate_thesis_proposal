@@ -1,4 +1,4 @@
-@article{browne2012survey,
+﻿@article{browne2012survey,
   title     = {A Survey of Monte Carlo Tree Search Methods},
   author    = {Browne, Cameron B and Powley, Edward and Whitehouse, Daniel and Lucas, Simon M and Cowling, Peter I and Rohlfshagen, Philipp and Tavener, Stephen and Perez, Diego and Samothrakis, Spyridon and Colton, Simon},
   journal   = {IEEE Transactions on Computational Intelligence and AI in Games},
@@ -290,15 +290,10 @@
 
 @inproceedings{liu2024autodan,
   title         = {AutoDAN: Generating Stealthy Jailbreak Prompts on Aligned Large Language Models},
-  author        = {Xiaogeng Liu and Nan Xu and Muhao Chen and Chaowei Xiao},
-  booktitle     = {Proceedings of the International Conference on Learning Representations},
-  volume        = {2024},
-  pages         = {56174--56194},
+  author        = {Liu, Xiaogeng and Xu, Nan and Chen, Muhao and Xiao, Chaowei},
+  booktitle     = {The Twelfth International Conference on Learning Representations},
   year          = {2024},
-  eprint        = {2310.04451},
-  archiveprefix = {arXiv},
-  primaryclass  = {cs.CL},
-  url           = {https://arxiv.org/abs/2310.04451}
+  url           = {https://openreview.net/forum?id=AcJrT90wnK}
 }
 
 @misc{liu2023prompt,
@@ -338,13 +333,16 @@
   url       = {https://doi.org/10.52202/079017-1952}
 }
 
-@misc{zou2023universal,
-  title        = {Universal and Transferable Adversarial Attacks on Aligned Language Models},
-  author       = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J Zico and Fredrikson, Matt},
-  year         = {2023},
-  howpublished = {\url{https://arxiv.org/abs/2307.15043}},
-  url          = {https://arxiv.org/abs/2307.15043},
-  urldate      = {2026-06-30}
+@online{zou2023universal,
+  title         = {Universal and Transferable Adversarial Attacks on Aligned Language Models},
+  author        = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J. Zico and Fredrikson, Matt},
+  year          = {2023},
+  eprint        = {2307.15043},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.CL},
+  howpublished  = {arXiv preprint arXiv:2307.15043},
+  url           = {https://arxiv.org/abs/2307.15043},
+  urldate       = {2026-09-28}
 }
 
 @misc{pan2025oet,
@@ -14914,12 +14912,7 @@
   abstract  = {We study the behavior of several black-box search algorithms used for generating adversarial examples for natural language processing (NLP) tasks. We perform a fine-grained analysis of three elements relevant to search: search algorithm, search space, and search budget. When new search algorithms are proposed in past work, the attack search space is often modified alongside the search algorithm. Without ablation studies benchmarking the search algorithm change with the search space held constant, one cannot tell if an increase in attack success rate is a result of an improved search algorithm or a less restrictive search space. Additionally, many previous studies fail to properly consider the search algorithms' run-time cost, which is essential for downstream tasks like adversarial training. Our experiments provide a reproducible benchmark of search algorithms across a variety of search spaces and query budgets to guide future research in adversarial NLP. Based on our experiments, we recommend greedy attacks with word importance ranking when under a time constraint or attacking long inputs, and either beam search or particle swarm optimization otherwise.}
 }
 
-@article{zou2023universal,
-  title   = {Universal and transferable adversarial attacks on aligned language models},
-  author  = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J Zico and Fredrikson, Matt},
-  journal = {arXiv preprint arXiv:2307.15043},
-  year    = {2023}
-}
+
 
 @inproceedings{ben2025gasliteing,
   title         = {{GASLITE}ing the Retrieval: Exploring Vulnerabilities in Dense Embedding-based Search},
@@ -15068,4 +15061,53 @@
   booktitle     = {International Conference on Learning Representations (ICLR)},
   year          = {2021},
   url           = {https://www.microsoft.com/en-us/research/publication/approximate-nearest-neighbor-negative-contrastive-learning-for-dense-text-retrieval/}
+}
+
+@article{liu2025ragsurvey,
+  title     = {基于大型语言模型的检索增强生成综述},
+  author    = {刘雪颖 and 云静 and 李博 and 史晓国 and 张钰莹},
+  journal   = {计算机工程与应用},
+  volume    = {61},
+  number    = {13},
+  pages     = {1--25},
+  year      = {2025},
+  doi       = {10.3778/j.issn.1002-8331.2410-0088},
+  url       = {https://doi.org/10.3778/j.issn.1002-8331.2410-0088}
+}
+
+@article{yuan2026ragoptimization,
+  title     = {大语言模型检索增强生成优化技术研究综述},
+  author    = {袁乐 and 刘绍华 and 王禹 and 朱尚威 and 王焘 and 毛天露},
+  journal   = {计算机学报},
+  volume    = {49},
+  number    = {2},
+  pages     = {383--422},
+  year      = {2026},
+  doi       = {10.11897/SP.J.1016.2026.00383},
+  url       = {https://doi.org/10.11897/SP.J.1016.2026.00383}
+}
+
+@article{zhang2026ragsoftware,
+  title     = {检索增强生成在软件工程中的应用综述},
+  author    = {张犬俊 and 谢杨 and 房春荣 and 虞圣呈 and 赵源 and 陈振宇},
+  journal   = {软件学报},
+  volume    = {37},
+  number    = {3},
+  pages     = {1316--1339},
+  year      = {2026},
+  doi       = {10.13328/j.cnki.jos.007567},
+  url       = {https://doi.org/10.13328/j.cnki.jos.007567}
+}
+@inproceedings{xian2025vulnerability,
+  title     = {On the Vulnerability of Applying Retrieval-Augmented Generation within Knowledge-Intensive Application Domains},
+  author    = {Xian, Xun and Wang, Ganghua and Bi, Xuan and Zhang, Rui and Srinivasa, Jayanth and Kundu, Ashish and Fleming, Charles and Hong, Mingyi and Ding, Jie},
+  booktitle = {Proceedings of the 42nd International Conference on Machine Learning},
+  pages     = {68292--68315},
+  year      = {2025},
+  editor    = {Singh, Aarti and Fazel, Maryam and Hsu, Daniel and Lacoste-Julien, Simon and Berkenkamp, Felix and Maharaj, Tegan and Wagstaff, Kiri and Zhu, Jerry},
+  volume    = {267},
+  series    = {Proceedings of Machine Learning Research},
+  month     = {13--19 Jul},
+  publisher = {PMLR},
+  url       = {https://proceedings.mlr.press/v267/xian25a.html}
 }

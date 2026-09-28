@@ -6,8 +6,8 @@
   arr/.style={-{Stealth[length=2mm]},thick,black}
 ]
 \node[head] (title) {面向大语言模型检索增强生成系统的安全攻防研究};
-\node[box,below=9mm of title,xshift=-36mm] (a0) {研究点一：ChunkTrojan\\多文本分块协同投毒};
-\node[box,below=9mm of title,xshift=36mm] (d0) {研究点二：RAGShield\\检索上下文表征防御};
+\node[box,below=9mm of title,xshift=-36mm] (a0) {研究点一：基于多文本分块协同的\\组合式投毒攻击框架};
+\node[box,below=9mm of title,xshift=36mm] (d0) {研究点二：基于检索上下文表征分析的\\检索增强生成安全防御方法};
 \node[box,below=5mm of a0] (a1) {单一源文档构造\\互补前提与内容布局};
 \node[box,below=5mm of a1] (a2) {受害者侧分块\\角色保持与联合召回};
 \node[box,below=5mm of a2] (a3) {离散候选搜索\\分级评价与预算调度};
