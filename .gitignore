@@ -339,13 +339,20 @@ tmp/
 tmp/*
 
 # ---------------------------------------------------------------------------
-# 例外：需纳入版本控制、且无法在 Overleaf 上重建的插图 PDF
+# 例外：figures/ 下的插图 PDF 需纳入版本控制
 # ---------------------------------------------------------------------------
-# figures/rag_conceptions.svg 由 draw.io 导出，其正文使用 <foreignObject>（配合
-# 内嵌位图回退）。只有浏览器（Chromium 内核）能把它渲染成矢量文字；Inkscape 与
-# cairosvg 不支持 foreignObject，只能使用内嵌位图，文字会变糊（实测该路径生成的
-# PDF 不含任何嵌入字体）。Overleaf 环境无法执行浏览器渲染，故把渲染结果纳入仓库。
+# 理由：这些 PDF 是 LaTeX 的 \includegraphics 素材，Overleaf 上缺失会直接编译失败
+# （例如 partitions/section3_content.tex 引用的 figures/chunktrojan_concept_zh.pdf）。
 #
-# 若更新了 figures/rag_conceptions.svg，需重新生成该 PDF，命令见
-# figures/README_rag_conceptions.md
-!figures/fig_rag_conceptions.pdf
+# 其中 fig_rag_conceptions.pdf 还无法在 Overleaf 上重建：它的 SVG 源由 draw.io 导出，
+# 正文使用 <foreignObject>（配合内嵌位图回退），只有浏览器（Chromium 内核）能渲染成
+# 矢量文字；Inkscape 与 cairosvg 不支持 foreignObject，只能使用内嵌位图，文字会变糊
+# （实测该路径生成的 PDF 不含任何嵌入字体）。若更新了 figures/rag_conceptions.svg，
+# 需重新生成该 PDF，命令见 figures/README_rag_conceptions.md
+#
+# 范围说明：
+#   - 本规则只覆盖 figures/ 的直接子文件；figures/archive/ 下的 PDF 仍被忽略
+#     （该目录不参与编译，main.tex 未引用）。若日后需要一并纳入，改用
+#     !figures/**/*.pdf
+#   - 根目录 main.pdf 与 outputs/main.pdf 是编译产物，仍被忽略
+!figures/*.pdf
