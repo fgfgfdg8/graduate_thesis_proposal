@@ -22,6 +22,14 @@
 
 \subsection{研究点一：基于多文本分块协同的组合式投毒攻击框架}
 
+\todo{手工重绘研究点概念图}
+\begin{figure}[htbp]
+  \centering
+  \resizebox{0.92\textwidth}{!}{\includegraphics{figures/chunktrojan_concept_zh.pdf}}
+  \caption{基于多文本分块协同的组合式投毒攻击框架}
+  \label{fig:chunktrojan_concept_zh}
+\end{figure}
+
 \subsubsection{研究内容与问题定义}
 
 单一攻击文档进入知识库后，其内容会被系统转换为多个检索单元。不同单元能否保留预设的信息角色，既取决于源文档的组织方式，也取决于系统分块边界。本研究拟将互补前提组织在同一源文档中，研究分块后文本之间的联合召回与组合式生成效果。攻击构造、检索反馈和生成反馈共同参与载荷搜索，使文档内容的修改直接依据其进入受害者系统后的表现。
@@ -119,6 +127,7 @@
 
 其中$\mathcal{A}_t$估计该次观测对高成本目标改进或不确定性降低的价值，$\widehat c_t$为预计调用成本。拟比较分级筛选与多保真度代理两类实现，并保留随机探索预算，防止低成本信号过早排除有价值候选。最终候选按相同高成本验证协议比较，低成本奖励用于搜索调度。
 
+\todo{重整算法}
 \begin{algorithm}[htbp]
   \small
   \caption{ChunkTrojan Payload Optimization}
@@ -239,6 +248,7 @@
 
 其中$U_{\mathrm{rel}}$表示查询相关性，$U_{\mathrm{cover}}$表示所需实体关系的覆盖程度，$U_{\mathrm{support}}$表示经审查的证据支持程度，$D(C,R)$为移除与替换代价，$U_{\mathrm{unc}}(C)$汇总待审查组合的覆盖不足和证据不确定性，$L_{\mathrm{ctx}}$为上下文长度预算。风险项只对已审查的组合计算，空集合的最大值按零处理，未审查状态由不确定性项记录。候选选择拟采用预算约束下的贪心修改或有限子集采样，权重在验证集上比较。输出前检查预定的最低审查覆盖要求。复查后若风险、审查覆盖或证据覆盖条件未满足，系统返回带证据不足提示的回答，并将该情形计入回答覆盖率与拒答率。
 
+\todo{手工重绘研究点概念图}
 \begin{figure}[htbp]
   \centering
   \resizebox{0.92\textwidth}{!}{\input{figures/fig_ragshield_pipeline.tikz}}
@@ -246,6 +256,7 @@
   \label{fig:ragshield_pipeline}
 \end{figure}
 
+\todo{重整算法}
 \begin{algorithm}[htbp]
   \small
   \caption{RAGShield Context Audit and Repair}
