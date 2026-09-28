@@ -1,0 +1,243 @@
+﻿\section{研究内容及方法}
+
+\subsection{研究目标}
+
+本研究面向大语言模型检索增强生成系统的知识库投毒威胁，围绕“攻击机制分析”与“防御方案设计”两个互补方向开展研究。首先，针对单一攻击源文档经受害者侧分块后可能形成的多文本块协同攻击问题，研究基于多文本分块协同的组合式投毒攻击框架ChunkTrojan；其次，针对攻击暴露出的检索上下文结构异常，研究基于检索上下文表征分析的安全防御方法RAGShield。研究点一侧重揭示攻击机制并建立攻击优化与评测方法，研究点二尚处于方案设计阶段，侧重形成候选技术路线并通过后续实验确定具体防御算法。本研究的整体研究路线如\autoref{fig:framework}所示。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{\textwidth}{!}{\input{figures/fig_research_framework.tikz}}
+  \caption{本研究的整体研究框架}
+  \label{fig:framework}
+\end{figure}
+
+\subsection{威胁模型}
+
+\textbf{威胁场景。}本研究关注开放知识库场景下的RAG知识投毒威胁：受害者RAG系统从外部知识库检索文本块并生成回答；攻击者通过知识库开放写入、内容提交或不可信来源聚合等渠道，向知识库加入一个恶意源文档；该文档经过受害者侧文本分块、表示、检索和上下文构造后影响最终生成结果。
+
+\textbf{攻击者能力假设。}攻击者只控制一个source document $D_{\mathrm{adv}}$，不能直接控制受害者侧实际产生的chunks，不能修改RAG系统的chunker、retriever、reranker或LLM参数，也不能篡改其他正常文档。攻击者可以知道或部分推断目标查询分布、chunking规则和检索输出反馈，但不假设拥有victim retriever梯度。
+
+\textbf{防御者能力假设。}防御者可在检索后访问查询、候选文本块、检索分数及可选的表示信息，可在生成前进行过滤、重排或风险提示；但不能修改用户查询，不能假设LLM内部注意力或隐藏状态可见，也不能直接改变攻击者已写入的源文档。研究点二的目标是在降低攻击成功率的同时尽量保持正常查询的检索与生成性能。
+
+\subsection{研究点一：基于多文本分块协同的组合式投毒攻击框架}
+
+\subsubsection{研究动机与问题定义}
+
+ChunkTrojan的研究动机来自现有攻击边界之间的空隙：PoisonedRAG等早期工作证明了恶意文本可以操纵检索与生成\cite{zou2025poisonedrag}；One Shot Dominance和AdversarialCoT证明单文档投毒可行\cite{chang2025oneshot,song2026adversarialcot}；CRCP关注攻击信号经过victim-side chunking和reranking后的鲁棒性\cite{nie2026crcp}；InceptionRAG研究攻击者控制的多个dormant passages之间的联合诱导\cite{zhang2026inceptionrag}。然而，当攻击者只控制一个source document，而victim-side chunker将其转换为多个同源chunks时，这些chunks如何被联合召回并形成跨块组合效应，仍缺乏系统分析。
+
+ChunkTrojan的核心攻击边界是：攻击者只控制一个source document $D_{\mathrm{adv}}$；victim chunker将其转换为实际检索单元：
+\begin{equation}
+  \phi(D_{\mathrm{adv}})=C_{\mathrm{adv}}=\{c_1,c_2,\ldots,c_n\}.
+  \label{eq:chunktrojan_chunking}
+\end{equation}
+本研究希望从中形成至少两个目标chunks $c_A,c_B\in\phi(D_{\mathrm{adv}})$，满足：（1）二者来源相同；（2）均为victim-side chunker实际产生的不同chunks；（3）分别承担不同信息角色；（4）单独出现时不足以产生目标攻击效果；（5）联合出现时能够支持目标生成结果。攻击链为：
+\begin{equation}
+  D_{\mathrm{adv}}
+  \rightarrow \phi(D_{\mathrm{adv}})
+  \rightarrow \{c_A,c_B,\ldots\}
+  \rightarrow \text{Top-}K\text{ retrieval}
+  \rightarrow c_A,c_B\text{ jointly retrieved}
+  \rightarrow \text{cross-chunk composition}
+  \rightarrow \text{target generation}.
+\end{equation}
+需要特别强调，攻击者控制的是“一个source”，而不是两个独立passages；多个检索单元由受害者系统创建。
+
+\subsubsection{问题形式化}
+
+设$q\in Q$为目标查询，$D_{\mathrm{adv}}$为攻击者控制的单一source document，$\phi(D_{\mathrm{adv}})=C_{\mathrm{adv}}=\{c_1,\ldots,c_n\}$为victim-side chunking function。检索器$f_r(q,c)$返回查询与文本块的相关性：
+\begin{equation}
+  s_r(q,c)=f_r(q,c).
+  \label{eq:chunktrojan_retrieval_score}
+\end{equation}
+在正常知识库chunks $C$与攻击chunks $C_{\mathrm{adv}}$组成的候选集合上，Top-$K$检索结果为
+\begin{equation}
+  R_K(q,D_{\mathrm{adv}})=\operatorname*{TopK}_{c\in C\cup C_{\mathrm{adv}}}s_r(q,c).
+\end{equation}
+
+定义两个目标攻击chunks $c_A,c_B\in\phi(D_{\mathrm{adv}})$，其联合召回事件为
+\begin{equation}
+  I_{\mathrm{co}}(q)=\mathbf{1}\!\left[c_A\in R_K(q)\wedge c_B\in R_K(q)\right],
+\end{equation}
+对应的检索层核心指标为
+\begin{equation}
+  \mathrm{CoRecall@}K=\frac{1}{|Q|}\sum_{q\in Q}I_{\mathrm{co}}(q).
+  \label{eq:corecall}
+\end{equation}
+CoRecall@$K$只要求两个目标chunks同时进入Top-$K$，不额外设置人为rank门槛；$c_A$和$c_B$的具体rank可作为分析指标记录。
+
+给定生成模型$y=f_g(q,R)$，定义单chunk target hit：
+\begin{align}
+  H_A(q)&=\mathbf{1}\!\left[f_g(q,\{c_A\})\in Y^*\right],\\
+  H_B(q)&=\mathbf{1}\!\left[f_g(q,\{c_B\})\in Y^*\right],
+\end{align}
+以及联合target hit：
+\begin{equation}
+  H_{AB}(q)=\mathbf{1}\!\left[f_g(q,\{c_A,c_B\})\in Y^*\right],
+\end{equation}
+其中$Y^*$为目标输出集合或target answer aliases。最基本的组合式攻击成功指标为
+\begin{equation}
+  H_{\mathrm{comp}}(q)=H_{AB}(q)\cdot(1-H_A(q))\cdot(1-H_B(q)).
+  \label{eq:composition_success}
+\end{equation}
+该指标说明“$A+B$成功且$A$、$B$单独失败”。它不能自动证明严格的非加性或因果协同效应。因此，本文优先称其为“组合式攻击成功”或“跨分块组合效果”；只有当后续实验进一步加入matched unrelated context control并证明$AB$的效果无法由单纯增加上下文数量解释时，才讨论更强的synergy或non-additive effect。
+
+\subsubsection{攻击优化目标}
+
+ChunkTrojan将payload optimization定义为source-level离散优化问题。设$x=D_{\mathrm{adv}}$，$C(x)=\phi(x)$，$A(x,q)$和$B(x,q)$为由预定义role assignment或自动匹配得到的两个目标chunks。检索分数为
+\begin{equation}
+  s_A(x,q)=s_r(q,A(x,q)),\qquad
+  s_B(x,q)=s_r(q,B(x,q)).
+\end{equation}
+优化目标不追求单个chunk独立最强，而是定义联合召回目标：
+\begin{equation}
+  J_{\mathrm{ret}}(x;q)=F\left(s_A(x,q),s_B(x,q),\tau_K\right),
+\end{equation}
+其中$F$可采用soft top-$K$ surrogate、rank-based utility、margin-based utility或其他平滑近似。由于Top-$K$是离散操作，直接对rank指示函数优化不可微，实际采用黑盒reward或surrogate objective。
+
+进一步定义semantic composition constraint $J_{\mathrm{comp}}(x;q)$，用于约束$A$和$B$分别承担不同语义角色，且$A+B$能够支持目标答案。整体优化问题为
+\begin{equation}
+  \max_x\quad
+  J(x)=\lambda_rJ_{\mathrm{ret}}(x)+\lambda_cJ_{\mathrm{comp}}(x)-\lambda_p\Omega(x),
+  \label{eq:chunktrojan_objective}
+\end{equation}
+其中$J_{\mathrm{ret}}$为联合检索目标；$J_{\mathrm{comp}}$为跨chunk组合目标；$\Omega$为payload复杂度、修改成本或查询成本等正则项。当前阶段的核心是攻击有效性和优化成本，$\Omega$不强行解释为隐蔽性目标；若后续需要显式隐蔽性，可作为扩展方向。
+
+\subsubsection{结合InceptionRAG与CRCP的优化思想}
+
+ChunkTrojan并不直接采用“InceptionRAG的ZOSO + CRCP”，而是面向single-source multi-chunk边界建立联合黑盒优化框架。其设计原则如下。
+
+第一，借鉴InceptionRAG的黑盒低查询优化思想：不依赖victim retriever梯度；通过有限次reward/query evaluation优化payload；使用低查询复杂度的zeroth-order或surrogate optimization方法；可参考NTK-GP对离散payload修改方向建模\cite{zhang2026inceptionrag}。第二，借鉴CRCP的chunk-aware约束：优化过程中显式模拟victim-side chunking；不在source-document embedding上单独优化；每一次候选payload都必须经过victim chunker；直接评价chunk-level retrieval behavior；关注chunk-boundary robustness\cite{nie2026crcp}。第三，ChunkTrojan自身新增的目标是：不追求单个chunk独立最强，而是优化两个目标chunks的联合召回，同时保持$A/B$语义角色互补，使$A+B$形成目标生成效果。
+
+从复杂度优化角度看，InceptionRAG的关键启发不仅是使用NTK-GP，而是在黑盒条件下避免昂贵的逐候选穷举搜索，利用历史reward对payload修改空间建立surrogate model，从而减少目标模型调用。ChunkTrojan可采用如下循环：
+\begin{equation}
+  \text{candidate payload}\rightarrow\text{victim-side chunking}
+  \rightarrow\text{retrieval/generation evaluation}
+  \rightarrow\text{reward}
+  \rightarrow\text{surrogate update}
+  \rightarrow\text{candidate proposal}
+  \rightarrow\text{repeat}.
+\end{equation}
+若采用NTK-GP，则将其视为可选的具体surrogate implementation，而非唯一最终算法。可抽象为：令$z_t=E(x_t)$表示payload表示或候选修改表示，历史样本为$\mathcal{H}_t=\{(z_i,r_i)\}_{i=1}^{t}$，使用核函数
+\begin{equation}
+  K_t(i,j)=k(z_i,z_j)
+\end{equation}
+建立surrogate posterior $\mu_t(z),\sigma_t(z)$，并根据acquisition或estimated improvement选择下一候选：
+\begin{equation}
+  z_{t+1}=\arg\max_z\mathcal{A}(z;\mu_t,\sigma_t).
+\end{equation}
+同时必须加入ChunkTrojan-specific chunk constraint：每个候选$x_{t+1}$都经过
+\begin{equation}
+  x_{t+1}\rightarrow\phi(x_{t+1})\rightarrow\text{identify }c_A,c_B
+  \rightarrow\text{evaluate joint retrieval}
+  \rightarrow\text{evaluate composition reward}.
+\end{equation}
+因此，优化对象不是source document embedding，而是source document经过victim-side transformation后的multi-chunk retrieval/composition behavior。
+
+\subsubsection{Chunk-aware约束}
+
+对候选payload $x$，要求$C(x)=\{c_1,\ldots,c_n\}$中存在$c_A,c_B\in C(x)$，满足
+\begin{equation}
+  \mathrm{Role}(c_A)=r_A,\qquad \mathrm{Role}(c_B)=r_B,\qquad r_A\neq r_B.
+\end{equation}
+语义角色可对应实体识别与关系、实体与属性、事件与时间、实体与位置等组合。检索约束要求$c_A,c_B$能够共同进入Top-$K$；组合约束要求$A$ alone insufficient、$B$ alone insufficient、$A+B$ sufficient。因此，ChunkTrojan的优化问题也可抽象为
+\begin{equation}
+\begin{aligned}
+  \max_x\quad & J_{\mathrm{ret}}(x)+\lambda J_{\mathrm{comp}}(x)\\
+  \text{s.t.}\quad
+  & c_A,c_B\in\phi(x),\quad c_A\neq c_B,\\
+  & \mathrm{CoRecall}_K(x)=1,\\
+  & H_A(x)=0,\quad H_B(x)=0,\quad H_{AB}(x)=1.
+\end{aligned}
+\end{equation}
+实际优化中，最后三个条件可通过reward或penalty近似，而不必要求硬约束始终满足。上述形式化是研究设计，目前尚不声称已经完成求解。
+
+\subsubsection{算法设计}
+
+\begin{algorithm}[htbp]
+  \caption{ChunkTrojan Payload Optimization}
+  \label{alg:chunktrojan}
+  \KwIn{target query set $Q$; victim chunker $\phi$; retriever $f_r$; target answer set $Y^*$; initial payload $x_0$; query budget $B$}
+  \KwOut{optimized poisoned source document $x^*$}
+  initialize source-level payload $x\leftarrow x_0$, history $\mathcal{H}\leftarrow\emptyset$, best reward $r^*\leftarrow-\infty$\;
+  \For{$t=1,\ldots,B$}{
+    perform victim-side chunking $C_t=\phi(x_t)$\;
+    identify candidate target chunks $c_A,c_B$ according to semantic roles\;
+    compute retrieval scores $s_r(q,c)$ for each $q\in Q$ and $c\in C_t$\;
+    compute joint retrieval reward\;
+    perform low-cost generation validation when necessary\;
+    obtain reward $r_t$\;
+    add $(x_t,r_t)$ to $\mathcal{H}$ and update surrogate model\;
+    propose candidate payload modification by acquisition function\;
+    re-run victim-side chunking on the new candidate\;
+    reject candidates violating chunk-role or composition constraints\;
+    update $x^*$ if historical best reward improves\;
+  }
+  \Return{$x^*$}\;
+\end{algorithm}
+
+该算法的关键约束是：每次候选评价都必须重新执行victim-side chunking，而不能先优化document、最后才一次性chunk。这正是借鉴CRCP后需要加入ChunkTrojan的关键设计。算法中的surrogate model用于减少昂贵的payload evaluation次数，而不是改变最终攻击目标。
+
+\subsubsection{复杂度分析}
+
+设$B$为黑盒payload evaluation budget，$N$为候选payload数量，$C$为单个source document产生的chunk数量，$K$为retrieval top-$K$，$G$为generation validation次数。若每次candidate evaluation包含chunking $O(|x|)$、embedding $O(Cd)$（$d$为embedding dimension），exact top-$K$检索取决于index implementation，以及$G$次生成验证调用，则总体主要成本可抽象为
+\begin{equation}
+  O\!\left(B\cdot(T_{\mathrm{chunk}}+T_{\mathrm{retrieval}}+G T_{\mathrm{gen}})\right).
+\end{equation}
+ChunkTrojan不需要对retriever参数求梯度，因此不依赖retriever white-box gradient。若采用surrogate model，其目标是减少昂贵的payload evaluation次数，而不是改变最终攻击目标。此处不虚构具体复杂度常数；若后续确认InceptionRAG正式论文给出明确的query complexity或optimization complexity定义，可再引入其数字进行比较。
+
+\subsubsection{实验设计与评估协议}
+
+实验拟主要使用NQ、MS MARCO和HotpotQA等公开数据集\cite{kwiatkowski-etal-2019-natural,bajaj2018msmarcohumangenerated,yang-etal-2018-hotpotqa}，检索器优先考虑Contriever、Contriever-MS、ANCE等公开模型\cite{izacard2022unsupervised,karpukhin2020dense}；实验阶段将根据资源情况确定具体模型。开题阶段不声称上述全部实验已经完成。
+
+实验设置以Clean与Poisoned对比为核心。检索层指标包括Recall@$K$、SourceRecall@$K$、CoRecall@$K$、target chunk rank和source-level retrieval success；生成层指标包括target answer hit、ASR、A/B/AB composition success，以及在matched control支持下的strong composition success。所有结果以independent query为统计单位；同一query下多个payload construction不作为多个独立样本。
+
+在生成组合控制中，至少比较$A$、$B$、$A+B$三种上下文，必要时加入$A+R$和$B+R$，其中$R$为与目标组合关系无关的matched unrelated retrieved chunk。该设计用于区分“$AB$特定组合导致攻击成功”与“只要增加上下文就更容易成功”。若实验仅证明$A+B$成功且$A/B$失败，则称其为cross-chunk composition或compositional attack effect；不直接称non-additive synergy。
+
+\subsubsection{创新性边界}
+
+ChunkTrojan的创新性表述保持谨慎。第一，在攻击控制边界上，已有单文档投毒工作证明single-document poisoning可行，本文进一步关注单一source document在victim-side chunking后形成多个retrieval units的协同关系。第二，在攻击机制上，区别于CRCP主要增强单个chunk的chunk-aware、rerank-consistent攻击鲁棒性，ChunkTrojan研究多个同源chunks的联合检索及组合式生成效应。第三，在优化机制上，借鉴InceptionRAG的黑盒低查询优化思想，并结合CRCP的victim-side chunk-aware constraint，建立面向single-source multi-chunk joint retrieval的payload optimization formulation。第四，在评估机制上，同时从retrieval-level CoRecall和generation-level composition success两个层面评价攻击效果。
+
+\subsection{研究点二：基于检索上下文表征分析的检索增强生成安全防御方法}
+
+\subsubsection{研究动机与问题定义}
+
+ChunkTrojan暴露出RAG攻击的一个结构性特点：攻击效果可能不由单个异常文本独立决定，而由多个检索文本块之间的联合关系和上下文整体分布共同形成。现有post-retrieval filtering多聚焦单passage检测\cite{kim2025ragdefender}；TrustRAG等工作开始利用检索上下文聚类或自评估\cite{trustrag2025}；PRA-RAG研究鲁棒聚合\cite{tan2026prarag}；ShieldRAG从embedding space改写防御\cite{he2026shieldrag}；CEG-RAG利用cross-encoder activation signals\cite{cegrag2026}。研究点二拟在此基础上进一步分析“单chunk表征、跨chunk关系和retrieved context整体分布”的联合风险信号。
+
+给定查询$q$和检索结果$R(q)=\{c_1,\ldots,c_K\}$，可获得查询表示$z_q$和chunk representations $z_i$。防御问题可形式化为构造chunk-level、relation-level和context-level三类特征，并输出检索上下文的风险估计。三类特征分别刻画单个文本块的异常程度、文本块之间关系结构的异常程度，以及整个检索上下文分布相对于正常查询的偏移程度。
+
+\subsubsection{候选技术路线}
+
+作为初步风险框架，可定义
+\begin{equation}
+  S(R(q))=\alpha S_{\mathrm{local}}+\beta S_{\mathrm{relation}}
+  +\gamma S_{\mathrm{distribution}}+\delta S_{\mathrm{retrieval}},
+  \label{eq:ragshield_risk}
+\end{equation}
+其中$S_{\mathrm{local}}$、$S_{\mathrm{relation}}$、$S_{\mathrm{distribution}}$和$S_{\mathrm{retrieval}}$分别对应单块、关系、整体分布和检索信号风险。该公式仅表示候选统一风险框架，$\alpha$、$\beta$、$\gamma$、$\delta$尚未确定，也不代表已确定某种最终算法。
+
+后续可比较的技术路线包括：distance-based anomaly detection、density-based methods、clustering、semantic consistency分析、similarity distribution分析、lightweight classifier和robust aggregation。具体模型、分类器、聚类算法、损失函数和训练方法需根据后续实验确定。防御目标是在降低ASR的同时尽量保持clean-query retrieval和generation utility。
+
+\subsubsection{实现路径与研究计划}
+
+研究点二目前处于方案设计阶段。首先，基于研究点一的攻击与正常检索数据构造上下文表示数据集，审计查询覆盖、来源分布和标签泄漏风险；其次，分别实现单块异常分数、跨块关系特征和上下文分布特征的可解释基线；再次，比较无监督、轻量监督和鲁棒聚合等候选方案，并通过消融实验判断关系特征与上下文分布特征是否提供独立增益；最后，根据实验结果确定最终防御方案。开题阶段不虚构该研究点的实验结果，也不提前固定其模型结构。
+
+\subsection{原型应用系统}
+
+为验证上述研究点，本研究拟设计并实现“RAG投毒攻防联合测试系统”。该系统是论文实验原型系统，不是商业化RAG安全产品，主要服务于攻击测试、防御测试、日志审计和结果可视化。系统包含以下模块：
+
+\begin{itemize}[leftmargin=2em,itemsep=0pt]
+  \item \textbf{攻击测试模块}：支持知识库构建、恶意源文档注入、victim-side chunking、检索与生成评测，记录ChunkTrojan的CoRecall、composition success和攻击成本。
+  \item \textbf{防御测试模块}：支持接入post-retrieval filtering、聚类、鲁棒聚合等候选防御方法，在相同攻击配置下评测ASR、clean utility和开销。
+  \item \textbf{日志审计模块}：统一记录检索分数、上下文组成、生成结果、指标计算和实验配置，支持复现实验和错误分析。
+  \item \textbf{可视化模块}：展示攻击链路、Top-$K$组成、跨块组合实验结果和防御指标对比。
+  \item \textbf{数据库模块}：管理数据集、索引、实验日志和结果，支撑日志审计与可视化查询。
+\end{itemize}
+
+系统各模块之间的调用关系与数据流向如\autoref{fig:system_design}所示：攻击测试模块和防御测试模块在相同RAG实验环境中运行，产生的日志统一写入数据库模块；日志审计模块读取数据并计算统计指标；可视化模块呈现攻防过程和实验结果。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{0.9\textwidth}{!}{\input{figures/fig_system_design.tikz}}
+  \caption{原型应用系统设计框图}
+  \label{fig:system_design}
+\end{figure}

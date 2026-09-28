@@ -1,67 +1,28 @@
-% fig_research_framework.tikz - 整体研究框架图
+% 整体研究思路，黑白框图
 \begin{tikzpicture}[
-  node distance=5mm and 10mm,
-  font=\scriptsize,
-  box/.style={draw=black, thick, rounded corners=2pt, fill=white, align=center, text width=34mm, minimum height=9mm, inner sep=2pt},
-  headbox/.style={draw=black, thick, rounded corners=2pt, fill=black!8, align=center, text width=128mm, minimum height=11mm, inner sep=3pt, font=\scriptsize},
-  colhead/.style={font=\bfseries\scriptsize, align=center},
-  sysbox/.style={draw=black, very thick, rounded corners=2pt, fill=black!5, align=center, text width=118mm, minimum height=14mm, inner sep=3pt},
-  note/.style={draw=black, dashed, rounded corners=2pt, fill=white, align=left, text width=30mm, font=\tiny, inner sep=2pt},
-  arr/.style={-{Stealth[length=1.8mm,width=1.6mm]}, thick, black},
-  darr/.style={-{Stealth[length=1.8mm,width=1.6mm]}, thick, black, dashed}
+  font=\small,
+  box/.style={draw=black,thick,fill=white,align=center,text width=49mm,minimum height=12mm,inner sep=3pt},
+  head/.style={draw=black,thick,fill=white,align=center,text width=132mm,minimum height=12mm,inner sep=3pt},
+  arr/.style={-{Stealth[length=2mm]},thick,black}
 ]
-
-% 研究标题
-\node[headbox] (scope) {面向LLM Agent工具调用链的威胁归因与防御方法研究};
-
-% 左列锚点与右列锚点
-\coordinate (Lx) at ($(scope.south)+(-37mm,0)$);
-\coordinate (Rx) at ($(scope.south)+(37mm,0)$);
-
-\node[colhead, below=7mm of Lx, xshift=0mm] (Ltitle) {研究点一（TGG：在线证据图防御）};
-\node[colhead, below=7mm of Rx, xshift=0mm] (Rtitle) {研究点二（MDT：可疑边排序与溯源）};
-
-\node[box, below=3mm of Ltitle] (l1) {运行时事件采集};
-\node[box, below=4mm of l1] (l2) {统一执行轨迹图构建\\（增量异构图$G_t$）};
-\node[box, below=4mm of l2] (l3) {确定性边推导\\（四类推导器）};
-\node[box, below=4mm of l3] (l4) {证据分级与\\候选边生成};
-\node[box, below=4mm of l4] (l5) {契约规则检查\\（五类SAST风格规则）};
-\node[box, below=4mm of l5] (l6) {聚合决策与处置};
-
-\node[box, below=3mm of Rtitle] (r1) {\texttt{SOFT/UNKNOWN}候选边};
-\node[box, below=4mm of r1] (r2) {边端点文本编码\\（SLM编码器）};
-\node[box, below=4mm of r2] (r3) {证据锥子图编码\\（图编码器）};
-\node[box, below=4mm of r3] (r4) {图-语义联合表示\\与特征融合};
-\node[box, below=4mm of r4] (r5) {MLP评分与\\Top-$K$可疑边排序};
-\node[box, below=4mm of r5] (r6) {审查预算分配与\\攻击路径定位};
-
-% 底部原型系统
-\node[sysbox, below=10mm of $(l6.south)!0.5!(r6.south)$] (sys) {原型应用系统：LLM Agent间接提示注入攻击防御方法鲁棒性测试系统};
-
-% 箭头连接
-\coordinate (splitpoint) at ($(scope.south)+(0,-4mm)$);
-\draw[thick] (scope.south) -- (splitpoint);
-\draw[arr] (splitpoint) -| (Ltitle.north);
-\draw[arr] (splitpoint) -| (Rtitle.north);
-\draw[arr] (Ltitle.south) -- (l1.north);
-\draw[arr] (Rtitle.south) -- (r1.north);
-
-\draw[arr] (l1) -- (l2);
-\draw[arr] (l2) -- (l3);
-\draw[arr] (l3) -- (l4);
-\draw[arr] (l4) -- (l5);
-\draw[arr] (l5) -- (l6);
-
-\draw[arr] (r1) -- (r2);
-\draw[arr] (r2) -- (r3);
-\draw[arr] (r3) -- (r4);
-\draw[arr] (r4) -- (r5);
-\draw[arr] (r5) -- (r6);
-
-% 研究点一到研究点二的接口箭头
-\draw[darr] (l4.east) -- ++(5mm,0) |- (r1.west);
-
-\draw[arr] (l6.south) -- ++(0,-3mm) -| (sys.north);
-\draw[arr] (r6.south) -- ++(0,-3mm) -| (sys.north);
-
+\node[head] (title) {面向大语言模型检索增强生成系统的安全攻防研究};
+\node[box,below=9mm of title,xshift=-36mm] (a0) {研究点一：ChunkTrojan\\多文本分块协同投毒};
+\node[box,below=9mm of title,xshift=36mm] (d0) {研究点二：RAGShield\\检索上下文表征防御};
+\node[box,below=5mm of a0] (a1) {单一源文档构造\\互补前提与内容布局};
+\node[box,below=5mm of a1] (a2) {受害者侧分块\\角色保持与联合召回};
+\node[box,below=5mm of a2] (a3) {离散候选搜索\\分级评价与预算调度};
+\node[box,below=5mm of a3] (a4) {组合对照与完整上下文\\检索、生成效果评价};
+\node[box,below=5mm of d0] (d1) {局部与结构分析\\组合候选及探索抽样};
+\node[box,below=5mm of d1] (d2) {组合影响审查\\正常多跳分布校准};
+\node[box,below=5mm of d2] (d3) {证据选择与上下文修复\\桥接证据保护及复查};
+\node[box,below=5mm of d3] (d4) {攻击抑制与效用评价\\误报、覆盖率及开销};
+\node[head,below=10mm of $(a4.south)!0.5!(d4.south)$] (eval) {统一实验环境与评价协议\\数据划分、源文档标识、分块记录、独立查询统计};
+\node[head,below=6mm of eval] (system) {RAG投毒攻防联合测试系统};
+\draw[arr] (title.south) -- ++(0,-4mm) -| (a0.north);
+\draw[arr] (title.south) -- ++(0,-4mm) -| (d0.north);
+\foreach \u/\v in {a0/a1,a1/a2,a2/a3,a3/a4,d0/d1,d1/d2,d2/d3,d3/d4}{\draw[arr] (\u.south)--(\v.north);}
+\draw[arr,dashed] (a2.east) -- node[above,font=\scriptsize,align=center]{攻击样本} (d2.west);
+\draw[arr] (a4.south) -- ++(0,-4mm) -| (eval.north);
+\draw[arr] (d4.south) -- ++(0,-4mm) -| (eval.north);
+\draw[arr] (eval.south) -- (system.north);
 \end{tikzpicture}

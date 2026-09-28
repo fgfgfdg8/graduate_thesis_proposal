@@ -2,274 +2,305 @@
 
 \subsection{研究目标}
 
-本研究面向LLM Agent工具调用链的间接提示注入攻击威胁，围绕"在线确定性防御"与"学习式智能溯源"两个互补的防御维度，提出两个研究点，组成一个递进的防御体系。
-
-\textbf{研究点一：基于Agent执行轨迹图分级证据判据的IPI防御}面向Agent运行时每一步工具调用行为，将执行轨迹建模为异构证据图，通过确定性边推导与契约规则检查，在注入攻击下Agent工具调用动作真正产生副作用前，进行可复核的运行时安全检查与处置。
-
-\textbf{研究点二：基于图-语义联合表示的攻击定位与溯源方法}面向研究点一中确定性规则无法唯一消歧的候选影响边，利用图结构与轻量语义的联合表示，对当前执行前缀中的候选边进行可疑度排序，识别最应优先审查的可疑攻击子图，为审查预算的优先分配提供依据。
-
-在防御层次上，二者形成互补关系：研究点一通过确定性推导和契约规则在线处置明确可判定的安全违规，研究点二则针对证据不完备区域，利用学习式模型定位最可疑的候选依赖边并引导审查资源分配，二者共同覆盖从确定性防御到不确定性溯源的完整安全分析链路。本研究的整体研究路线如\autoref{fig:framework}所示。
+本研究面向RAG知识库投毒问题，分析外部文档经过分块、检索和上下文组织后对生成结果的影响。研究点一拟建立ChunkTrojan攻击框架，在单一源文档控制下设计互补的语义内容，通过分块感知构造和预算约束搜索实现多文本块联合召回，并区分检索成功与组合式生成效果。研究点二拟建立RAGShield防御方案，综合检索上下文的局部表征、跨块关系和生成影响，审查可疑文本组合，选择兼顾证据完整性与安全性的生成上下文。两个研究点将在统一实验环境中比较攻击成功率、正常问答效用与计算开销，整体研究思路如\autoref{fig:framework}所示。
 
 \begin{figure}[htbp]
   \centering
-  \resizebox{\textwidth}{!}{\input{figures/fig_research_framework.tikz}}
-  \caption{本研究的整体研究框架}
+  \resizebox{0.92\textwidth}{!}{\input{figures/fig_research_framework.tikz}}
+  \caption{整体研究思路}
   \label{fig:framework}
 \end{figure}
 
 \subsection{威胁模型}
-本研究面向混合信任模式（即系统内的数据同时来自可信的用户和不可信的外部数据源）下真实的黑盒LLM Agent攻防场景，构建如下威胁模型：
 
-\textbf{威胁场景。}本研究关注的是用户委托任务后，在LLM Agent工具调用链中，由于外部攻击者的提示注入攻击导致的潜在安全威胁，即受害者Agent因提示注入攻击诱导产生恶意的真实或沙箱工具执行，达成攻击者预设的恶意目标。
+本研究考虑知识库接收外部文档的RAG场景。攻击者向正常知识库写入一个源文档$D_{\mathrm{adv}}$，该文档与正常文档经过相同的解析、分块和索引流程。系统根据用户查询检索文本块，并将选定证据提供给生成模型。攻击目标是使指定查询产生攻击者设定的错误答案。
 
-\textbf{攻击者能力假设。}根据真实Agent运行场景，本研究假设攻击者不能篡改可信用户请求所在的宿主通道，不能直接修改Agent的规划器、工具实现或本研究的防御逻辑，也不能获知防御模块的内部实现；但攻击者可以通过邮件、网页、文件、工具返回值（如记忆检索、知识库检索等）等外部内容注入非用户授权的控制性指令或诱导信息，并借助Agent对这些内容的读取与推理，跨一个或多个步骤影响工具选择、关键参数、持久状态或最终的外部副作用动作。
+攻击者的写入权限限于$D_{\mathrm{adv}}$，可以修改其中的文本、段落顺序和局部布局。实际检索单元由受害者侧分块器产生，分块器、检索器、正常语料和生成模型参数保持不变。攻击者在给定预算内获得查询反馈，基准设置返回检索文本及排名，有分数接口时同时记录相关性分数，生成接口返回回答文本。搜索依赖这些可观测反馈，不使用受害者检索器梯度。分块规则已知与部分已知分别作为两种实验条件，后者采用有限组估计配置开展搜索，再在实际系统返回的文本块上确认联合召回，在独立配置上测试迁移效果。
 
-\textbf{防御者能力假设。}防御者能够访问Agent的运行时状态、工具调用记录与返回值、Agent环境状态，具备对调用前中介与运行时证据采集的完整控制权；但防御者不能在Agent运行时直接修改Agent的工具实现，也不能获知攻击者的内部决策过程。防御者不能假设Agent所使用的LLM模型内部注意力或隐藏状态可见，也不能直接修改模型权重。
+防御者在检索后访问查询、候选文本块、检索分数和可用的向量表示。由系统记录的源文档标识与块偏移用于判断同源关系，文档正文中自称的来源不作为可信标识。防御者可调整上下文中的证据组成，并在限定预算内执行诊断生成。基本方案面向仅返回文本的生成接口，重排序器内部表征、检索器梯度和答案概率作为具有相应访问权限时的附加信号。防御决策不使用真实答案、攻击目标或测试集投毒标签，相关标签仅用于离线评价。
 
-\subsection{研究点一：基于Agent任务契约授权与轨迹图溯源的IPI防御}
+\subsection{研究点一：基于多文本分块协同的组合式投毒攻击框架}
 
-\subsubsection{研究动机与防御目标}
+\subsubsection{研究内容与问题定义}
 
-现有研究已表明，将Agent运行轨迹组织为具有控制流和数据流语义的图结构是可行的\cite{wang2025agentarmor}，参数级来源追踪对安全检查具有重要价值\cite{fan2026granularity,zhang2026agentsentry}。然而，真实Agent运行时通常只直接记录工具调用、参数、返回值和状态快照，跨工具别名变换、对象版本传播及语义分支影响并不总以显式依赖边形式呈现。与此同时，将Agent自报的来源信息直接作为安全真值会引入循环信任，而对每一步调用LLM或反事实验证器又具有较高的运行开销。
+单一攻击文档进入知识库后，其内容会被系统转换为多个检索单元。不同单元能否保留预设的信息角色，既取决于源文档的组织方式，也取决于系统分块边界。本研究拟将互补前提组织在同一源文档中，研究分块后文本之间的联合召回与组合式生成效果。攻击构造、检索反馈和生成反馈共同参与载荷搜索，使文档内容的修改直接依据其进入受害者系统后的表现。
 
-为应对上述挑战，本研究点的核心思路是：\textbf{（1）}将Agent执行轨迹建模为具有证据分级的异构图，区分"直接观测""确定性推导""软控制候选"和"未解析关系"四类边，在同一图表示中保持证据边界；\textbf{（2）}以任务契约语义而非简单的"任意污点可达"作为图规则判据，使不可信信息可以在契约允许范围内提供事实性输入，但不能自主授权高影响参数；\textbf{（3）}采用确定性优先、按需语义补边的策略，仅在确定性规则无法消歧且涉及高影响调用时才调用LLM辅助推理，控制运行开销。
+设$q\in Q$为目标查询，$x=D_{\mathrm{adv}}$为攻击源文档，$\phi$为受害者侧分块函数，正常知识库产生的文本块集合记为$\mathcal{C}_{\phi}$。攻击文档产生的文本块及其检索结果定义为
 
-本研究点的防御目标是：在Agent工具调用即将产生真实副作用前，利用执行轨迹图中的证据分级边和任务契约规则，判定当前调用是否违反信息流约束；若判定为违规或存在高影响不确定关系，则选择合适的处置方式（阻断、最小改写或重规划），在保障安全性的同时尽可能维持用户任务的正常执行。
-
-\subsubsection{问题形式化}
-
-\paragraph{执行轨迹与最终物化动作}
-定义截至时刻$t$的可观测执行轨迹为
 \begin{equation}
-  \tau_{\le t} = (q_0, m_0, c_1, r_1, \sigma_1, \ldots, m_t, c_t, r_t, \sigma_t)
-  \label{eq:trajectory}
+  C_{\phi}(x)=\phi(x),\qquad
+  R_K(q,x;\phi)=\operatorname*{TopK}_{c\in\mathcal{C}_{\phi}\cup C_{\phi}(x)}s_r(q,c),
+  \label{eq:chunktrojan_chunking}
 \end{equation}
-其中$q_0$为任务开始时冻结的可信用户请求，$m_i$为第$i$步Agent消息，$c_i$为工具调用，$r_i$为返回值，$\sigma_i$为调用后的环境状态引用。当前待执行工具调用的最终物化动作定义为$M_t=(n_t, \alpha_t, \iota_t, h_t)$，其中$n_t$为规范化工具函数键，$\alpha_t$为通过Schema校验的参数JSON，$\iota_t$为工具调用标识，$h_t$为绑定摘要。安全检查的对象是该物化动作，而非LLM生成的原始文本。
 
-\paragraph{统一执行轨迹图}
-定义增量异构图为
+其中$s_r(q,c)=f_r(q,c)$为检索器返回的相关性评分，$K$为检索结果数量。向量相似度的具体形式随检索器确定。改变分块配置时，正常语料与攻击文档均采用该配置构建检索单元。
+
+依据预设语义角色，从$C_{\phi}(x)$中识别两个不同的实际文本块$c_A$和$c_B$。例如，一个文本块说明实体之间的对应关系，另一个文本块说明相关实体的属性，两者合并后形成针对目标查询的回答依据。角色识别由文本内容和块偏移确定，在观察生成结果之前完成。两块均来自$x$，各自承载完整的局部前提，其联合内容提供目标推理所需的关系。若分块使两类前提落入同一块，或某一前提被截断而无法识别，则将该候选记为角色构造失败。
+
+定义目标文本块的联合召回事件及其统计指标为
+
 \begin{equation}
-  G_t = (V_t, E_t, X_t^V, X_t^E, C)
-  \label{eq:unified_graph}
+  I_{\mathrm{co}}(q)=\mathbf{1}[c_A\in R_K(q,x;\phi)\land c_B\in R_K(q,x;\phi)],\qquad
+  \mathrm{CoRecall}@K=\frac{1}{|Q|}\sum_{q\in Q}I_{\mathrm{co}}(q).
+  \label{eq:corecall}
 \end{equation}
-其中$V_t$为截至时刻$t$的节点集合，$E_t$为依赖关系边集合，$X_t^V$和$X_t^E$分别为节点与边属性，$C$为冻结的任务契约与工具策略。节点集合覆盖八类异构节点：\texttt{TaskContract}等契约节点$V_t^C$、\texttt{AgentStep}步骤节点$V_t^A$、\texttt{SourceArtifact}来源节点$V_t^S$、\texttt{ToolCall}调用节点$V_t^T$、\texttt{ArgumentSlot}参数槽节点$V_t^P$、\texttt{ToolResult}结果节点$V_t^R$、\texttt{EntityVersion}实体版本节点$V_t^Q$和\texttt{Effect}效果节点$V_t^F$。边的语义类型集合$\mathcal{R}$包含结构关系（\texttt{EMITS\_CALL}、\texttt{CONTAINS\_ARGUMENT}等）、数据流关系（\texttt{EXACT\_VALUE\_FROM}、\texttt{STRUCTURED\_ALIAS\_FROM}等）、控制流关系（\texttt{MAY\_CONTROL}、\texttt{BRANCH\_NOVELTY}等）、状态关系（\texttt{READS}、\texttt{WRITES}等）和授权关系（\texttt{ALLOWS\_FLOW}、\texttt{PROTECTS\_ARGUMENT}等）五类。
 
-\paragraph{边属性的两个正交维度}
-本研究提出以"构造方式"与"证据等级"两个正交维度描述每条边的可信程度。对任意边$e$，定义：
+其中固定一次评价的文档和分块配置后，简记为$I_{\mathrm{co}}(q)$。CoRecall@$K$用于衡量两个目标文本块共同进入检索结果的比例，是攻击检索层的核心指标。目标块排名作为辅助分析量记录。角色构造失败或任一目标块未被召回时，联合召回事件取值为零。
+
+设生成模型为$f_g$，查询$q$的目标答案集合为$Y_q^*$，其中包含预先确定的等价答案表达。对三种受控上下文分别定义
+
+\begin{align}
+  H_A(q)&=\mathbf{1}[f_g(q,\{c_A\})\in Y_q^*],\qquad
+  H_B(q)=\mathbf{1}[f_g(q,\{c_B\})\in Y_q^*],\notag\\
+  H_{AB}(q)&=\mathbf{1}[f_g(q,\{c_A,c_B\})\in Y_q^*],\qquad
+  H_{\mathrm{comp}}(q)=H_{AB}(q)(1-H_A(q))(1-H_B(q)).
+  \label{eq:composition_success}
+\end{align}
+
+其中$H_{\mathrm{comp}}$刻画联合上下文命中目标、两个单块上下文均未命中目标的组合式攻击效果。实际攻击成功率则在完整检索上下文$R_K$上统计，保留正常证据的竞争作用。受控组合实验用于分析机制，完整上下文实验用于评价端到端攻击效果。
+
+\subsubsection{分块感知载荷构造与优化目标}
+
+载荷构造拟采用语义前提与布局联合设计。首先围绕目标查询确定两类互补角色，将相应实体、关系及属性组织为简短段落，再将所有段落写入同一个源文档。局部表述尽量明确指代对象，减少关键前提横跨句子边界的情况。候选修改包括前提改写、查询相关表述调整、段落顺序改变和局部长度调整，修改结果均重新经过分块器。
+
+对于部分已知的分块规则，构建有限配置集合$\widehat\Phi$，覆盖块长、重叠长度和起始偏移的变化。每次评价重新识别$c_A$与$c_B$，记录角色是否保留、是否分离及是否共同被检索。角色识别使用统一规则处理各配置，避免根据生成是否成功事后选择目标块。角色有效性和联合召回随配置变化的程度，用于衡量载荷的边界敏感性。
+
+设$s_A=s_r(q,c_A)$、$s_B=s_r(q,c_B)$，当前索引中第$K$个检索位置的评分为$\tau_K$。联合检索奖励拟采用两个目标块中较弱一方的检索效用，例如
+
 \begin{equation}
-  d(e) \in \{\texttt{OBSERVED}, \texttt{INFERRED}\}, \qquad
-  \ell(e) \in \{\texttt{HARD}, \texttt{SOFT}, \texttt{UNKNOWN}\}
-  \label{eq:edge_attr}
+  J_{\mathrm{ret}}(x;q,\phi)
+  =\min\left\{g(s_A-\tau_K),\ g(s_B-\tau_K)\right\},
+  \label{eq:joint_retrieval_reward}
 \end{equation}
-其中$d(e)$表示边的构造方式，\texttt{OBSERVED}表示运行时日志直接记录，\texttt{INFERRED}表示由规则或模型补全；$\ell(e)$表示证据等级，\texttt{HARD}表示关系可由确定性证据回放，\texttt{SOFT}表示存在可解释但非唯一的候选支持，\texttt{UNKNOWN}表示证据不足以确定关系。例如，\texttt{OBSERVED+HARD}对应日志直接记录的工具调用参数绑定，\texttt{INFERRED+HARD}对应同一结构化对象内唯一键映射的确定性推导，\texttt{OBSERVED+SOFT}对应外部文本中出现的工具调用指示（但Agent是否采纳未知）。这一正交表示使得安全检查可以根据证据强度采取不同的处置策略。
 
-\paragraph{任务契约}
-定义任务契约$C = (A_C, E_C, O_C, F_C, V_C, N_C, T_C, H_C)$，其中$A_C$为允许调用的工具集合，$E_C$为允许产生的效果类别，$O_C$为允许作用的目标对象，$F_C$为来源类别到参数角色的允许信息流关系，$V_C$为各参数槽的允许值域，$N_C$为数值边界，$T_C$为时间约束，$H_C$为版本化批准策略。契约由运行前冻结的可信用户请求和工具目录编译生成，外部来源、工具返回和Agent自身输出不能修改契约。受保护对象集合$Z_C = Z_C^{arg} \cup Z_C^{state} \cup Z_C^{effect}$覆盖受保护参数槽、持久状态和高影响效果三类。
+其中$g$为单调的平滑映射，用于区分候选距离检索边界的程度。只有排名反馈时，使用对应的排名效用。最终评价仍按照实际Top-$K$结果计算$I_{\mathrm{co}}$，同时将全部攻击文本块加入候选索引，以反映同源块之间的竞争。
 
-\subsubsection{算法设计}
+将角色满足条件、联合检索和生成验证纳入同一个源文档优化问题：
 
-\paragraph{自动边构建规则}
-运行时首先从日志直接创建\texttt{OBSERVED+HARD}的结构边（如\texttt{AgentStep→ToolCall}、\texttt{ToolCall→ArgumentSlot}等），随后运行四类无需LLM的确定性推导器生成\texttt{INFERRED+HARD}边：（1）\textbf{精确值匹配}（\textsc{EXACT-VALUE}）：参数叶值与此前消息或工具结果在类型规范化后完全一致；（2）\textbf{结构化别名}（\textsc{STRUCTURED-ALIAS}）：名称、ID、邮箱等位于同一结构化对象或经审核唯一键映射中；（3）\textbf{对象版本传播}（\textsc{OBJECT-VERSION}）：前一调用产生的对象版本被后续调用通过稳定ID读取或修改；（4）\textbf{状态差分}（\textsc{STATE-DIFF}）：调用前后状态快照在可寻址叶节点发生变化，可绑定到当前调用回执。硬边生成条件为$HardDerive(u,v,r)=1 \iff Verify_r(u,v,R)=\texttt{PASS}$，即独立确定性验证器能唯一重放该关系。对于确定性规则无法唯一恢复的边，则生成\texttt{SOFT/UNKNOWN}候选边保留于图中。
-
-\paragraph{SAST风格图检查规则}
-在确定性边构建完成后，对当前待执行的物化动作运行五类图检查规则（见\autoref{tab:contract_actions}），以任务契约而非简单污点可达性作为判定依据。以\texttt{FLOW-ORIGIN}规则为例，其命中条件为
 \begin{equation}
-  Match_{flow}(G_t, C, u, z) = 1 \iff
-  Path_H(G_t, u, z) = 1 \land Protected_C(z) = 1 \land FlowAllowed_C(u, z) = 0
-  \label{eq:flow_origin}
+\begin{aligned}
+  x^*=\arg\max_{x\in\mathcal{X}}\quad
+  &\mathbb{E}_{q\in Q_{\mathrm{opt}},\,\phi\in\widehat\Phi}
+  \left[\lambda_rJ_{\mathrm{ret}}(x;q,\phi)
+  +\lambda_cH_{\mathrm{comp}}(q)
+  +\lambda_eH_{\mathrm{full}}(q)\right]\\
+  &-\lambda_bP_{\mathrm{bound}}(x)-\lambda_p\Omega(x),
+  \label{eq:chunktrojan_objective}
+\end{aligned}
 \end{equation}
-即来源节点$u$通过全硬边路径到达受保护节点$z$，且契约明确禁止该信息流。
 
-\input{tables/contract_actions}
+其中$\mathcal{X}$为单一源文档的离散候选空间，$Q_{\mathrm{opt}}$为优化查询集，$H_{\mathrm{full}}(q)$表示完整检索上下文是否命中目标答案。$P_{\mathrm{bound}}$汇总不同分块配置下的角色失效和联合召回波动，$\Omega$表示文档长度与修改代价。各权重通过验证集比较确定。检索调用与生成调用的成本分别记账，并以预算约束控制。上述目标作为后续实现与实验比较的统一定义。
 
-\paragraph{聚合决策}
-系统对规则命中结果按以下优先级进行聚合决策。硬证据违规优先触发阻断：$\exists q \in Q_H(G_t,C),\,q=\texttt{VIOLATION} \Rightarrow Decision_t = \texttt{BLOCK}$。没有硬违规但存在高影响不确定关系时，选择\texttt{REWRITE}（当来源距离较近且存在可用检查点）或\texttt{REPLAN}（当来源距离较远或无干净检查点）。仅在不存在硬违规和软候选、且动作获得契约授权时才自动放行。各处置动作的具体语义见\autoref{tab:cut_primitives}。
+\subsubsection{离散候选搜索与分级评价}
 
-\input{tables/tracegraph_cut_primitives}
+直接枚举载荷修改并逐一调用生成模型，难以适应较大的候选空间。本研究拟利用历史检索与生成反馈建立代理模型，在离散候选中选择后续评价对象。候选表示由文本内容、段落布局和角色分布共同构成，使代理模型能够区分内容相近但分块行为不同的源文档。
 
-\paragraph{选择性LLM隐式边推理}
-LLM仅在同时满足以下条件时调用：当前动作是高影响调用，至少一个受保护参数或控制候选为\texttt{UNKNOWN/SOFT}，且确定性规则均无法消歧。LLM输出受Schema约束，只能生成\texttt{INFERRED+SOFT}边；若LLM提示存在别名或结构映射，确定性验证器从原始字段独立重算，验证通过后生成新的\texttt{INFERRED+HARD}边，而非采信LLM输出。LLM调用次数作为观测量完整报告，不以成本上限提前放行未解析的高影响动作。
+图高斯过程作为主要候选实现。设有限候选池为$\mathcal{X}_N$，候选表示为$z_x$，依据表示相近程度构建对称非负稀疏邻接矩阵$W$，并形成图拉普拉斯矩阵$L_G$。以图扩散核表达候选之间的关联：
 
-\paragraph{处置与恢复机制}
-对于阻断的调用，系统根据证据类型选择恢复策略：\texttt{REWRITE}在隔离环境中对最近的不可信来源进行净化后局部重执行；\texttt{REPLAN}通过无工具权限的语义调解器选择回退、撤回（仅当工具目录登记逆操作且逆操作通过安全检查时）或中止；已经发生且无逆操作的真实世界效果不宣称可回滚。恢复后产生的任何新调用均重新进入完整检查流程。完整算法流程如\autoref{alg:contract_gate}所示。
-
-\input{algorithms/contract_gate}
-
-\subsubsection{优化目标}
-
-研究点一的优化目标为在可用观测下同时控制安全性、效用、证据保真度与成本。定义\emph{同授权安全完成率}指标：
 \begin{equation}
-  \text{SASC}(\tau) = \mathbb{1}\Big[\text{utility\_pass}=1 \,\land\, \text{attack\_success}=0 \,\land\, \forall a_t \in \text{Exec}(\tau):\ a_t \in \mathcal{A}(K_t)\Big]
-  \label{eq:sasc}
+  L_G=\operatorname{diag}(W\mathbf{1})-W,\qquad
+  K_G=\exp(-\beta L_G).
+  \label{eq:payload_graph_kernel}
 \end{equation}
-其中每个实际执行动作均按其执行时刻有效的契约版本判定。在预先注册的有限干预策略集合$\Pi$中，依据经验证据选择使$\text{SASC}$最大化的策略，同时约束不安全率的置信上界不超过预注册阈值$\epsilon$、综合成本不超过预算$B$。
 
-\subsubsection{理论依据和适用条件}
+其中$\beta>0$控制图上信息传播范围。该核用于利用已评价候选的奖励预测未评价候选的表现。其适用性通过奖励预测误差和等预算搜索结果检验，并与普通核代理、随机搜索及局部搜索比较。
 
-在统一图构造正确、全部声明的调用入口均被中介、确定性推导器通过独立验证且执行回执有效的前提下，本研究点具备以下性质：
-\begin{enumerate}
-  \item \emph{硬推导边的证据可追溯性}：系统只在确定性验证器返回\texttt{PASS}时才生成\texttt{INFERRED+HARD}边，任一硬推导边均能通过其证据引用回放到产生它的运行时事实。
-  \item \emph{已检测硬违规的提交前非执行}：若所有高影响调用都经过统一安全门、图规则查询发生在provider之前、且硬违规命中映射为\texttt{BLOCK}，则包含已检测硬违规路径的当前动作不会进入真实执行。
-  \item \emph{授权不放大}：确定性边推导和选择性LLM补边只能补充依赖证据，不能修改契约规则或扩大允许来源集合。
-  \item \emph{选择性语义开销}：语义补边和调解仅在高影响不确定关系出现时触发，其调用次数等于不确定事件数而非Agent总步骤数。
-  \item \emph{改写执行闭包}：若参数改写通过Schema验证与二次安全检查，则实际派发的改写动作不存在当前已枚举的硬冲突。
-\end{enumerate}
+候选评价分为两个层级。低成本评价执行分块、角色识别和检索，主要检查联合召回及边界稳定性。高成本评价进一步执行单块、联合块和完整上下文生成，判断组合效果与端到端目标命中。历史记录同时保留评价层级、奖励分量和实际调用成本，分别建模不同层级的观测。通过在同一候选上获得两级反馈，估计检索信号对完整攻击效果的预测能力。
 
-\subsubsection{实现路径}
+设$\ell$为评价层级，$\mu_t^H(x)$为代理对高成本目标的预测均值，$\sigma_t^H(x)$为相应不确定性。下一次候选与评价层级选择表示为
 
-主实验在AgentDyn脚手架上比较无防御基线、工具过滤类防御方法（如Tool Filter）、策略约束类防御方法（如Progent、IPIGuard）以及本研究方法。在同一任务契约上设置确定性边推导、确定性+选择性LLM补边、边推导后直接保守阻断三组对照，比较安全性、效用与成本表现。消融实验依次移除结构化别名推导器、移除选择性LLM补边、将分层处置统一退化为阻断，以检验各组件的独立贡献。评估以"评测套件+用户任务"为独立分析单元，核心指标包括攻击成功率、用户任务完成率、同授权安全完成率、硬边精度与召回率、错误阻断率、LLM调用次数与token消耗。统计检验采用配对bootstrap置信区间估计效应量。
-
-\subsubsection{研究目标}
-此部分的研究目标是：构建统一的Agent执行轨迹证据图，形成"确定性边推导—证据分级—契约规则检查—聚合决策与处置"的在线安全检查闭环；通过区分构造方式与证据等级的正交边属性表示，使安全检查可按证据强度采取差异化处置；验证以契约语义为判据、确定性优先按需语义补边的策略在安全性、任务效用和运行成本三方面的表现，降低间接提示注入攻击下Agent执行恶意工具调用的概率并提升用户任务的鲁棒性。
-
-\subsection{研究点二：基于图-语义联合表示的攻击定位与溯源方法}
-
-\subsubsection{研究动机与防御目标}
-
-研究点一在Agent在线执行链中通过确定性边推导与契约规则检查形成运行时安全检查闭环，但其面向的是"当前物化动作是否违反任务契约"的判定问题，输出的是逐动作的处置决策。在安全审计、攻击路径回溯和审查预算分配等场景中，还需要回答另一个互补问题：在截至当前时刻的完整Runtime前缀图中，哪些边最可能是攻击入口边（SOURCE），哪些边最可能是攻击目标边（SINK），以及二者之间是否存在可定位的场景关联。
-
-为此，本研究点提出一种基于Runtime前缀图与边端点文本联合表示的攻击边定位方法。该方法从已完成的benchmark轨迹中独立构建Runtime前缀图和边文本表示，不读取研究点一的契约、候选边、规则见证或处置回执，以确保二者在输入层面的独立性。模型在每个前缀时间步对所有已观测边预测安全角色标签、输出危险Top-3边，以及在SINK出现后对其对应SOURCE边进行排序匹配。这些定位结果可以指导研究点一中审查资源的优先分配，也可以为安全审计人员提供直观的攻击传播路径视图。
-
-本研究点的防御目标是：仅使用截至时刻$t$已经存在的Runtime前缀图与边端点文本，稳定定位危险的SOURCE与SINK边，并在SINK出现后准确匹配其对应的SOURCE入口，为审查预算的优先分配和攻击路径的快速定位提供支持。
-
-\subsubsection{问题形式化}
-
-本研究点的核心任务定义为：给定截至时间步$t$的执行轨迹图与边文本，模型输出每条已观测边的安全角色概率、危险Top-3边以及Source--Sink匹配结果：
 \begin{equation}
-  f_{\theta}\!\left(G_{\le t},\, M_{\le t}\right)
-  \longrightarrow
-  \left(
-  \left\{p_{\theta}(y_e \mid G_{\le t}, M_{\le t})\right\}_{e \in E_{\le t}},\;
-  Top3_t,\;
-  Match_t
-  \right)
-  \label{eq:mdt_task}
+  (x_{t+1},\ell_{t+1})=
+  \arg\max_{x\in\mathcal{X}_N,\,\ell\in\{L,H\}}
+  \frac{\mathcal{A}_t(x,\ell;\mu_t^H,\sigma_t^H)}{\widehat c_t(x,\ell)}.
+  \label{eq:payload_acquisition}
 \end{equation}
-其中$f_{\theta}$为参数为$\theta$的MDT模型，$G_{\le t}$为截至时间步$t$的完整Runtime前缀图，$M_{\le t}$为该前缀内所有可观测边的端点文本事件集合，$E_{\le t}$为前缀中已经发生的边集合，$y_e \in \{BENIGN, SOURCE, SINK\}$为边$e$的安全角色标签，$Top3_t$为当前得分最高的至多三条攻击相关边，$Match_t$为SINK已出现时对其对应SOURCE边的排序结果。该输出是统计定位结果，用于辅助攻击识别与追溯，用于为防御引擎的处置提供引导参考信号。
 
-一条含$T$个AgentStep的轨迹产生$T$个前缀样本$\mathcal{P}(\tau) = \{(G_{\le 1}, M_{\le 1}), \ldots, (G_{\le T}, M_{\le T})\}$。训练、验证和测试均不能将$t$之后的消息、工具调用、环境状态或最终结果回填到当前前缀。
+其中$\mathcal{A}_t$估计该次观测对高成本目标改进或不确定性降低的价值，$\widehat c_t$为预计调用成本。拟比较分级筛选与多保真度代理两类实现，并保留随机探索预算，防止低成本信号过早排除有价值候选。最终候选按相同高成本验证协议比较，低成本奖励用于搜索调度。
 
-\paragraph{Runtime图与边类型}
-MDT图只保留实际运行中可以重建的节点——\texttt{UserMessage}、\texttt{AgentStep}、\texttt{ToolCall}、\texttt{ToolResult}、\texttt{InformationSource}和\texttt{EnvironmentState}——不包含研究点一的契约、规则见证和恢复回执。边类型集合固定为六种Runtime关系：\texttt{USER\_CONTEXT}（用户输入到Agent步骤）、\texttt{EMITS\_CALL}（Agent步骤到工具调用）、\texttt{READ}（工具调用读取外部信息源）、\texttt{RETURN\_DATA}（信息源返回数据）、\texttt{CALL\_RESULT}（工具结果交付后续步骤）和\texttt{WRITE}（工具调用对环境状态产生写效果）。
+\begin{algorithm}[htbp]
+  \small
+  \caption{ChunkTrojan Payload Optimization}
+  \label{alg:chunktrojan}
+  \KwIn{optimization queries $Q_{\mathrm{opt}}$; chunkers $\widehat\Phi$; retriever $f_r$; generator $f_g$; target sets $Y_q^*$; initial source $x_0$; budgets $B_r,B_g$}
+  \KwOut{validated source $x^*$ or $\bot$; evaluation history $\mathcal{H}$}
+  Initialize a finite source-level candidate pool, $\mathcal{H}\leftarrow\emptyset$, and validated set $\mathcal{V}\leftarrow\emptyset$\;
+  Build candidate representations and initialize fidelity-aware surrogates\;
+  \While{the remaining budgets permit another scheduled evaluation}{
+    Select candidate $x$ and fidelity $\ell$ using acquisition value per cost\;
+    Apply each scheduled chunker to the entire source $x$\;
+    Identify distinct same-source chunks $c_A,c_B$ using fixed role rules\;
+    \eIf{role constraints hold}{
+      Evaluate joint retrieval in the index containing all chunks of $x$\;
+      Record retrieval utility and boundary sensitivity\;
+      \If{$\ell=H$ and the remaining generation budget covers the full protocol}{
+        Evaluate $A$, $B$, $AB$, and the full retrieved context\;
+        Record composition reward, end-to-end reward, and validation status\;
+        Add the fully evaluated source to $\mathcal{V}$\;
+      }
+    }{
+      Record role failure with its realized evaluation cost\;
+    }
+    Store the candidate, fidelity, observed rewards, and actual costs in $\mathcal{H}$\;
+    Update the surrogates and remaining budgets\;
+    Propose source-level edits and refresh the pool while retaining evaluated nodes\;
+  }
+  \eIf{$\mathcal{V}\neq\emptyset$}{
+    \Return{the best source in $\mathcal{V}$ under the common validation protocol, and $\mathcal{H}$}\;
+  }{
+    \Return{$\bot$ and $\mathcal{H}$}\;
+  }
+\end{algorithm}
 
-\paragraph{安全角色标签}
-每条边同时具有关系类型$r_e$与安全角色$y_e$两个正交标签。其中$y_e = \texttt{SOURCE}$表示该边从已实际读取的注入点把数据带入执行轨迹，$y_e = \texttt{SINK}$表示该边对应benchmark注入任务的高影响目标调用，$y_e = \texttt{BENIGN}$表示该边未被当前标签协议指定为攻击入口或攻击目标。
+算法\ref{alg:chunktrojan}给出了拟采用的搜索流程。每次候选评价均从完整源文档重新分块，文本块仅作为评价对象。最终输出附带角色有效性、联合召回和生成验证记录，便于区分候选奖励提高与攻击条件满足。
 
-\paragraph{强监督标签构造}
-主任务采用边级强监督学习。标签生成只使用benchmark已知配置、实际Runtime事件和一次性审核的工具/外部信息源目录，不调用LLM，也不需要逐轨迹人工标注。SOURCE标签由benchmark注入位置与实际Runtime读取事件共同确定——只配置了注入点但未被读取、或读取结果未交付给Agent时不生成SOURCE正标签：
+设$B_r$为实际执行的查询与分块配置下的检索评价次数，$B_g$为生成调用总次数，则主要计算成本记为
+
 \begin{equation}
-  Source_t(e) = 1 \iff Observed_t(e) = 1 \land InjectionPoint(e) = 1 \land Delivered_t(e) = 1
-  \label{eq:source_label}
+  T_{\mathrm{attack}}=
+  O\!\left(B_r(T_{\mathrm{chunk}}+T_{\mathrm{enc}}+T_{\mathrm{ret}})
+  +B_gT_{\mathrm{gen}}+T_{\mathrm{sur}}\right).
+  \label{eq:attack_cost}
 \end{equation}
-SINK标签由注入任务的目标调用描述、实际工具调用和工具影响目录共同确定：
+
+其中各项分别表示分块、编码、检索、生成及代理更新成本。分块扫描与源文档长度有关，$C$个文本块的$d$维向量存储量为$O(Cd)$，编码与Top-$K$搜索时间由模型和索引实现决定。对$N$个候选构建稠密图核、对$t$条观测执行朴素精确高斯过程更新，分别可能产生$O(N^3)$和$O(t^3)$的线性代数开销。实现时拟通过稀疏图、候选池规模控制及缓存减少开销，并统计代理计算是否抵消生成调用的节省。
+
+\subsubsection{实验设计与评价方法}
+
+实验拟采用自然问题数据集（Natural Questions，NQ）、MS MARCO和多跳问答数据集HotpotQA，覆盖事实查询与多段证据推理\cite{kwiatkowski-etal-2019-natural,bajaj2018msmarcohumangenerated,yang-etal-2018-hotpotqa}。检索器优先选用Izacard等\cite{izacard2022unsupervised}提出的Contriever及其监督微调版本Contriever-MS，并根据资源条件扩展至Xiong等\cite{xiong2021approximate}提出的ANCE等公开模型。首先在不含重排序器的配置中分析分块和联合召回，再加入重排序、混合检索等设置检验适用范围。对含重排序的系统分别报告初步召回和最终入选上下文中的联合保留率。
+
+攻击比较包括正常知识库、未经优化的单源载荷、仅优化单块相关性的载荷和完整ChunkTrojan。选取单文档投毒、分块感知投毒和多文本组合投毒作为外部基线，在同一评测环境中明确各自的源文档数、注入长度和查询预算。通过移除边界评价、改用随机搜索、关闭分级评价等消融，分析各部分对攻击效果与调用成本的作用。
+
+检索层记录正常证据召回率、攻击源召回率、CoRecall@$K$及目标块排名。攻击源召回率统计至少一个攻击块被检索的查询比例，用于区分单源出现与目标块共同出现。生成层记录目标答案命中率、攻击成功率（Attack Success Rate，ASR）和组合式攻击成功率。生成组合实验比较$A$、$B$和$A+B$，并加入$A+R$与$B+R$，其中$R$为长度和检索相关性相近、但不承担目标组合角色的无关文本块。保持提示、解码配置和位置规则一致，以区分特定组合与上下文数量变化的影响。组合式成功与更强的非加性解释分开报告，后者依据匹配对照结果分析。
+
+数据按独立查询划分优化集、验证集和测试集，载荷选择与超参数调整在测试前完成。同一查询的多次构造、多个分块设置及重复生成均归入该查询，以查询为单位汇总结果并计算区间。对于查询特定的在线攻击，另设已知目标查询的攻击协议，固定调参结果并逐次记录在线搜索成本，与未参与优化查询上的迁移实验分开报告。
+
+\subsection{研究点二：基于检索上下文表征分析的检索增强生成安全防御方法}
+
+\subsubsection{研究内容与防御目标}
+
+多个文本块联合支持某一回答时，单块异常程度与其实际作用可能不一致。正常多跳问答中的桥接证据同样具有较强的组合影响。本研究拟从检索上下文的表征与依赖关系出发，研究局部风险筛查、候选组合审查和证据选择相衔接的防御方法。局部与结构分析用于组织审查对象，生成干预用于估计组合影响，语义支持和任务效用用于约束最终处理。
+
+给定查询$q$，设初始生成上下文为$R=R_K(q)$，可用候选池为$P=R_{K'}(q)$，其中$K'\geq K$。每个文本块记录文本、检索分数、表示$z_i$及可用的来源标识，查询表示记为$z_q$。防御输出修复后的上下文$R^*\subseteq P$、最终回答$y^*=f_g(q,R^*)$及文本块处理记录。候选池中的后备文本同样需要审查，候选池大小受检索和计算预算约束。
+
+防御目标是在抑制目标错误回答的同时保留正常证据，重点评价普通投毒、同源组合投毒和正常多跳问答。以下流程为拟验证的方法草稿，先建立可解释评分基线，再比较不同特征组合与决策方式，具体分类器、训练方式和参数根据验证结果确定。
+
+\subsubsection{局部表征与候选组合构建}
+
+局部分析拟计算文本与查询的相关性、语义片段删减后的检索分数变化，以及文本表述与查询要求的一致性。检索分数对少量内容高度敏感，可作为局部风险线索。具有模型访问权限时，补充高影响词元的语言合理性或重排序器内部表征。各信号参照正常验证数据标定为可比较的分数，形成局部风险$L_i$，基本实现不要求这些附加信号全部可用。
+
+结构分析结合文本块相似关系、实体关联、同源分布与上下文整体分布。拟统计相似文本集中程度、跨块实体关系是否冲突、某一来源占据的上下文比例，以及检索分数与语义一致性之间的偏离。由此形成文本块关系特征$F_i^{\mathrm{rel}}$和上下文分布特征$F^{\mathrm{ctx}}$。来源集中和语义相近用于描述集合结构，其含义通过正常同源检索与正常多跳样本校准。
+
+候选组合族$\mathcal{S}$由三类对象共同构成：局部或结构风险较高的文本，同源或共享实体关系的文本组合，以及预留预算内抽样得到的低风险组合。优先检查规模较小的组合，再根据剩余预算扩展。后一类抽样使表面正常的文本也能进入审查范围。候选数量与组合大小设定上限，并单独评价候选构建对真实攻击组合的覆盖率。
+
+\subsubsection{组合影响审查与正常证据保护}
+
+组合影响审查首先基于初始上下文生成内部候选回答$y_0$，随后比较移除单块和移除组合后的变化。定义$v_q(y_0;C)$为上下文$C$对候选回答的支持程度。有概率接口时，可采用候选回答的长度归一化对数概率；仅有文本接口时，采用固定解码或重复生成下关键答案与语义表达的一致性统计。同一次比较使用相同的评分口径，候选回答仅在系统内部用于诊断。
+
+对候选组合$S\subseteq R$定义
+
 \begin{equation}
-  Sink_t(e) = 1 \iff Observed_t(e) = 1 \land HighImpact(e) = 1 \land GoalCallMatch(e, I) = 1
-  \label{eq:sink_label}
+  \Delta(S)=v_q(y_0;R)-v_q(y_0;R\setminus S),\qquad
+  I(S)=\Delta(S)-\sum_{c_i\in S}\Delta(\{c_i\}).
+  \label{eq:ragshield_influence}
 \end{equation}
-其中$I$为当前注入任务，$GoalCallMatch$表示实际调用与注入任务的目标函数及其固定参数约束匹配。对已出现matched SINK的轨迹，所有在该SINK之前已交付的当前场景注入SOURCE均进入Source--Sink正匹配集合，多源场景允许一个SINK对应多个SOURCE。
 
-\paragraph{边文本}
-边文本不使用生成式全轨迹摘要，而由两个端点的Runtime事件确定性序列化。例如，对\texttt{AgentStep}到\texttt{ToolCall}的边，文本包括当前可观测assistant内容、工具名和参数；对\texttt{InformationSource}到\texttt{ToolResult}之间的边，文本包括来源类型、工具名和实际返回文本。长程关系由完整$G_{\le t}$的图编码承担，端点文本负责补充结构无法表达的语义差异。模型输入明确排除：攻击名称、注入任务标识、benchmark路径、安全/效用分数、未来事件和Source/Sink标签等。
+其中$\Delta(S)$反映移除组合后候选回答支持程度的变化，$I(S)$反映组合移除与逐块移除之间的差异。该差异可能为正或负，拟结合两侧偏离及其在正常任务中的分布开展分析。对高优先级组合补充等长度、相近相关性的替换对照，控制文本数量和位置变化。评分刻画给定干预条件下的回答依赖，用于组织风险证据。
 
-\subsubsection{算法设计}
+正常分布按查询类型、组合大小和上下文长度分组估计，分别覆盖单跳与多跳任务。对有较大组合影响的文本，进一步检查其是否提供查询所需的实体关系，关键前提是否相互矛盾，以及其他来源能否提供一致支持。缺少独立来源支持时，将其作为不确定性保留在审查结果中。组合风险可统一表示为
 
-本研究点的模型架构采用"自监督预训练+目标任务微调"的两阶段设计，整体架构如\autoref{fig:mdt_arch}所示。
+\begin{equation}
+  \rho_S=F_{\mathrm{risk}}\!\left(
+  \{L_i,F_i^{\mathrm{rel}}\}_{c_i\in S},\ F^{\mathrm{ctx}},\
+  \widetilde\Delta(S),\ \widetilde I(S),\ E(S)\right),
+  \label{eq:ragshield_risk}
+\end{equation}
+
+其中$\widetilde\Delta$与$\widetilde I$为经正常样本校准的影响特征，$E(S)$汇总语义支持、矛盾关系及来源信息。$F_{\mathrm{risk}}$先采用分位数标定与加权评分实现，再与密度分析、语义一致性判别或轻量分类器比较。正常多跳证据的保留率和误报率共同约束风险阈值，使正常桥接信息在审查和修复后仍有机会进入生成上下文。
+
+\subsubsection{风险约束下的上下文修复}
+
+上下文修复在有限候选集合中比较保留、移除和替换方案。根据组合风险生成若干候选上下文$\mathcal{U}$，每个候选保留原始检索位置记录，并满足相同的上下文长度预算。对高风险组合，优先比较打断可疑依赖且保留其他证据的修改；对语义支持明确的桥接文本，增加其保留优先级。后备文本经局部和关系分析后进入候选，最终选中的修复上下文再执行一次组合复查。
+
+拟采用以下目标组织候选选择：
+
+\begin{equation}
+\begin{aligned}
+  R^*=\arg\max_{C\in\mathcal{U}}\quad
+  &U_{\mathrm{rel}}(q,C)+\eta U_{\mathrm{cover}}(q,C)
+  +\xi U_{\mathrm{support}}(q,C)\\
+  &-\lambda\max_{S\in\mathcal{S}:S\subseteq C}\rho_S
+  -\kappa D(C,R)-\nu U_{\mathrm{unc}}(C),\\
+  \text{s.t.}\quad &|C|\leq K,\qquad \operatorname{len}(C)\leq L_{\mathrm{ctx}}.
+  \label{eq:ragshield_selection}
+\end{aligned}
+\end{equation}
+
+其中$U_{\mathrm{rel}}$表示查询相关性，$U_{\mathrm{cover}}$表示所需实体关系的覆盖程度，$U_{\mathrm{support}}$表示经审查的证据支持程度，$D(C,R)$为移除与替换代价，$U_{\mathrm{unc}}(C)$汇总待审查组合的覆盖不足和证据不确定性，$L_{\mathrm{ctx}}$为上下文长度预算。风险项只对已审查的组合计算，空集合的最大值按零处理，未审查状态由不确定性项记录。候选选择拟采用预算约束下的贪心修改或有限子集采样，权重在验证集上比较。输出前检查预定的最低审查覆盖要求。复查后若风险、审查覆盖或证据覆盖条件未满足，系统返回带证据不足提示的回答，并将该情形计入回答覆盖率与拒答率。
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\textwidth]{figures/fig_mdt_architecture.pdf}
-  \caption{研究点二的攻击边定位模型架构}
-  \label{fig:mdt_arch}
+  \resizebox{0.92\textwidth}{!}{\input{figures/fig_ragshield_pipeline.tikz}}
+  \caption{检索上下文审查与修复流程}
+  \label{fig:ragshield_pipeline}
 \end{figure}
 
-\paragraph{统一多任务图自监督预训练}
-预训练数据只来自无注入攻击的AgentDyn/AgentDojo Runtime图，并按照目标实验的训练组隔离。一次前向传播共享同一个图编码器，联合优化三个辅助任务：（1）边类型预测——遮掩真实相邻节点之间的关系类型并预测$r_e$；（2）边存在性判别——区分真实边与按节点类型、时间顺序和工具族构造的困难非边；（3）上下文一致性判别——区分真实局部上下文与端点替换、时间逆序、错误工具-来源配对等结构化负例。联合预训练损失为：
-\begin{equation}
-  \mathcal{L}_{pre} = \lambda_{type}\mathcal{L}_{type} + \lambda_{exist}\mathcal{L}_{exist} + \lambda_{context}\mathcal{L}_{context},\quad \min_{\theta_G} \mathcal{L}_{pre}
-  \label{eq:pretrain_loss}
-\end{equation}
-其中$\theta_G$为图编码器参数。该预训练阶段使图编码器先学习Agent执行结构先验，再以强监督SOURCE/SINK标签进行目标任务微调。
+\begin{algorithm}[htbp]
+  \small
+  \caption{RAGShield Context Audit and Repair}
+  \label{alg:ragshield}
+  \KwIn{query $q$; candidate pool $P$; initial context $R$; generator $f_g$; clean calibration data $\mathcal{D}_{\mathrm{cal}}$; audit budget $B_a$; context limits}
+  \KwOut{answer $y^*$; repaired context $R^*$; audit log $\mathcal{L}$}
+  Compute local, relational, and context-distribution features\;
+  Construct a bounded group family using risk, provenance, semantic links, and exploration\;
+  Generate an internal provisional answer $y_0$\;
+  \ForEach{scheduled group $S$ within the audit budget}{
+    Evaluate single-chunk and group removals with a common support score\;
+    Add matched replacement controls when the remaining budget permits\;
+    Calibrate influence features against matched clean-query strata\;
+    Assess semantic support, contradictions, and available source evidence\;
+    Estimate group risk $\rho_S$ and record coverage and uncertainty\;
+  }
+  Build a bounded family of keep, remove, and replace contexts\;
+  Screen replacement chunks and preserve supported bridge evidence\;
+  Select $R^*$ by relevance, coverage, support, risk, uncertainty, and modification cost\;
+  Re-audit new combinations using a reserved part of $B_a$\;
+  \eIf{$R^*$ satisfies the calibrated risk, audit-coverage, and evidence-coverage criteria}{
+    Generate $y^*\leftarrow f_g(q,R^*)$\;
+  }{
+    Return an evidence-insufficiency response as $y^*$\;
+  }
+  Store decisions, unaudited groups, and actual costs in $\mathcal{L}$\;
+  \Return{$y^*,R^*,\mathcal{L}$}\;
+\end{algorithm}
 
-\paragraph{图-文本模型与模态融合}
-图编码器骨干网络候选有：关系感知的GAT/R-GCN、Graph Transformer与简单属性池化。文本编码器以DeBERTa-v3-base微调模型为初始化，并在MDT Runtime边文本上二次微调。对候选边$e=(u,v)$，先取得全前缀图中的端点表示和边文本表示，再以双向cross-attention或门控交互融合：
-\begin{equation}
-  h_{e,t} = Fusion_{\phi}\!\left(h^G_{u,t},\; h^G_{v,t},\; h^T_{e,t},\; h^G_{\le t}\right)
-  \label{eq:fusion}
-\end{equation}
-其中$h^G_{u,t}$和$h^G_{v,t}$分别为源端点与目标端点的图表示，$h^T_{e,t}$为边端点Runtime文本的语言模型表示，$h^G_{\le t}$为完整前缀图的全局结构上下文，$Fusion_{\phi}$为参数为$\phi$的融合模块。简单拼接仅作为消融基线。
+\autoref{fig:ragshield_pipeline}与算法\ref{alg:ragshield}给出了防御各环节的输入输出关系。局部风险和上下文结构决定审查顺序，组合干预提供回答依赖特征，证据支持约束修复决策，修复后复查处理新形成的组合。审查与复查共用预算，并预留最终生成所需调用。对于$K'$个$d$维文本表示，完整成对相似度计算为$O(K'^2d)$，影响审查的额外开销随实际生成或评分调用次数增长。通过限制组合规模、缓存重复干预和按风险分配预算控制成本。
 
-\subsubsection{训练与优化目标}
+\subsubsection{实验设计与方案完善}
 
-目标任务阶段包含三个子任务的联合优化。
+防御实验拟设置普通投毒、组合投毒、知晓防御规则的自适应投毒，以及未投毒的正常多跳问答四类条件。攻击集同时覆盖公开攻击与ChunkTrojan，正常集保留同源多块、重复证据和关键桥接证据等情形。校准集与测试集按查询及来源划分，避免将同一源文档的相邻块分配到不同集合而造成信息泄漏。
 
-\paragraph{任务一：攻击相关边分类}
-对当前前缀中的所有已观测边预测\texttt{BENIGN}、\texttt{SOURCE}或\texttt{SINK}：
-\begin{equation}
-  \mathcal{L}_{cls} = -\sum_{t}\sum_{e \in E_{\le t}} w_{y_e} \log p_{\theta}(y_e \mid G_{\le t}, M_{\le t})
-  \label{eq:cls_loss}
-\end{equation}
-其中$w_{y_e}$为类别权重，采样与权重按母轨迹归一化，避免长轨迹因产生更多前缀而支配训练。
+实验比较无防御、仅局部筛查、局部与结构筛查、加入组合影响审查，以及完整上下文修复。对候选组合覆盖、随机探索、双侧影响校准、匹配替换、桥接证据保护和修复后复查分别开展消融。外部基线覆盖文本过滤、上下文聚合和文档隔离，统一报告其模型访问条件与额外调用次数。
 
-\paragraph{任务二：Source--Sink匹配}
-对每条SINK边，从此前已出现的SOURCE候选中排序对应source。多源正例采用集合式listwise损失：
-\begin{equation}
-  \mathcal{L}_{match} = -\sum_{k \in \mathcal{K}} \log \frac{\sum_{s \in \mathcal{S}_k^{+}} \exp score_{\theta}(s, k)}{\sum_{s \in \mathcal{S}_{\le t_k}} \exp score_{\theta}(s, k)}
-  \label{eq:match_loss}
-\end{equation}
-其中$\mathcal{K}$为训练集中已出现的SINK边集合，$\mathcal{S}_k^{+}$为与SINK $k$属于同一benchmark攻击场景且在其之前已交付的SOURCE正例集合，$\mathcal{S}_{\le t_k}$为截至$t_k$的全部source候选边。
-
-\paragraph{任务三：提前预警}
-只在SOURCE已实际出现后奖励提前发现，并对SOURCE出现前的误报赋予更大惩罚。设真实SOURCE首次出现于$t_s$，matched SINK出现于$t_k$：
-\begin{equation}
-  \mathcal{L}_{early} = \sum_{t=t_s}^{t_k-1} \omega_t \left[-\log(p^{src}_t + \epsilon)\right],\quad
-  \mathcal{L}_{fp} = \sum_{t<t_s} \max_{e \in E_{\le t}} p_{\theta}(SOURCE \mid e, G_{\le t}, M_{\le t})
-  \label{eq:early_loss}
-\end{equation}
-其中$\omega_t$为随$t$接近$t_k$而不减的时间权重，$p^{src}_t$为时间步$t$对真实SOURCE边集合给出的最大SOURCE概率。
-
-目标阶段总损失为：
-\begin{equation}
-  \mathcal{L}_{target} = \lambda_{cls}\mathcal{L}_{cls} + \lambda_{match}\mathcal{L}_{match} + \lambda_{early}\mathcal{L}_{early} + \lambda_{fp}\mathcal{L}_{fp} + \lambda_{miss}\mathcal{L}_{miss},\quad \lambda_{fp} > \lambda_{early}
-  \label{eq:total_loss}
-\end{equation}
-其中$\mathcal{L}_{miss}$为在SINK前最后一个前缀仍未识别SOURCE的漏报损失，$\lambda_{fp} > \lambda_{early}$表示SOURCE出现前的误报惩罚必须高于提前量收益，防止模型通过持续报警投机。
-
-\subsubsection{理论依据和适用条件}
-
-本研究点具备以下条件化性质：
-\begin{enumerate}
-  \item \emph{前缀无未来泄漏}：样本构造器只读取时间戳不晚于$t$的事件和状态，标签泄漏字段在构图前删除，时刻$t$的模型输入不包含未来轨迹事件。
-  \item \emph{标签不等于因果归因}：SOURCE与SINK标签由benchmark注入位置、目标调用和真实事件确定，只能支持攻击入口/目标边定位与场景内匹配，不能推出反事实因果关系。
-  \item \emph{模态增量可验证}：实验先分别报告图结构特征、端点文本特征和联合模型各自在独立测试切片上的表现，验证图结构是否真正提供超越单步文本检测的信息增量。
-  \item \emph{候选规模校正}：主要结果按候选边数量和前缀长度分层报告排序效果与相对随机提升，避免小候选集合导致的虚高命中率。
-\end{enumerate}
-
-\subsubsection{实现路径}
-
-主实验基于AgentDyn历史轨迹独立构建Runtime前缀图和边文本表示，在训练集、校准集和测试集严格按场景组隔离的前提下进行模型训练与评测。数据进入目标训练的最小条件为$DataReady = ParseReady \land CatalogReady \land LabelReady \land LeakageFree \land SplitReady$，若该条件不满足则只交付解析器、图数据、标签覆盖审计和负结果。模型比较包括：PIGuard端点文本基线、纯图基线、属性池化基线、拼接融合基线以及本研究提出的图-文本联合模型。核心评测指标分为四组：（1）边分类——macro-F1、SOURCE/SINK AUCPR和Recall@3；（2）Source--Sink匹配——Top-1/Top-3 match recall和MRR；（3）提前预警——source前误报率、sink前召回率、DetectionDelay和LeadTime；（4）OOD泛化——按任务、攻击模板、来源、工具族和模型分组评测。消融实验依次移除自监督预训练、移除全局前缀图、替换图骨干和融合机制，以检验各组件贡献。
-
-\subsubsection{研究目标}
-此部分的研究目标是：设计基于Runtime前缀图与边端点文本联合表示的攻击边定位模型，形成"自监督预训练—图-文本联合编码—边角色分类—Source--Sink匹配—提前预警"的攻击定位与溯源流程；建立基于benchmark强监督的标签构造协议和数据就绪门控机制；验证图-文本联合模型在不同前缀时间步、不同候选规模和跨任务/跨工具族OOD条件下的定位稳定性与溯源准确性，为审查预算的智能分配和攻击路径的快速定位提供支持。
+主要指标包括防御后的ASR、正常检索召回率、答案精确匹配率（Exact Match，EM）、词元级$F_1$分数、误报率（False Positive Rate，FPR）、桥接证据保留率、回答覆盖率和延迟。其中，$F_1$分数为词元级精确率与召回率的调和平均值。误报率分别按文本块与查询统计，拒答样本纳入整体效用评价。通过上述结果确定各特征的独立作用、预算分配方式及最终评分方案，形成兼顾风险抑制与证据利用的防御方法。
 
 \subsection{原型应用系统}
 
-为验证上述两个研究点在真实Agent执行环境中的可用性，并为其他基线防御方法提供统一的对比实验环境，本研究拟设计并实现"LLM Agent间接提示注入攻击防御方法鲁棒性测试系统"。该系统围绕"在线攻击与防御方法运行—日志审计—统计分析—可视化呈现"的完整链路组织七个功能模块：
+本研究拟设计并实现RAG投毒攻防联合测试系统，将两个研究点接入相同的知识库、检索器和生成器配置。系统以论文实验验证为目标，前端用于配置实验与展示结果，后端执行载荷搜索、上下文审查和指标统计。主要功能划分如下。
 
 \begin{itemize}[leftmargin=2em,itemsep=0pt]
-  \item \textbf{执行轨迹图防御模块}：对应研究点一，在工具调用真正派发前完成统一图构建、确定性边推导、契约规则检查和聚合决策，输出证据分级边、规则见证、处置动作与执行回执。
-  \item \textbf{攻击边定位与溯源模块}：对应研究点二，基于benchmark轨迹独立构建Runtime前缀图和边文本表示，对已观测边进行SOURCE/SINK安全角色分类和Source--Sink匹配，输出危险Top-3边、攻击路径定位和提前预警结果。
-  \item \textbf{基线对比实验模块}：接入已有的工具过滤、策略约束与检测型防御方法，与上述两个模块在相同任务与攻击配置下并行运行，产出可直接比较的实验记录。
-  \item \textbf{日志审计模块}：对实验产生的运行日志进行离线审计分析，计算安全性、效用与成本指标并输出统计结果，服务于可视化模块。
-  \item \textbf{在线运行实验模块}：支持指定AgentDyn评测套件、攻击类型与防御方法组合，在线驱动实验运行并输出对应防御方法的鲁棒性测试结果。
-  \item \textbf{可视化模块}：提供Web前端界面，包括实验总览Dashboard、Agent执行轨迹的攻防过程可视化，以及执行轨迹图与可疑边排序结果的可视化呈现。
-  \item \textbf{数据库模块}：包含关系型数据库，用于存放和管理实验产生的Agent执行日志，供日志审计模块与可视化模块查询使用；以及图数据库，用于存放执行轨迹图防御模块产生的图结构日志。
+  \item 攻击测试模块管理单一源文档的构造与注入，执行分块、联合检索和生成验证，记录载荷版本、评价层级及调用成本。
+  \item 防御测试模块提取上下文特征，组织候选组合与干预实验，生成修复上下文，并支持基线和消融配置的统一比较。
+  \item 日志审计模块记录源文档标识、块偏移、检索排名、组合干预、证据处理与最终回答，按独立查询计算安全和效用指标。
+  \item 可视化模块展示源文档到文本块的对应关系、联合召回情况、组合影响及修复前后的证据变化，同时呈现攻击效果与开销对比。
+  \item 数据库模块保存数据划分、索引配置、载荷版本、运行日志与评测结果，为实验复现和审计查询提供数据支持。
 \end{itemize}
 
-系统各模块之间的调用关系与数据流向如\autoref{fig:system_design}所示：在线运行实验模块驱动执行轨迹图防御模块、可疑边排序与溯源模块与基线对比实验模块在AgentDyn环境中执行，三者产生的执行日志统一写入数据库模块，日志审计模块从数据库读取数据完成统计分析，可视化模块进一步呈现审计结果与执行轨迹结构。
+系统结构如\autoref{fig:system_design}所示。攻击与防御使用统一的数据版本和评价接口，实验配置、随机种子、阈值来源及生成参数随结果保存。系统同时支持正常、投毒和防御后对照运行，使方法比较能够回溯到具体查询、检索上下文和处理决策。
 
 \begin{figure}[htbp]
   \centering
-  \resizebox{0.9\textwidth}{!}{\input{figures/fig_system_design.tikz}}
-  \caption{原型应用系统设计框图}
+  \resizebox{0.88\textwidth}{!}{\input{figures/fig_system_design.tikz}}
+  \caption{RAG投毒攻防联合测试系统}
   \label{fig:system_design}
 \end{figure}
