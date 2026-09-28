@@ -2,7 +2,14 @@
 
 随着深度学习技术的快速发展，大语言模型（Large Language Model，LLM）已成为新一代人工智能技术落地与应用的前沿基础设施。LLM的发展与模型结构、预训练规模和指令对齐方法的演进密切相关。2017年，Vaswani等\cite{vaswani2017attention}提出的Transformer采用自注意力机制建模序列中的依赖关系，为语言模型的大规模并行训练提供了结构基础；2020年，Brown等\cite{brown2020language}提出的GPT-3通过扩大自回归语言模型的训练规模，使模型能够依据少量上下文示例完成多种语言任务；2022年，Ouyang等\cite{ouyang2022training}提出的监督微调与人类反馈强化学习技术，则更进一步大幅改善了模型对用户指令的遵循能力，使大模型的回答更加稳定和可靠。这些发展推动了大语言模型在开放域问答、文档分析和知识密集型任务中的广泛应用。
 
-大语言模型的知识主要保存在参数中，其更新依赖后续训练，难以及时反映外部信息变化，面对训练语料覆盖不足的问题，模型还可能生成语言流畅但缺乏事实依据的回答，即幻觉问题。模型规模增长和指令遵循能力的提升，并未消除知识时效性、长尾知识覆盖与事实幻觉问题，外部知识的获取和利用仍是提高回答可靠性的重要途径\cite{ouyang2022training,lewis2020retrieval}。围绕外部知识利用，Guu等\cite{guu2020realm}提出的检索增强语言模型预训练方法（Retrieval-Augmented Language Model Pre-Training，REALM）将知识检索纳入预训练，通过掩码预测信号，加强了大模型从文档库中获取相关信息的能力；而Lewis等\cite{lewis2020retrieval}提出的检索增强生成（Retrieval-Augmented Generation，RAG）框架则更进一步将稠密检索与序列生成相结合，使模型可以在推理阶段显式利用外部文本完成知识密集型任务。外部知识库作为一个独立于模型之外的单元，可以独立更新，检索结果也为回答提供了可追踪的证据来源，使知识更新与模型参数更新得以分离\cite{guu2020realm,lewis2020retrieval}。有关研究\cite{liu2025ragsurvey,yuan2026ragoptimization,zhang2026ragsoftware}已经从检索增强流程、优化技术和应用实践角度指出，RAG系统通常包含知识库构建、检索和生成等相互衔接的阶段，这些阶段相互依赖，共同构成了RAG系统的完整工作流程。
+大语言模型的知识主要保存在参数中，其更新依赖后续训练，难以及时反映外部信息变化，面对训练语料覆盖不足的问题，模型还可能生成语言流畅但缺乏事实依据的回答，即幻觉问题。模型规模增长和指令遵循能力的提升，并未消除知识时效性、长尾知识覆盖与事实幻觉问题，外部知识的获取和利用仍是提高回答可靠性的重要途径\cite{ouyang2022training,lewis2020retrieval}。围绕外部知识利用，Guu等\cite{guu2020realm}提出的检索增强语言模型预训练方法（Retrieval-Augmented Language Model Pre-Training，REALM）将知识检索纳入预训练，通过掩码预测信号，加强了大模型从文档库中获取相关信息的能力；而Lewis等\cite{lewis2020retrieval}提出的检索增强生成（Retrieval-Augmented Generation，RAG）框架则更进一步将稠密检索与序列生成相结合，使模型可以在推理阶段显式利用外部文本完成知识密集型任务。外部知识库作为一个独立于模型之外的单元，可以独立更新，检索结果也为回答提供了可追踪的证据来源，使知识更新与模型参数更新得以分离\cite{guu2020realm,lewis2020retrieval}。有关研究\cite{liu2025ragsurvey,yuan2026ragoptimization,zhang2026ragsoftware}已经从检索增强流程、优化技术和应用实践角度指出，RAG系统通常包含知识库构建、检索和生成等相互衔接的阶段，这些阶段相互依赖，共同构成了RAG系统的完整工作流程。图\ref{fig:rag_conceptions}展示了RAG系统一次查询的典型工作流程。
+
+\begin{figure}[htbp]
+  \centering
+  \resizebox{0.92\textwidth}{!}{\includegraphics{figures/fig_rag_conceptions.pdf}}
+  \caption{RAG系统的典型查询工作流程}
+  \label{fig:rag_conceptions}
+\end{figure}
 
 但是，RAG在利用外部知识的同时，也将文档处理和证据选择纳入了系统的安全边界，形成了新的潜在威胁面。知识库中的原始文档经过解析、分块和表示计算后，会形成可供检索的文本单元。系统再根据检索、重排序及上下文长度等条件组织生成证据，不同任务可以采用不同的组件组合\cite{gao2023retrieval,liu2025ragsurvey,yuan2026ragoptimization,zhang2026ragsoftware}。因此，模型最终接收的信息取决于整个知识处理过程，RAG系统的安全性除了模型自身外，还与外部检索链路密切相关。当外部知识库接收公开网页、用户提交文档或其他不可信内容时，攻击者可以通过写入恶意文本操纵检索结果与下游回答，从而引导大模型针对特殊问题回复攻击者预设的答案\cite{zou2025poisonedrag,chang2025oneshot,song2026adversarialcot}。在医疗、金融和法律等知识密集型领域，RAG的检索与生成结果会直接影响专业判断，投毒攻击可能造成隐私泄露、错误信息传播或误导性决策\cite{xian2025vulnerability}。因此，RAG投毒不仅是检索性能问题，还可能在高价值应用中形成隐私、安全和决策风险。
 
