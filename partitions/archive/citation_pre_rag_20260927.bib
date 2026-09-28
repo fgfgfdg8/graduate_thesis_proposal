@@ -1,4 +1,4 @@
-@article{browne2012survey,
+﻿@article{browne2012survey,
   title     = {A Survey of Monte Carlo Tree Search Methods},
   author    = {Browne, Cameron B and Powley, Edward and Whitehouse, Daniel and Lucas, Simon M and Cowling, Peter I and Rohlfshagen, Philipp and Tavener, Stephen and Perez, Diego and Samothrakis, Spyridon and Colton, Simon},
   journal   = {IEEE Transactions on Computational Intelligence and AI in Games},
@@ -422,8 +422,7 @@
   volume    = {30},
   publisher = {Curran Associates, Inc.},
   year      = {2017},
-  pages     = {5998--6008},
-  url       = {https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html}
+  pages     = {5998--6008}
 }
 
 @inproceedings{wallace2019universal,
@@ -1830,14 +1829,17 @@
   urldate      = {2026-06-30}
 }
 
-@inproceedings{lewis2020retrieval,
+@article{lewis2020retrieval,
   title         = {Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks},
   author        = {Patrick Lewis and Ethan Perez and Aleksandra Piktus and Fabio Petroni and Vladimir Karpukhin and Naman Goyal and Heinrich Küttler and Mike Lewis and Wen-tau Yih and Tim Rocktäschel and Sebastian Riedel and Douwe Kiela},
-  booktitle     = {Advances in Neural Information Processing Systems},
+  journal       = {NIPS},
   volume        = {33},
   pages         = {9459--9474},
   year          = {2020},
-  url           = {https://proceedings.neurips.cc/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html}
+  eprint        = {2005.11401},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.CL},
+  url           = {https://arxiv.org/abs/2005.11401}
 }
 
 @misc{langchain,
@@ -2094,13 +2096,13 @@
   urldate      = {2026-06-30}
 }
 
-@online{gao2023retrieval,
+@misc{gao2023retrieval,
   title        = {Retrieval-augmented generation for large language models: A survey},
   author       = {Yunfan Gao and Yun Xiong and Xinyu Gao and Kangxiang Jia and Jinliu Pan and Yuxi Bi and Yi Dai and Jiawei Sun and Meng Wang and Haofen Wang},
   year         = {2023},
-  howpublished = {arXiv preprint arXiv:2312.10997},
+  howpublished = {\url{https://arxiv.org/abs/2312.10997}},
   url          = {https://arxiv.org/abs/2312.10997},
-  urldate      = {2026-09-28}
+  urldate      = {2026-06-30}
 }
 
 @misc{li2024enhancing,
@@ -4529,7 +4531,7 @@
 @inproceedings{zhang2025traceback,
   author    = {Baolei Zhang and Haoran Xin and Minghong Fang and Zhuqing Liu and Biao Yi and Tong Li and Zheli Liu},
   doi       = {10.1145/3696410.3714756},
-  booktitle = {Proceedings of the ACM on Web Conference 2025},
+  booktitle = {WWW 2025 - Proceedings of the ACM Web Conference},
   month     = {4},
   pages     = {2085-2097},
   publisher = {Association for Computing Machinery, Inc},
@@ -7252,14 +7254,14 @@
 }
 
 @inproceedings{izacard2021leveraging,
-  title         = {Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering},
-  author        = {Izacard, Gautier and Grave, Edouard},
-  booktitle     = {Proceedings of the 16th Conference of the European Chapter of the Association for Computational Linguistics: Main Volume},
-  pages         = {874--880},
-  year          = {2021},
-  publisher     = {Association for Computational Linguistics},
-  doi           = {10.18653/v1/2021.eacl-main.74},
-  url           = {https://aclanthology.org/2021.eacl-main.74/}
+  title     = {Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering},
+  url       = {http://dx.doi.org/10.18653/v1/2021.eacl-main.74},
+  doi       = {10.18653/v1/2021.eacl-main.74},
+  booktitle = {Proceedings of the Conference of the European Chapter of the Association for Computational Linguistics: Main Volume},
+  publisher = {Association for Computational Linguistics},
+  author    = {Izacard, Gautier and Grave, Edouard},
+  year      = {2021},
+  pages     = {874–880}
 }
 
 @misc{jain2023baseline,
@@ -12735,8 +12737,7 @@
   volume    = {33},
   pages     = {1877--1901},
   year      = {2020},
-  publisher = {Curran Associates, Inc.},
-  url       = {https://proceedings.neurips.cc/paper/2020/hash/1457c0d6bfcb4967418bfb8ac142f64a-Abstract.html}
+  publisher = {Curran Associates, Inc.}
 }
 
 @misc{kaplan2020scaling,
@@ -13717,17 +13718,16 @@
   urldate = {2026-08-08}
 }
 
-@inproceedings{ouyang2022training,
- author = {Ouyang, Long and Wu, Jeffrey and Jiang, Xu and Almeida, Diogo and Wainwright, Carroll and Mishkin, Pamela and Zhang, Chong and Agarwal, Sandhini and Slama, Katarina and Ray, Alex and Schulman, John and Hilton, Jacob and Kelton, Fraser and Miller, Luke and Simens, Maddie and Askell, Amanda and Welinder, Peter and Christiano, Paul F and Leike, Jan and Lowe, Ryan},
- booktitle = {Advances in Neural Information Processing Systems},
- doi = {10.52202/068431-2011},
- editor = {S. Koyejo and S. Mohamed and A. Agarwal and D. Belgrave and K. Cho and A. Oh},
- pages = {27730--27744},
- publisher = {Curran Associates, Inc.},
- title = {Training language models to follow instructions with human feedback},
- url = {https://proceedings.neurips.cc/paper_files/paper/2022/file/b1efde53be364a73914f58805a001731-Paper-Conference.pdf},
- volume = {35},
- year = {2022}
+@article{ouyang2022training,
+  author    = {Ouyang, Long and Wu, Jeffrey and Jiang, Xu and Almeida, Diogo and Wainwright, Carroll and Mishkin, Pamela and Zhang, Chong and Agarwal, Sandhini and Slama, Katarina and Ray, Alex and Schulman, John and Hilton, Jacob and Kelton, Fraser and Miller, Luke and Simens, Maddie and Askell, Amanda and Welinder, Peter and Christiano, Paul F. and Leike, Jan and Lowe, Ryan},
+  title     = {Training Language Models to Follow Instructions with Human Feedback},
+  journal   = {Advances in Neural Information Processing Systems},
+  volume    = {35},
+  pages     = {27730--27744},
+  publisher = {Neural Information Processing Systems Foundation, Inc.},
+  year      = {2022},
+  doi       = {10.52202/068431-2011},
+  url       = {https://doi.org/10.52202/068431-2011}
 }
 
 @article{wei2022chain,
@@ -14673,16 +14673,14 @@
   year    = {2026}
 }
 
-@online{bajaj2018msmarcohumangenerated,
+@misc{bajaj2018msmarcohumangenerated,
   title         = {MS MARCO: A Human Generated MAchine Reading COmprehension Dataset},
   author        = {Payal Bajaj and Daniel Campos and Nick Craswell and Li Deng and Jianfeng Gao and Xiaodong Liu and Rangan Majumder and Andrew McNamara and Bhaskar Mitra and Tri Nguyen and Mir Rosenberg and Xia Song and Alina Stoica and Saurabh Tiwary and Tong Wang},
   year          = {2018},
-  howpublished  = {arXiv preprint arXiv:1611.09268},
   eprint        = {1611.09268},
   archiveprefix = {arXiv},
   primaryclass  = {cs.CL},
-  url           = {https://arxiv.org/abs/1611.09268},
-  urldate       = {2026-09-28}
+  url           = {https://arxiv.org/abs/1611.09268}
 }
 
 @article{kwiatkowski-etal-2019-natural,
@@ -14742,330 +14740,4 @@
   doi       = {10.18653/v1/D18-1259},
   pages     = {2369--2380},
   abstract  = {Existing question answering (QA) datasets fail to train QA systems to perform complex reasoning and provide explanations for answers. We introduce HotpotQA, a new dataset with 113k Wikipedia-based question-answer pairs with four key features: (1) the questions require finding and reasoning over multiple supporting documents to answer; (2) the questions are diverse and not constrained to any pre-existing knowledge bases or knowledge schemas; (3) we provide sentence-level supporting facts required for reasoning, allowing QA systems to reason with strong supervision and explain the predictions; (4) we offer a new type of factoid comparison questions to test QA systems' ability to extract relevant facts and perform necessary comparison. We show that HotpotQA is challenging for the latest QA systems, and the supporting facts enable models to improve performance and make explainable predictions.}
-}
-
-@article{izacard2022unsupervised,
-  title   = {Unsupervised Dense Information Retrieval with Contrastive Learning},
-  author  = {Izacard, Gautier and Caron, Mathilde and Hosseini, Lucas and Riedel, Sebastian and Bojanowski, Piotr and Joulin, Armand and Grave, Edouard},
-  journal = {Transactions on Machine Learning Research},
-  year    = {2022},
-  url     = {https://openreview.net/forum?id=jKN1pXi7b0},
-  urldate = {2026-09-28}
-}
-
-@inproceedings{karpukhin2020dense,
-  title     = {Dense Passage Retrieval for Open-Domain Question Answering},
-  author    = {Karpukhin, Vladimir and O{\u{g}}uz, Barlas and Min, Sewon and Lewis, Patrick and Wu, Ledell and Edunov, Sergey and Chen, Danqi and Yih, Wen-tau},
-  booktitle = {Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
-  pages     = {6769--6781},
-  year      = {2020},
-  doi       = {10.18653/v1/2020.emnlp-main.550}
-}
-
-@inproceedings{robertson2009probabilistic,
-  title     = {The Probabilistic Relevance Framework: {BM25} and Beyond},
-  author    = {Robertson, Stephen and Zaragoza, Hugo},
-  booktitle = {Foundations and Trends in Information Retrieval},
-  volume    = {3},
-  number    = {4},
-  pages     = {333--389},
-  year      = {2009},
-  doi       = {10.1561/1500000019}
-}
-
-@inproceedings{chang2025oneshot,
-  title     = {One Shot Dominance: Knowledge Poisoning Attack on Retrieval-Augmented Generation Systems},
-  author    = {Chang, Zhiyuan and Li, Mingyang and Jia, Xiaojun and Wang, Junjie and Huang, Yuekai and Jiang, Ziyou and Liu, Yang and Wang, Qing},
-  booktitle = {Findings of the Association for Computational Linguistics: EMNLP 2025},
-  pages     = {18811--18825},
-  year      = {2025},
-  doi       = {10.18653/v1/2025.findings-emnlp.1023}
-}
-
-@inproceedings{song2026adversarialcot,
-  title     = {{AdversarialCoT}: Single-Document Retrieval Poisoning for {LLM} Reasoning},
-  author    = {Song, Hongru and Liu, Yu-An and Zhang, Ruqing and Guo, Jiafeng and de Rijke, Maarten and Fan, Yixing and Cheng, Xueqi},
-  booktitle = {Proceedings of the 49th International ACM SIGIR Conference on Research and Development in Information Retrieval},
-  pages     = {4145--4150},
-  year      = {2026},
-  publisher = {Association for Computing Machinery},
-  doi       = {10.1145/3805712.3809838}
-}
-
-@online{nie2026crcp,
-  title         = {When Poison Fails After Retrieval: Revisiting Corpus Poisoning under Chunking and Reranking Pipelines},
-  author        = {Nie, Xi and Li, Hongwei and Wu, Shenghao and Li, Mingxuan and Li, Jiachen and Jiang, Wenbo},
-  year          = {2026},
-  howpublished  = {arXiv preprint arXiv:2606.11265},
-  eprint        = {2606.11265},
-  archiveprefix = {arXiv},
-  primaryclass  = {cs.CR},
-  url           = {https://arxiv.org/abs/2606.11265},
-  urldate       = {2026-09-28}
-}
-
-@online{zhang2026inceptionrag,
-  title         = {{InceptionRAG}: Stealthy Poisoning Attack Against Retrieval-Augmented Generation},
-  author        = {Zhang, Jiachang and Chen, Min and Ren, Xiao and Zhang, Zhenyong and Shu, Yuanchao and Gao, Yunjun and Zhang, Zhikun},
-  year          = {2026},
-  howpublished  = {arXiv preprint arXiv:2609.16818},
-  eprint        = {2609.16818},
-  archiveprefix = {arXiv},
-  note          = {Accepted at ACM CCS 2026},
-  url           = {https://arxiv.org/abs/2609.16818},
-  urldate       = {2026-09-28}
-}
-
-@inproceedings{kim2025ragdefender,
-  title     = {Rescuing the Unpoisoned: Efficient Defense Against Knowledge Corruption Attacks on RAG Systems},
-  author    = {Kim, Minseok and Lee, Hankook and Koo, Hyungjoon},
-  booktitle = {2025 IEEE Annual Computer Security Applications Conference (ACSAC)},
-  pages     = {1178--1192},
-  year      = {2025},
-  doi       = {10.1109/acsac67867.2025.00093}
-}
-
-@misc{trustrag2025,
-  title         = {{TrustRAG}: Enhancing Robustness and Trustworthiness in Retrieval-Augmented Generation},
-  author        = {Zhou, Huichi and Lee, Kin-Hei and Zhan, Zhonghao and Chen, Yue and Li, Zhenhao and Wang, Zhaoyang and Haddadi, Hamed and Yilmaz, Emine},
-  year          = {2025},
-  journal       = {arXiv preprint arXiv:2501.00879},
-  howpublished  = {arXiv preprint arXiv:2501.00879},
-  eprint        = {2501.00879},
-  archiveprefix = {arXiv},
-  url           = {https://arxiv.org/abs/2501.00879},
-  urldate       = {2026-09-28}
-}
-
-@inproceedings{tan2026prarag,
-  title     = {PRA-RAG: Provably Robust Aggregation in Retrieval-Augmented Generation against Retrieval Corruption},
-  author    = {Tan, Xue and Zheng, Yi and Huo, Chang and Zhang, Yunruo and Liu, Yu and Luan, Hao and Yu, Zhuyang and Dai, Jun and Sun, Xiaoyan and Chen, Ping},
-  booktitle = {Findings of the Association for Computational Linguistics: ACL 2026},
-  pages     = {36002--36017},
-  year      = {2026},
-  doi       = {10.18653/v1/2026.findings-acl.1794}
-}
-
-@article{he2026shieldrag,
-  title   = {Push and Pull: Defending against Retrieval Poisoning Attacks via Embedding Space Reshaping},
-  author  = {He, Longzhu and Zhang, Xiyu and Liu, Quan and Li, Chaozhuo and Liu, Zheng and Zhou, Pengpeng and Su, Sen},
-  journal = {ACM Transactions on Information Systems},
-  volume  = {44},
-  number  = {4},
-  pages   = {1--31},
-  year    = {2026},
-  doi     = {10.1145/3800948},
-  articleno = {86},
-  numpages  = {31}
-}
-
-@inproceedings{cegrag2026,
-  title     = {Defending {RAG} Against Knowledge Poisoning Using Cross-Encoder Activation Signals},
-  author    = {Moradi, Razieh and Noughabi, Havva Alizadeh and Zarrinkalam, Fattane and Dehghantanha, Ali},
-  booktitle = {Proceedings of the 39th Canadian Conference on Artificial Intelligence},
-  series    = {Proceedings of Machine Learning Research},
-  volume    = {318},
-  pages     = {366--376},
-  year      = {2026},
-  publisher = {PMLR},
-  url       = {https://proceedings.mlr.press/v318/moradi26a.html},
-  urldate   = {2026-09-28}
-}
-
-@inproceedings{ebrahimi-etal-2018-hotflip,
-  title     = {{H}ot{F}lip: White-Box Adversarial Examples for Text Classification},
-  author    = {Ebrahimi, Javid  and
-               Rao, Anyi  and
-               Lowd, Daniel  and
-               Dou, Dejing},
-  editor    = {Gurevych, Iryna  and
-               Miyao, Yusuke},
-  booktitle = {Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)},
-  month     = jul,
-  year      = {2018},
-  address   = {Melbourne, Australia},
-  publisher = {Association for Computational Linguistics},
-  url       = {https://aclanthology.org/P18-2006/},
-  doi       = {10.18653/v1/P18-2006},
-  pages     = {31--36},
-  abstract  = {We propose an efficient method to generate white-box adversarial examples to trick a character-level neural classifier. We find that only a few manipulations are needed to greatly decrease the accuracy. Our method relies on an atomic flip operation, which swaps one token for another, based on the gradients of the one-hot input vectors. Due to efficiency of our method, we can perform adversarial training which makes the model more robust to attacks at test time. With the use of a few semantics-preserving constraints, we demonstrate that HotFlip can be adapted to attack a word-level classifier as well.}
-}
-
-@inproceedings{yoo-etal-2020-searching,
-  title     = {Searching for a Search Method: Benchmarking Search Algorithms for Generating {NLP} Adversarial Examples},
-  author    = {Yoo, Jin Yong  and
-               Morris, John  and
-               Lifland, Eli  and
-               Qi, Yanjun},
-  editor    = {Alishahi, Afra  and
-               Belinkov, Yonatan  and
-               Chrupa{\l}a, Grzegorz  and
-               Hupkes, Dieuwke  and
-               Pinter, Yuval  and
-               Sajjad, Hassan},
-  booktitle = {Proceedings of the Third BlackboxNLP Workshop on Analyzing and Interpreting Neural Networks for NLP},
-  month     = nov,
-  year      = {2020},
-  address   = {Online},
-  publisher = {Association for Computational Linguistics},
-  url       = {https://aclanthology.org/2020.blackboxnlp-1.30/},
-  doi       = {10.18653/v1/2020.blackboxnlp-1.30},
-  pages     = {323--332},
-  abstract  = {We study the behavior of several black-box search algorithms used for generating adversarial examples for natural language processing (NLP) tasks. We perform a fine-grained analysis of three elements relevant to search: search algorithm, search space, and search budget. When new search algorithms are proposed in past work, the attack search space is often modified alongside the search algorithm. Without ablation studies benchmarking the search algorithm change with the search space held constant, one cannot tell if an increase in attack success rate is a result of an improved search algorithm or a less restrictive search space. Additionally, many previous studies fail to properly consider the search algorithms' run-time cost, which is essential for downstream tasks like adversarial training. Our experiments provide a reproducible benchmark of search algorithms across a variety of search spaces and query budgets to guide future research in adversarial NLP. Based on our experiments, we recommend greedy attacks with word importance ranking when under a time constraint or attacking long inputs, and either beam search or particle swarm optimization otherwise.}
-}
-
-@article{zou2023universal,
-  title   = {Universal and transferable adversarial attacks on aligned language models},
-  author  = {Zou, Andy and Wang, Zifan and Carlini, Nicholas and Nasr, Milad and Kolter, J Zico and Fredrikson, Matt},
-  journal = {arXiv preprint arXiv:2307.15043},
-  year    = {2023}
-}
-
-@inproceedings{ben2025gasliteing,
-  title         = {{GASLITE}ing the Retrieval: Exploring Vulnerabilities in Dense Embedding-based Search},
-  author        = {Ben-Tov, Matan and Sharif, Mahmood},
-  booktitle     = {Proceedings of the 2025 ACM SIGSAC Conference on Computer and Communications Security},
-  pages         = {4364--4378},
-  year          = {2025},
-  publisher     = {ACM},
-  doi           = {10.1145/3719027.3765095}
-}
-
-@inproceedings{zhong-etal-2023-poisoning,
-  title     = {Poisoning Retrieval Corpora by Injecting Adversarial Passages},
-  author    = {Zhong, Zexuan  and
-               Huang, Ziqing  and
-               Wettig, Alexander  and
-               Chen, Danqi},
-  editor    = {Bouamor, Houda  and
-               Pino, Juan  and
-               Bali, Kalika},
-  booktitle = {Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},
-  month     = dec,
-  year      = {2023},
-  address   = {Singapore},
-  publisher = {Association for Computational Linguistics},
-  url       = {https://aclanthology.org/2023.emnlp-main.849/},
-  doi       = {10.18653/v1/2023.emnlp-main.849},
-  pages     = {13764--13775},
-  abstract  = {Dense retrievers have achieved state-of-the-art performance in various information retrieval tasks, but to what extent can they be safely deployed in real-world applications? In this work, we propose a novel attack for dense retrieval systems in which a malicious user generates a small number of adversarial passages by perturbing discrete tokens to maximize similarity with a provided set of training queries. When these adversarial passages are inserted into a large retrieval corpus, we show that this attack is highly effective in fooling these systems to retrieve them for queries that were not seen by the attacker. More surprisingly, these adversarial passages can directly generalize to out-of-domain queries and corpora with a high success attack rate {---} for instance, we find that 50 generated passages optimized on Natural Questions can mislead {\ensuremath{>}}94{\%} of questions posed in financial documents or online forums. We also benchmark and compare a range of state-of-the-art dense retrievers, both unsupervised and supervised. Although different systems exhibit varying levels of vulnerability, we show they can all be successfully attacked by injecting up to 500 passages, a small fraction compared to a retrieval corpus of millions of passages.}
-}
-
-@inproceedings{chen-etal-2025-indirect,
-  title     = {Can Indirect Prompt Injection Attacks Be Detected and Removed?},
-  author    = {Chen, Yulin  and
-               Li, Haoran  and
-               Sui, Yuan  and
-               He, Yufei  and
-               Liu, Yue  and
-               Song, Yangqiu  and
-               Hooi, Bryan},
-  editor    = {Che, Wanxiang  and
-               Nabende, Joyce  and
-               Shutova, Ekaterina  and
-               Pilehvar, Mohammad Taher},
-  booktitle = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
-  month     = jul,
-  year      = {2025},
-  address   = {Vienna, Austria},
-  publisher = {Association for Computational Linguistics},
-  url       = {https://aclanthology.org/2025.acl-long.890/},
-  doi       = {10.18653/v1/2025.acl-long.890},
-  pages     = {18189--18206},
-  isbn      = {979-8-89176-251-0},
-  abstract  = {Prompt injection attacks manipulate large language models (LLMs) by misleading them to deviate from the original input instructions and execute maliciously injected instructions, because of their instruction-following capabilities and inability to distinguish between the original input instructions and maliciously injected instructions. To defend against such attacks, recent studies have developed various detection mechanisms. If we restrict ourselves specifically to works which perform detection rather than direct defense, most of them focus on direct prompt injection attacks, while there are few works for the indirect scenario, where injected instructions are indirectly from external tools, such as a search engine. Moreover, current works mainly investigate injection detection methods and pay less attention to the post-processing method that aims to mitigate the injection after detection.In this paper, we investigate the feasibility of detecting and removing indirect prompt injection attacks, and we construct a benchmark dataset for evaluation. For detection, we assess the performance of existing LLMs and open-source detection models, and we further train detection models using our crafted training datasets. For removal, we evaluate two intuitive methods: (1) the \textit{segmentation removal method}, which segments the injected document and removes parts containing injected instructions, and (2) the \textit{extraction removal method}, which trains an extraction model to identify and remove injected instructions.}
-}
-
-@online{zhou2025trustrag,
-  title         = {{TrustRAG}: Enhancing Robustness and Trustworthiness in Retrieval-Augmented Generation},
-  author        = {Zhou, Huichi and Lee, Kin-Hei and Zhan, Zhonghao and Chen, Yue and Li, Zhenhao and Wang, Zhaoyang and Haddadi, Hamed and Yilmaz, Emine},
-  year          = {2025},
-  howpublished  = {arXiv preprint arXiv:2501.00879},
-  eprint        = {2501.00879},
-  archiveprefix = {arXiv},
-  url           = {https://arxiv.org/abs/2501.00879},
-  urldate       = {2026-09-28}
-}
-
-@inproceedings{xiang2024certifiably,
-  title         = {Certifiably Robust {RAG} against Retrieval Corruption},
-  author        = {Xiang, Chong and Wu, Tong and Zhong, Zexuan and Wagner, David and Chen, Danqi and Mittal, Prateek},
-  booktitle     = {2026 IEEE Conference on Secure and Trustworthy Machine Learning (SaTML)},
-  pages         = {392--410},
-  year          = {2026},
-  publisher     = {IEEE},
-  doi           = {10.1109/satml68715.2026.00029}
-}
-
-@inproceedings{cho-etal-2024-typos,
-  title     = {Typos that Broke the {RAG}{'}s Back: Genetic Attack on {RAG} Pipeline by Simulating Documents in the Wild via Low-level Perturbations},
-  author    = {Cho, Sukmin  and
-               Jeong, Soyeong  and
-               Seo, Jeongyeon  and
-               Hwang, Taeho  and
-               Park, Jong C.},
-  editor    = {Al-Onaizan, Yaser  and
-               Bansal, Mohit  and
-               Chen, Yun-Nung},
-  booktitle = {Findings of the Association for Computational Linguistics: EMNLP 2024},
-  month     = nov,
-  year      = {2024},
-  address   = {Miami, Florida, USA},
-  publisher = {Association for Computational Linguistics},
-  url       = {https://aclanthology.org/2024.findings-emnlp.161/},
-  doi       = {10.18653/v1/2024.findings-emnlp.161},
-  pages     = {2826--2844},
-  abstract  = {The robustness of recent Large Language Models (LLMs) has become increasingly crucial as their applicability expands across various domains and real-world applications. Retrieval-Augmented Generation (RAG) is a promising solution for addressing the limitations of LLMs, yet existing studies on the robustness of RAG often overlook the interconnected relationships between RAG components or the potential threats prevalent in real-world databases, such as minor textual errors. In this work, we investigate two underexplored aspects when assessing the robustness of RAG: 1) vulnerability to noisy documents through low-level perturbations and 2) a holistic evaluation of RAG robustness. Furthermore, we introduce a novel attack method, the Genetic Attack on RAG (GARAG), which targets these aspects. Specifically, GARAG is designed to reveal vulnerabilities within each component and test the overall system functionality against noisy documents. We validate RAG robustness by applying our GARAG to standard QA datasets, incorporating diverse retrievers and LLMs. The experimental results show that GARAG consistently achieves high attack success rates. Also, it significantly devastates the performance of each component and their synergy, highlighting the substantial risk that minor textual inaccuracies pose in disrupting RAG systems in the real world. Code is available at \url{https://github.com/zomss/GARAG}.}
-}
-@inproceedings{kim2025gmtp,
-  title         = {Safeguarding {RAG} Pipelines with {GMTP}: A Gradient-based Masked Token Probability Method for Poisoned Document Detection},
-  author        = {Kim, San and Kim, Jonghwi and Jeon, Yejin and Lee, Gary},
-  booktitle     = {Findings of the Association for Computational Linguistics: ACL 2025},
-  pages         = {24597--24614},
-  year          = {2025},
-  publisher     = {Association for Computational Linguistics},
-  doi           = {10.18653/v1/2025.findings-acl.1263},
-  url           = {https://aclanthology.org/2025.findings-acl.1263/}
-}
-
-@inproceedings{zheng2025grada,
-  title         = {{GRADA}: Graph-based Reranking against Adversarial Documents Attack},
-  author        = {Zheng, Jingjie and Gema, Aryo Pradipta and Hong, Giwon and He, Xuanli and Minervini, Pasquale and Sun, Youcheng and Xu, Qiongkai},
-  booktitle     = {Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},
-  pages         = {22244--22266},
-  year          = {2025},
-  publisher     = {Association for Computational Linguistics},
-  doi           = {10.18653/v1/2025.emnlp-main.1132},
-  url           = {https://aclanthology.org/2025.emnlp-main.1132/}
-}
-
-@article{yin2027rade,
-  title   = {{RADE}: Responsibility-aware Decoding of Evidence for Robust Retrieval-Augmented Generation},
-  author  = {Yin, Li and Cheng, Yanqi and Du, Xuefeng and Wang, Zhen and Zheng, Yuduo and Li, Fengqi},
-  journal = {Expert Systems with Applications},
-  volume  = {333},
-  pages   = {133898},
-  year    = {2027},
-  doi     = {10.1016/j.eswa.2026.133898},
-  note    = {Available online 21 August 2026}
-}
-
-@inproceedings{guu2020realm,
-  title         = {Retrieval Augmented Language Model Pre-Training},
-  author        = {Guu, Kelvin and Lee, Kenton and Tung, Zora and Pasupat, Panupong and Chang, Mingwei},
-  booktitle     = {Proceedings of the 37th International Conference on Machine Learning},
-  series        = {Proceedings of Machine Learning Research},
-  volume        = {119},
-  pages         = {3929--3938},
-  year          = {2020},
-  publisher     = {PMLR},
-  url           = {https://proceedings.mlr.press/v119/guu20a.html}
-}
-
-@inproceedings{xiong2021approximate,
-  title         = {Approximate Nearest Neighbor Negative Contrastive Learning for Dense Text Retrieval},
-  author        = {Xiong, Lee and Xiong, Chenyan and Li, Ye and Tang, Kwok-Fung and Liu, Jialin and Bennett, Paul and Ahmed, Junaid and Overwijk, Arnold},
-  booktitle     = {International Conference on Learning Representations (ICLR)},
-  year          = {2021},
-  url           = {https://www.microsoft.com/en-us/research/publication/approximate-nearest-neighbor-negative-contrastive-learning-for-dense-text-retrieval/}
 }

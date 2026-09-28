@@ -1,0 +1,27 @@
+% 防御方法输入、审查、修复与复查流程
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw=black,thick,fill=white,align=center,text width=52mm,minimum height=11mm,inner sep=3pt},
+  wide/.style={draw=black,thick,fill=white,align=center,text width=132mm,minimum height=9mm,inner sep=3pt},
+  arr/.style={-{Stealth[length=2mm]},thick,black}
+]
+\node[wide] (input) {查询与检索候选池\\文本、分数、向量表示与来源标识};
+\node[box,below=4mm of input,xshift=-37mm] (local) {局部表征分析\\相关性、扰动敏感性与语义一致性};
+\node[box,below=4mm of input,xshift=37mm] (structure) {上下文结构分析\\同源分布、实体关系与语义分布};
+\node[wide,below=4mm of $(local.south)!0.5!(structure.south)$] (groups) {预算内候选组合\\风险排序、来源与关系分组、低风险探索抽样};
+\node[box,below=4mm of groups,xshift=-37mm] (influence) {组合影响审查\\内部回答、单块及组合干预};
+\node[box,below=4mm of groups,xshift=37mm] (support) {正常任务校准与证据检查\\匹配替换、语义支持与矛盾关系};
+\node[wide,below=4mm of $(influence.south)!0.5!(support.south)$] (repair) {风险约束下的证据选择\\保留桥接证据，比较移除与替换方案};
+\node[wide,below=4mm of repair] (review) {修复后组合复查\\检查新组合与证据覆盖，记录未审查状态};
+\node[wide,below=4mm of review] (output) {输出回答、修复上下文与审查记录\\证据不足时返回提示并计入效用评价};
+\draw[arr] (input.south) -- ++(0,-2mm) -| (local.north);
+\draw[arr] (input.south) -- ++(0,-2mm) -| (structure.north);
+\draw[arr] (local.south) -- ++(0,-2mm) -| (groups.north);
+\draw[arr] (structure.south) -- ++(0,-2mm) -| (groups.north);
+\draw[arr] (groups.south) -- ++(0,-2mm) -| (influence.north);
+\draw[arr] (groups.south) -- ++(0,-2mm) -| (support.north);
+\draw[arr] (influence.south) -- ++(0,-2mm) -| (repair.north);
+\draw[arr] (support.south) -- ++(0,-2mm) -| (repair.north);
+\draw[arr] (repair.south) -- (review.north);
+\draw[arr] (review.south) -- (output.north);
+\end{tikzpicture}
