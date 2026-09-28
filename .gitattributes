@@ -1,0 +1,73 @@
+# =============================================================================
+# 行尾（换行符）统一策略
+# -----------------------------------------------------------------------------
+# 背景
+#   本地为 Windows（core.autocrlf=true，且此前没有 .gitattributes），
+#   Overleaf 为 Linux，向 GitHub 提交时使用 LF。
+#   仓库内曾有 30 个文本文件的 blob 以 CRLF 存储，与 Overleaf 的 LF 版本相比
+#   会产生“整文件被改写”的伪冲突（例如 ref/citation.bib 约 1.5 万行差异），
+#   进而导致 Overleaf 报 “could not be automatically merged”。
+#
+# 策略
+#   一切文本文件在【仓库内一律以 LF 存储】，且【检出到工作区也一律为 LF】。
+#
+# 为什么用 eol=lf 而不是依赖 core.autocrlf
+#   .gitattributes 中的 eol 属性优先级高于 core.autocrlf / core.eol，
+#   因此行为不随各人本地 git 配置而改变，可保证
+#       本地工作区 == 仓库 blob == Overleaf 三者完全一致。
+# =============================================================================
+
+# 默认：由 git 判断文本/二进制；文本一律以 LF 存储与检出
+* text=auto eol=lf
+
+# -----------------------------------------------------------------------------
+# 二进制文件：禁止任何行尾转换与文本 diff
+# （git 本已能自动识别其中的 PNG/TTF 为 -text，此处显式声明以固定行为、便于审计）
+# -----------------------------------------------------------------------------
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.bmp   binary
+*.ico   binary
+*.pdf   binary
+*.ttf   binary
+*.otf   binary
+*.woff  binary
+*.woff2 binary
+*.eot   binary
+*.zip   binary
+*.tar   binary
+*.gz    binary
+*.7z    binary
+*.vsdx  binary
+*.docx  binary
+*.xlsx  binary
+*.pptx  binary
+
+# -----------------------------------------------------------------------------
+# 文本文件：显式声明 LF
+# 上面的 “* text=auto eol=lf” 已覆盖这些类型；此处列出是为了：
+#   1) 让策略可读、可审计；
+#   2) 避免 git 的二进制启发式判断在极短或含异常字节的文件上失手。
+# -----------------------------------------------------------------------------
+*.tex    text eol=lf
+*.tikz   text eol=lf
+*.bib    text eol=lf
+*.bst    text eol=lf
+*.cls    text eol=lf
+*.sty    text eol=lf
+*.md     text eol=lf
+*.txt    text eol=lf
+*.mmd    text eol=lf
+*.svg    text eol=lf
+*.drawio text eol=lf
+*.py     text eol=lf
+*.ps1    text eol=lf
+*.sh     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.json   text eol=lf
+*.html   text eol=lf
+*.css    text eol=lf
+*.js     text eol=lf
