@@ -1,4 +1,4 @@
-\section{研究内容及方法}
+﻿\section{研究内容及方法}
 
 \subsection{研究目标}
 
@@ -177,7 +177,7 @@
 
 \subsubsection{实验设计与评价方法}
 
-实验拟采用自然问题数据集（Natural Questions，NQ）、MS MARCO和多跳问答数据集HotpotQA，覆盖事实查询与多段证据推理\cite{kwiatkowski-etal-2019-natural,bajaj2018msmarcohumangenerated,yang-etal-2018-hotpotqa}。检索器优先选用Izacard等\cite{izacard2022unsupervised}提出的Contriever及其监督微调版本Contriever-MS，并根据资源条件扩展至Xiong等\cite{xiong2021approximate}提出的ANCE等公开模型。首先在不含重排序器的配置中分析分块和联合召回，再加入重排序、混合检索等设置检验适用范围。对含重排序的系统分别报告初步召回和最终入选上下文中的联合保留率。
+实验拟采用自然问题数据集（Natural Questions，NQ）、MS MARCO和多跳问答数据集HotpotQA，覆盖事实查询与多段证据推理\cite{kwiatkowski-etal-2019-natural,bajaj2018msmarcohumangenerated,yang-etal-2018-hotpotqa}。此外，SafeRAG从RAG安全评测角度对银噪声、上下文冲突、软广告和拒绝服务等攻击任务进行系统组织，并在多个RAG组件上提供统一评测，可作为通用问答数据集之外的安全评测补充\cite{liang2025saferag}。检索器优先选用Izacard等\cite{izacard2022unsupervised}提出的Contriever及其监督微调版本Contriever-MS，并根据资源条件扩展至Xiong等\cite{xiong2021approximate}提出的ANCE等公开模型。首先在不含重排序器的配置中分析分块和联合召回，再加入重排序、混合检索等设置检验适用范围。对含重排序的系统分别报告初步召回和最终入选上下文中的联合保留率。
 
 攻击比较包括正常知识库、未经优化的单源载荷、仅优化单块相关性的载荷和完整ChunkTrojan。选取单文档投毒、分块感知投毒和多文本组合投毒作为外部基线，在同一评测环境中明确各自的源文档数、注入长度和查询预算。通过移除边界评价、改用随机搜索、关闭分级评价等消融，分析各部分对攻击效果与调用成本的作用。
 
