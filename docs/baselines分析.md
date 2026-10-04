@@ -87,7 +87,7 @@
 | `tests/experiments/documents.py` | `_chunk_document`、`_token_spans` | 复用：注入文档的分块与偏移 |
 | `src/attack/` | 仅 `"""Reserved for future supported attacks…"""` | **占位，需新建** |
 | `src/defense/` | 空目录 | **需新建** |
-| `baselines/` | 38 个 submodule + 3 个源码快照，分 `attacks/`、`defenses/`、`benchmarks/`、`tools/`、`misc/` 五类（§1.7） | 上游实现载体已就位 |
+| `baselines/` | 39 个 submodule + 3 个源码快照，分 `attacks/`、`defenses/`、`benchmarks/`、`tools/`、`misc/` 五类（§1.7） | 上游实现载体已就位 |
 
 ### 1.5 模型动物园（本地 `/mnt/sdc2/models`，实测存在）
 
@@ -125,18 +125,19 @@
 
 ### 1.7 上游 baseline 清单（`baselines/`）
 
-`baselines/` 按性质分为五类，共 **41 个项目目录**（38 个 Git submodule + 3 个源码快照），另含 `patches/` 本地适配补丁。
+`baselines/` 按性质分为五类，共 **42 个项目目录**（39 个 Git submodule + 3 个源码快照），另含 `patches/` 本地适配补丁。
 
 | 类别 | 数量 | 项目 |
 |---|---:|---|
-| `attacks/` | 14（11 submodule + `OTRB`、`p3a`、`FlippedRAG` 源码快照） | InceptionRAG、PoisonedRAG、corpus-poisoning、GASLITE、GARAG、robust-rag、Topic-FlipRAG、TrojanRAG、Open-Prompt-Injection、MIRAGE、CamoDocs、OTRB、p3a、FlippedRAG |
+| `attacks/` | 15（12 submodule + `OTRB`、`p3a`、`FlippedRAG` 源码快照） | InceptionRAG、PoisonedRAG、corpus-poisoning、GASLITE、GARAG、robust-rag、Topic-FlipRAG、TrojanRAG、Open-Prompt-Injection、MIRAGE、CamoDocs、ReGENT、OTRB、p3a、FlippedRAG |
 | `defenses/` | 16 | CEG-RAG、GMTP、GRADA、PIShield、RAGDefender、RobustRAG、TrustRAG、indirect-pia-detection、HijackRAG、Joint-GCG、PRA-RAG、RAG-Responsibility-Attribution、ReliabilityRAG、Secon-Rag、Stealthy_Attacks_Against_RAG、tris |
 | `benchmarks/` | 3 | BIPIA、SafeRAG、SecRAG |
 | `tools/` | 2 | evaluate、gector |
 | `misc/` | 6 | EMNLP2025-Claim-Verification-Survey、Fact-checking-via-Raw-Evidence、llm-misinformation-survey、TRACER、DEO-negation-aware-retrieval、AdversarialCoT_case |
 
-- **进入统一复现矩阵的是 `attacks/` 与 `defenses/` 两类，共 30 个项目**（27 submodule + `OTRB`、`p3a`、`FlippedRAG`）；它们对应 §4 G6 的适配工作量与 §6 的资源评估。（另 `misc/AdversarialCoT_case` 为 A17 的案例制品，不含实现代码，不入矩阵。）
+- **进入统一复现矩阵的是 `attacks/` 与 `defenses/` 两类，共 31 个项目**（28 submodule + `OTRB`、`p3a`、`FlippedRAG`）；它们对应 §4 G6 的适配工作量与 §6 的资源评估。（另 `misc/AdversarialCoT_case` 为 A17 的案例制品，不含实现代码，不入矩阵。）
 - **本地载体与文献方法清单的高度对齐，但仍非一一对应**：本次相对上一版新增的 3 篇（`#79`–`#81`）与本地载体的对应关系如下；仍需按原论文新建适配器的是 **`#66 MedMisBench`（A16）、`#70 Estimating Embedding Vectors`、`#73 ToxicRAG`、`#76 RAGForensics`、`#80 DenialRAG`，以及仅在 §9 综述补充中出现的约 20 篇**。因此适配工作量应按**并集**而非交集估算（§4 G6）。
+- **另有一篇基础篇目本次刚完成本地化**：`#21 ReGENT`（A6/A8 不可察觉 RL 攻击）→ `baselines/attacks/ReGENT`（RL 智能体 + 代理检索器 + 立场/事实双场景基准，完整度见 §6.2 备注）。它属核心集既有条目，不计入上表“新增篇章”。
 
 | 文献报告条目 | 报告内类别 | 本地载体 | 备注 |
 |---|---|---|---|
@@ -180,9 +181,9 @@
 | 受害者生成 | `ChatClient` + vLLM 27B | ✅ 直接 | 可换模型后端以复现跨 LLM 迁移 |
 | 判分 | `answers.answer_matches`（归一化 EM / contains） | ✅ 直接 | 报告 §7.5 建议的 **LLM-judge 口径需新增** |
 | 调度 | `poc <cmd> --stage` | ⚠️ 部分 | 需要"攻击→检索→防御→生成→判分"的矩阵编排 |
-| 攻击/防御实现 | 空 | ❌ 新建 | 从 `baselines/attacks` 与 `baselines/defenses` 的 32 个项目适配（§1.7） |
+| 攻击/防御实现 | 空 | ❌ 新建 | 从 `baselines/attacks` 与 `baselines/defenses` 的 33 个项目适配（§1.7） |
 
-**结论**：数据、索引、编码、检索、生成、判分这几层可**零改动或极小改动直接复用**——这已覆盖统一复现 80% 以上的工程量。缺口集中在**重排阶段、可插拔拦截、矩阵编排、以及 32 个攻击/防御项目的适配层**。
+**结论**：数据、索引、编码、检索、生成、判分这几层可**零改动或极小改动直接复用**——这已覆盖统一复现 80% 以上的工程量。缺口集中在**重排阶段、可插拔拦截、矩阵编排、以及 33 个攻击/防御项目的适配层**。
 
 ---
 
@@ -212,7 +213,7 @@ $$
 |---|---|---|---|
 | 追加新文档（PoisonedRAG、corpus-poisoning、GASLITE、OTRB、Phantom、CatPoison、AuthChain、CorruptRAG、HijackRAG、SilentRetrieval、BadRAG、Micro-Collaborative、ReGENT 注入、**CamoDocs**、**DenialRAG**、**AdversarialCoT**，**以及 Joint-GCG**） | 否 | ✅ **精确且近零成本** | 主流攻击族。Joint-GCG 虽需白盒梯度**构造**载荷，但最终只是往**未改动的**检索器里注入文本，故评估期仍可走缓存；A17 的 AdversarialCoT 虽需多轮反馈优化，但载荷仍是“追加文档”，评估期同样可走缓存 |
 | **A16 干扰/不可答诱导**（Toward Robust RALMs 的 GenADV、MedMisBench 的误导上下文注入） | 否（仅追加干扰文档） | ✅ **精确且近零成本** | 载荷目标是"让模型在不该作答时作答"，不伪造具体答案；构造期只在本地生成上下文，评估期同样走缓存 |
-| **改写既有文档**（GARAG 拼写扰动、P3A 字符扰动、CRCP、Human-Imperceptible） | 是 | ✅ **仍可精确**（局部重算） | 只需重编码**被改写的那几篇**文档（通常 1 篇/题），再用其新向量替换旧向量参与归并 |
+| **改写既有文档**（GARAG 拼写扰动、P3A 字符扰动、CRCP、Human-Imperceptible、**ReGENT 同义词替换**） | 是 | ✅ **仍可精确**（局部重算） | 只需重编码**被改写的那几篇**文档（通常 1 篇/题），再用其新向量替换旧向量参与归并；ReGENT 每题仅扰动 **1 篇**且**不新增文档**，故重算成本仅为 1 篇 |
 | **改变检索器本身**（TrojanRAG：训练并分发检索器） | 是（模型变） | ❌ **必须重算** | 检索器一变，$v_q$ 与全部 $v_d$ 都变；受害者安装的是攻击者训练过的检索器 |
 | 多向量/混合检索（Semantic Chameleon 的 BM25 混合） | 需稀疏通道 | ⚠️ 需新增 | 缓存只覆盖稠密通道 |
 
@@ -240,7 +241,7 @@ $$
 | G3 | **防御拦截点抽象**（检索前 / 检索后 / 重排后 / 生成前 / 生成后） | 全部防御 | 中：定义 `pre_retrieval / post_retrieval / pre_generation / post_generation` 四个钩子 |
 | G4 | **多阶段/多轮编排**（防御可能多次调用 LLM，或不调用 LLM 直接改检索结果） | RobustRAG、PRA-RAG、Astute RAG、CARE-RAG、RAGOrigin、RAGForensics、Cordon-MAS | 大：需要 DAG 式执行器与调用预算记账 |
 | G5 | **LLM-judge 判分口径** | 文献报告 §7.5 建议双口径 | 小：新增 judge prompt + 解析 |
-| G6 | **攻击/防御适配层** | 全部 | 大：`baselines/attacks` 与 `baselines/defenses` 共 32 个项目的 API 各异（详见 §6） |
+| G6 | **攻击/防御适配层** | 全部 | 大：`baselines/attacks` 与 `baselines/defenses` 共 33 个项目的 API 各异（详见 §6） |
 | G7 | **held-out 划分机制** | 通用/可迁移类攻击（GASLITE、corpus-poisoning、GCG） | 小：按 `instance` 切分并冻结 |
 | G8 | **磁盘与索引重建预算** | 需重建索引的方法 | 大：见 §7 |
 | G9 | **多检索器/多生成器矩阵** | Influence Factors 类因子实验、跨模型迁移 | 中：检索器可切换，需重编码 |
@@ -335,7 +336,7 @@ class DefenseAdapter(Protocol):
 | **Micro-Collaborative** | 弱信号分散注入 | 低 | 低 | 缓存 ✅ | < 1 MB |
 | **InceptionRAG** | **ZOSO 零阶优化**：需**受害者响应反馈**迭代 | **≈ 5,000–20,000**（50–200/题） | 中 | 缓存 ✅ | < 1 MB |
 | **SIREN** | **PAIR 越狱循环** + 活体 web 回放 | **≈ 2,500–7,500**（含 124 次试验协议） | 低 | 需活体检索 | — |
-| **ReGENT** | **强化学习循环**（相关性-生成-自然度奖励） | **高（RL 采样）** | 中 | 局部重算 ✅ | 忽略 |
+| **ReGENT** | **RL 循环**：代理检索器 + LLM 构成虚拟环境，PPO 式智能体定位脆弱位置做**同义词替换**；奖励 = 相关性-生成-自然度三项，语义相似度约束保不察觉（IRG-Attack，改写**既有**文档） | **中高**（每查询 RL 迭代；环境每步含 LLM 生成 + 评分两次调用） | 中（代理检索器两阶段训练；RL 策略/价值网为小 MLP） | 局部重算 ✅（仅改 1 篇既有文档） | 忽略（不新增文档） |
 | **A16・GenADV**（Toward Robust RALMs） | 用生成模型批量构造**引开注意力**的对抗文档 | ≈ 300–900（1–3/题） | 低 | 缓存 ✅ | < 1 MB |
 | **A16・MedMisBench** | 生成**形式化规则式**误导上下文（不伪造具体答案） | ≈ 300（1/题） | 低 | 缓存 ✅ | < 1 MB |
 | **CamoDocs** | 良性/对抗子文档**分别切块** + 梯度引导的**分散 token** 替换 + 困惑度（连贯性）重排 | 中（每目标需合成器 LLM 生成草稿；离线构造） | 中（原文用 **1× A6000 48 GB**；**每篇 ≈ 3.22 min**，每目标 β=10 篇） | 缓存 ✅ | 约 1,000 篇/目标（正文档） |
@@ -345,7 +346,7 @@ class DefenseAdapter(Protocol):
 **看要点**：
 
 1. **"零额外 LLM 调用"的方法占比过半**（梯度/HotFlip/CEM/遗传类），它们的成本是**本地 GPU 前向**，可控。
-2. **迭代式攻击是唯一的量级杀手**：InceptionRAG（ZOSO）、SIREN（PAIR）、ReGENT（RL）每题的 LLM/受害者调用是普通方法的 **50–200 倍**。按 95 题/分钟计，20,000 次调用 ≈ **3.5 小时**（单进程）；若按题串行无并行，规模更大。
+2. **迭代式攻击是唯一的量级杀手**：InceptionRAG（ZOSO）、SIREN（PAIR）、ReGENT（RL）每题的 LLM/受害者调用是普通方法的 **50–200 倍**。按 95 题/分钟计，20,000 次调用 ≈ **3.5 小时**（单进程）；若按题串行无并行，规模更大。**ReGENT 是其中唯一有明确单题实测值者**：原文报告**单查询优化 1–15 min**（不含代理模型 4 h 训练），故 100 查询的构造成本 ≈ **1.7–25 h**，且**代理模型与索引可复用**，跨查询不重复付费。
 3. **MIRAGE 与 FlippedRAG 属另一类**：它们**不依赖受害者查询反馈**，但需在本地做**偏好优化 / 对比学习训练**（MIRAGE 原文全部实验在**单张 H200** 上完成，并把“TPO 迭代的高计算成本”列为第一项局限；FlippedRAG 需先黑盒模仿出替代检索器）。因此二者**不吃 100 RPM 的生成配额，瓶颈在 GPU 而非 API**。
 4. **PoisonedRAG 类“每问 N 篇”的构造是次要量级**：1,500 次调用 ≈ **16 分钟**。
 5. **新增的 A17 与 CamoDocs 各代表一种新开销形态**：**CamoDocs** 是**离线几何优化**（单卡 A6000，每篇 ≈ 3.22 min，不增加受害者推理延迟）；**AdversarialCoT** 是**决策式黑盒的多轮交互**（每查询最多 3 轮），成本以**受害者/攻方调用次数**计，而非 GPU —— 两者都**不吃本地 GPU 梯度预算**。
@@ -408,6 +409,7 @@ class DefenseAdapter(Protocol):
 | 优化 | **CamoDocs** | 每篇对抗文档 **≈3.22 min**（单卡 **A6000 48 GB**）；β=**10 篇/目标查询**、投毒率 **0.019% / 0.037% / 0.011%**（HotpotQA/NQ/MS-MARCO）；**不增加受害者推理延迟** | 与 MIRAGE 同为“离线几何优化”型（GPU 主导）；**每目标 10 篇 × 3.22 min 使构造成本随目标数线性放大** |
 | 优化 | **DenialRAG** | 离线**2 次 LLM 调用**产出 1 篇 **≤100 词**文档（无反馈迭代）；Mistral-7B 上三集 ASR **89 / 94 / 86%**；消融去掉“否认”降 **17.1 pp**、成本档→前沿档降 **−30.3 pp（83.5%→53.2%）** | 属“最轻构造”端（与 CorruptRAG 同量级），适合放第一批 |
 | 交互 | **AdversarialCoT** | 每查询最多 **3 轮**黑盒交互（攻方智能体 **KIMI-K2**）；MS-MARCO/NQ/HotpotQA 各 **100 查询**、top-5、Co-Condenser；迭代后 ASR **59–80%**，较基线**最高提升 23%** | 成本以**交互轮次数**计而非 GPU；属§6.2“需读回输出者”一类 |
+| 优化/端到端 | **ReGENT** | 单/双 **NVIDIA A800**；**代理检索器训练 ≈4 h**、索引构建 + 评测 ≈**1.5 h**；**单查询目标文档优化 1–15 min**；ASR：LLaMA3-8B **45%（事实）/47%（立场）**、Qwen2.5-7B **44/41**、GPT-4o **40/43**；ASR_r（检索侧）**64–79%**、ASR_g（生成侧）**54–69%**；APR（扰动率）**3.05–4.62%**、ADSP（语义相似度）**99.34–99.61%**；Quora 场景 **43%** | 100 查询 × 1–15 min ≈ **1.7–25 h**（不含 4 h 代理训练）——与 §6.5「迭代式攻击 10–25 h」同量级；**代理模型可复用**，是该方法相对其他迭代式攻击的优势 |
 | 推理延迟 | **TRIS** | **L1 ≈13 ms、L2 ≈8 ms/查询**（默认 L1+L2 ≈**0.35 s**/查询）；**L3 使延迟升至 ≈16–19 s/查询**（always-on ≈15 s） | L1+L2 可全量常开；L3 必须按需触发（自适应模式只在 L1/L2 分歧时点火，约占 HotpotQA 查询的 21%） |
 | 推理延迟 | **SilentRetrieval** | 组合防御 **6×** 延迟（ASR-LLM 25.6%）、最强防御 **11×**（21.3%） | 与 §6.3 的倍增假设同量级 |
 | 推理延迟 | **RADE** | **3.9×** 延迟（顺序单卡 **3.91 s** vs Vanilla RAG **1.00 s**；双卡调度降至 3.24 s） | 属 §6.3「生成倍增族」的轻端 |
@@ -431,8 +433,8 @@ class DefenseAdapter(Protocol):
 | 受害者生成（31 个攻击，1.0×） | 31 × 12 × 100 = 37,200 次 | **≈ 6.5 h** |
 | 受害者生成（22 个防御，平均 1.8×） | 22 × 12 × 100 × 1.8 = 47,520 次 | **≈ 8.3 h** |
 | **受害者生成小计** | **≈ 85,920 次**（95 题/min） | **≈ 15.1 h** |
-| 攻击构造侧 LLM（迭代式 4 个方法主导） | InceptionRAG + SIREN + ReGENT + **AdversarialCoT** | **≈ 10–25 h** |
-| 攻击构造侧 GPU（无受害者反馈的训练类） | MIRAGE（对抗 TPO）、FlippedRAG（模仿训练）、**CamoDocs（分散 token 优化）** | **≈ 15–40 h（单卡 H200/A6000）** |
+| 攻击构造侧 LLM（迭代式 4 个方法主导） | InceptionRAG + SIREN + ReGENT + **AdversarialCoT**（其中 ReGENT 有实测：100 查询 × 1–15 min ≈ **1.7–25 h**） | **≈ 10–30 h** |
+| 攻击构造侧 GPU（无需受害者反馈的本地训练/优化） | MIRAGE（对抗 TPO）、FlippedRAG（模仿训练）、CamoDocs（分散 token 优化）、**ReGENT（代理检索器训练 ≈4 h + 索引/评测 ≈1.5 h）** | **≈ 15–45 h（单卡 H200/A6000/A800）** |
 | 载荷编码 | 53 方法 × 300 题 × 5 篇 × 300 tok ≈ 23.9 M tok | **≈ 5 min**（70 K tok/s） |
 | 检索复算（缓存路径） | 53 × 12 格 × < 1 s | **< 10 min** |
 | 重排打分（重排相关约 8 个方法） | 8 × 12 × 100 题 × 100 候选 = 96 万对 | **≈ 0.5–2 h（GPU）** |
@@ -442,7 +444,7 @@ class DefenseAdapter(Protocol):
 **读法**：
 
 - 排除迭代式攻击与索引重建，全矩阵**单轮约 17–22 小时**，其中 **受害者生成占 15.1 小时且完全受 100 RPM 客户端配额支配**（GPU 远未饱和）。提高 `RPM_PARALLEL` 或并行多端点可近似线性压缩这 15.1 小时。
-- **迭代式攻击（4 个）与需索引重建/双白盒/本地训练的方法（TrojanRAG + Joint-GCG + MIRAGE + FlippedRAG + CamoDocs）合计 30–60 小时**，占总量 60% 以上——这正是 §8.1 建议把它们放入第三批的原因。
+- **迭代式攻击（4 个）与需索引重建/双白盒/本地训练的方法（TrojanRAG + Joint-GCG + MIRAGE + FlippedRAG + CamoDocs + ReGENT 的代理模型）合计 30–70 小时**，占总量 60% 以上——这正是 §8.1 建议把它们放入第三批的原因。其中 **ReGENT 的相对优势**是：代理检索器与索引**跨查询可复用**（4 h + 1.5 h 为**一次性**投入），单查询增量仅 1–15 min。
 
 ---
 
@@ -460,6 +462,7 @@ class DefenseAdapter(Protocol):
 | R8 | TrojanRAG **需训练并重建检索器**；Joint-GCG **需双白盒梯度**（构造期） | 🟡 中 | 两者性质不同：前者是索引重建，后者是构造开销；均单独排期，不与增量路径混跑 |
 | R9 | 部分方法依赖**外部 API**（GPT-4o 判分、活体 web） | 🟢 低 | 文献 §7.2 已指出多数"白盒"实为本地影子系统；本地 27B 可替代大部分 |
 | R10 | **本机 15 GB RAM**：缓存 `screening.jsonl`（约 30 MB）与向量可放下；但 top-1000 归并需注意驻留 | 🟢 低 | 按题流式处理 |
+| R11 | **部分上游仓库并非完整实现**：`attacks/ReGENT` 上游自述为“审阅参考用主代码”，仅 8 个文件、**缺端到端入口与依赖/环境说明**；`attacks/CamoDocs` 完整（含 requirements 与 scripts）；`misc/AdversarialCoT_case` 仅案例页 | 🟡 中 | 适配前先落 **Runbook**：ReGENT 需自备 MS MARCO passage 语料并按 `surogate_model.md` 的 Tevatron 命令链重跑编码/检索/训练；入场时将这部分工量单列（不入 G6 的统一适配估算） |
 
 **明确不适用/需降级的项**：
 
