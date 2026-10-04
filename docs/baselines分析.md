@@ -1,7 +1,7 @@
 # RAG 攻防 Baseline 统一复现：可行性审定与计算资源评估
 
 > **审定对象**：`/home/shadowx/mnt/sdc2/New_Future/GraduationDesign/SEU_Graduation_Design`（ChunkTrojan 现役代码库）
-> **输入依据**：`docs/RAG安全文献攻防技术手段总结报告.md`（**78 篇独立文献**，攻击 A1–A16 / 防御 D1–D18；实验设计与开销统计见其 §7，优先级评定见 §8，综述补充的攻防文献见 §9，跨域借鉴文献见其 §6.7，低优先级邻域文献见其 §6.8）
+> **输入依据**：`docs/RAG安全文献攻防技术手段总结报告.md`（**81 篇独立文献**，攻击 A1–A17 / 防御 D1–D18；实验设计与开销统计见其 §7，优先级评定见 §8，综述补充的攻防文献见 §9，跨域借鉴文献见其 §6.7，低优先级邻域文献见其 §6.8）
 > **审定日期**：2026-10-02
 > **结论口径**：本文所有资产数字均为**本机实测**；所有计算量估算均标注为**估算**并给出推导依据。未实测处不冒充实测。
 
@@ -87,7 +87,7 @@
 | `tests/experiments/documents.py` | `_chunk_document`、`_token_spans` | 复用：注入文档的分块与偏移 |
 | `src/attack/` | 仅 `"""Reserved for future supported attacks…"""` | **占位，需新建** |
 | `src/defense/` | 空目录 | **需新建** |
-| `baselines/` | 36 个 submodule + 3 个源码快照，分 `attacks/`、`defenses/`、`benchmarks/`、`tools/`、`misc/` 五类（§1.7） | 上游实现载体已就位 |
+| `baselines/` | 38 个 submodule + 3 个源码快照，分 `attacks/`、`defenses/`、`benchmarks/`、`tools/`、`misc/` 五类（§1.7） | 上游实现载体已就位 |
 
 ### 1.5 模型动物园（本地 `/mnt/sdc2/models`，实测存在）
 
@@ -125,18 +125,18 @@
 
 ### 1.7 上游 baseline 清单（`baselines/`）
 
-`baselines/` 按性质分为五类，共 **39 个项目目录**（36 个 Git submodule + 3 个源码快照），另含 `patches/` 本地适配补丁。
+`baselines/` 按性质分为五类，共 **41 个项目目录**（38 个 Git submodule + 3 个源码快照），另含 `patches/` 本地适配补丁。
 
 | 类别 | 数量 | 项目 |
 |---|---:|---|
-| `attacks/` | 13（10 submodule + `OTRB`、`p3a`、`FlippedRAG` 源码快照） | InceptionRAG、PoisonedRAG、corpus-poisoning、GASLITE、GARAG、robust-rag、Topic-FlipRAG、TrojanRAG、Open-Prompt-Injection、MIRAGE、OTRB、p3a、FlippedRAG |
+| `attacks/` | 14（11 submodule + `OTRB`、`p3a`、`FlippedRAG` 源码快照） | InceptionRAG、PoisonedRAG、corpus-poisoning、GASLITE、GARAG、robust-rag、Topic-FlipRAG、TrojanRAG、Open-Prompt-Injection、MIRAGE、CamoDocs、OTRB、p3a、FlippedRAG |
 | `defenses/` | 16 | CEG-RAG、GMTP、GRADA、PIShield、RAGDefender、RobustRAG、TrustRAG、indirect-pia-detection、HijackRAG、Joint-GCG、PRA-RAG、RAG-Responsibility-Attribution、ReliabilityRAG、Secon-Rag、Stealthy_Attacks_Against_RAG、tris |
 | `benchmarks/` | 3 | BIPIA、SafeRAG、SecRAG |
 | `tools/` | 2 | evaluate、gector |
-| `misc/` | 5 | EMNLP2025-Claim-Verification-Survey、Fact-checking-via-Raw-Evidence、llm-misinformation-survey、TRACER、DEO-negation-aware-retrieval |
+| `misc/` | 6 | EMNLP2025-Claim-Verification-Survey、Fact-checking-via-Raw-Evidence、llm-misinformation-survey、TRACER、DEO-negation-aware-retrieval、AdversarialCoT_case |
 
-- **进入统一复现矩阵的是 `attacks/` 与 `defenses/` 两类，共 29 个项目**（26 submodule + `OTRB`、`p3a`、`FlippedRAG`）；它们对应 §4 G6 的适配工作量与 §6 的资源评估。
-- **本地载体与文献方法清单的高度对齐，但仍非一一对应**：本次相对上一版新增的 15 篇（`#64`–`#78`）与本地载体的对应关系如下；仍需按原论文新建适配器的是 **`#66 MedMisBench`（A16）、`#70 Estimating Embedding Vectors`、`#73 ToxicRAG`、`#76 RAGForensics`，以及仅在 §9 综述补充中出现的约 20 篇**。因此适配工作量应按**并集**而非交集估算（§4 G6）。
+- **进入统一复现矩阵的是 `attacks/` 与 `defenses/` 两类，共 30 个项目**（27 submodule + `OTRB`、`p3a`、`FlippedRAG`）；它们对应 §4 G6 的适配工作量与 §6 的资源评估。（另 `misc/AdversarialCoT_case` 为 A17 的案例制品，不含实现代码，不入矩阵。）
+- **本地载体与文献方法清单的高度对齐，但仍非一一对应**：本次相对上一版新增的 3 篇（`#79`–`#81`）与本地载体的对应关系如下；仍需按原论文新建适配器的是 **`#66 MedMisBench`（A16）、`#70 Estimating Embedding Vectors`、`#73 ToxicRAG`、`#76 RAGForensics`、`#80 DenialRAG`，以及仅在 §9 综述补充中出现的约 20 篇**。因此适配工作量应按**并集**而非交集估算（§4 G6）。
 
 | 文献报告条目 | 报告内类别 | 本地载体 | 备注 |
 |---|---|---|---|
@@ -155,6 +155,9 @@
 | `#76` RAGForensics | 防御（**D12** 投毒追溯） | — | 未本地化；"检索—判定—剔除"迭代取证（§6.3） |
 | `#77` FilterRAG | 低优先级（其 §6.8） | — | 多模态 VQA 去幻觉，**不进入复现矩阵** |
 | `#78` 检索增强生成综述:方法与应用 | 综述（其 §6.3） | — | 中文综述，技术底座参照的第二来源 |
+| `#79` CamoDocs | 攻击（**A6** 嵌入分散·抗聚类投毒） | `baselines/attacks/CamoDocs` | 良性/对抗子文档分别切块 + 分散 token 替换 + 连贯性重排；同时躲开查询检测与聚类检测（§6.2、§6.4） |
+| `#80` DenialRAG | 攻击（**A13** 单文档·嵌入式否认） | — | 未本地化；显式点名正确答案并当场否决（§6.2） |
+| `#81` AdversarialCoT | 攻击（**A17** 推理链污染） | `baselines/misc/AdversarialCoT_case`（案例制品，**无实现代码**） | 伪推理链 + 观察/反馈/再优化回路；只可读回输出的决策式黑盒（§6.2） |
 
 - `benchmarks/` 提供评测协议与载荷集合，`tools/` 提供指标与文本扰动能力；两者按需被前两类适配器调用，不单独作为对比方法。
 - `misc/` 是与 RAG 安全相邻、但不属投毒/注入攻防的资料：声明验证、事实核查、半真检测与否定感知检索。**它们不进入统一复现矩阵**，其语料与标签体系与 RAG 投毒任务不可直接混用；若后续需要纳入，须先单独说明口径差异。逐项定位与上游地址见 [baselines/README.md](../baselines/README.md)。
@@ -177,9 +180,9 @@
 | 受害者生成 | `ChatClient` + vLLM 27B | ✅ 直接 | 可换模型后端以复现跨 LLM 迁移 |
 | 判分 | `answers.answer_matches`（归一化 EM / contains） | ✅ 直接 | 报告 §7.5 建议的 **LLM-judge 口径需新增** |
 | 调度 | `poc <cmd> --stage` | ⚠️ 部分 | 需要"攻击→检索→防御→生成→判分"的矩阵编排 |
-| 攻击/防御实现 | 空 | ❌ 新建 | 从 `baselines/attacks` 与 `baselines/defenses` 的 29 个项目适配（§1.7） |
+| 攻击/防御实现 | 空 | ❌ 新建 | 从 `baselines/attacks` 与 `baselines/defenses` 的 32 个项目适配（§1.7） |
 
-**结论**：数据、索引、编码、检索、生成、判分这几层可**零改动或极小改动直接复用**——这已覆盖统一复现 80% 以上的工程量。缺口集中在**重排阶段、可插拔拦截、矩阵编排、以及 29 个攻击/防御项目的适配层**。
+**结论**：数据、索引、编码、检索、生成、判分这几层可**零改动或极小改动直接复用**——这已覆盖统一复现 80% 以上的工程量。缺口集中在**重排阶段、可插拔拦截、矩阵编排、以及 32 个攻击/防御项目的适配层**。
 
 ---
 
@@ -207,7 +210,7 @@ $$
 
 | 攻击族 | 是否改变既有向量 | 可否走缓存路径 | 说明 |
 |---|---|---|---|
-| 追加新文档（PoisonedRAG、corpus-poisoning、GASLITE、OTRB、Phantom、CatPoison、AuthChain、CorruptRAG、HijackRAG、SilentRetrieval、BadRAG、Micro-Collaborative、ReGENT 注入，**以及 Joint-GCG**） | 否 | ✅ **精确且近零成本** | 主流攻击族。Joint-GCG 虽需白盒梯度**构造**载荷，但最终只是往**未改动的**检索器里注入文本，故评估期仍可走缓存 |
+| 追加新文档（PoisonedRAG、corpus-poisoning、GASLITE、OTRB、Phantom、CatPoison、AuthChain、CorruptRAG、HijackRAG、SilentRetrieval、BadRAG、Micro-Collaborative、ReGENT 注入、**CamoDocs**、**DenialRAG**、**AdversarialCoT**，**以及 Joint-GCG**） | 否 | ✅ **精确且近零成本** | 主流攻击族。Joint-GCG 虽需白盒梯度**构造**载荷，但最终只是往**未改动的**检索器里注入文本，故评估期仍可走缓存；A17 的 AdversarialCoT 虽需多轮反馈优化，但载荷仍是“追加文档”，评估期同样可走缓存 |
 | **A16 干扰/不可答诱导**（Toward Robust RALMs 的 GenADV、MedMisBench 的误导上下文注入） | 否（仅追加干扰文档） | ✅ **精确且近零成本** | 载荷目标是"让模型在不该作答时作答"，不伪造具体答案；构造期只在本地生成上下文，评估期同样走缓存 |
 | **改写既有文档**（GARAG 拼写扰动、P3A 字符扰动、CRCP、Human-Imperceptible） | 是 | ✅ **仍可精确**（局部重算） | 只需重编码**被改写的那几篇**文档（通常 1 篇/题），再用其新向量替换旧向量参与归并 |
 | **改变检索器本身**（TrojanRAG：训练并分发检索器） | 是（模型变） | ❌ **必须重算** | 检索器一变，$v_q$ 与全部 $v_d$ 都变；受害者安装的是攻击者训练过的检索器 |
@@ -222,7 +225,7 @@ $$
 | 路径 | 计算量 | 估算耗时 |
 |---|---|---|
 | 全库重检索（HotpotQA @256） | 13.40 M 向量 × 768 维 × 100 题；FP16 向量体积 ≈ 20.6 GB/题，需读 ≈ 2.06 TB | 数小时～十余小时（依是否命中 page cache） |
-| **缓存路径（本文推荐）** | 50 篇载荷 × 100 题 = 5,000 次 768 维内积 ≈ 0.008 GFLOP | **< 1 秒** |
+| **缓存路径（本文推荐）** | 53 篇载荷 × 100 题 = 5,300 次 768 维内积 ≈ 0.008 GFLOP | **< 1 秒** |
 
 > 缓存路径**不仅是"够用"，而是"更精确"**：全库重检索会引入 FAISS 分片级 tie-break 与浮点累积顺序差异（现役记录的最大重算差异为 2.38×10⁻⁷），而缓存归并只需一次确定性的 `lexsort`（`full_clean.merge_top5` 已实现该确定性 tie-break）。
 
@@ -237,7 +240,7 @@ $$
 | G3 | **防御拦截点抽象**（检索前 / 检索后 / 重排后 / 生成前 / 生成后） | 全部防御 | 中：定义 `pre_retrieval / post_retrieval / pre_generation / post_generation` 四个钩子 |
 | G4 | **多阶段/多轮编排**（防御可能多次调用 LLM，或不调用 LLM 直接改检索结果） | RobustRAG、PRA-RAG、Astute RAG、CARE-RAG、RAGOrigin、RAGForensics、Cordon-MAS | 大：需要 DAG 式执行器与调用预算记账 |
 | G5 | **LLM-judge 判分口径** | 文献报告 §7.5 建议双口径 | 小：新增 judge prompt + 解析 |
-| G6 | **攻击/防御适配层** | 全部 | 大：`baselines/attacks` 与 `baselines/defenses` 共 29 个项目的 API 各异（详见 §6） |
+| G6 | **攻击/防御适配层** | 全部 | 大：`baselines/attacks` 与 `baselines/defenses` 共 32 个项目的 API 各异（详见 §6） |
 | G7 | **held-out 划分机制** | 通用/可迁移类攻击（GASLITE、corpus-poisoning、GCG） | 小：按 `instance` 切分并冻结 |
 | G8 | **磁盘与索引重建预算** | 需重建索引的方法 | 大：见 §7 |
 | G9 | **多检索器/多生成器矩阵** | Influence Factors 类因子实验、跨模型迁移 | 中：检索器可切换，需重编码 |
@@ -288,7 +291,7 @@ class DefenseAdapter(Protocol):
 
 ## 6. 各方法计算资源估算
 
-> **本节口径**：按文献报告的**核心集**——攻击族 A1–A16（对应 28 篇）与防御族 D1–D18（对应 22 篇）——逐项估算，共 50 个方法（§6.5）。除核心集外，§9 综述补充的约 20 篇方法（ProGRank、CleanBase、RAGuard、Cordon-MAS、RAGSieve、ContextCite、TracLLM、AttnTrace、SDAG、RAGShield、AV Filter 等）为**扩展集**，其在 `baselines/` 中的载体见 §1.7；§6.2–§6.3 的“调用次数 / 开销等级”为**依机理推算的估算**，§6.4 另列出文献报告 §7.7 已**实测**的原文开销作为实证参照。
+> **本节口径**：按文献报告的**核心集**——攻击族 A1–A17（对应 31 篇）与防御族 D1–D18（对应 22 篇）——逐项估算，共 53 个方法（§6.5）。除核心集外，§9 综述补充的约 20 篇方法（ProGRank、CleanBase、RAGuard、Cordon-MAS、RAGSieve、ContextCite、TracLLM、AttnTrace、SDAG、RAGShield、AV Filter 等）为**扩展集**，其在 `baselines/` 中的载体见 §1.7；§6.2–§6.3 的“调用次数 / 开销等级”为**依机理推算的估算**，§6.4 另列出文献报告 §7.7 已**实测**的原文开销作为实证参照。
 
 ### 6.1 统一成本模型
 
@@ -335,6 +338,9 @@ class DefenseAdapter(Protocol):
 | **ReGENT** | **强化学习循环**（相关性-生成-自然度奖励） | **高（RL 采样）** | 中 | 局部重算 ✅ | 忽略 |
 | **A16・GenADV**（Toward Robust RALMs） | 用生成模型批量构造**引开注意力**的对抗文档 | ≈ 300–900（1–3/题） | 低 | 缓存 ✅ | < 1 MB |
 | **A16・MedMisBench** | 生成**形式化规则式**误导上下文（不伪造具体答案） | ≈ 300（1/题） | 低 | 缓存 ✅ | < 1 MB |
+| **CamoDocs** | 良性/对抗子文档**分别切块** + 梯度引导的**分散 token** 替换 + 困惑度（连贯性）重排 | 中（每目标需合成器 LLM 生成草稿；离线构造） | 中（原文用 **1× A6000 48 GB**；**每篇 ≈ 3.22 min**，每目标 β=10 篇） | 缓存 ✅ | 约 1,000 篇/目标（正文档） |
+| **DenialRAG** | 两阶段内容构造（特征抽取 → 四段式段落：断言 Y → 织入实体 → **否定 X 并给理由** → 收尾权威）+ 表层词校验 | **≈ 600**（2/题，无迭代反馈） | 低 | 缓存 ✅ | < 1 MB（每目标 1 篇 ≤100 词） |
+| **AdversarialCoT（A17）** | 攻方智能体读回模型输出与推理轨迹，据此改写**伪推理链**；相关性/说服力双维度反馈优化 | **中高（需读回受害者输出）**：每查询最多 **3 轮**交互（每轮 1 次受害调用 + 若干攻方调用） | 低（无梯度；成本在 API/交互轮次） | 缓存 ✅ | < 1 MB（单篇） |
 
 **看要点**：
 
@@ -342,6 +348,7 @@ class DefenseAdapter(Protocol):
 2. **迭代式攻击是唯一的量级杀手**：InceptionRAG（ZOSO）、SIREN（PAIR）、ReGENT（RL）每题的 LLM/受害者调用是普通方法的 **50–200 倍**。按 95 题/分钟计，20,000 次调用 ≈ **3.5 小时**（单进程）；若按题串行无并行，规模更大。
 3. **MIRAGE 与 FlippedRAG 属另一类**：它们**不依赖受害者查询反馈**，但需在本地做**偏好优化 / 对比学习训练**（MIRAGE 原文全部实验在**单张 H200** 上完成，并把“TPO 迭代的高计算成本”列为第一项局限；FlippedRAG 需先黑盒模仿出替代检索器）。因此二者**不吃 100 RPM 的生成配额，瓶颈在 GPU 而非 API**。
 4. **PoisonedRAG 类“每问 N 篇”的构造是次要量级**：1,500 次调用 ≈ **16 分钟**。
+5. **新增的 A17 与 CamoDocs 各代表一种新开销形态**：**CamoDocs** 是**离线几何优化**（单卡 A6000，每篇 ≈ 3.22 min，不增加受害者推理延迟）；**AdversarialCoT** 是**决策式黑盒的多轮交互**（每查询最多 3 轮），成本以**受害者/攻方调用次数**计，而非 GPU —— 两者都**不吃本地 GPU 梯度预算**。
 
 ### 6.3 防御方法资源表
 
@@ -378,12 +385,12 @@ class DefenseAdapter(Protocol):
 | **ReliabilityRAG** | 生成时 | **5–6** | ✅ | 同族可证明聚合 |
 | **PIShield** | 输入侧 | **1.0** | 需指令微调 LLM 前向（残差流） | 线性分类器，不生成 |
 | **indirect-pia-detection** | 输入侧 | **1.0** | ✅ 已训练分类器 | 上游已 clone |
-| **TRIS** | 检索期（三层纵深） | **1.0**（L3 另需一次 LLM 一致性校验，非生成） | ✅ 独立判官嵌入模型（本地已有多个）+ 结构过滤；L3 需 LLM | 上游 `defenses/tris` 已就位；**L1 ~12 ms/查询、L3 ~16–19 s/查询**（文献 §7.7） |
+| **TRIS** | 检索期（三层纵深） | **1.0**（L3 另需一次 LLM 一致性校验，非生成） | ✅ 独立判官嵌入模型（本地已有多个）+ 结构过滤；L3 需 LLM | 上游 `defenses/tris` 已就位；**L1 ≈13 ms、L2 ≈8 ms、默认 L1+L2 ≈0.35 s/查询；L3 ≈16–19 s/查询**（原文 §6.7 实测） |
 | **DeRAG** | 架构层 | **1.0** | ⚠️ 需区块链/DHT 环境 | 吞吐 78 k qps（论文值） |
 
 **看要点**：
 
-1. **防御侧的分层特征**：**31 个防御中 18 个不增加生成次数**（检测/过滤/重排/溯源类，含 GMTP、CEG-RAG、RAGDefender、GRADA、ShieldRAG、RAGPart、ProGRank、CleanBase、RAGRank、TRIS 等），成本集中在一次额外前向或一次 cross-encoder 打分——**计算量小，且所需模型基本已在本地**（§1.5）。
+1. **防御侧的分层特征**：**多数防御不增加生成次数**（检测/过滤/重排/溯源类，含 GMTP、CEG-RAG、RAGDefender、GRADA、ShieldRAG、RAGPart、ProGRank、CleanBase、RAGRank、TRIS 等），成本集中在一次额外前向或一次 cross-encoder 打分——**计算量小，且所需模型基本已在本地**（§1.5）。
 2. **可证明鲁棒族（RobustRAG / PRA-RAG / ReliabilityRAG）是生成侧最贵的**：5–6 倍生成。300 题 × 4 档 × 3 数据集的单轮，从 3,600 次生成膨胀到 18,000–21,600 次 → 约 **3.2–3.8 小时**（按 95 题/分钟）。
 3. **溯源族（RAGOrigin / RAGForensics）是迭代最贵的**：5–20 倍。这正对应文献报告 §5.2 缺口 6 的判断——"RAGOrigin 是少数事后溯源工作，但仍是黑盒启发式，缺乏理论保障"：**当前用迭代聚类换取精度，代价是线性增长的 LLM 预算**，这也是该方向可出增量贡献的地方。
 
@@ -398,6 +405,9 @@ class DefenseAdapter(Protocol):
 | 优化 | **InceptionRAG** | **ZOSO 234.1 min** vs 穷举 **6,621.5 min**（**28.3× 加速**） | 印证 §6.2 中 ZOSO 是主要成本项；若无此加速，复现不可行 |
 | 优化 | **MIRAGE** | 全部实验跑在**单张 H200**；每数据集 **1,000 次独立试验**、每次仅注入 **1 篇**；作者把“TPO 迭代的高计算成本”列为第一项局限 | 与 §6.2「MIRAGE 瓶颈在 GPU 而非 API」一致；H200 不可得时需用 H100/A100 外推 |
 | 优化 | **FlippedRAG** | 平均攻击成功率较基线 **+16.7**、观点极性**方向性偏移约 50%**、**约 20% 受试用户认知被带动** | 需先在黑盒系统上枚举查询/候选训练替代检索器；复现成本主要在**模仿阶段** |
+| 优化 | **CamoDocs** | 每篇对抗文档 **≈3.22 min**（单卡 **A6000 48 GB**）；β=**10 篇/目标查询**、投毒率 **0.019% / 0.037% / 0.011%**（HotpotQA/NQ/MS-MARCO）；**不增加受害者推理延迟** | 与 MIRAGE 同为“离线几何优化”型（GPU 主导）；**每目标 10 篇 × 3.22 min 使构造成本随目标数线性放大** |
+| 优化 | **DenialRAG** | 离线**2 次 LLM 调用**产出 1 篇 **≤100 词**文档（无反馈迭代）；Mistral-7B 上三集 ASR **89 / 94 / 86%**；消融去掉“否认”降 **17.1 pp**、成本档→前沿档降 **−30.3 pp（83.5%→53.2%）** | 属“最轻构造”端（与 CorruptRAG 同量级），适合放第一批 |
+| 交互 | **AdversarialCoT** | 每查询最多 **3 轮**黑盒交互（攻方智能体 **KIMI-K2**）；MS-MARCO/NQ/HotpotQA 各 **100 查询**、top-5、Co-Condenser；迭代后 ASR **59–80%**，较基线**最高提升 23%** | 成本以**交互轮次数**计而非 GPU；属§6.2“需读回输出者”一类 |
 | 推理延迟 | **TRIS** | **L1 ≈13 ms、L2 ≈8 ms/查询**（默认 L1+L2 ≈**0.35 s**/查询）；**L3 使延迟升至 ≈16–19 s/查询**（always-on ≈15 s） | L1+L2 可全量常开；L3 必须按需触发（自适应模式只在 L1/L2 分歧时点火，约占 HotpotQA 查询的 21%） |
 | 推理延迟 | **SilentRetrieval** | 组合防御 **6×** 延迟（ASR-LLM 25.6%）、最强防御 **11×**（21.3%） | 与 §6.3 的倍增假设同量级 |
 | 推理延迟 | **RADE** | **3.9×** 延迟（顺序单卡 **3.91 s** vs Vanilla RAG **1.00 s**；双卡调度降至 3.24 s） | 属 §6.3「生成倍增族」的轻端 |
@@ -413,26 +423,26 @@ class DefenseAdapter(Protocol):
 
 ### 6.5 全量矩阵的单轮总量估算
 
-**矩阵定义**：文献报告核心集为 16 个攻击族（A1–A16，对应 28 篇）+ 18 个防御族（D1–D18，对应 22 篇），共 **50 个方法**；连同 §9 综述补充的扩展集，适配项合计约 53 条。按每方法覆盖 **3 数据集 × 4 档 = 12 格**、每格 **100 题**计：
+**矩阵定义**：文献报告核心集为 17 个攻击族（A1–A17，对应 31 篇）+ 18 个防御族（D1–D18，对应 22 篇），共 **53 个方法**；连同 §9 综述补充的扩展集，适配项合计约 56 条。按每方法覆盖 **3 数据集 × 4 档 = 12 格**、每格 **100 题**计：
 
 | 成本项 | 计算 | 估算 |
 |---|---|---|
 | 受害者生成（干净基线） | 12 格 × 100 题 = 1,200 次 | ≈ 13 min |
-| 受害者生成（28 个攻击，1.0×） | 28 × 12 × 100 = 33,600 次 | **≈ 5.9 h** |
+| 受害者生成（31 个攻击，1.0×） | 31 × 12 × 100 = 37,200 次 | **≈ 6.5 h** |
 | 受害者生成（22 个防御，平均 1.8×） | 22 × 12 × 100 × 1.8 = 47,520 次 | **≈ 8.3 h** |
-| **受害者生成小计** | **≈ 82,320 次**（95 题/min） | **≈ 14.4 h** |
-| 攻击构造侧 LLM（迭代式 3 个方法主导） | InceptionRAG + SIREN + ReGENT | **≈ 10–25 h** |
-| 攻击构造侧 GPU（无受害者反馈的训练类） | MIRAGE（对抗 TPO）、FlippedRAG（模仿训练） | **≈ 5–15 h（单卡 H200/A100）** |
-| 载荷编码 | 50 方法 × 300 题 × 5 篇 × 300 tok ≈ 22.5 M tok | **≈ 5 min**（70 K tok/s） |
-| 检索复算（缓存路径） | 50 × 12 格 × < 1 s | **< 10 min** |
+| **受害者生成小计** | **≈ 85,920 次**（95 题/min） | **≈ 15.1 h** |
+| 攻击构造侧 LLM（迭代式 4 个方法主导） | InceptionRAG + SIREN + ReGENT + **AdversarialCoT** | **≈ 10–25 h** |
+| 攻击构造侧 GPU（无受害者反馈的训练类） | MIRAGE（对抗 TPO）、FlippedRAG（模仿训练）、**CamoDocs（分散 token 优化）** | **≈ 15–40 h（单卡 H200/A6000）** |
+| 载荷编码 | 53 方法 × 300 题 × 5 篇 × 300 tok ≈ 23.9 M tok | **≈ 5 min**（70 K tok/s） |
+| 检索复算（缓存路径） | 53 × 12 格 × < 1 s | **< 10 min** |
 | 重排打分（重排相关约 8 个方法） | 8 × 12 × 100 题 × 100 候选 = 96 万对 | **≈ 0.5–2 h（GPU）** |
 | **索引重建（仅 TrojanRAG）** | 1 方法 × 3 数据集 全库重编码 | **≈ 10 h（双机）** |
 | **载荷构造白盒开销（Joint-GCG）** | 27B 检索器+生成器双阶段反向 | **≈ 5–15 h（GPU）** |
 
 **读法**：
 
-- 排除迭代式攻击与索引重建，全矩阵**单轮约 16–21 小时**，其中 **受害者生成占 14.4 小时且完全受 100 RPM 客户端配额支配**（GPU 远未饱和）。提高 `RPM_PARALLEL` 或并行多端点可近似线性压缩这 14.4 小时。
-- **迭代式攻击（3 个）与需索引重建/双白盒/本地训练的方法（TrojanRAG + Joint-GCG + MIRAGE + FlippedRAG）合计 25–50 小时**，占总量 60% 以上——这正是 §8.1 建议把它们放入第三批的原因。
+- 排除迭代式攻击与索引重建，全矩阵**单轮约 17–22 小时**，其中 **受害者生成占 15.1 小时且完全受 100 RPM 客户端配额支配**（GPU 远未饱和）。提高 `RPM_PARALLEL` 或并行多端点可近似线性压缩这 15.1 小时。
+- **迭代式攻击（4 个）与需索引重建/双白盒/本地训练的方法（TrojanRAG + Joint-GCG + MIRAGE + FlippedRAG + CamoDocs）合计 30–60 小时**，占总量 60% 以上——这正是 §8.1 建议把它们放入第三批的原因。
 
 ---
 
@@ -445,7 +455,7 @@ class DefenseAdapter(Protocol):
 | R3 | **生成受 100 RPM 客户端限速**，非 GPU 限速 | 🟡 中 | 迭代式攻击（InceptionRAG/SIREN/ReGENT）的总时长由该配额决定；可提高 `RPM_PARALLEL` 或用多端点 |
 | R4 | 现役协议 **无 reranker**，与 CRCP/P3A/CEG-RAG 的设定不符 | 🟡 中 | 需补重排阶段（本地已有 5 个 cross-encoder 候选） |
 | R5 | **语料来源差异**导致跨文献 ASR 不可直接比较（文献 §7.1：同一攻击在 Security SE 38%、FEVER 0%） | 🟡 中 | 统一复现恰好解决此问题——这正是本方案的价值所在；报告须固定语料层与分母 |
-| R6 | 定向投毒**不区分优化集与测试集**（文献 §7.3，78 篇中仅 6 篇严格隔离） | 🟡 中 | 复现时对每方法标注"是否 held-out"，避免把 ASR 解读为泛化能力（ToxicRAG、FlippedRAG 均未隔离） |
+| R6 | 定向投毒**不区分优化集与测试集**（文献 §7.3 E3，81 篇中仅 6 篇严格隔离） | 🟡 中 | 复现时对每方法标注"是否 held-out"，避免把 ASR 解读为泛化能力（ToxicRAG、FlippedRAG、CamoDocs、DenialRAG、AdversarialCoT 均未隔离） |
 | R7 | **投毒率分母不统一**（文献 E6：500 段落 ～ 2,101 万段落） | 🟡 中 | 统一以"占 `manifest.document_count` 比例"报告 |
 | R8 | TrojanRAG **需训练并重建检索器**；Joint-GCG **需双白盒梯度**（构造期） | 🟡 中 | 两者性质不同：前者是索引重建，后者是构造开销；均单独排期，不与增量路径混跑 |
 | R9 | 部分方法依赖**外部 API**（GPT-4o 判分、活体 web） | 🟢 低 | 文献 §7.2 已指出多数"白盒"实为本地影子系统；本地 27B 可替代大部分 |
@@ -466,11 +476,11 @@ class DefenseAdapter(Protocol):
 
 | 批次 | 范围 | 方法数 | 理由 | 预估 |
 |---|---|---:|---|---|
-| **第一批** | 追加式攻击（corpus-poisoning、GASLITE、OTRB、Phantom、HijackRAG、BadRAG、PoisonedRAG、CorruptRAG、AuthChain、CatPoison、Topic-FlipRAG、Micro-Collaborative、ToxicRAG、**A16 的 GenADV 与 MedMisBench**）× 过滤/检测式防御（GMTP、CEG-RAG、RAGDefender、GRADA、ShieldRAG、RAGRank、TrustRAG、CleanBase、RAGPart/RAGMask、ProGRank、**TRIS（L1+L2）**） | **≈ 26** | 全部走 §3 缓存路径，无索引重建；防御侧不增生成或仅增 1 次 | 以编排框架 + 适配层为主，**单轮 ≈ 5 h** |
+| **第一批** | 追加式攻击（corpus-poisoning、GASLITE、OTRB、Phantom、HijackRAG、BadRAG、PoisonedRAG、CorruptRAG、AuthChain、CatPoison、Topic-FlipRAG、Micro-Collaborative、ToxicRAG、**DenialRAG**、**A16 的 GenADV 与 MedMisBench**）× 过滤/检测式防御（GMTP、CEG-RAG、RAGDefender、GRADA、ShieldRAG、RAGRank、TrustRAG、CleanBase、RAGPart/RAGMask、ProGRank、**TRIS（L1+L2）**） | **≈ 27** | 全部走 §3 缓存路径，无索引重建；防御侧不增生成或仅增 1 次 | 以编排框架 + 适配层为主，**单轮 ≈ 5 h** |
 | **第二批** | 需重排阶段的方法（P3A、CRCP、SilentRetrieval、GARAG、Human-Imperceptible） + 生成倍增族（RobustRAG、PRA-RAG、ReliabilityRAG、Astute RAG、CARE-RAG、BRIDGE、RAGuard、Cordon-MAS） + 溯源族（RAGOrigin、RAGForensics、ContextCite、TracLLM、AttnTrace、RAGSieve） | **≈ 19** | 需补 G2 重排阶段与 G4 多阶段编排 | **单轮 ≈ 8–10 h**（生成倍增主导） |
-| **第三批** | 迭代式攻击（InceptionRAG、SIREN、ReGENT） + 需重建检索器者（TrojanRAG） + 需双白盒梯度者（Joint-GCG） + 严格黑盒但需本地偏好/模仿训练者（**MIRAGE、FlippedRAG**） | **≈ 7** | 成本量级最高（GPU 主导，非 API 主导），需独立预算与排期 | **单轮 ≈ 30–55 h** |
+| **第三批** | 迭代式攻击（InceptionRAG、SIREN、ReGENT、**AdversarialCoT**） + 需重建检索器者（TrojanRAG） + 需双白盒梯度者（Joint-GCG） + 严格黑盒但需本地偏好/模仿/几何优化者（**MIRAGE、FlippedRAG、CamoDocs**） | **≈ 9** | 成本量级最高（GPU/交互轮次主导，非批量 API 主导），需独立预算与排期 | **单轮 ≈ 35–60 h** |
 
-> 批次划分依据是**单轮成本量级**而非难度：第一批 26 个方法的合计成本低于第三批任一个迭代式攻击。§9 综述补充的扩展集方法（ProGRank、CleanBase、RAGuard、Cordon-MAS、RAGSieve、ContextCite、TracLLM、AttnTrace、SDAG、RAGShield、AV Filter 等）已按相同口径并入上述批次。
+> 批次划分依据是**单轮成本量级**而非难度：第一批 27 个方法的合计成本低于第三批任一个迭代式攻击。§9 综述补充的扩展集方法（ProGRank、CleanBase、RAGuard、Cordon-MAS、RAGSieve、ContextCite、TracLLM、AttnTrace、SDAG、RAGShield、AV Filter 等）已按相同口径并入上述批次。
 
 ### 8.2 八条硬性记录要求（直接采用文献报告 §10 第 5 条的"实验设计自查项"）
 
@@ -483,10 +493,12 @@ class DefenseAdapter(Protocol):
 7. 报告 **ACC 须声明三个口径**：① 是攻击条件还是干净条件（ACC vs CACC）；② 分母是全部查询还是仅目标查询；③ 分子是子串包含还是须校验证据。并建议额外报告 **$1-(ACC+ASR)$ 缺口率**，以区分"被攻击成功"与"过度过滤导致答不出"；
 8. 报告 **ASR 须声明四个口径**：① 判定协议（substring / LLM-judge / ASR-LLM / 关键词占比 / 排序）；② 分母（全部查询 / 仅目标查询 / 排除性净增益 / 非查询单位）；③ 立场（攻方 raw ASR / 守方 residual ASR）；④ 同时给出 baseline 与 defended 的**绝对值**（否则"降幅 88.8%"无法复算）。
 
+> **补充（针对新增的 A17 与几何规避类）**：对**推理模型类**攻击（A17 AdversarialCoT）须额外声明 **① 推理侧是否纳入判定**（原文用 $\mathrm{ASR}_r \times \mathrm{ASR}_g = \mathrm{ASR}$，即检索侧与生成侧分别计后再合取）、**② 交互预算**（最多几轮、每轮代价）、**③ 是否逐条人工核验**（原文对全部结果人工核验成败）；对**多信号规避类**（CamoDocs）须额外声明 **④ 被规避的防御信号清单**及其阈值（原文扫描了 7 种防御、并给出 TrustRAG 阈值 0.10→0.99 的全扫描），以及 **⑤ 规避的效用代价**（原文报告 TrustRAG 剔除 **91.48%** 检索文档、干净准确率 **29.13%→5.79%**）。
+
 ### 8.3 立即可做的三件事
 
 1. **固化缓存清单**：为 `screening.jsonl` / `query_vectors.npy` / `search/*.npz` 生成 SHA256 清单（`protocol.json` 已有部分），防止后续实验误改分母。
-2. **写 `src/attack/index_overlay.py`**：实现 §3 的"缓存背景 + 注入向量归并"，这是解锁第一批 26 个方法的最小可用组件。
+2. **写 `src/attack/index_overlay.py`**：实现 §3 的"缓存背景 + 注入向量归并"，这是解锁第一批 27 个方法的最小可用组件。
 3. **补 LLM-judge 判分**（G5）：文献 §7.5 明确指出单一判定口径会带来偏差，且实现量小。
 
 ---
