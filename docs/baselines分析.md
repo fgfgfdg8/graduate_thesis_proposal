@@ -22,6 +22,7 @@
 | 重排器阶段（reranker） | ❌ **缺失** | 现役协议 `reranker: false`；CEG-RAG/P3A/GRADA 类方法需要 |
 | 多阶段拦截框架（检索→重排→生成） | ❌ **缺失** | 现有管线是单链路，防御需可插拔拦截点 |
 | 攻击/防御适配层 | ❌ **缺失** | `src/attack/` 仅占位 docstring，`src/defense/` 为空目录 |
+| 上游实验产物（artifacts） | ⚠️ **部分可用** | `baselines/` 中 14 个库随上游分发了约 670 MB 产物（载荷、检索打分、逐查询判分、多种子重复运行）；但语料/检索器/分块/判分口径与本地均不同，**仅可作联调夹具与口径校验，不可作 ASR 来源**（§1.8） |
 | 磁盘余量 | ⚠️ **紧张** | `/mnt/sdb1` 3.7 T 已用 97%，仅剩 138 GB |
 | 本机算力 | ❌ **不可用于编码/生成** | 本机仅 1×Tesla M40 12 GB + 15 GB RAM；编码与 27B 生成实际在 dancher-01/03 远端完成 |
 
@@ -164,6 +165,100 @@
 - `misc/` 是与 RAG 安全相邻、但不属投毒/注入攻防的资料：声明验证、事实核查、半真检测与否定感知检索。**它们不进入统一复现矩阵**，其语料与标签体系与 RAG 投毒任务不可直接混用；若后续需要纳入，须先单独说明口径差异。逐项定位与上游地址见 [baselines/README.md](../baselines/README.md)。
 - 版本固定方式：每个 submodule 在主仓库以 gitlink 锁定提交，`git submodule update --init` 即可复现；`attacks/OTRB`、`attacks/p3a` 与 `attacks/FlippedRAG` 为源码快照，随主仓库提交（FlippedRAG 仅跟踪代码与小型元数据，其余约 2.6 GB 复现产物按 `.gitignore` 排除）。
 
+### 1.8 上游实验产物（artifacts）盘点
+
+> **扫描口径**：对 `baselines/` 下全部 42 个项目逐个枚举产物型目录（`results/`、`artifacts/`、`outputs/`、`logs/`、`evaluation/`、`figures/`、`plots/` 等）与已跟踪文件，并按 SHA256 做跨库同源性比对。**只统计随上游提交一并分发的文件**（即 `git submodule update --init` 后即可获得），不含本地生成物。扫描脚本 `tmp/scan_artifacts*.py`，产物清单 `tmp/artifact_scan.json`。
+
+**总览**：42 个项目中 **14 个**分发了产物目录，合计约 **670 MB**，**全部随仓库分发**（不占本地额外磁盘，克隆即得）。但其中**真正可用于复现的数据型产物集中在 9 个库**，另 5 个仅含论文插图或绘图脚本。
+
+#### （1）逐库一览（按数据型产物体积降序）
+
+| 库 | 类别 | 产物目录 | 文件数 | 体积 | 内容性质 |
+|---|---|---|---:|---:|---|
+| `attacks/robust-rag` | 攻击 | `artifacts/run-*-rawdata:v0/` | 12 | **254.3 MB** | WandB 导出的逐样本原始表（`raw-data.table.json`，单文件 1.9–42.6 MB） |
+| `defenses/Stealthy_Attacks_Against_RAG` | 防御 | `results/`、`logs/` | 2779 | **177.5 MB** | 逐查询输出（`query_results/` 2453 个）、对抗载荷、**5 个随机种子**的重复运行、321 个运行日志 |
+| `defenses/RAGDefender` | 防御 | `artifacts/` | 2888 | **80.7 MB** | **投毒语料 2200 篇**（按数据集 × 攻击变体分目录）、目标查询集、金标、检索打分、逐查询结果 |
+| `attacks/CamoDocs` | 攻击 | `results/`、`data_examples/` | 13 | **86.4 MB** | 原始/对抗/良性合成文档（9 个 JSON）、BEIR 检索打分、固定目标查询集 |
+| `attacks/PoisonedRAG` | 攻击 | `results/` | 6 | **36.1 MB** | **白盒对抗载荷**（5 篇/题）+ BEIR 检索打分 |
+| `defenses/Secon-Rag` | 防御 | `results/` | 6 | **36.1 MB** | 上述两组文件的**同源副本** |
+| `attacks/TrojanRAG` | 攻击 | `sample data/`、`evaluation/` | 29 | **21.3 MB** | 投毒训练/评测样本（CSV+JSON）、LLM 评测配置与缓存 |
+| `benchmarks/SecRAG` | 基准 | `logs/` | 6 | **2.9 MB** | 攻击生成与基准调试日志 |
+| `defenses/tris` | 防御 | `results/` | 8 | **0.9 MB** | 载荷 + **自适应攻击变体**（`*_adaptive.json`、`nq_bb20.json`） |
+| `defenses/CEG-RAG` | 防御 | `Figures/` | 1 | 5.8 MB | ⚠️ 仅论文插图（非数据） |
+| `attacks/corpus-poisoning` | 攻击 | `figures/` | 2 | 1.0 MB | ⚠️ 仅论文插图 |
+| `defenses/HijackRAG` | 防御 | `figures/` | 1 | 386 KB | ⚠️ 仅论文插图 |
+| `defenses/ReliabilityRAG` | 防御 | `plots/` | 10 | 61.6 KB | ⚠️ 仅 10 个绘图脚本（无数据） |
+| `benchmarks/SafeRAG` | 基准 | `output/` | 1 | 27 B | ⚠️ 仅一个空 README 占位 |
+
+> 其余 28 个项目（含 `ReGENT`、`MIRAGE`、`GARAG`、`GASLITE`、`GMTP`、`GRADA`、`PIShield`、`PRA-RAG`、`Joint-GCG`、`TrustRAG`、`RobustRAG`、全部 `misc/`、`tools/`）**不提供任何实验产物**——只有代码，结果须自行重跑。这与 §6 的"适配工作量按并集估算"互为印证。
+
+#### （2）五类产物及其形态
+
+| 类 | 内容 | 代表实例 | 结构要点 |
+|---|---|---|---|
+| **① 载荷 / 投毒语料** | 可直接使用的对抗文本 | PoisonedRAG `adv_targeted_results/{nq,hotpotqa,msmarco}.json`；RAGDefender `artifacts/poisoned_corpus/`；CamoDocs `data_examples/`；Stealthy `results/adv_targeted_results/`；TrojanRAG `sample data/` | PoisonedRAG 系：`{test_id: {question, correct answer, incorrect answer, adv_texts[5]}}`，**含 gold 与 target 答案**，可直接判分 |
+| **② 检索打分记录** | 每查询 top-K 的 `doc_id → score` | `beir_results/{nq,hotpotqa,msmarco}-contriever.json`（PoisonedRAG / Secon-Rag / CamoDocs） | `{test_id: {doc_id: float}}`，**每查询 100 篇**（本地 `screening.jsonl` 为 1000 篇） |
+| **③ 逐查询生成与判分** | 攻击后模型输出 | Stealthy `results/query_results/{main,passage_scores,adap_poisoned_passage}/`（2453 个）；RAGDefender `results/golden/` | 文件名自带条件编码：`{模型}_{攻击}_{参数}_{语料}_{seed}`；**`seed_{12,49,89,131,157}` 为 5 次重复运行**（§7.6 M8 的稀缺样本） |
+| **④ 运行日志** | 训练/评测文本日志 | Stealthy `logs/`（321 个，含 `adaptive_attacks/`）；SecRAG `logs/`（6 个，最大 1.3 MB） | 非结构化文本，仅排障参考 |
+| **⑤ 第三方评测导出** | WandB 原始表 | `attacks/robust-rag/artifacts/run-*-rawdata:v0/raw-data.table.json` | `{_type: "table", column_types, columns[8], data[n][8], ncols, nrows}`，**非通用格式**，解析成本高 |
+
+#### （3）关键发现：跨库**字节级同源**（SHA256 验证）
+
+同一份产物被**多个库重复携带**，说明这些库从 PoisonedRAG 派生并共享同一套上游工件：
+
+| 文件 | 出现的库 | SHA256（前 16 位） | 判定 |
+|---|---|---|---|
+| `adv_targeted_results/nq.json` | PoisonedRAG、**RAGDefender**、Secon-Rag、tris | `44df711454a9bada` | **4 库完全一致** |
+| `adv_targeted_results/hotpotqa.json` | 同上 4 库 | `5119d6f9fd53cb0e` | **4 库完全一致** |
+| `adv_targeted_results/msmarco.json` | 同上 4 库 | `d6bf508ebb0e31e0` | **4 库完全一致** |
+| `beir_results/hotpotqa-contriever.json` | PoisonedRAG、CamoDocs、Secon-Rag | `7f1713731dfd58ac` | **3 库完全一致**（22.4 MB） |
+| `beir_results/msmarco-contriever.json` | PoisonedRAG、Secon-Rag | `6af85dd8d65eff4a` | **2 库完全一致** |
+| `beir_results/nq-contriever.json` | PoisonedRAG、Secon-Rag vs CamoDocs | `a5e9d9…` vs `f0e55c…` | ⚠️ **2 个不同版本**，需按来源区分 |
+
+**含义（三点，均对复现有利）**：
+1. **载荷只需入库一次**：这 7 份 `adv_targeted_results` 合计约 1.4 MB × 冗余 4 份；`beir_results` 三份合计 35.8 MB × 冗余 3 份（去重可省约 **64 MB**）。
+2. **天然构成"公共基线"**：同一批毒文本 + 同一批目标查询 + 同一套检索打分，可作为**跨方法对照的固定分母**（正好回应文献报告 §7.5 E9/E10「分母口径不统一」）。
+3. **⚠️ 陷阱**：`nq-contriever.json` 的两个版本说明**同名文件不等于同内容**；引用产物时必须**带 SHA256**，否则会把不同版本的检索背景混用（§8.3 第 1 条"固化缓存清单"因此同样适用于上游产物）。
+
+#### （4）对本项目的复用价值分档
+
+| 档 | 产物 | 复用方式 | 可省/可得 |
+|---|---|---|---|
+| **A｜高** | `adv_targeted_results`（PoisonedRAG 白盒载荷，5 篇/题，含 gold + target） | 作为**已知有效载荷**直接注入，跳过载荷构造期 | 省下 §6.4 的 **≈10.8 h**（300 题 × 5 × 26 s）——但**仅用于管线联调**，不可用于报告 ASR（语料与检索器不同，见 (5)） |
+| **A｜高** | RAGDefender `poisoned_corpus/`（**2200 篇**，hotpotqa/nq 各 5 种策略、msmarco 11 种策略，含 `paraphrasing_attack`、`synonym_substitution_attack`、`semantic_dispersion_attack`） | 提供**投毒语料的物理格式样例**与多策略负样本池；`mixed_strategy_attack` 可直接充当"多策略混合"评测集 | 语料格式对齐；省去自造多策略投毒语料的工量 |
+| **A｜高** | Stealthy `query_results/main/*`（**1380 个，含 `seed_{12,49,89,131,157}` 五次重复运行**） | 逐查询原始输出 + **多种子**，用于校验本仓库判分口径；也是 §7.6 统计检验（仅 40% 文献具备）的现成对照 | 判分口径交叉验证；补齐"多种子/方差"参照 |
+| **B｜中** | `beir_results/*-contriever.json`（每查询 top-100 的精确打分） | 与本地 `screening.jsonl` 的 **top-1000 互为独立实现**，取交集可交叉校验检索层正确性 | 检索层正确性验证（免费的第二意见） |
+| **B｜中** | `tris results/adv_targeted_results/*_adaptive*.json`、`nq_bb20.json`（含 `paraphrased_question`） | 提供**自适应攻击变体**（同义改写触发词），可用于验证过滤类防御的抗改写能力 | 自适应评测集（对应 §8.2 补充 ③） |
+| **B｜中** | CamoDocs `target_queries_fixed/*`、SecRAG `data/*_test.jsonl` + `data/attack/*_common_questions.jsonl` | 固定的目标查询集与"公共问题"集 | 问题集来源的第二参照 |
+| **C｜低** | robust-rag `raw-data.table.json`（254 MB，WandB `table` 类型） | 结构非通用，解析成本 > 收益；仅记录存在 | 不建议消费 |
+| **C｜低** | 各类日志（Stealthy 321 个、SecRAG 6 个） | 非结构化文本 | 排障参考 |
+| **C｜低** | CEG-RAG / HijackRAG / corpus-poisoning 的 `Figures/`、ReliabilityRAG `plots/*.py` | **仅论文插图与绘图脚本**，无实验数据 | 无复用价值 |
+
+#### （5）与本地资产的差异（**不可直接混用**，务必先对齐五项）
+
+| 维度 | 本地 300-query PoC | 上游产物 |
+|---|---|---|
+| **语料** | HotpotQA fullwiki 5,486,212 / MS MARCO doc dev 401,855 / NQ validation 7,378 | 多为 **BEIR 加工版**（NQ 2.6M / HotpotQA 5.2M / MS MARCO 8.8M）或 SQuAD / RealtimeQA / wiki 子集 |
+| **检索器** | Contriever（本地 837 M 权重，FP16，masked-mean pooling） | Contriever（BEIR 版）——**权重版本与池化实现需逐字节核对** |
+| **目标查询** | 300 抽样（InceptionRAG 五类语义配额，`fill_seed=20260924`） | PoisonedRAG 原始 **100 题/数据集**（`test1..test100`，无分层配额） |
+| **分块** | CLS/SEP v2 协议，64/128/256/512 四档（overlap=0） | **无分块概念**（整篇文档参与检索） |
+| **判分** | EM + alias contains（`answers.answer_matches`） | 各库不一：substring / LLM-judge / keyword / 排序 |
+
+因此**上游产物不作为本仓库的 ASR 数据来源**，而定位为三类用途：
+1. **管线烟囱测试夹具**——验证 §3 的"缓存背景 + 注入向量归并"链路与判分链路能跑通（**这是"写 `src/attack/index_overlay.py`"这一步的现成输入**，§8.3 第 2 条）；
+2. **判分口径校验参照**——对同一条模型输出，本仓库判分与上游判分应给出一致结论，否则说明口径有别（E9/E10 的实测对照）；
+3. **检索实现交叉验证**——本地 top-1000 与上游 top-100 在重叠区间内应逐位一致。
+
+#### （6）产物卫生问题（需在引用前处理）
+
+| 库 | 问题 | 影响 |
+|---|---|---|
+| `defenses/TrustRAG` | 提交了 Office 临时锁文件 `trustrag/modules/clusters/result/.~美国_cluster_double.xlsx` | 无害，但会污染遍历脚本 |
+| `attacks/TrojanRAG` | 提交了 `evaluation/**/__pycache__/*.pyc`（8 个） | 无害，但属于应被 `.gitignore` 的产物 |
+| `attacks/CamoDocs` | `logs/` 仅有 `.gitkeep`（空目录占位） | 该库实际**未分发日志** |
+| `attacks/robust-rag` | `artifacts/` 目录名含 `:`（`rawdata:v0`） | 在部分文件系统/打包工具上非法，脚本遍历需转义 |
+| `defenses/CEG-RAG` | `Figures/Model_CEG_Final2.png` 单文件 **5.8 MB** | 插图体积远超该库代码本身，是克隆体积主要来源 |
+
 ---
 
 ## 2. 复用性判定：逐环节
@@ -176,6 +271,7 @@
 | 语料索引 | 12 套，`complete` | ✅ 直接 | 攻击只追加时**不需重建**（见 §3） |
 | 精确检索 | `full_clean.retrieve`（全分片 FAISS，按片缓存 npz） | ✅ 直接 | 只对"修改既有文档"的攻击需要局部重算 |
 | 检索背景复用 | `cached_retrieval.cached_background` + `screening.jsonl` | ✅ 直接 | 这正是注入式攻击的接入点 |
+| 上游实验产物 | PoisonedRAG/Stealthy/RAGDefender/CamoDocs 等 14 库的 `results/`、`artifacts/`（§1.8） | ⚠️ 作夹具/校验，不作数据源 | 需先做**口径对齐**（语料、检索器、分块、判分四项）；`adv_targeted_results` 可直接充当 `index_overlay` 的联调输入 |
 | 重排 | **无** | ❌ 新建 | 引入 cross-encoder（本地已有 5 个候选模型） |
 | 上下文组装 | `CONTEXT: {ctx}\nQUESTION: {q}`，两空行连 5 块 | ⚠️ 可配置化 | 各 baseline 的 prompt/上下文格式不同，需抽象 |
 | 受害者生成 | `ChatClient` + vLLM 27B | ✅ 直接 | 可换模型后端以复现跨 LLM 迁移 |
@@ -245,6 +341,7 @@ $$
 | G7 | **held-out 划分机制** | 通用/可迁移类攻击（GASLITE、corpus-poisoning、GCG） | 小：按 `instance` 切分并冻结 |
 | G8 | **磁盘与索引重建预算** | 需重建索引的方法 | 大：见 §7 |
 | G9 | **多检索器/多生成器矩阵** | Influence Factors 类因子实验、跨模型迁移 | 中：检索器可切换，需重编码 |
+| G10 | **上游产物的归一化读入层** | 全部可用夹具 | 中：需把 5 类异构产物（① 载荷 JSON、② `doc_id→score` 打分表、③ 逐查询判分、④ 文本日志、⑤ WandB table）统一读成 `InjectedDoc` / `RetrievalHit` / `JudgeResult` 三型；并**按 SHA256 索引**以避开 `nq-contriever.json` 的双版本陷阱（§1.8）。无此层则产物只能人工翻查 |
 
 ---
 
@@ -463,6 +560,7 @@ class DefenseAdapter(Protocol):
 | R9 | 部分方法依赖**外部 API**（GPT-4o 判分、活体 web） | 🟢 低 | 文献 §7.2 已指出多数"白盒"实为本地影子系统；本地 27B 可替代大部分 |
 | R10 | **本机 15 GB RAM**：缓存 `screening.jsonl`（约 30 MB）与向量可放下；但 top-1000 归并需注意驻留 | 🟢 低 | 按题流式处理 |
 | R11 | **部分上游仓库并非完整实现**：`attacks/ReGENT` 上游自述为“审阅参考用主代码”，仅 8 个文件、**缺端到端入口与依赖/环境说明**；`attacks/CamoDocs` 完整（含 requirements 与 scripts）；`misc/AdversarialCoT_case` 仅案例页 | 🟡 中 | 适配前先落 **Runbook**：ReGENT 需自备 MS MARCO passage 语料并按 `surogate_model.md` 的 Tevatron 命令链重跑编码/检索/训练；入场时将这部分工量单列（不入 G6 的统一适配估算） |
+| R12 | **上游产物易被误当成本仓库结果**：`adv_targeted_results` 与 `beir_results` 在 4 个库中字节同源，且 `nq-contriever.json` 存在 **2 个不同版本**；这些产物建立在 BEIR 语料与不同检索器版本上，与本地 300-query PoC 的语料/分块/判分均不同 | 🟡 中 | 引用产物时必须**附带 SHA256 与来源库名**（§1.8(3)）；在 `protocol.json` 的缓存清单中把上游产物单独分区，禁止与本地 `screening.jsonl` 混用分母 |
 
 **明确不适用/需降级的项**：
 
@@ -498,11 +596,12 @@ class DefenseAdapter(Protocol):
 
 > **补充（针对新增的 A17 与几何规避类）**：对**推理模型类**攻击（A17 AdversarialCoT）须额外声明 **① 推理侧是否纳入判定**（原文用 $\mathrm{ASR}_r \times \mathrm{ASR}_g = \mathrm{ASR}$，即检索侧与生成侧分别计后再合取）、**② 交互预算**（最多几轮、每轮代价）、**③ 是否逐条人工核验**（原文对全部结果人工核验成败）；对**多信号规避类**（CamoDocs）须额外声明 **④ 被规避的防御信号清单**及其阈值（原文扫描了 7 种防御、并给出 TrustRAG 阈值 0.10→0.99 的全扫描），以及 **⑤ 规避的效用代价**（原文报告 TrustRAG 剔除 **91.48%** 检索文档、干净准确率 **29.13%→5.79%**）。
 
-### 8.3 立即可做的三件事
+### 8.3 立即可做的四件事
 
-1. **固化缓存清单**：为 `screening.jsonl` / `query_vectors.npy` / `search/*.npz` 生成 SHA256 清单（`protocol.json` 已有部分），防止后续实验误改分母。
-2. **写 `src/attack/index_overlay.py`**：实现 §3 的"缓存背景 + 注入向量归并"，这是解锁第一批 27 个方法的最小可用组件。
-3. **补 LLM-judge 判分**（G5）：文献 §7.5 明确指出单一判定口径会带来偏差，且实现量小。
+1. **固化缓存清单**：为 `screening.jsonl` / `query_vectors.npy` / `search/*.npz` 生成 SHA256 清单（`protocol.json` 已有部分），防止后续实验误改分母。**同时把 §1.8 的上游产物纳入同一份清单**（按库名 + SHA256 记录），以避开 `nq-contriever.json` 的双版本陷阱。
+2. **写 `src/attack/index_overlay.py`**：实现 §3 的"缓存背景 + 注入向量归并"，这是解锁第一批 27 个方法的最小可用组件。**联调输入直接取 `attacks/PoisonedRAG/results/adv_targeted_results/nq.json`**——它已给出每条目标问题的 `question` / `correct answer` / `incorrect answer` / 5 篇 `adv_texts`，无需自行构造载荷即可验证归并链路（§1.8(4) 档 A）。
+3. **补 LLM-judge 判分**（G5）：文献 §7.5 明确指出单一判定口径会带来偏差，且实现量小。**可用 Stealthy 的 `query_results/main/` 作校准集**（1380 个逐查询输出 + 5 个随机种子）。
+4. **写上游产物读入层**（G10）：把 5 类异构产物归一为 `InjectedDoc` / `RetrievalHit` / `JudgeResult` 三型，并顺带清理 §1.8(6) 的产物卫生问题（TrustRAG 的 Office 锁文件、TrojanRAG 的 `.pyc`、`robust-rag` 目录名中的 `:`）。
 
 ---
 
@@ -521,10 +620,11 @@ class DefenseAdapter(Protocol):
 | 硬件与磁盘 | `nvidia-smi`、`nproc`、`free -g`、`df -h` |
 | 本地模型清单 | `/mnt/sdc2/models`（`du -sh`） |
 | baselines 清单与版本 | `.gitmodules`、各 submodule 的 gitlink 与 HEAD、`baselines/README.md` |
+| 上游实验产物清单、体积、SHA256 同源性 | `tmp/scan_artifacts.py` → `tmp/artifact_scan.json`；`tmp/scan_artifacts4.py` → `tmp/artifact_shared.txt`；`tmp/scan_artifacts5.py` → `tmp/artifact_size.txt`；`tmp/scan_artifacts6.py` → `tmp/artifact_track.txt` |
 | 文献侧开销实测（§6.4） | `docs/RAG安全文献攻防技术手段总结报告.md` §7.7（逐篇原文自报值，已在 `docs/papers/` 原文 PDF 逐条核对） |
 
-**估算声明**：本报告的数字分三层，不可混用——①**本机实测**：§1 全部资产、§6.1 的检索/编码/生成吞吐；②**文献原文自报**：§6.4 全部数据（引自文献报告 §7.7 并经 `docs/papers/` 原文 PDF 逐条核对，非本机实测，不可直接换算到本仓库语料）；③**基于机理的估算**：§6.2 / §6.3 的"额外 LLM 调用次数""GPU 开销等级""重排打分耗时"，以及 §6.5 的总量（其中干净基线生成、受害者生成、载荷编码、检索复算四项**基于 ① 的实测吞吐推算**）。所有涉及具体方法的机理描述引自 `docs/RAG安全文献攻防技术手段总结报告.md` 第二、三、六章，口径与统计定义（ACC/ASR 分子分母、机理实验分布、设置与开销）见其 §7，优先级评定见其 §8，综述补充文献见其 §9，低优先级邻域文献见其 §6.8。
+**估算声明**：本报告的数字分四层，不可混用——①**本机实测**：§1.1–§1.7 全部资产、§6.1 的检索/编码/生成吞吐；②**文献原文自报**：§6.4 全部数据（引自文献报告 §7.7 并经 `docs/papers/` 原文 PDF 逐条核对，非本机实测，不可直接换算到本仓库语料）；③**上游产物实录**：§1.8 的体积、文件数、SHA256 与结构均为对已克隆 submodule 的**本机静态扫描值**（产物本身由上游作者产生，非本机实验所得）；④**基于机理的估算**：§6.2 / §6.3 的"额外 LLM 调用次数""GPU 开销等级""重排打分耗时"，以及 §6.5 的总量（其中干净基线生成、受害者生成、载荷编码、检索复算四项**基于 ① 的实测吞吐推算**）。所有涉及具体方法的机理描述引自 `docs/RAG安全文献攻防技术手段总结报告.md` 第二、三、六章，口径与统计定义（ACC/ASR 分子分母、机理实验分布、设置与开销）见其 §7，优先级评定见其 §8，综述补充文献见其 §9，低优先级邻域文献见其 §6.8。
 
 ---
 
-*报告生成：基于 SEU_Graduation_Design 现役代码与数据的静态盘点（12 套索引、967 个分片、300 抽样题、400×4 条 screening 记录、模型动物园 18 个本地模型）+ 已归档吞吐记录的再计算。未执行任何对现有索引的写操作；未运行任何攻防实验。*
+*报告生成：基于 SEU_Graduation_Design 现役代码与数据的静态盘点（12 套索引、967 个分片、300 抽样题、400×4 条 screening 记录、模型动物园 18 个本地模型、**42 个 baseline 项目的 670 MB 上游实验产物**）+ 已归档吞吐记录的再计算。未执行任何对现有索引的写操作；未运行任何攻防实验。*
