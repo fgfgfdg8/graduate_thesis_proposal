@@ -169,15 +169,15 @@
 
 > **扫描口径**：对 `baselines/` 下全部 42 个项目逐个枚举产物型目录（`results/`、`artifacts/`、`outputs/`、`logs/`、`evaluation/`、`figures/`、`plots/` 等）与已跟踪文件，并按 SHA256 做跨库同源性比对。**只统计随上游提交一并分发的文件**（即 `git submodule update --init` 后即可获得），不含本地生成物。扫描脚本 `tmp/scan_artifacts*.py`，产物清单 `tmp/artifact_scan.json`。
 
-**总览**：42 个项目中 **14 个**分发了产物目录，合计约 **670 MB**，**全部随仓库分发**（不占本地额外磁盘，克隆即得）。但其中**真正可用于复现的数据型产物集中在 9 个库**，另 5 个仅含论文插图或绘图脚本。
+**总览**：42 个项目中 **14 个**分发了产物目录，合计约 **670 MB**，**全部随仓库分发**（克隆即得，占用本地磁盘）。但其中**真正可用于复现的数据型产物集中在 9 个库**，另 5 个仅含论文插图或绘图脚本。
 
 #### （1）逐库一览（按数据型产物体积降序）
 
 | 库 | 类别 | 产物目录 | 文件数 | 体积 | 内容性质 |
 |---|---|---|---:|---:|---|
-| `attacks/robust-rag` | 攻击 | `artifacts/run-*-rawdata:v0/` | 12 | **254.3 MB** | WandB 导出的逐样本原始表（`raw-data.table.json`，单文件 1.9–42.6 MB） |
+| `attacks/robust-rag` | 攻击 | `artifacts/run-*-rawdata:v0/` | 12 | **254.3 MB** | WandB 导出的 11 份逐样本原始表 + 1 份结果表（原始表 `raw-data.table.json`） |
 | `defenses/Stealthy_Attacks_Against_RAG` | 防御 | `results/`、`logs/` | 2779 | **177.5 MB** | 逐查询输出（`query_results/` 2453 个）、对抗载荷、**5 个随机种子**的重复运行、321 个运行日志 |
-| `defenses/RAGDefender` | 防御 | `artifacts/` | 2888 | **80.7 MB** | **投毒语料 2200 篇**（按数据集 × 攻击变体分目录）、目标查询集、金标、检索打分、逐查询结果 |
+| `defenses/RAGDefender` | 防御 | `artifacts/` | 2888 | **80.7 MB** | **投毒语料目录 2200 个文件**（含 passage 文本、答案候选与指标 CSV，见 (7)）、目标查询集、金标、检索打分、逐查询结果 |
 | `attacks/CamoDocs` | 攻击 | `results/`、`data_examples/` | 13 | **86.4 MB** | 原始/对抗/良性合成文档（9 个 JSON）、BEIR 检索打分、固定目标查询集 |
 | `attacks/PoisonedRAG` | 攻击 | `results/` | 6 | **36.1 MB** | **白盒对抗载荷**（5 篇/题）+ BEIR 检索打分 |
 | `defenses/Secon-Rag` | 防御 | `results/` | 6 | **36.1 MB** | 上述两组文件的**同源副本** |
@@ -200,7 +200,7 @@
 | **② 检索打分记录** | 每查询 top-K 的 `doc_id → score` | `beir_results/{nq,hotpotqa,msmarco}-contriever.json`（PoisonedRAG / Secon-Rag / CamoDocs） | `{test_id: {doc_id: float}}`，**每查询 100 篇**（本地 `screening.jsonl` 为 1000 篇） |
 | **③ 逐查询生成与判分** | 攻击后模型输出 | Stealthy `results/query_results/{main,passage_scores,adap_poisoned_passage}/`（2453 个）；RAGDefender `results/golden/` | 文件名自带条件编码：`{模型}_{攻击}_{参数}_{语料}_{seed}`；**`seed_{12,49,89,131,157}` 为 5 次重复运行**（§7.6 M8 的稀缺样本） |
 | **④ 运行日志** | 训练/评测文本日志 | Stealthy `logs/`（321 个，含 `adaptive_attacks/`）；SecRAG `logs/`（6 个，最大 1.3 MB） | 非结构化文本，仅排障参考 |
-| **⑤ 第三方评测导出** | WandB 原始表 | `attacks/robust-rag/artifacts/run-*-rawdata:v0/raw-data.table.json` | `{_type: "table", column_types, columns[8], data[n][8], ncols, nrows}`，**非通用格式**，解析成本高 |
+| **⑤ 第三方评测导出** | WandB 原始表 | `attacks/robust-rag/artifacts/run-*-rawdata:v0/raw-data.table.json` | `{_type: "table", column_types, columns[11], data[n][11], ncols, nrows}`，原始表含 11 列，保留拼接 prompt，未独立保存 payload 边界 |
 
 #### （3）关键发现：跨库**字节级同源**（SHA256 验证）
 
@@ -224,13 +224,13 @@
 
 | 档 | 产物 | 复用方式 | 可省/可得 |
 |---|---|---|---|
-| **A｜高** | `adv_targeted_results`（PoisonedRAG 白盒载荷，5 篇/题，含 gold + target） | 作为**已知有效载荷**直接注入，跳过载荷构造期 | 省下 §6.4 的 **≈10.8 h**（300 题 × 5 × 26 s）——但**仅用于管线联调**，不可用于报告 ASR（语料与检索器不同，见 (5)） |
-| **A｜高** | RAGDefender `poisoned_corpus/`（**2200 篇**，hotpotqa/nq 各 5 种策略、msmarco 11 种策略，含 `paraphrasing_attack`、`synonym_substitution_attack`、`semantic_dispersion_attack`） | 提供**投毒语料的物理格式样例**与多策略负样本池；`mixed_strategy_attack` 可直接充当"多策略混合"评测集 | 语料格式对齐；省去自造多策略投毒语料的工量 |
+| **A｜高** | `adv_targeted_results`（PoisonedRAG 白盒载荷，5 篇/题，含 gold + target） | 作为**上游预制载荷**用于检索/判分对照，跳过载荷构造期 | 省下 §6.4 的 **≈10.8 h**（300 题 × 5 × 26 s）——但**仅用于管线联调**，不可用于报告 ASR（语料与检索器不同，见 (5)） |
+| **A｜高** | RAGDefender `poisoned_corpus/`（**2200 个文件**，含 1800 个文档型文本文件；hotpotqa/nq 各 5 种策略、msmarco 11 种策略，含 `paraphrasing_attack`、`synonym_substitution_attack`、`semantic_dispersion_attack`） | 提供**投毒语料的物理格式样例**与多策略负样本池；`mixed_strategy_attack` 可直接充当"多策略混合"评测集 | 语料格式对齐；省去自造多策略投毒语料的工量 |
 | **A｜高** | Stealthy `query_results/main/*`（**1380 个，含 `seed_{12,49,89,131,157}` 五次重复运行**） | 逐查询原始输出 + **多种子**，用于校验本仓库判分口径；也是 §7.6 统计检验（仅 40% 文献具备）的现成对照 | 判分口径交叉验证；补齐"多种子/方差"参照 |
 | **B｜中** | `beir_results/*-contriever.json`（每查询 top-100 的精确打分） | 与本地 `screening.jsonl` 的 **top-1000 互为独立实现**，取交集可交叉校验检索层正确性 | 检索层正确性验证（免费的第二意见） |
 | **B｜中** | `tris results/adv_targeted_results/*_adaptive*.json`、`nq_bb20.json`（含 `paraphrased_question`） | 提供**自适应攻击变体**（同义改写触发词），可用于验证过滤类防御的抗改写能力 | 自适应评测集（对应 §8.2 补充 ③） |
 | **B｜中** | CamoDocs `target_queries_fixed/*`、SecRAG `data/*_test.jsonl` + `data/attack/*_common_questions.jsonl` | 固定的目标查询集与"公共问题"集 | 问题集来源的第二参照 |
-| **C｜低** | robust-rag `raw-data.table.json`（254 MB，WandB `table` 类型） | 结构非通用，解析成本 > 收益；仅记录存在 | 不建议消费 |
+| **C｜低** | robust-rag `raw-data.table.json`（254 MB，WandB `table` 类型） | 可解析 prompt 与生成结果，但无法可靠分离逐 payload 边界 | 可做输出审计；逐文档长度不可由 prompt 推定 |
 | **C｜低** | 各类日志（Stealthy 321 个、SecRAG 6 个） | 非结构化文本 | 排障参考 |
 | **C｜低** | CEG-RAG / HijackRAG / corpus-poisoning 的 `Figures/`、ReliabilityRAG `plots/*.py` | **仅论文插图与绘图脚本**，无实验数据 | 无复用价值 |
 
@@ -241,13 +241,13 @@
 | **语料** | HotpotQA fullwiki 5,486,212 / MS MARCO doc dev 401,855 / NQ validation 7,378 | 多为 **BEIR 加工版**（NQ 2.6M / HotpotQA 5.2M / MS MARCO 8.8M）或 SQuAD / RealtimeQA / wiki 子集 |
 | **检索器** | Contriever（本地 837 M 权重，FP16，masked-mean pooling） | Contriever（BEIR 版）——**权重版本与池化实现需逐字节核对** |
 | **目标查询** | 300 抽样（InceptionRAG 五类语义配额，`fill_seed=20260924`） | PoisonedRAG 原始 **100 题/数据集**（`test1..test100`，无分层配额） |
-| **分块** | CLS/SEP v2 协议，64/128/256/512 四档（overlap=0） | **无分块概念**（整篇文档参与检索） |
+| **分块** | CLS/SEP v2 协议，64/128/256/512 四档（overlap=0） | 多为预切 passage 或合成短文；实际长度与边界见 (7) |
 | **判分** | EM + alias contains（`answers.answer_matches`） | 各库不一：substring / LLM-judge / keyword / 排序 |
 
 因此**上游产物不作为本仓库的 ASR 数据来源**，而定位为三类用途：
 1. **管线烟囱测试夹具**——验证 §3 的"缓存背景 + 注入向量归并"链路与判分链路能跑通（**这是"写 `src/attack/index_overlay.py`"这一步的现成输入**，§8.3 第 2 条）；
 2. **判分口径校验参照**——对同一条模型输出，本仓库判分与上游判分应给出一致结论，否则说明口径有别（E9/E10 的实测对照）；
-3. **检索实现交叉验证**——本地 top-1000 与上游 top-100 在重叠区间内应逐位一致。
+3. **检索实现交叉验证**——在语料、权重、文本预处理、相似度及精度完全一致时，核对本地 top-1000 与上游 top-100 的排序差异。
 
 #### （6）产物卫生问题（需在引用前处理）
 
@@ -258,6 +258,140 @@
 | `attacks/CamoDocs` | `logs/` 仅有 `.gitkeep`（空目录占位） | 该库实际**未分发日志** |
 | `attacks/robust-rag` | `artifacts/` 目录名含 `:`（`rawdata:v0`） | 在部分文件系统/打包工具上非法，脚本遍历需转义 |
 | `defenses/CEG-RAG` | `Figures/Model_CEG_Final2.png` 单文件 **5.8 MB** | 插图体积远超该库代码本身，是克隆体积主要来源 |
+
+#### （7）三种 tokenizer 的原文与 payload 长度实测（2026-10-05）
+
+**结论：现成载荷可以复用于短块检索对照；按 512-token 窗口，没有一条独立 payload 能自然切出两个 chunk。** 许多 NQ、HotpotQA 问题有本地长 gold 文档，适合作为重构载荷时的问题与载体来源。两项条件需要分别筛选。
+
+**统计口径。** 使用本地 Contriever、`msmarco-roberta-base-ance-firstp` 与 BGE-M3 tokenizer；关闭截断和 special tokens，逐条计算存储正文，同时保留 `title + "\n" + text` 的长度。下文三元数均依次为 **Contriever / ANCE / BGE-M3**。严格以 `L > 512` 判断长文档；`L == 512` 仍为一个块。64/128/256/512 使用无重叠固定 token 窗口，短文与尾块全部保留，长度不因模型原生最大上下文而截断。
+
+审计清单包含 **2,791 个已跟踪文件**；其中 **109 个字节级同源副本**仅保留来源引用。对去重后文件提取到的 **286,375 个非空 payload 槽位**计数，另统计显式原文、合成载体、检索上下文和负样本。槽位数包括候选草稿、同一文件内重复文本，以及文件型载荷中消费代码会读入的非空说明行；它不表示实际成功注入次数。唯一文本数和全部文件哈希见明细。查询分母按标准化题面去重，使用 Unicode NFKC、大小写/空白规范化及末尾问号去除，按正 qrels 关联 gold。不同语料的 document ID 独立解析。
+
+**a. 载荷长度与可分块性**
+
+每个长度单元格为「最小值 / 中位数 / 最大值」，单位 token。CamoDocs 将优化结果与原始攻击草稿分开；RAGDefender 文件型载荷按消费代码的 `readlines()` 边界统计。
+
+| 产物家族 | 数据集 | payload 槽位 | Contriever | ANCE | BGE-M3 | >512 数量（三种） |
+|---|---|---:|---|---|---|---|
+| CamoDocs（优化后） | hotpotqa | 10,000 | 40 / 110 / 192 | 38 / 105 / 182 | 50 / 134 / 229 | 0 / 0 / 0 |
+| CamoDocs（优化后） | msmarco | 10,000 | 43 / 107 / 208 | 41 / 101 / 186 | 47 / 128 / 243 | 0 / 0 / 0 |
+| CamoDocs（优化后） | nq | 10,000 | 40 / 108 / 232 | 40 / 103 / 327 | 50 / 132 / 230 | 0 / 0 / 0 |
+| CamoDocs（原始攻击草稿） | hotpotqa | 20,000 | 8 / 102 / 143 | 9 / 101 / 142 | 8 / 121 / 177 | 0 / 0 / 0 |
+| CamoDocs（原始攻击草稿） | msmarco | 10,125 | 50 / 106 / 147 | 50 / 104 / 144 | 55 / 121 / 167 | 0 / 0 / 0 |
+| CamoDocs（原始攻击草稿） | nq | 12,500 | 23 / 104 / 179 | 25 / 102 / 277 | 28 / 123 / 170 | 0 / 0 / 0 |
+| PoisonedRAG | hotpotqa | 500 | 27 / 37 / 54 | 28 / 37 / 59 | 29 / 43 / 65 | 0 / 0 / 0 |
+| PoisonedRAG | msmarco | 500 | 25 / 37 / 82 | 26 / 37 / 83 | 30 / 44 / 95 | 0 / 0 / 0 |
+| PoisonedRAG | nq | 500 | 25 / 36.5 / 52 | 25 / 36 / 48 | 30 / 43 / 64 | 0 / 0 / 0 |
+| tris | hotpotqa | 500 | 27 / 37 / 54 | 28 / 37 / 59 | 29 / 43 / 65 | 0 / 0 / 0 |
+| tris | nq | 500 | 25 / 36.5 / 52 | 25 / 36 / 48 | 30 / 43 / 64 | 0 / 0 / 0 |
+| Stealthy | nq | 3,080 | 20 / 36 / 150 | 20 / 36 / 141 | 23 / 43 / 174 | 0 / 0 / 0 |
+| Stealthy | realtimeqa | 1,278 | 19 / 39 / 158 | 19 / 39 / 154 | 24 / 46 / 183 | 0 / 0 / 0 |
+| Stealthy | hotpotqa | 500 | 27 / 37 / 54 | 29 / 38 / 60 | 29 / 43 / 65 | 0 / 0 / 0 |
+| RAGDefender | hotpotqa | 46,280 | 4 / 42 / 500 | 5 / 43 / 498 | 4 / 49 / 505 | 0 / 0 / 0 |
+| RAGDefender | msmarco | 48,180 | 4 / 43 / 228 | 5 / 44 / 210 | 4 / 50 / 211 | 0 / 0 / 0 |
+| RAGDefender | nq | 107,232 | 3 / 45 / 448 | 2 / 45 / 449 | 2 / 52 / 482 | 0 / 0 / 0 |
+| TrojanRAG | nq | 1,260 | 7 / 36 / 58 | 8 / 34 / 54 | 9 / 42 / 66 | 0 / 0 / 0 |
+| SecRAG | hotpotqa | 1,500 | 22 / 39 / 162 | 23 / 40 / 166 | 25 / 47 / 196 | 0 / 0 / 0 |
+| SecRAG | msmarco | 1,000 | 17 / 40 / 141 | 19 / 39 / 144 | 21 / 47 / 165 | 0 / 0 / 0 |
+| SecRAG | nq | 940 | 14 / 40 / 172 | 14 / 39 / 172 | 14 / 46 / 181 | 0 / 0 / 0 |
+
+PoisonedRAG 的 NQ/MS MARCO/HotpotQA 标准载荷被 Secon-Rag、RAGDefender 与 tris 携带；这些副本统一计入 PoisonedRAG。tris 表中保留独立 adaptive 版本，`nq_adaptive30`、`nq_bb20` 等同源文件由清单追踪。SecRAG 包含 common-questions、CPA-RAG 和 AuthChain 中的实际 `adv_texts`。
+
+RAGDefender 的 `poisoned_corpus/` 共 2200 个文件，其中 100 个是指标 CSV、300 个是 `gemini_fake_answers` 的答案候选文本，其余 1800 个是文档型文本文件。一个文本文件包含多条独立 passage，不能把整份文件拼接后用于证明单源跨块。另统计 GARAG/Tan 的配对 JSON 与文本存档；它们的重复文本通过逐条 SHA256 可识别。这里计算存储载荷，RAGDefender 在线代码额外添加的 `question + "."` 属于运行时变换，需在实际检索时重新计算分块。
+
+**b. 原始文档、载体与上下文的长度**
+
+先对显式存储文本分类。下表仍为「最小值 / 中位数 / 最大值」；只有 `paired_original` 是上游明确配对的原文，`retrieved_context` 与 `negative_context` 不作为 gold。
+
+| 类型 / 家族 | 数据集 | 非空槽位 | Contriever | ANCE | BGE-M3 | >512 数量（三种） |
+|---|---|---:|---|---|---|---|
+| CamoDocs / synthetic_carrier | hotpotqa | 5,000 | 52 / 101 / 138 | 51 / 100 / 136 | 64 / 120 / 164 | 0 / 0 / 0 |
+| CamoDocs / synthetic_carrier | msmarco | 4,999 | 63 / 101 / 150 | 61 / 99 / 139 | 73 / 119 / 166 | 0 / 0 / 0 |
+| CamoDocs / synthetic_carrier | nq | 5,000 | 1 / 102 / 143 | 2 / 100 / 131 | 1 / 123 / 161 | 0 / 0 / 0 |
+| Stealthy / retrieved_context | nq | 15,723 | 1 / 35 / 426 | 2 / 33 / 440 | 3 / 37 / 473 | 0 / 0 / 0 |
+| Stealthy / retrieved_context | realtimeqa | 9,468 | 5 / 33 / 85 | 3 / 30 / 83 | 3 / 34 / 84 | 0 / 0 / 0 |
+| Stealthy / retrieved_context | hotpotqa | 1,000 | 5 / 107 / 551 | 5 / 107 / 550 | 6 / 118.5 / 611 | 2 / 2 / 2 |
+| RAGDefender / paired_original | hotpotqa | 600 | 18 / 78.5 / 344 | 18 / 82.5 / 364 | 19 / 89.5 / 389 | 0 / 0 / 0 |
+| RAGDefender / paired_original | msmarco | 402 | 20 / 71 / 205 | 20 / 73 / 180 | 19 / 78 / 194 | 0 / 0 / 0 |
+| RAGDefender / paired_original | nq | 1,090 | 41 / 118.5 / 307 | 41 / 115.5 / 317 | 45 / 130.5 / 378 | 0 / 0 / 0 |
+| TrojanRAG / negative_context | nq | 30,202 | 104 / 129 / 537 | 104 / 130 / 499 | 112 / 146 / 510 | 1 / 0 / 0 |
+
+再通过题面对齐与正 qrels，读取本地原文及上游 BEIR 的 gold 正文。下表按 `(scope, document_id)` 去重；同一文档服务多个问题仅计一次。MS MARCO 当前 document-dev 没有匹配 gold，记为未匹配而非零长度。
+
+| gold 语料范围 | 匹配题面 | 唯一 gold 文档 | Contriever 中位 / 最大 | ANCE 中位 / 最大 | BGE-M3 中位 / 最大 | >512 文档（三种） |
+|---|---:|---:|---|---|---|---|
+| nq_local_eval | 1407 | 1382 | 5894.5 / 81334 | 5904 / 82351 | 6737 / 100211 | 1376 / 1376 / 1378 |
+| nq_beir_test | 1217 | 1531 | 116 / 772 | 116 / 769 | 127 / 891 | 4 / 4 / 4 |
+| hotpotqa_local_eval | 1092 | 2164 | 1085 / 23995 | 1121 / 25214 | 1224 / 27943 | 1474 / 1490 / 1524 |
+| hotpotqa_beir_test | 1092 | 2164 | 86 / 364 | 88 / 375 | 95 / 400 | 0 / 0 / 0 |
+| msmarco_local_eval | 0 | 0 | 未匹配 | 未匹配 | 未匹配 | 0 / 0 / 0 |
+| msmarco_beir_train | 1099 | 1128 | 101 / 301 | 103 / 306 | 113 / 295 | 0 / 0 / 0 |
+
+全部已关联的 gold document ID 均成功读取，缺失文档数为 **0**。NQ 上游 BEIR 常为截短的 passage，而本地为完整原文；HotpotQA 的本地全文与 BEIR 支持段也有不同长度。上游短 gold 不能用于推断本地原文也短。
+
+**c. 每类产物的本地长 gold 复用条件**
+
+“长 gold 题数”表示该题至少一条本地 eval 正 gold 正文 >512 tokens；三个 tokenizer 分别判定。联合条件为同一问题同时有长 gold 与独立长 payload。
+
+| 产物家族 | 数据集 | 唯一题面 | 本地有 gold 题面 | 长 gold 题数（三种） | gold 与 payload 同时 >512 |
+|---|---|---:|---:|---|---|
+| CamoDocs（优化后） | hotpotqa | 1000 | 1000 | 916 / 923 / 934 | 0 / 0 / 0 |
+| CamoDocs（优化后） | msmarco | 999 | 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| CamoDocs（优化后） | nq | 1000 | 1000 | 996 / 996 / 998 | 0 / 0 / 0 |
+| CamoDocs（原始攻击草稿） | hotpotqa | 1000 | 1000 | 916 / 923 / 934 | 0 / 0 / 0 |
+| CamoDocs（原始攻击草稿） | msmarco | 999 | 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| CamoDocs（原始攻击草稿） | nq | 1000 | 1000 | 996 / 996 / 998 | 0 / 0 / 0 |
+| PoisonedRAG | hotpotqa | 100 | 100 | 90 / 91 / 92 | 0 / 0 / 0 |
+| PoisonedRAG | msmarco | 100 | 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| PoisonedRAG | nq | 100 | 94 | 94 / 94 / 94 | 0 / 0 / 0 |
+| tris | hotpotqa | 100 | 100 | 90 / 91 / 92 | 0 / 0 / 0 |
+| tris | nq | 100 | 94 | 94 / 94 / 94 | 0 / 0 / 0 |
+| Stealthy | nq | 590 | 584 | 582 / 582 / 582 | 0 / 0 / 0 |
+| Stealthy | realtimeqa | 100 | 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| Stealthy | hotpotqa | 100 | 100 | 90 / 91 / 92 | 0 / 0 / 0 |
+| RAGDefender | hotpotqa | 100 | 100 | 90 / 91 / 92 | 0 / 0 / 0 |
+| RAGDefender | msmarco | 100 | 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| RAGDefender | nq | 100 | 94 | 94 / 94 / 94 | 0 / 0 / 0 |
+| TrojanRAG | nq | 210 | 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| SecRAG | hotpotqa | 100 | 100 | 90 / 91 / 92 | 0 / 0 / 0 |
+| SecRAG | msmarco | 100 | 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| SecRAG | nq | 100 | 94 | 94 / 94 / 94 | 0 / 0 / 0 |
+
+本节的本地复用范围是现有 val/dev eval。CamoDocs MS MARCO 的 1000 个 artifact ID 对应 999 个标准化题面，属于上游 passage-train，故没有当前 document-dev 匹配；此前 document-train 补充核对在当前 corpus 中找回 102 题的 gold，其中正文 >512 的题数为 **97 / 97 / 100**。该训练集资产可另行选题，不能计入当前 dev 分母，详见 [CamoDocs 三 tokenizer 审计](../results/camodocs_efficiency_20261005/three_tokenizer_audit/README.md)。
+
+
+下表进一步给出**本地长 gold + 至少一条该窗口可分块 payload**的唯一题面并集；同题跨库与跨变体只计一次。这是长度筛选结果。
+
+| 数据集 | tokenizer | gold>512 且 payload>64 | gold>512 且 payload>128 | gold>512 且 payload>256 | gold>512 且 payload>512 |
+|---|---|---:|---:|---:|---:|
+| nq | contriever | 1072 | 823 | 25 | 0 |
+| nq | ance | 1073 | 644 | 24 | 0 |
+| nq | bge_m3 | 1086 | 1039 | 23 | 0 |
+| hotpotqa | contriever | 999 | 800 | 8 | 0 |
+| hotpotqa | ance | 1007 | 650 | 7 | 0 |
+| hotpotqa | bge_m3 | 1019 | 989 | 10 | 0 |
+| msmarco | contriever | 0 | 0 | 0 | 0 |
+| msmarco | ance | 0 | 0 | 0 | 0 |
+| msmarco | bge_m3 | 0 | 0 | 0 | 0 |
+
+**d. 复用决策**
+
+- **512-token 同源跨块：需要重构文档。** 所有现成独立 payload 均 ≤512；有长 gold 的问题可复用题面、参考答案与载体原文，payload 可作单块攻击对照或构造种子。多个独立 passage 不能直接拼作已验证的同源 A/B。
+- **64/128-token：有现成长载荷可用于分块检索实验；256-token：可用量更少，且受 tokenizer 影响。** 所有家族、文件变体的四档分块数量见 [逐产物长度与分块明细](../results/baseline_artifact_token_audit_20261005/details.md)，其中保留 title+body 边界统计。跨块语义完整性、A/B 独立性与联合攻击效果须由该配置的检索生成实验检验。
+- **GARAG/Tan：保留显式原文—载荷配对。** 两侧正文都已计数，可直接用于文本改写、检索偏移与短块对照；其存储原文全部 ≤512。
+- **Stealthy：区分 retrieved context 与 gold。** HotpotQA 有 2 个 >512 的检索上下文槽位；它们不等价于两条 gold，也不改变 payload 全部 ≤512 的结论。RealtimeQA 的 query 不属于本地三个数据集。
+- **TrojanRAG：可作为后门载荷样例。** 210 条带触发前缀的问题有 1260 个正上下文载荷；这些正上下文已经被投毒。保留的负样本也不能充当原始 gold。移除代码中使用的固定触发前缀后，对全部 210 条进行本地 NQ eval 精确题面对齐，仍为 0；复现其训练式后门还需对应训练语料与流程。
+- **robust-rag：存档能解析，但无法可靠恢复逐 payload 边界。** 11 份 raw-data 表包含拼接 prompt，没有独立 payload、source-document 边界和毒文标签；另 1 份是结果表。故不把整个 prompt 的长度当作单篇载荷。其余仅含图片、绘图脚本或空 README 的 5 个库没有可计数 payload。
+
+**校验与复现。** 仅使用子模块 HEAD 跟踪的字节；文件哈希、来源位置、每条文本哈希、三种 tokenizer 长度和 gold 关联分别落盘。没有执行 embedding、检索或生成，也没有把上游 ASR 当作本地复现结果。新加的来源/分块边界测试通过，完整测试集 **180 passed**，相关 Ruff 检查通过。
+
+```bash
+python src/main.py poc baseline-token-audit \
+  --models /mnt/sdc2/models \
+  --output results/baseline_artifact_token_audit_20261005
+```
+
+机器可读结果及 tokenizer 文件指纹见 [审计目录 README](../results/baseline_artifact_token_audit_20261005/README.md)。
 
 ---
 
