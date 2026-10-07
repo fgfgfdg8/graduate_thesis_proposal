@@ -668,3 +668,66 @@ python src/main.py poc baseline-clean-compare --stage report --output results/ba
 [综合分析报告](../full_clean_top5_tail32_20261004/post_run_analysis/report.md)；[本实验逐条件结果](report.md)。
 
 补充诊断可用 `python src/main.py poc baseline-clean-analysis --output results/baseline_clean_compare_20261006` 重建。matched_local_comparison.jsonl 保存同题、不同答案口径的逐条重评分；original_retrieval_diagnostics.json 保存原始 Top-5 长度与 gold 覆盖；prompt_difference_examples.json 保存 5 个定性案例。
+
+# BM25 同分块 Top-5 Clean RAG 实验
+
+状态：complete。
+
+BM25检索原样持久化的256-token修复版chunk，Top-5原样送入d01 Qwen3.8-27B；输出上限1000。
+全文ACC采用上一轮相同词面口径，严格EM与F1并列；未完成时ACC是固定分母下界。
+
+|集合|完成/总数|QA gold|全文ACC|严格EM|F1|source Hit@5|输入截断|
+|---|---:|---:|---:|---:|---:|---:|---:|
+|nq|7830/7830|4462|43.75%|31.13%|44.75%|85.03%|0|
+|msmarco|5193/5193|5169|7.45%|3.71%|20.96%|35.66%|0|
+|hotpotqa|7405/7405|7405|36.52%|28.93%|37.10%|81.16%|0|
+
+各题retrieval.jsonl记录chunk ID、source ID、BM25分数、排名、原token边界及原样输入文本。generation_attempts.jsonl记录实际prompt及模型输出。BM25索引位于data链接目标，完整原语料及Contriever索引保持不变。
+与Contriever修复版保持相同chunk池、query、Top-5、LLM、prompt与评分，只切换检索器。
+
+## 与 Contriever 修复版对比
+
+|集合|Contriever 全文ACC|BM25 全文ACC|变化（百分点）|source Hit@5：旧→新|
+|---|---:|---:|---:|---:|
+|nq|43.81%|43.75%|-0.07|87.05% → 85.03%|
+|msmarco|5.65%|7.45%|+1.80|27.25% → 35.66%|
+|hotpotqa|15.68%|36.52%|+20.84|42.30% → 81.16%|
+
+## 上下文与生成诊断
+
+|集合|平均prompt tokens|输入截断query|UNKNOWN|输出截断|API错误次数|未完成query|
+|---|---:|---:|---:|---:|---:|---:|
+|nq|1555.4|0|3248|168|0|0|
+|msmarco|1321.1|0|1065|83|0|0|
+|hotpotqa|1226.4|0|3123|430|0|0|
+
+HotpotQA 全部支持句覆盖率为 18.38%，支持句宏平均Recall为 49.21%。支持句计数依据实际送入模型的正文范围，超限未发送的后缀不计覆盖。
+
+prompt长度使用Qwen tokenizer计算，包含system/user模板。API错误次数与最终未完成query分别报告；每题首次成功响应固定，输出截断不重试。完整回答ACC是规范化gold词组匹配，语义释义和答案立场需结合严格EM/F1及原始输出审计。
+
+## 同分块诊断
+
+|集合|平均正文tokens|自然短块<32占比|人工短尾<32占比|重复文本占比|答案词面覆盖|
+|---|---:|---:|---:|---:|---:|
+|nq|1272.2|0.00%|0.00%|1.17%|54.64%|
+|msmarco|1181.3|0.06%|0.00%|2.90%|12.29%|
+|hotpotqa|1011.6|1.48%|0.00%|0.00%|49.39%|
+
+|集合/指标|两者成功|仅BM25成功|仅Contriever成功|两者失败|
+|---|---:|---:|---:|---:|
+|nq/qrel_hit_at5|3502|292|382|286|
+|nq/all_support_covered|0|0|0|0|
+|nq/lexical_answer_presence_proxy|1975|368|443|1502|
+|nq/accuracy_match|1496|456|459|2051|
+|msmarco/qrel_hit_at5|962|890|453|2888|
+|msmarco/all_support_covered|0|0|0|0|
+|msmarco/lexical_answer_presence_proxy|359|263|109|4331|
+|msmarco/accuracy_match|209|176|83|4701|
+|hotpotqa/qrel_hit_at5|2933|3077|199|1196|
+|hotpotqa/all_support_covered|107|1254|27|6015|
+|hotpotqa/lexical_answer_presence_proxy|1406|2025|175|3341|
+|hotpotqa/accuracy_match|922|1782|239|4462|
+
+逐题配对见paired_comparison.jsonl；生成未完成时，ACC配对仅统计已有回答的query。
+
+判读规则：若同一chunk池上BM25显著改善召回、支持句覆盖和ACC，支持当前Contriever检索配置存在性能局限；若两者都低，应结合共同失败题的gold支持句、答案覆盖、短块与重复文本诊断定位分块及标签问题。两者都低本身不能单独证明分块错误，标签稀疏和生成失败也会产生该结果。HotpotQA同时报告source命中与实际支持句覆盖；答案词面覆盖为辅助指标。
