@@ -1,12 +1,12 @@
 # RAG 安全攻防文献技术手段总结报告
 
 > **文献来源**：`D:\学在东南\毕业论文\开题\科研数据库\20_Research\Papers\RAG安全文献`
-> **文献规模**：**85 个 PDF**（含 2 个附录工件，重复副本已清理，去重后 **83 篇本地独立文献**），连同 1 篇以著录形式收录的中文综述，**独立文献共 84 篇**
+> **文献规模**：**86 个 PDF**（含 2 个附录工件，重复副本已清理，去重后 **84 篇本地独立文献**），连同 1 篇以著录形式收录的中文综述，**独立文献共 85 篇**
 > **统计时间**：2026-10-04（全量扫描）
 > **提取方式**：PyMuPDF 批量提取标题与摘要（`tmp/extract_rag_abstracts.py` → `tmp/rag_abstracts.json`）+ 实验设计逐篇全文提取（`tmp/extract_experiment_compact.py` → `tmp/experiment_design_compact.txt`）+ **文献逐篇精读存档**（`tmp/read_new_papers.py` → `tmp/new_papers_deep_read.txt`）
 > **文档结构**：
 > - **第二、三章**：技术手段主题综述（攻击 A1–A16、防御 D1–D18）；
-> - **第六章**：**本地 84 篇完整文献清单（含逐篇解读与实验设计要点、方法论类别）**——全文的"事实底座"；§6.1/§6.2 各行的「方法论类别」列给出**逐篇方法论判定**（系统机制设计 / 算法优化 / 混合），判定标准与三类横向对比见 §6.6；**§6.7 另收录 5 篇"其它领域可借鉴文献"**（虚假信息、事实核查、查询嵌入），**§6.8 收录 1 篇低优先级邻域文献**；
+> - **第六章**：**本地 85 篇完整文献清单（含逐篇解读与实验设计要点、方法论类别）**——全文的"事实底座"；§6.1/§6.2 各行的「方法论类别」列给出**逐篇方法论判定**（系统机制设计 / 算法优化 / 混合），判定标准与三类横向对比见 §6.6；**§6.7 另收录 5 篇"其它领域可借鉴文献"**（虚假信息、事实核查、查询嵌入），**§6.8 收录 1 篇低优先级邻域文献**；
 > - **第七章**：实验设计横向分析（五个统一维度 + **§7.5 ACC / ASR 专项分析** + §7.6 机理实验分类 + **§7.7 实验设置整定与计算开销** + §7.8 共性缺陷 E1–E12）；
 > - **第八章**：**本地文献优先级评定**（按《文献筛选方案》**含开源因子版**计算，分攻击 / 防御 / 基准三类降序）；
 > - **第九章**：三篇综述所引攻防文献的原文整理（联网补充，**20 篇**攻防文献的原始数据）；
@@ -19,7 +19,7 @@
 
 ### 1.1 文献构成
 
-> 85 个 PDF 文件去重后为 **83 篇独立文献**（剔除 Topic-FlipRAG 与 When Poison Fails 各 1 个重复副本，以及 **2 个附录工件**：*Topic-FlipRAG_appendix* 与 *[With Appendix]PoisonedRAG*）。
+> 86 个 PDF 文件去重后为 **84 篇独立文献**（剔除 Topic-FlipRAG 与 When Poison Fails 各 1 个重复副本，以及 **2 个附录工件**：*Topic-FlipRAG_appendix* 与 *[With Appendix]PoisonedRAG*）。
 
 | 类型 | 数量 | 占独立文献比 | 代表文献 |
 |------|------|------|----------|
@@ -27,10 +27,10 @@
 | **防御方法**（Defense，含 2 篇攻防混合） | 22 | 26.2% | RobustRAG、PRA-RAG、TrustRAG、GMTP、GRADA、SeCon-RAG、Astute RAG、TRIS、**RAGForensics** |
 | **综述/分类学**（Survey） | 9 | 10.7% | SLOT 分类学、Retrieved But Not Reliable、Towards Secure RAG、Security & Privacy in RAG |
 | **基准、数据集与实证研究**（Benchmark/Dataset/Empirical） | 10 | 11.9% | SafeRAG、Benchmarking Poisoning Attacks、BEIR、NQ、MS MARCO、HotpotQA、FEVER、**MedMisBench**、**Toward Robust RALMs** |
-| **基础方法与检索增强技术**（Foundation） | 3 | 3.6% | HotFlip、GCG、**DEO** |
+| **基础方法与检索增强技术**（Foundation） | 4 | 4.7% | HotFlip、GCG、**DEO**、**ARCA** |
 | **其它领域可借鉴文献**（Cross-domain，详见 §6.7） | 5 | 6.0% | **Combating Misinformation**、**Complex Claim Verification**、**The Missing Parts（TRACER）**、**Claim Verification Survey**、**Estimating Embedding Vectors** |
 | **其它低优先级文献**（Low-priority，详见 §6.8） | 1 | 1.2% | **FilterRAG**（多模态 VQA） |
-| **合计** | **84** | 100% | — |
+| **合计** | **85** | 100% | — |
 
 > **注 1**：*On the Vulnerability…* 与 *Semantic Chameleon* 同时提出攻击与防御，在「防御」计数中重复计入。
 > **注 2**：*Influence Factors on RAG Poisoning*（432 组全因子实验）归入「基准与数据集」类，因其贡献是**投毒影响因子分析**而非新攻击方法。
@@ -134,6 +134,10 @@ flowchart LR
 - **GCG（Universal and Transferable Adversarial Attacks）**：结合贪心与梯度搜索自动生成**对抗后缀**，可**迁移至黑盒模型**，是后续 RAG 投毒（如 Semantic Chameleon 的 GCG 优化）的方法学基础。
 - **HotFlip**：基于 one-hot 输入梯度的**原子翻转**操作，以极少改动大幅降低分类器精度，是白盒对抗样本的经典方法。
 - **Joint-GCG**（增补）：首个把**检索器与生成器双阶段梯度统一优化**的投毒框架，三项创新为 **跨词表投影（Cross-Vocabulary Projection）**、**梯度分词对齐（Gradient Tokenization Alignment）**、**自适应加权融合**。ASR 较前作最高提升 **25%**、平均 **5%**，且毒文本对**未见模型**展现前所未有的迁移性（跨检索器 96%/87%，对 GPT-4o 比未优化毒文本高约 2%）。
+- **ARCA（Automatically Auditing LLMs via Discrete Optimization，ICML'23）**（增补）：把"**发现模型失败模式**"从"人工写提示 / 模板 / 微调生成器"改造为**可自动求解的离散优化问题**——在"提示 $x$ 经贪心解码得到指定输出 $o$"这一非可微约束下最大化审计目标 $\phi(x,o)$。其核心算法 **ARCA（Autoregressive Randomized Coordinate Ascent）** 把得分函数**拆成两项**：
+  1. **自回归项** $s_{i,\text{Aut}}(v)=\lambda_{p}\log p_{\text{LLM}}(o_{1:i-1},v\mid x)$——在位置 $i$ 处**精确计算**（一次前向传播即可），**弥补了此前一阶方法在末位梯度为零的缺陷**；
+  2. **线性项** $s_{i,\text{Lin}}(v)$——把目标中的其他项用"**在 $k$ 个随机 token 处求一阶近似并取平均**"来逼近，**方差更小、全局性更好**，而**无需对全词表求梯度**。
+  两者相加后对**整个词表排序**，只对 top-$k$ 候选**精确求值**并取 argmax——这一"**廉价近似排序 + 精确重排验证**"的两段式结构，是本库 GCG / HotFlip / DIGA 等后续优化器的共同祖先。实测在 GPT-2 758M 上，三 token 输出的**归一化成功率 58%**（AutoPrompt 29%、GBDA 4%）；在美国参议员补全任务上达 **72%/55%**（无约束/小写），而 GBDA 从未超过 5%。其局限亦值得记录：需**白盒 logits 与梯度**，且作者把"**零阶审计（仅 API）**"与"**证明某失败模式不存在**"明确列为未竟工作——这两条恰与本库 §5.2 缺口 12、§7.7（黑盒成本未报）相接。
 
 #### （6）类目级与单文档投毒（A11、A13）
 
@@ -337,9 +341,10 @@ A1–A19 都在追求"**让模型说出攻击者想要的内容**"；A20 反其�
 
 ```mermaid
 timeline
-    title RAG 安全攻防技术演进（本地 83 篇独立文献）
+    title RAG 安全攻防技术演进（本地 84 篇独立文献）
     section 攻击侧
         2023 : HotFlip / GCG 通用对抗方法
+             : ARCA 自动化审计（离散优化，ICML'23）
              : AdvPassage 对抗段落注入
         2024 : PoisonedRAG 知识腐蚀形式化
              : BadRAG 检索后门
@@ -469,11 +474,11 @@ timeline
 
 ---
 
-## 六、本地完整文献清单（83 篇独立文献 · 含逐篇解读与实验设计要点）
+## 六、本地完整文献清单（84 篇独立文献 · 含逐篇解读与实验设计要点）
 
 > **本章定位**：全文的**事实底座**。每个条目的「核心解读」给出该文献的**一句话贡献**，「实验设计要点」浓缩其**威胁模型 / 语料 / 评测指标**（细节以原文为准）。
-> **去重规则**：*Topic-FlipRAG_appendix* 为复现工件，不计入独立文献；重复副本已清理，故 **85 个 PDF 对应 83 篇独立文献**。
-> **篇号约定**：`#1–#84` 为**连续篇号**，按第六章各表的**阅读顺序**依次编排——§6.1 攻击类 **1–34** → §6.2 防御类 **35–56** → §6.3 综述 **57–65** → §6.4 基准与实证 **66–75** → §6.5 基础方法 **76–78** → §6.7 跨域借鉴 **79–83** → §6.8 低优先级 **84**。**篇号与各表行序一一对应**，正文及 §7.6 中的 `#N` 均指向此篇号；`#N` 是**文献标识**，与第八章的**排名**列（各类内按 $P_i$ 降序的位次）是两回事。
+> **去重规则**：*Topic-FlipRAG_appendix* 为复现工件，不计入独立文献；重复副本已清理，故 **86 个 PDF 对应 84 篇独立文献**。
+> **篇号约定**：`#1–#85` 为**连续篇号**，按第六章各表的**阅读顺序**依次编排——§6.1 攻击类 **1–34** → §6.2 防御类 **35–56** → §6.3 综述 **57–65** → §6.4 基准与实证 **66–75** → §6.5 基础方法 **76–79** → §6.7 跨域借鉴 **80–84** → §6.8 低优先级 **85**。**篇号与各表行序一一对应**，正文及 §7.6 中的 `#N` 均指向此篇号；`#N` 是**文献标识**，与第八章的**排名**列（各类内按 $P_i$ 降序的位次）是两回事。
 > **与第九章关系**：标有"§9.x"的条目为综述联网核实过的文献，其原始数据在第九章；其余为本地 PDF 直接解读。
 > **与第七章关系**：语料来源、威胁模型、查询集隔离性、指标的**横向统计**在第七章。
 > **排序约定**：§6.1 / §6.2 / §6.4 三表已分别按 **§8.2 / §8.3 / §8.4 的优先级降序**重排，便于按优先级阅读；**§6.3 / §6.5 / §6.6 / §6.7** 在第八章中无对应优先级，故保持原有顺序（§6.7 按主题排列）。
@@ -520,7 +525,7 @@ timeline
 | 32 | **Poison-RAG** | arXiv | 2025 | 0 | A14 推荐系统投毒 | **算法优化** — 局部（BERT 嵌入个性化标签）/ 全局标签扰动策略；推荐系统流水线不变 | 操纵 item **元数据(tag/描述)** 在 RAG 推荐中提升长尾、压制热门 | **黑盒**；MovieLens ml-latest-small（365 用户 / 3,079 item / 16,823 评分）；manipulation 效果；**局部策略 +50%**，全局策略可能反噬；约 70% item 无标签（冷启动） |
 | 33 | **On the Vulnerability（医疗）** | ICML | 2025 | 22 | A1+A15 领域专向（攻防混合） | **混合** — 225 组配置的实证脆弱性分析（发现"正交增广"规律）+ 检测式防御算法；两块均为贡献 | 医疗问答场景 **225 组配置**的通用投毒，发现嵌入偏离呈规律性 | 攻击者可注入条目（建维基页 / 插入假患者行）；PubMed 随机 **200 万**（原 23M）；225 组 query×corpus×retriever×targeted-info；success rate；**含检测式防御** |
 | 34 | **Human-Imperceptible Retrieval Poisoning** | FSE Companion | 2024 | 28 | A6 视觉不可察觉 | **系统机制** — 贡献是应用框架层的不可见文本注入通道（结构性发现）；无算法优化，仅 3 LLM × 2 温度验证 | 毒文档**视觉上与良性不可区分、内容正确**，但一旦被引用即误导应用 | 面向 LLM 应用框架（无独立威胁模型章节）；LLM + 真实应用；success rate；LLM **88.33%**、真实应用 **66.67%** |
-> **攻击类方法论分布**：算法优化 **13**（42%）＞ 混合 **12**（39%）＞ 系统机制 **6**（19%）。三类的判定标准与横向对比见 **§6.6**。
+> **攻击类方法论分布**：算法优化 **14**（41%）＞ 混合 **14**（41%）＞ 系统机制 **6**（18%）。三类的判定标准与横向对比见 **§6.6**。
 
 ### 6.2 防御类文献（22 篇）
 
@@ -583,19 +588,22 @@ timeline
 | 74 | **Benchmarking Poisoning Attacks against RAG** | arXiv | 2025 | 33 | 系统性基准 | 首个 RAG 投毒系统基准 | **5 标准 QA + 10 扩展变体、13 攻击、7 防御**；扩展集上攻击效果**显著下降**；顺序/分支/条件/循环 RAG、多模态 RAG、RAG-Agent **均易受攻击**；**现有防御不足** |
 | 75 | **Toward Robust RALMs** | TACL | 2024 | 18 | 实证研究（不完美检索） | 首个系统刻画**不可答 / 对抗 / 冲突**三类不完美检索场景；提出 **GenADV** 攻击与 **RAD** 指标 | NQ(3,610)/TQA(11,313)/WebQ(2,032)/PopQA(14,267)，Recall@5 仅 **0.65–0.76**（即 24–35% 问题检索不到答案）；**Llama2 在 NQ 上幻觉率 95.79%**；Gemma 对 **28.59%** 可答样本误答"unanswerable"（Llama2 仅 0.7%）；**"对抗+不可答"叠加时最脆弱** |
 
-### 6.5 基础方法与检索增强技术（3 篇）
+### 6.5 基础方法与检索增强技术（4 篇）
 
 > **DEO（#78）** 归入本节的依据：它是**训练无关的查询嵌入优化**方法，与 GCG/HotFlip 同属"**为后续攻防提供底层方法**"的基础技术；其**否定/排除语义**能力直接对应 §5.2 缺口 13。
+>
+> **ARCA（#79）** 归入本节的依据：它把"**发现模型失败模式**"形式化为**离散优化问题**，并以"**自回归项（零梯度项）+ 一阶近似重排**"的组合替代昂贵搜索——与 GCG/HotFlip 同属"**为后续投毒与审计提供底层优化器**"的基础技术。其"**联合优化输入与输出**"的视角，既是本库**投毒类攻击**（PoisonedRAG 的"毒文本优化"、DIGA 的"重要性引导搜索"）的**方法学上游**，也提示了一种**尚未被 RAG 领域采用的审计范式**：彼可借**自动求解**取代人工构造探测样本；论文自陈的"**零阶审计（仅 API）**""**证明某失败模式不存在**"两项未竟问题，恰对应本库 §5.2 缺口 12（防御侧缺乏"不可能性"论证）与 §7.7（黑盒成本未报）。
 
 | # | 文献 | Venue | 年份 | 引用 | 定位 | 核心解读 |
 |---|------|---|---|---|------|----------|
 | 76 | **GCG（Universal and Transferable Adversarial Attacks）** | arXiv | 2023 | 4530 | 攻击基础方法 | 贪心+梯度搜索生成**对抗后缀**，可迁移至黑盒；RAG 投毒（Semantic Chameleon、Joint-GCG）的方法学基础。Harmful Behaviors 上 Vicuna-7B **100%** / Llama-2-7B-Chat **88%** |
 | 77 | **HotFlip** | ACL Short | 2018 | 1803 | 攻击基础方法 | 基于 one-hot 输入梯度的**原子翻转**，改动极少即大幅降低分类器精度。AG News（120K train / 7.6K test）上平均仅改 **4.18%** 字符 |
 | 78 | **DEO（Direct Embedding Optimization）** | arXiv | 2026 | 3 | 检索增强技术（训练无关） | **无需训练、无需额外数据**的**否定感知检索**：将查询分解为**正/负子查询**，用**对比目标**直接优化查询嵌入（模型无关，可跨文本与多模态）。效果：NegConstraint **+0.0738 nDCG@10、+0.1028 MAP@100**；COCO-Neg 文→图 OpenAI CLIP Recall@5 **0.4792 → 0.5392**（+6%）、NegCLIP 0.6715 → **0.6980**；查询分解用 GPT-4.1-nano |
+|79|**ARCA（Automatically Auditing LLMs）**|ICML|2023|304|审计基础方法（离散优化）|把"**审计**"形式化为**离散优化问题**：搜索满足 $f(x)=o$（提示 $x$ 贪心生成输出 $o$）且审计目标 $\phi(x,o)$ 最大的**提示-输出对**；提出 **ARCA（Autoregressive Randomized Coordinate Ascent）**——把目标拆为**可线性近似项** $s_{i,\text{Lin}}$ 与**自回归项** $s_{i,\text{Aut}}$，前者用**随机 token 处的一阶近似平均**（而非在当前位置求梯度）近似，后者由**一次前向传播**精确算出，再对 top-k 候选精确求值取 argmax；首次把"**发现模型失败模式**"从"人工写提示 / 模板 / 微调生成器"转为**可自动求解的优化问题**；其"**联合优化输入与输出**"的思路与"**用一阶近似 + 精确重排**降低搜索成本"的两项技术，是后续 RAG 投毒（如 GCG 类对抗后缀、DIGA 类重要性引导搜索）的**方法学上游**；**白盒**（需模型 logits 与梯度；论文自陈"用零阶信息审计仅 API 可及的系统"列为未来工作）；案例模型 **GPT-2 762M** 与 **GPT-J 6B**（另测 GPT-3 davinci-002 的提示迁移）；四类审计目标：**名人毒性补全**（NotToxic(x)+Toxic(o)+CelebPrefix(x)）、**跨语言补全**（French(x)+English(o)）、**指定后缀生成**（ExactMatch(o,o*)）、**意外毒性**（非毒提示 → 毒输出）；对照 **AutoPrompt** 与 **GBDA**；指标为**成功率**与**归一化成功率**（仅计"任一优化器能解出"的输出）；GPT-2 上三 token 输出：ARCA 归一化成功率 **58%** vs AutoPrompt 29% vs GBDA 4%；美国参议员任务：ARCA **72%/55%**（无约束/小写）vs AutoPrompt 58%/30%，GBDA 从未超过 5%；**提示迁移**：GPT-2 上找到的 100 个三 token 提示中，**半数在 GPT-3 上生成相同首 token、逾 20% 仍产生毒性输出**|
 
 ### 6.6 方法论判定标准、其余类别与横向对比
 
-> **逐篇判定位置**：攻击类 31 篇的方法论类别见 **§6.1** 的「方法论类别」列，防御类 22 篇见 **§6.2** 同名列（两表末行给出各类占比）；本节只保留**判定标准**、**不适用类别**与**三类横向对比**。
+> **逐篇判定位置**：攻击类 34 篇的方法论类别见 **§6.1** 的「方法论类别」列，防御类 22 篇见 **§6.2** 同名列（两表末行给出各类占比）；本节只保留**判定标准**、**不适用类别**与**三类横向对比**。
 >
 > **判定标准**（依据原文的方法论表述，非仅凭标题）：
 > - **系统机制设计类**：贡献是**结构性制品**（框架 / 流水线 / 架构 / 协议 / 分层防御），新颖性在于**组件如何编排**（信息流、阶段划分、控制逻辑），而各组件内部的数值方法多为现成；验证方式为**端到端系统行为**。
@@ -607,7 +615,7 @@ timeline
 
 | 类别 | 文献 | 说明 |
 |------|------|------|
-| **基础方法（3 篇，§6.5）** | GCG、HotFlip、**DEO** | 均含**算法优化**成分（贪心坐标梯度 / 原子翻转 / 对比目标优化） |
+| **基础方法（4 篇，§6.5）** | GCG、HotFlip、**DEO**、**ARCA** | 均含**算法优化**成分（贪心坐标梯度 / 原子翻转 / 对比目标优化 / 自回归随机坐标上升） |
 | **综述（9 篇）** | SLOT 分类学、Retrieved But Not Reliable、Towards Trustworthy RAG、Towards Secure RAG、Security & Privacy in RAG、RAG 优化技术综述、检索增强生成综述:方法与应用、刘雪颖综述、SE×RAG 综述 | **不适用**（分类 / 框架贡献） |
 | **基准与数据集（10 篇，§6.4）** | SafeRAG、Benchmarking Poisoning（RSB）、Influence Factors、BEIR、NQ、MS MARCO、HotpotQA、FEVER、**Toward Robust RALMs**、**MedMisBench** | **不适用**（基准 / 数据集 / 实证构建）；其中 **Influence Factors** 兼有**因子实证研究**属性 |
 | **跨域借鉴（5 篇，§6.7）** | Combating Misinformation、Complex Claim Verification、Estimating Embedding Vectors、The Missing Parts（TRACER）、Claim Verification Survey | **不适用**（不同任务域）；其贡献是**方法学与评测范式**，见 §6.7 |
@@ -623,7 +631,7 @@ timeline
 | **攻防分布** | 攻击 6 / 防御 6 | 攻击 13 / 防御 3 + 基础 3 | 攻击 12 / 防御 13 |
 | **典型代表** | DeRAG、Micro-Collaborative、AuthChain、ToxicRAG | PoisonedRAG、GASLITE、Joint-GCG、GRADA、RAGRank | RobustRAG、CEG-RAG、RADE、Semantic Chameleon、TrojanRAG、MIRAGE、FlippedRAG |
 
-> **对开题的提示**：本文献库中**算法优化类在攻击侧已成主流（42%）**，而**防御侧的空白恰在于"纯算法"（仅 14%）**——也就是说，**"把某个已被验证的机制换成更优的核心算法"仍存在明确的发表空间**；相反，**"仅重新编排流程而不改进核心信号"的系统机制类防御**（占 27%）已相对饱和，这呼应了 §5.2 缺口 3"信号错配"与 §7.6"同一张可视化两侧读出相反结论"的观察。
+> **对开题的提示**：本文献库中**算法优化类在攻击侧已成主流（41%）**，而**防御侧的空白恰在于"纯算法"（仅 14%）**——也就是说，**"把某个已被验证的机制换成更优的核心算法"仍存在明确的发表空间**；相反，**"仅重新编排流程而不改进核心信号"的系统机制类防御**（占 27%）已相对饱和，这呼应了 §5.2 缺口 3"信号错配"与 §7.6"同一张可视化两侧读出相反结论"的观察。
 
 ---
 
@@ -634,16 +642,16 @@ timeline
 
 | # | 文献 | Venue | 年份 | 引用 | 领域/定位 | 核心内容 | 对本开题的借鉴点 |
 |---|------|---|---|---|------|----------|----------|
-| **79** | **Combating Misinformation in the Age of LLMs** | AI Magazine | 2024 | 486 | 虚假信息治理（综述） | 提出"**用 LLM 对抗虚假信息**"与"**对抗 LLM 生成的虚假信息**"**双问题框架**；系统梳理 LLM 前时代的虚假信息检测历史、LLM 时代的早期检测、CoT 辟谣、LLM 生成文本检测、多模态假新闻 | ① **早期检测（early detection）**思路可直接迁移为 RAG 的"**检出即阻断**"；② 提出**自主虚假信息 Agent** 风险，与 §5.2 缺口 7（Agent 化）呼应；③ 本库**引用最高的综述**（486），可作为开题引言的政策/社会影响立足点 |
-| **80** | **Complex Claim Verification with Evidence Retrieved in the Wild** | NAACL | 2024 | 176 | 实时事实核查管线 | 首个**贴近真实**的事实验证管线：**证据限定为"声明发表之前"可获得的原始网页**；五阶段——声明分解 → 原始文档检索 → 细粒度证据检索 → 声明聚焦摘要 → 真实性判定 | ① **时间约束是全新评测变量**：同一查询相隔两月的搜索结果 **URL 重叠仅 30%**，说明"同一份语料"在时间维度并不成立——为 §7.1"**语料来源分层**"补上**时间层 L0**；② **soft accuracy**（6 级量表差一级记为对）与 §7.5"**口径宽松度影响 ACC**"同理；③ 表明**摘要环节不可省**（无摘要时指标最差） |
-| **81** | **Estimating Embedding Vectors for Queries** | ICTIR | 2016 | 149 | 查询嵌入估计（检索基础） | 为"**如何由词向量估计查询向量**"给出理论框架，并证明常用的 **AWE（词向量平均）是本框架的特例**；提出用**伪相关文档**估计的**伪查询向量（PQV）** | ① 解释了本库多数攻击"**篡改查询表示以提升相似度**"的理论根基（AdvPassage、GASLITE 均属此类）；② 提醒"**查询嵌入的估计方式**"是一个被 RAG 安全研究忽视、却同时影响攻击与防御的前置变量；③ MAP/P@5/P@10 + 双侧配对 t 检验的评测范式可直接复用 |
-| **82** | **The Missing Parts: Augmenting Fact Verification with Half Truth Detection** | EMNLP | 2025 | 10 | 半真（遗漏型）误导检测 | 提出**半真检测（half-truth detection）**新任务——声明**事实正确但因遗漏关键上下文而具误导性**；构建 **POLITIFACT-HIDDEN**（**15k 政治声明** + 句级证据对齐 + 隐含意图，另有 **2020–2025 时间不交叠测试集**）；提出 **TRACER**（证据对齐 → 隐含意图推断 → **隐藏内容的因果影响估计**） | ① 把"**遗漏（omission）**"确立为与"添加（commission）"并列的误导机制——**本库全部攻击均为后者**；② **Half-True 分类 F1 可在强基线上再提升 16 点**，说明现有验证器**系统性地漏检遗漏型误导**；③ TRACER 的**模块化"再评估"**可无缝插入既有流水线，与 §5.2 缺口 9"冲突感知与投毒防御尚未统一"直接衔接 |
-| **83** | **A Systematic Survey of Claim Verification** | EMNLP Findings | 2025 | 3 | 事实验证系统综述 | 系统综述 **2022-01 至 2025-03 的 198 篇**事实验证研究，聚焦**语料构建实践**与系统设计（156 篇构建/评测系统，68 篇含句选/排序模块）；两个深度案例 | ① 量化了**判定标注的不可靠性**：6 标签 IAA 仅 **58.3%**、合并为 4 标签 **74.4%**；MSVEC 中 **35.7%** 声明无证据句——这为 §7.5"**ACC/ASR 口径不可比**"提供了**标注层面的根因**；② 指出**声明分解质量是瓶颈**（语义等价率 76%、错误率 0–50%），与 §7.6"缺少组分归因消融"呼应 |
+| **80** | **Combating Misinformation in the Age of LLMs** | AI Magazine | 2024 | 486 | 虚假信息治理（综述） | 提出"**用 LLM 对抗虚假信息**"与"**对抗 LLM 生成的虚假信息**"**双问题框架**；系统梳理 LLM 前时代的虚假信息检测历史、LLM 时代的早期检测、CoT 辟谣、LLM 生成文本检测、多模态假新闻 | ① **早期检测（early detection）**思路可直接迁移为 RAG 的"**检出即阻断**"；② 提出**自主虚假信息 Agent** 风险，与 §5.2 缺口 7（Agent 化）呼应；③ 本库**引用最高的综述**（486），可作为开题引言的政策/社会影响立足点 |
+| **81** | **Complex Claim Verification with Evidence Retrieved in the Wild** | NAACL | 2024 | 176 | 实时事实核查管线 | 首个**贴近真实**的事实验证管线：**证据限定为"声明发表之前"可获得的原始网页**；五阶段——声明分解 → 原始文档检索 → 细粒度证据检索 → 声明聚焦摘要 → 真实性判定 | ① **时间约束是全新评测变量**：同一查询相隔两月的搜索结果 **URL 重叠仅 30%**，说明"同一份语料"在时间维度并不成立——为 §7.1"**语料来源分层**"补上**时间层 L0**；② **soft accuracy**（6 级量表差一级记为对）与 §7.5"**口径宽松度影响 ACC**"同理；③ 表明**摘要环节不可省**（无摘要时指标最差） |
+| **82** | **Estimating Embedding Vectors for Queries** | ICTIR | 2016 | 149 | 查询嵌入估计（检索基础） | 为"**如何由词向量估计查询向量**"给出理论框架，并证明常用的 **AWE（词向量平均）是本框架的特例**；提出用**伪相关文档**估计的**伪查询向量（PQV）** | ① 解释了本库多数攻击"**篡改查询表示以提升相似度**"的理论根基（AdvPassage、GASLITE 均属此类）；② 提醒"**查询嵌入的估计方式**"是一个被 RAG 安全研究忽视、却同时影响攻击与防御的前置变量；③ MAP/P@5/P@10 + 双侧配对 t 检验的评测范式可直接复用 |
+| **83** | **The Missing Parts: Augmenting Fact Verification with Half Truth Detection** | EMNLP | 2025 | 10 | 半真（遗漏型）误导检测 | 提出**半真检测（half-truth detection）**新任务——声明**事实正确但因遗漏关键上下文而具误导性**；构建 **POLITIFACT-HIDDEN**（**15k 政治声明** + 句级证据对齐 + 隐含意图，另有 **2020–2025 时间不交叠测试集**）；提出 **TRACER**（证据对齐 → 隐含意图推断 → **隐藏内容的因果影响估计**） | ① 把"**遗漏（omission）**"确立为与"添加（commission）"并列的误导机制——**本库全部攻击均为后者**；② **Half-True 分类 F1 可在强基线上再提升 16 点**，说明现有验证器**系统性地漏检遗漏型误导**；③ TRACER 的**模块化"再评估"**可无缝插入既有流水线，与 §5.2 缺口 9"冲突感知与投毒防御尚未统一"直接衔接 |
+| **84** | **A Systematic Survey of Claim Verification** | EMNLP Findings | 2025 | 3 | 事实验证系统综述 | 系统综述 **2022-01 至 2025-03 的 198 篇**事实验证研究，聚焦**语料构建实践**与系统设计（156 篇构建/评测系统，68 篇含句选/排序模块）；两个深度案例 | ① 量化了**判定标注的不可靠性**：6 标签 IAA 仅 **58.3%**、合并为 4 标签 **74.4%**；MSVEC 中 **35.7%** 声明无证据句——这为 §7.5"**ACC/ASR 口径不可比**"提供了**标注层面的根因**；② 指出**声明分解质量是瓶颈**（语义等价率 76%、错误率 0–50%），与 §7.6"缺少组分归因消融"呼应 |
 
 > **本节小结**：5 篇文献可归纳为**三个可直接移植的机制**——
-> 1. **时间约束**（#80）：证据必须在声明作出**之前**可得。本库无一篇 RAG 攻防工作限制检索文档的时间，而这是"真实部署"与"实验室环境"最大的差异之一。
-> 2. **遗漏即误导**（#82）：危害不必来自"错误信息被写入"，也可来自"关键信息被省略"。这直接把攻防战场从"**投毒检测**"扩展到"**完整性审计**"。
-> 3. **标注即口径**（#79、#83）：IAA 仅 58–76%、ACC 分子口径各异，说明**指标的可信度上限由标注质量决定**；开题若自建数据集，**必须报告 IAA**。
+> 1. **时间约束**（#81）：证据必须在声明作出**之前**可得。本库无一篇 RAG 攻防工作限制检索文档的时间，而这是"真实部署"与"实验室环境"最大的差异之一。
+> 2. **遗漏即误导**（#83）：危害不必来自"错误信息被写入"，也可来自"关键信息被省略"。这直接把攻防战场从"**投毒检测**"扩展到"**完整性审计**"。
+> 3. **标注即口径**（#80、#84）：IAA 仅 58–76%、ACC 分子口径各异，说明**指标的可信度上限由标注质量决定**；开题若自建数据集，**必须报告 IAA**。
 
 ---
 
@@ -653,14 +661,14 @@ timeline
 
 | # | 文献 | Venue | 年份 | 引用 | 领域/定位 | 核心内容 | 与本报告的关系 |
 |---|------|---|---|---|------|----------|----------|
-| 84 | **FilterRAG** | arXiv | 2025 | 0（xlsx 未收录） | 多模态 VQA（检索增强去幻觉） | 把 **BLIP-VQA** 与 RAG 结合：图像切成 **2×2 网格**，从 **Wikipedia**（检索式）与 **DBpedia**（SPARQL 查询式）取外部知识，再由**冻结的 GPT-Neo 1.3B** 生成答案；OK-VQA 上 **36.5%** 准确率，报告在域内与 OOD 场景下均减少幻觉 | **不涉及投毒攻防**。其价值仅在于提供"**检索增强用于抑制幻觉**"这一**非安全视角**的对照——与本库"检索增强会**引入**新的攻击面"构成镜像；**不参与 §8 的优先级评定** |
+| 85 | **FilterRAG** | arXiv | 2025 | 0（xlsx 未收录） | 多模态 VQA（检索增强去幻觉） | 把 **BLIP-VQA** 与 RAG 结合：图像切成 **2×2 网格**，从 **Wikipedia**（检索式）与 **DBpedia**（SPARQL 查询式）取外部知识，再由**冻结的 GPT-Neo 1.3B** 生成答案；OK-VQA 上 **36.5%** 准确率，报告在域内与 OOD 场景下均减少幻觉 | **不涉及投毒攻防**。其价值仅在于提供"**检索增强用于抑制幻觉**"这一**非安全视角**的对照——与本库"检索增强会**引入**新的攻击面"构成镜像；**不参与 §8 的优先级评定** |
 
 ---
 
 ## 七、实验设计横向分析
 
-> **分析范围**：**去重后 82 篇本地独立文献 PDF + 20 篇联网补充原文**，逐篇提取"威胁模型 / 实验设置 / 数据集"章节原文，**在统一维度下横向对比**。
-> **提取产物**：`tmp/experiment_design_extract.txt`（全量）、`tmp/experiment_design_compact.txt`（精简，未去重全 84 篇）、**`tmp/new_papers_deep_read.txt`（文献逐篇精读存档）**。
+> **分析范围**：**去重后 83 篇本地独立文献 PDF + 20 篇联网补充原文**，逐篇提取"威胁模型 / 实验设置 / 数据集"章节原文，**在统一维度下横向对比**。
+> **提取产物**：`tmp/experiment_design_extract.txt`（全量）、`tmp/experiment_design_compact.txt`（精简，未去重全 85 篇）、**`tmp/new_papers_deep_read.txt`（文献逐篇精读存档）**。
 > **五个统一维度**：§7.1 语料库来源 → §7.2 攻击者能力 → §7.3 查询集隔离与反馈 → §7.4 问题集合确定 → §7.5 效果统计（含 **ACC 专项分析** 与 **ASR 专项分析**：分子／分母口径与数值差异来源）。
 > **另加**：§7.6 机理分析实验（证据补强）分类 → §7.7 实验设置整定与计算开销估算 → §7.8 共性缺陷小结。
 > **本节的判定均以原文句子为依据**，括号内为可溯源的原话或数据。
@@ -672,7 +680,7 @@ timeline
 | 层级 | 语料形态 | 代表文献与具体语料 |
 |------|----------|--------------------|
 | **L1 原始信源** | 自建索引：直接取原始 dump 并自行分块 | **SDAG**：*"English Wikipedia dump from December 20, 2018 as the corpus … segmented into non-overlapping passages of 100 words, resulting in a total of 21,015,324 passages"* |
-| **L2 标准化基准**（主流） | 使用 NQ / MS MARCO / HotpotQA / SQuAD / BoolQ 等公开 QA 基准（其语料多为 Wikipedia 页 / Bing 网页） | PoisonedRAG、BadRAG、TrustRAG、GRADA、CEG-RAG、PRA-RAG、Who Taught the Lie?、Practical Poisoning、Rescuing（RAGDEFENDER）、Micro-Collaborative、HijackRAG、TrojanRAG、CatPoison、CorruptRAG、AuthChain、Joint-GCG、SeCon-RAG、RAGPart & RAGMask、**RAG Paradox**（HotpotQA / NQ / MedQA）、**DIGA**（NQ / NFCorpus / FiQA / SciDocs） |
+| **L2 标准化基准**（主流） | 使用 NQ / MS MARCO / HotpotQA / SQuAD / BoolQ 等公开 QA 基准（其语料多为 Wikipedia 页 / Bing 网页） | PoisonedRAG、BadRAG、TrustRAG、GRADA、CEG-RAG、PRA-RAG、Who Taught the Lie?、Practical Poisoning、Rescuing（RAGDEFENDER）、Micro-Collaborative、HijackRAG、TrojanRAG、CatPoison、CorruptRAG、AuthChain、Joint-GCG、SeCon-RAG、RAGPart & RAGMask、**RAG Paradox**（HotpotQA / NQ / MedQA）、**DIGA**（NQ / NFCorpus / FiQA / SciDocs）、**Machine Against the RAG**（NQ 2.6M / MS-MARCO 8.8M） |
 | **L2b 显式 BEIR 加工** | 明确声明使用 **BEIR 处理后的语料**（而非原始 dump） | **GMTP**：*"using the BEIR benchmark"*（NQ 2.6M / HotpotQA 5.2M / MS MARCO 8.8M）；**IPI**：*"the test splits of 11 datasets provided in the BEIR benchmark"*；**RAGuard**：*"BEIR (NFCorpus)"*；**ToxicRAG**：*"We load the official BEIR corpus and qrels for each benchmark"*（并按 100 个目标问题**只索引其 qrels 干净段落**） |
 | **L2c 基准的扩展/修订变体** | 在标准基准之上再加工：扩充冗余、修正答案或自建 | **Benchmarking Poisoning Attacks**：**5 标准 QA + 10 扩展变体（EX-M/EX-L）**，其关键结论是**扩展版上攻击效果显著下降**——说明语料的"冗余度/正确答案密度"本身即是防御因子；**CARE-RAG**：对 NQ/TriviaQA/HotpotQA/ASQA/2Wiki 做 **QA Repair**（修正过时/歧义标准答案，记为 NQ\* 等）；**BRIDGE**：自建 **TRD（36,266 问题 × 4 种 RAG 设定）** |
 | **L3 领域/专有语料** | 垂直领域数据，通常不可公开复现 | **On the Vulnerability**：PubMed 随机抽 200 万（原 23M）；**Semantic Chameleon**：Security Stack Exchange 67,941 文档 + 某网络安全厂商 156,777 文档；**GraphRAG(TKPA/UKPA)**：维基长文（《小王子》、2007-08 金融危机、日本资产泡沫、俄乌战争，共 94,496 词）；**Poison-RAG**：MovieLens ml-latest-small（推荐系统，365 用户 / 3,079 item）；**RAGRank**：模拟 CTI 语料（CrowdStrike/Darktrace 类报告）；**ReGENT**：Britannica ProCon 立场文档（约 2,000 篇）|
@@ -684,7 +692,7 @@ timeline
 1. **"语料来源"在文献中常被压缩为一句"我们使用 NQ/MS MARCO/HotpotQA"**，而其背后的真实信源（Wikipedia 页 vs Bing 网页 vs BEIR 的过滤版本 vs 扩展/修订版）差异很大。这与领域此前统计的 **corpus-dependent 效应**直接相关——Semantic Chameleon 报告同一攻击在 Security SE 上成功率 38%、在 FEVER Wikipedia 上为 **0%**（*"corpus vocabulary coverage—not embedding model choice—determines attack success"*）。
 2. **规模即"投毒率"的分母**，各文献差异极大：从 SDAG 的 2,101 万段落，到 SilentRetrieval 刻意构造的 **36.1 万段落**（*"combines DPR positive/hard-negative passages (~109K) with stratified Wikipedia samples"*，并特意声明 *"not the standard 21M DPR corpus"*），再到 RAGShield 的 **500 段落**；**ToxicRAG** 更极端——为控制变量**只索引与 100 个目标问题相关的干净段落**（NQ 仅 **115–127 篇**），作者本人亦声明该结果**不可外推到百万级语料**。**投毒率数字（如 0.04%）只有配合分母才有意义**。
 3. **"语料加工深度"本身构成一个被忽视的变量**（L2 vs L2b vs L2c）：同一攻击在**原始 dump、BEIR 过滤版、扩充冗余版**上的效果可能相差极大。**Benchmarking Poisoning Attacks** 的 EX-M/EX-L 实验正是该变量的直接证据——**判读任何 ASR 时都应先确认其语料处于哪一层**。
-4. **语料还有一条被完全忽视的"时间轴"**（来自 §6.7 #80）：真实事实核查要求证据在**声明发表之前**可得，而本库全部工作均**不限制检索文档的时间**。Complex Claim Verification 实测**同一查询相隔两月的搜索结果 URL 重叠仅 30%**——这意味着"**语料快照**"是比"语料来源"更底层的变量：**连"同一份语料"这个前提在时间维度上都不成立**。建议开题报告语料时额外声明**抓取时间与文档时间戳分布**。
+4. **语料还有一条被完全忽视的"时间轴"**（来自 §6.7 #81）：真实事实核查要求证据在**声明发表之前**可得，而本库全部工作均**不限制检索文档的时间**。Complex Claim Verification 实测**同一查询相隔两月的搜索结果 URL 重叠仅 30%**——这意味着"**语料快照**"是比"语料来源"更底层的变量：**连"同一份语料"这个前提在时间维度上都不成立**。建议开题报告语料时额外声明**抓取时间与文档时间戳分布**。
 5. **语料还可能是"被系统自己指认的"**（来自 §5.2 缺口 17）：RAG Paradox 里攻击者并不预先知道语料在哪，而是**先查询系统、从它披露的来源列表反推投毒平台**。这意味着"语料来源"在这一类攻击中**不是攻击者的输入，而是输出**——语料边界因此随系统行为而变，传统"固定语料 + 固定规模"的投毒率口径在此**无法直接套用**。
 6. **文档长度是一个被忽视的"难度旋钮"**：NQ / MS-MARCO 的文档平均仅 **472 / 336** 字符，而 BioASQ / FinQA / TiEBe 达 **1,484 / 3,973 / 8,295** 字符。MIRAGE 明确指出：**短事实型文档会人为压低生成侧操纵的难度**——恶意断言在上下文中几乎没有竞争者；一旦换成信息密度高的长文档，同一攻击的收益必须靠"内容是否真正有说服力"来挣。这一观察与 Benchmarking（RS0 扩展版上攻击效果显著下降）互为印证，共同说明**语料的形态本身就是一个未申报的混淆变量**：报告 ASR 时应至少给出文档长度分布。
 
@@ -697,7 +705,7 @@ timeline
 | 设定 | 文献 | 原文依据 |
 |------|------|----------|
 | **白盒检索器** | BadRAG、PoisonedRAG(W)、PRA-RAG、Who Taught、Semantic Chameleon、TrojanRAG、Joint-GCG(检索器+生成器双白盒) | PRA-RAG：*"assumed to have white-box knowledge of the retriever because many retrievers (e.g., Contriever, ANCE) are publicly available"*；BadRAG：*"white-box access to the RAG retriever … practical as white-box retrievers like LLaMA Embedding, JinaBERT, Contriever are freely available on HuggingFace"*；**Joint-GCG**（本地文献中攻击者能力最强）：*"We assume the attacker has full white-box access to both the retriever and the generator models"* |
-| **黑盒检索器** | PoisonedRAG(B)、GASLITE、GARAG、SIREN、IPI、HijackRAG(B)、MINJA、SilentRetrieval、CatPoison、CorruptRAG、AuthChain、Phantom、Poison-RAG、ReGENT、ToxicRAG、**MIRAGE**（连**用户查询分布**也不可知）、**FlippedRAG**（连**语料**也不可知，只保留"可查询系统"这一能力）、**RAG Paradox**（**连检索器类型也不知**，且**语料边界由系统披露的来源反推**）、**DIGA**（**不需梯度、不需训练、不需知道检索器类型**，且**跨检索器迁移在稀疏 BM25 上反而最好**） | IPI：*"Our black-box assumption rules out attacks that require white-box access to parameters"*；CatPoison：*"black-box LLMs (e.g., GPT-4, Llama-2) do not provide gradients, and even with white-box access, the computational cost is prohibitive"* |
+| **黑盒检索器** | PoisonedRAG(B)、GASLITE、GARAG、SIREN、IPI、HijackRAG(B)、MINJA、SilentRetrieval、CatPoison、CorruptRAG、AuthChain、Phantom、Poison-RAG、ReGENT、ToxicRAG、**MIRAGE**（连**用户查询分布**也不可知）、**FlippedRAG**（连**语料**也不可知，只保留"可查询系统"这一能力）、**RAG Paradox**（**连检索器类型也不知**，且**语料边界由系统披露的来源反推**）、**DIGA**（**不需梯度、不需训练、不需知道检索器类型**，且**跨检索器迁移在稀疏 BM25 上反而最好**）、**Machine Against the RAG**（**查询级黑盒**：不知嵌入与 LLM、**不知 k**、看不到 logits） | IPI：*"Our black-box assumption rules out attacks that require white-box access to parameters"*；CatPoison：*"black-box LLMs (e.g., GPT-4, Llama-2) do not provide gradients, and even with white-box access, the computational cost is prohibitive"* |
 | **灰盒** | On the Vulnerability、RADE | On the Vulnerability：*"the attacker lacks access to the exact queries but has access to their semantically equivalent counterparts"*；RADE：*"defense-aware grey-box semantic camouflage"* |
 | **无检索器访问** | RAGSieve（威胁模型侧）、Practical Poisoning | RAGSieve：*"The operator controls … but does not know the targeted queries, payloads, attack construction, or poisoned documents"* |
 
@@ -719,7 +727,7 @@ timeline
 
 | 通道 | 文献 | 原文依据 |
 |------|------|----------|
-| **仅能通过公开信源间接投毒** | **P3A**、SilentRetrieval、IPI、BadRAG、SIREN、Semantic Chameleon、On the Vulnerability、GraphRAG、**Phantom**、**CorruptRAG**、**AuthChain**、**RAG Paradox** | **RAG Paradox（通道最受限）**：投放目标**不是预先选定的**，而是**由系统披露的来源列表动态确定**，且攻击者**无法控制系统何时索引**——*"This capability is limited to posting documents on the identified platforms, without extending to any direct control over how the system subsequently indexes or integrates such content"*；P3A（最明确）：*"The attacker can only poison the system by injecting carefully crafted documents Dp into the corpus via public sources (e.g., Wikipedia or online forums)"*；BadRAG：*"an attacker can … publish these passages online"*（通过 Wikipedia/Reddit/HuggingFace）；On the Vulnerability：*"by creating a new Wikipedia page or by entering a row of a fake patient's information"*；GraphRAG：*"The attacker can modify a small fraction of trusted sources (e.g., Wikipedia) but has no access to the constructed graph or model parameters"*；**Phantom**（单文档、**明确不控制检索器或生成器**）：*"our adversary only needs to introduce a single poisoned passage into the knowledge base and does not assume control over the retriever or generator components"* |
+| **仅能通过公开信源间接投毒** | **P3A**、SilentRetrieval、IPI、BadRAG、SIREN、Semantic Chameleon、On the Vulnerability、GraphRAG、**Phantom**、**CorruptRAG**、**AuthChain**、**RAG Paradox**、**Machine Against the RAG** | **Machine Against the RAG（通道限制最严）**：*"can insert and repeatedly edit their own content ... but not remove or modify other documents"*——**只能插入并反复编辑自己那一篇**，故无法靠"删掉答案"压制，只能靠单篇文档在多数干净文档同时被检索时仍然压住它们；**RAG Paradox（通道最需反推）**：投放目标**不是预先选定的**，而是**由系统披露的来源列表动态确定**，且攻击者**无法控制系统何时索引**——*"This capability is limited to posting documents on the identified platforms, without extending to any direct control over how the system subsequently indexes or integrates such content"*；P3A（最明确）：*"The attacker can only poison the system by injecting carefully crafted documents Dp into the corpus via public sources (e.g., Wikipedia or online forums)"*；BadRAG：*"an attacker can … publish these passages online"*（通过 Wikipedia/Reddit/HuggingFace）；On the Vulnerability：*"by creating a new Wikipedia page or by entering a row of a fake patient's information"*；GraphRAG：*"The attacker can modify a small fraction of trusted sources (e.g., Wikipedia) but has no access to the constructed graph or model parameters"*；**Phantom**（单文档、**明确不控制检索器或生成器**）：*"our adversary only needs to introduce a single poisoned passage into the knowledge base and does not assume control over the retriever or generator components"* |
 | **可直接注入目标知识库** | PoisonedRAG、Benchmarking、TrustRAG、Cordon-MAS、RAGShield（T3/T5 内部人层级）、ToxicRAG（*"The attacker can append one document … to a corpus that is later indexed by the victim system"*）、**MIRAGE**（*"the attacker's sole capability with respect to the target system is corpus injection"*，且**只注入 1 篇**） | Benchmarking：*"We assume the attacker can inject arbitrary text into the knowledge database by modifying the data sources from which the database is constructed"*；RAGShield 显式划分 **T3 内部人（有合法来源证明）** 与 **T5 自适应对手**两个攻击层级 |
 
 > **与之互补的一类：语料"来源不可信"而非"通道可达"**——**RAGRank** 指出 CTI 场景下攻击者**可完美模仿合法格式、术语与文风**（*"sophisticated threat actors can mimic legitimate formats, terminology, and stylistic conventions"*），使"检测异常格式"型防御失效。这与"通道"维度正交，是**威胁模型的一个独立变量**。
@@ -748,7 +756,7 @@ timeline
 | 设定 | 文献 | 说明 |
 |------|------|------|
 | **防御感知 / 自适应** | **TRIS**（architecture-aware adversary）、**RADE**（defense-aware grey-box camouflage）、**RAGShield**（T5 自适应对手）、**P3A**（针对重排器盲点） | 攻击者**知晓防御机制并针对性规避**。TRIS 测试了"**改写触发器以绕过结构过滤**"的自适应攻击，结果仅启用 L3 仍可将 ASR 减半（NQ **32.0% → 15.0%**）并提升净准确率 18 个百分点 |
-| **非自适应（oblivious）** | 多数文献（含 **RAG Paradox**：其两种防御实验为"事后叠加"，攻击本身未针对重排器或置信过滤器优化） | 防御固定、攻击不针对防御优化——**其 ASR 下降幅度存在高估风险** |
+| **非自适应（oblivious）** | 多数文献（含 **RAG Paradox** 与 **Machine Against the RAG**：二者的防御实验均为"事后叠加"，攻击本身未针对防御优化） | 防御固定、攻击不针对防御优化——**其 ASR 下降幅度存在高估风险** |
 
 > **观察**：本库**仅少数文献报告自适应攻击**（TRIS、RADE、RAGShield、P3A、ProGRank）；而 SLOT 综述（§7.1 I3）明确要求"**分层防御须在攻击者知晓防御时仍成立**"。**未报自适应 ASR 的防御结论应被视为上界**。
 
@@ -759,7 +767,7 @@ timeline
 | 情况 | 文献 | 说明 |
 |------|------|------|
 | **严格隔离**（在 train/优化集上生成，在 held-out 测试集上评估） | **Poisoning Retrieval Corpora**、**GASLITE**、**GCG**、**ProGRank**、**RADE**、**Joint-GCG**、**DIGA** | Poisoning Retrieval Corpora 最明确：*"We generate adversarial passages on the training set (NQ or MS MARCO) and inject them into the corpus and measure the top-k attack success rates on test queries"*，并称 *"held-out test queries"*；GASLITE：*"randomly sample 5% of MSMARCO's training queries (25K queries), made available for attacks"*，再在 test set / 其他数据集上评估；GCG：*"held-out test behaviors"*；**ProGRank**：*"To avoid data snooping, retrieval-stage analysis and configuration selection use a random 20% query split, while downstream generation uses the remaining 80%"*；**Joint-GCG**：*"We collect the shared tokens from both models and create a train-test split with an 80% training set and a 20% validation set"*；**MIRAGE**（最彻底的隔离）：*"we operationalize this query-agnostic setting by strictly separating attack construction from evaluation: MIRAGE optimizes solely over the synthetic query cluster $\mathcal Q'$, whereas all evaluations are conducted on the datasets' original held-out user queries"*；**DIGA**：*"We utilize the training sets of the respective datasets to generate adversarial passages, subsequently evaluating their effectiveness on the corresponding test sets"*（SciDocs 无独立训练集，故同集攻击与评估，作者已声明） |
-| **不隔离**（定向投毒，优化与测试使用同一组查询） | **PoisonedRAG、BadRAG、HijackRAG、InceptionRAG、CRCP、TrustRAG、Who Taught、Practical Poisoning、Cordon-MAS、CorruptRAG、CatPoison、AuthChain、**RAG Paradox**（在固定的目标 QA 对集合上评估）、**DIGA**（**在训练集生成、在测试集评估**，与 Poisoning Retrieval Corpora 同协议）、**ToxicRAG** | PoisonedRAG：*"we randomly select 10 close-ended questions from each dataset as the target questions"*，攻击即在这些目标问题上评估；TrustRAG 的威胁模型直接以 `Q = [q1..qM]` 为目标；Cordon-MAS：*"the choice of which queries to target (per-query or corpus-level injection)"*；**AuthChain**：*"use their constructed test set containing 100 question-answer pairs … to enable direct comparison with baselines"*（沿用前作测试集，优化即在同一批问题上）|
+| **不隔离**（定向投毒，优化与测试使用同一组查询） | **PoisonedRAG、BadRAG、HijackRAG、InceptionRAG、CRCP、TrustRAG、Who Taught、Practical Poisoning、Cordon-MAS、CorruptRAG、CatPoison、AuthChain、**RAG Paradox**（在固定的目标 QA 对集合上评估）、**DIGA**（**在训练集生成、在测试集评估**，与 Poisoning Retrieval Corpora 同协议）、**Machine Against the RAG**、**ToxicRAG** | PoisonedRAG：*"we randomly select 10 close-ended questions from each dataset as the target questions"*，攻击即在这些目标问题上评估；TrustRAG 的威胁模型直接以 `Q = [q1..qM]` 为目标；Cordon-MAS：*"the choice of which queries to target (per-query or corpus-level injection)"*；**AuthChain**：*"use their constructed test set containing 100 question-answer pairs … to enable direct comparison with baselines"*（沿用前作测试集，优化即在同一批问题上）|
 
 > **这是本分析最重要的方法论发现之一**：**"定向投毒"（targeted poisoning）这一类攻击天然不区分优化集与测试集**——因为攻击的目标就是"让指定问题输出指定答案"，攻击者当然知道这些问题。这在威胁模型上是合理的（定向攻击者确实掌握目标问题），但**意味着这类 ASR 不能解读为"泛化能力"**。真正做了隔离的是**"通用/可迁移"这条线**（Poisoning Retrieval Corpora、GASLITE、GCG、UniC-RAG、IPI、Joint-GCG）以及**报告了查询划分的防御类**（ProGRank 20%/80%、RADE 多种子划分），它们的价值恰在于证明方法能迁移到**未见过的查询**上。
 
@@ -776,7 +784,7 @@ timeline
 | 反馈来源 | 文献 | 原文依据 |
 |----------|------|----------|
 | **本地影子系统的梯度 / 替代模型反馈**（最强反馈） | GCG、HotFlip、TrojanRAG、AgentPoison、Semantic Chameleon、CRCP、RADE、**Joint-GCG**、**Phantom**、**MIRAGE**（无梯度；用**替代检索器的相似度**与**替代 LLM + 判官**的两路打分做奖励） | AgentPoison：梯度引导束搜索（唯一性 + 紧凑性损失）；TrojanRAG：对比学习 + 正交优化训练检索器；**Joint-GCG**：对**检索器与生成器双向梯度**联合优化；**Phantom**：*"only required running our HotFlip attack locally on Contriever using MS MARCO as the query dataset for 16 epochs"*（本地跑 HotFlip） |
-| **目标系统的查询响应**（真系统反馈，较弱） | **SIREN**、**MINJA**、**InceptionRAG**、**ReGENT**、**FlippedRAG**（提示系统复述其检索片段，把"系统自述上下文"当作检索器标签） | SIREN：*"The attacker proposes edits, the target answers from the replayed sources, and the judge extracts the target entity's rank and returns feedback"*；InceptionRAG：*"The feedback signal is obtained using the same response-based protocol"*（配合零阶优化 ZOSO 在无梯度下迭代）；**ReGENT**：强化学习框架持续以**相关性-生成-自然度三合一奖励**精化策略 |
+| **目标系统的查询响应**（真系统反馈，较弱） | **SIREN**、**MINJA**、**InceptionRAG**、**ReGENT**、**FlippedRAG**、**Machine Against the RAG**（BBO 每轮**实际调用目标 RAG** 取各候选响应，再用辅助嵌入模型比较响应与目标拒答语的相似度）（提示系统复述其检索片段，把"系统自述上下文"当作检索器标签） | SIREN：*"The attacker proposes edits, the target answers from the replayed sources, and the judge extracts the target entity's rank and returns feedback"*；InceptionRAG：*"The feedback signal is obtained using the same response-based protocol"*（配合零阶优化 ZOSO 在无梯度下迭代）；**ReGENT**：强化学习框架持续以**相关性-生成-自然度三合一奖励**精化策略 |
 | **仅嵌入模型的相似度分数** | **IPI**、**GASLITE**、**DIGA**（适应度即"对抗段落嵌入与查询簇质心的余弦相似度"，**有闭式解**，故无需迭代试探系统） | IPI：*"the adversary to solve Problem 2 under a limited number of black-box accesses to the scoring function f (which calls E as a sub-routine)"*，并给出明确预算 B |
 | **无反馈（一次性构造）** | PoisonedRAG(B)（启发式）、Benchmarking、Practical Poisoning、**AuthChain**、**CatPoison**、**DIGA**（遗传算法在**本地嵌入空间**内进化，**不查询目标系统**）、**RAG Paradox**（只用**被披露的文档**做一次性偏好分析，**不迭代试探系统**）、**ToxicRAG**（*"does not query the victim RAG system"*；其自校验仅用替代模型，**不触及目标系统**） | PoisonedRAG 黑盒设定用启发式规则构造，无迭代反馈；CatPoison 形式化为黑盒一次性优化问题 |
 
@@ -786,7 +794,7 @@ timeline
 
 | 确定方式 | 文献 | 规模与依据 |
 |----------|------|------------|
-| **从官方划分中随机采样固定数量**（最主流） | PoisonedRAG、CEG-RAG、GRADA、Push and Pull、GMTP、ProGRank、RAGShield、Cordon-MAS、SDAG、TrustRAG、Certifiably Robust、RAGuard、ContextCite、**CatPoison**、**CorruptRAG**、**Practical Poisoning**、**RAGPart & RAGMask**、**SeCon-RAG**、**RAGRank**、ToxicRAG（seed 42、每数据集 100 题）、**MIRAGE**（每数据集 **1,000 次独立试验**、每次重采样源文档并**还原索引**）、**RAG Paradox**（**在线实验每目标 5–10 个 QA 对**；离线实验用 HotpotQA / NQ / MedQA 全集）、**DIGA**（**用各数据集官方训练集生成、测试集评估**；SciDocs 因无独立训练集而同集处理）、**FlippedRAG**（争议话题集 + 语料从 2,000 扩到 100,000） | PoisonedRAG：*"randomly select 10 close-ended questions"*；CEG-RAG：*"randomly sample 4,000 queries … then poison a subset … by selecting 2,000 target queries"*；GRADA：*"select 100 close-ended questions from each dataset, yielding 300 … repeated using 3 random seeds … 900 questions"*；SDAG：*"randomly sample 1,000 questions from the validation set"*；GMTP：*"randomly sample 200 test queries"*；ProGRank：*"sample 100 evaluation queries, and each query is associated with 50 clean passages"* |
+| **从官方划分中随机采样固定数量**（最主流） | PoisonedRAG、CEG-RAG、GRADA、Push and Pull、GMTP、ProGRank、RAGShield、Cordon-MAS、SDAG、TrustRAG、Certifiably Robust、RAGuard、ContextCite、**CatPoison**、**CorruptRAG**、**Practical Poisoning**、**RAGPart & RAGMask**、**SeCon-RAG**、**RAGRank**、ToxicRAG（seed 42、每数据集 100 题）、**MIRAGE**（每数据集 **1,000 次独立试验**、每次重采样源文档并**还原索引**）、**RAG Paradox**（**在线实验每目标 5–10 个 QA 对**；离线实验用 HotpotQA / NQ / MedQA 全集）、**DIGA**（**用各数据集官方训练集生成、测试集评估**；SciDocs 因无独立训练集而同集处理）、**Machine Against the RAG**（NQ / MS-MARCO 各**随机 100 查询**，且**只统计"干净时能答、投毒后不答"**者）、**FlippedRAG**（争议话题集 + 语料从 2,000 扩到 100,000） | PoisonedRAG：*"randomly select 10 close-ended questions"*；CEG-RAG：*"randomly sample 4,000 queries … then poison a subset … by selecting 2,000 target queries"*；GRADA：*"select 100 close-ended questions from each dataset, yielding 300 … repeated using 3 random seeds … 900 questions"*；SDAG：*"randomly sample 1,000 questions from the validation set"*；GMTP：*"randomly sample 200 test queries"*；ProGRank：*"sample 100 evaluation queries, and each query is associated with 50 clean passages"* |
 | **使用数据集官方全集/划分** | SilentRetrieval | NQ 官方 3,452 test queries + MS MARCO 6,980 dev queries |
 | **沿用前作测试集以直接可比** | **AuthChain**、**Joint-GCG** | AuthChain：*"we use their constructed test set containing 100 question-answer pairs for each dataset to enable direct comparison with baselines"*；Joint-GCG：*"The dataset used for comparison with PoisonedRAG and LIAR consists of 100 queries, each sampled by PoisonedRAG"* |
 | **按方法筛选子集**（非纯随机） | **Benchmarking**、**P3A**、**Micro-Collaborative**、Topic-FlipRAG | Benchmarking：*"randomly sampled 500 queries … as initial targeted queries"*，再筛到 *"100 queries … ensure that, under a benign RAG system, the target query does not naturally yield the intended answer"*（**零目标答案条件**）；P3A：*"we sample 500 questions with clearly defined answers from each dataset, instead of open-ended questions"*；Micro-Collaborative：*"a curated subset of 100 semantically aligned question pairs"*；Topic-FlipRAG：*"retrieve the top-1000 passages ranked by relevance per topic, then identify the passage with the lowest average rank"* |
@@ -1053,7 +1061,7 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 ### 7.6 机理分析实验（证据补强）横向分析
 
 > **定义**：本节把"支撑论文核心论点的辅助实验"统称为**机理分析实验（证据补强实验）**——它们不直接测攻击/防御的最终效果，而是回答"**为何有效**""**哪一部分在起作用**""**结论是否稳健/可推广**"。
-> **数据来源**：`tmp/extract_mechanism.py` → `tmp/mechanism_experiments.txt`（全部 83 个 PDF 全文扫描 + 20 篇联网补充原文）。
+> **数据来源**：`tmp/extract_mechanism.py` → `tmp/mechanism_experiments.txt`（全部 84 个 PDF 全文扫描 + 20 篇联网补充原文）。
 
 #### （1）八类机理实验的分类与总体分布
 
@@ -1068,7 +1076,7 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 | **M7** | 案例研究 | 具体样例是否符合预期？ | 定性示例、正/反例对照、walkthrough |
 | **M8** | 统计检验 | 差异是否显著、结果是否可复现？ | 置信区间、p 值、多种子、误差棒 |
 
-**分布统计**（基于关键词提取，**含少量假阳性**，如参考文献或 checklist 中的"confidence interval"，故仅作**方向性**参考；**分母为 82 篇独立文献**）：
+**分布统计**（基于关键词提取，**含少量假阳性**，如参考文献或 checklist 中的"confidence interval"，故仅作**方向性**参考；**分母为 83 篇独立文献**）：
 
 | 类别 | M1 动机 | M2 归因 | M3 消融 | M4 敏感性 | M5 可视化 | M6 迁移性 | M7 案例 | M8 统计 |
 |------|--------|--------|--------|----------|----------|----------|--------|--------|
@@ -1084,6 +1092,7 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 |---|------|--------|------------|--------|----------|----------|----------|--------|--------|
 | 1 | **PoisonedRAG** | 人工评估验证子串匹配 | 黑/白盒差异归因（白盒相似度更高→F1 更高） | 超参消融 | k=50 时仍 41%/43% ASR | — | — | 失败案例、非目标问题受影响 | — |
 | 2 | **IPI** | 把"检索"设为决定性步骤 | 1 token 触发即 Recall 0.86–1.0；单毒邮件致 GPT-4o 外泄 SSH 成功率 80% | **触发片段长度消融**（2 token→40%，5 token→完美） | 掩码 token 数扫描（Fig 13） | — | 跨位置/跨攻击片段可迁移，跨模型架构不可 | RAG 案例 + **Agentic 案例** | **5 随机种子 ± std** |
+| 3 | **Machine Against the RAG** | RAG 的"可用性"从未被当作攻击目标；且拒答天然合理、不可事实核查 | **三类拒答机理的归因**（R1 信息不足 / R2 安全 / R3 不可靠）；并**归因现有安全指标的失效**——抗阻塞能力与 DecodingTrust 等排名不相关甚至负相关 | **三种构造方式对照（指令注入 / Oracle 生成 / 黑盒优化 BBO）**；**跨 LLM 与跨大模型的迁移矩阵** | **k 的敏感性（3/5/7/10）**；**查询改写（5 种改写）的对抗鲁棒性** | **困惑度分布对比（ROC-AUC 仅 0.05；干净 15.93 vs 阻塞 290.64）** | **跨 6 个开源 LLM + 7 个闭源/大模型的两级迁移评估** | 真实拒答样例（如 *"I cannot provide an answer… I'm just an AI"* 却与目标拒答语相似度仅 0.34） | **报告置信度**：Jamming 由 oracle LLM + 子串匹配双判定 |
 | 4 | **MIRAGE** | 短事实型基准"人为压低"了生成侧难度 | **检索可见性与语义说服力相互解耦**（RSR 更高者 ASR_L 未必更高） | **加性消融（AE / QI / RR / MR / Ellis 逐项开关）** | **top-k 5→20、语料规模、λ_ret 权衡、优化器规模 4B→120B** | — | **3 检索器 × 3 生成器 + 跨模型迁移热图** | 四类改写实例（实体替换 / 时间改动 / 语义改动 / 多跳） | **1,000 次重复试验 + 判官-人工一致性 > 0.96** |
 | 5 | **CorruptRAG** | — | AK 变体整合为一致单元→顺序不敏感 | 单文本拆分（p_s⊕p_h） | 超参数影响 | — | — | — | — |
 | 6 | **InceptionRAG** | "有效后缀在搜索空间成簇"的观察 | 检索信号集中于少数信息 token | **ZOSO 后缀策略消融（44.7→80.3）**；CTTFT 策略消融 | 注入量 N | 嵌入空间导航 | 8 个 LLM（含黑盒） | 双端注入示例 | — |
@@ -1118,7 +1127,7 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 
 #### （3）防御类与其它类别文献的机理实验清单（30 篇）
 
-> **说明**：本表在 §6.2 的 22 篇防御类文献之外，另合并 §6.4 的 2 篇基准类、§6.5 的 1 篇基础方法类与 §6.7 的 5 篇跨域借鉴类，共 **30 篇**；9 篇综述、8 篇通用基准 / 数据集与 1 篇低优先级邻域文献因不涉及机理实验未列入。表中 `#` 沿用 **§6 的连续篇号**，故在 **55** 之后直接跳至 **70**（中间 56–69 属综述与通用基准 / 数据集类，不做机理实验）。
+> **说明**：本表在 §6.2 的 22 篇防御类文献之外，另合并 §6.4 的 2 篇基准类、§6.5 的 1 篇基础方法类与 §6.7 的 5 篇跨域借鉴类，共 **30 篇**；9 篇综述、8 篇通用基准 / 数据集与 1 篇低优先级邻域文献因不涉及机理实验未列入。表中 `#` 沿用 **§6 的连续篇号**，故在 **56** 之后直接跳至 **80**（中间 57–79 属综述、通用基准 / 数据集与基础方法类，不做机理实验）。
 
 | # | 文献 | M1 动机 | M2 机理归因 | M3 消融 | M4 敏感性 | M5 可视化 | M6 迁移性 | M7 案例 | M8 统计 |
 |---|------|--------|------------|--------|----------|----------|----------|--------|--------|
@@ -1147,11 +1156,11 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 | 71 | **MedMisBench** | 干净 71.1% → 误导下 38.0%，“知道”不等于“守得住” | 权威框架式虚构最具破坏性的机理 | **11 模型配置 × 误导类型消融** | 误导强度与条数 | 误导上下文–选项对分布 | 11 个模型配置（跨厂商） | 临床专家认定的 38.2% 高危样例 | **注入生成器复现 + 14 人 / 7 国临床专家评审** |
 | 75 | **Toward Robust RALMs** | 真实检索器 Recall@5 仅 0.65–0.76，不完美检索是常态 | 不可答 / 对抗 / 冲突三场景分别诱发幻觉的机理 | **三场景受控交叉实验（GenADV / RAD）** | — | — | 多 RALM（Llama2 / Gemma 等）× 多数据集 | 幻觉与误判 “unanswerable” 的实例 | 场景交叉统计 |
 | 78 | **DEO** | 否定 / 排除语义是检索器的系统性盲区 | 查询分解 + 对比目标为何能修正否定语义 | **正 / 负子查询与对比项的逐项消融** | 分解与优化步数 | 嵌入空间中的否定方向 | 跨嵌入模型（模型无关性验证） | 文→图检索示例 | 多嵌入模型一致性 |
-| 79 | **Combating Misinformation** | 提出“用 LLM 对抗虚假信息 / 对抗 LLM 生成的虚假信息”双问题框架 | 梳理 LLM 前后时代的检测范式差异 | 双问题框架的对照梳理 | — | — | 覆盖文本与多模态场景 | 自主虚假信息 Agent 风险案例 | 系统整理方法论与风险分类 |
-| 80 | **Complex Claim Verification** | 证据若不做时间限定，等于偷看答案 | 时间约束下 URL 重叠仅 30%，“同一语料”前提不成立 | **五阶段管线逐阶段对照（摘要环节不可省）** | **T = 0 / 1 周 / 2 月三次重取** | 检索结果随时间变化 | 跨时间点与跨声明类型 | 复杂政治声明实例 | **5 次随机种子；p<0.05** |
-| 81 | **Estimating Embedding Vectors** | — | 证明 AWE 是本框架的特例 | **多种查询嵌入估计方式对照** | 词向量模型与集合规模 | 嵌入空间分布对比 | 跨词向量模型与多集合 | — | **95% 双侧配对 t 检验** |
-| 82 | **The Missing Parts（TRACER）** | 遗漏（omission）是与添加并列的误导机制 | 隐含意图推断 + 隐藏内容因果影响的归因 | 三模块（对齐 / 意图 / 因果影响）消融 | — | 证据对齐可视化 | 跨声明来源与时间不交叠测试集 | 半真声明实例 | **LLM–人一致性 92.1–98.9% + 50 例人工抽检** |
-| 83 | **A Systematic Survey of Claim Verification** | 语料创建实践长期未被审视 | 指出声明分解质量是系统瓶颈 | 198 篇文献的编码统计 | — | 标注一致性分布 | 2022-01–2025-03 全时段 | 两个深度案例 | **IAA 58.3% / 74.4%、MSVEC 35.7% 无证据句** |
+| 80 | **Combating Misinformation** | 提出“用 LLM 对抗虚假信息 / 对抗 LLM 生成的虚假信息”双问题框架 | 梳理 LLM 前后时代的检测范式差异 | 双问题框架的对照梳理 | — | — | 覆盖文本与多模态场景 | 自主虚假信息 Agent 风险案例 | 系统整理方法论与风险分类 |
+| 81 | **Complex Claim Verification** | 证据若不做时间限定，等于偷看答案 | 时间约束下 URL 重叠仅 30%，“同一语料”前提不成立 | **五阶段管线逐阶段对照（摘要环节不可省）** | **T = 0 / 1 周 / 2 月三次重取** | 检索结果随时间变化 | 跨时间点与跨声明类型 | 复杂政治声明实例 | **5 次随机种子；p<0.05** |
+| 82 | **Estimating Embedding Vectors** | — | 证明 AWE 是本框架的特例 | **多种查询嵌入估计方式对照** | 词向量模型与集合规模 | 嵌入空间分布对比 | 跨词向量模型与多集合 | — | **95% 双侧配对 t 检验** |
+| 83 | **The Missing Parts（TRACER）** | 遗漏（omission）是与添加并列的误导机制 | 隐含意图推断 + 隐藏内容因果影响的归因 | 三模块（对齐 / 意图 / 因果影响）消融 | — | 证据对齐可视化 | 跨声明来源与时间不交叠测试集 | 半真声明实例 | **LLM–人一致性 92.1–98.9% + 50 例人工抽检** |
+| 84 | **A Systematic Survey of Claim Verification** | 语料创建实践长期未被审视 | 指出声明分解质量是系统瓶颈 | 198 篇文献的编码统计 | — | 标注一致性分布 | 2022-01–2025-03 全时段 | 两个深度案例 | **IAA 58.3% / 74.4%、MSVEC 35.7% 无证据句** |
 
 #### （4）横向观察
 
@@ -1180,7 +1189,7 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 |------|------|------|
 | **单检索器**（只验证一个） | PoisonedRAG、InceptionRAG、SilentRetrieval、P3A、Human-Imperceptible、CatPoison(主)、SIREN、**DenialRAG**、**AdversarialCoT**（Co-Condenser） | 均以 **Contriever** 或单一稠密检索器为主——Contriever（无监督对比预训练）是本领域事实上的**默认检索器** |
 | **双检索器对比** | BadRAG、Phantom、RAGPart & RAGMask、SeCon-RAG、ShieldRAG | 常见组合为 Contriever + DPR/ANCE，或搭配 **E5 / BGE / MiniLM** |
-| **三检索器以上** | AdvPassage、GASLITE、GRADA、Repoisoning、Can IPI、GMTP、TrustRAG、RAGDefender、Joint-GCG、Benchmarking、ToxicRAG（4 种稠密检索器）、**MIRAGE**（3 种，含 API 型 text-embedding-3-large）、**FlippedRAG**（4 种，含 Qwen3-Embedding-4b）、**CamoDocs**（3 种，含 API 型 text-embedding-ada-002）、**RAG Paradox**（4 种，**含稀疏 BM25**）、**DIGA**（3 稠密 GTR-base / ANCE / DPR-nq + 稀疏 BM25） | 覆盖**无监督对比 / 有监督 / 稀疏 / 晚期交互**四类代表：Contriever、DPR、ANCE、BM25、ColBERT |
+| **三检索器以上** | AdvPassage、GASLITE、GRADA、Repoisoning、Can IPI、GMTP、TrustRAG、RAGDefender、Joint-GCG、Benchmarking、ToxicRAG（4 种稠密检索器）、**MIRAGE**（3 种，含 API 型 text-embedding-3-large）、**FlippedRAG**（4 种，含 Qwen3-Embedding-4b）、**CamoDocs**（3 种，含 API 型 text-embedding-ada-002）、**RAG Paradox**（4 种，**含稀疏 BM25**）、**DIGA**（3 稠密 GTR-base / ANCE / DPR-nq + 稀疏 BM25）、**Machine Against the RAG**（GTR-base / Contriever，**另含 7 个闭源/大模型**） | 覆盖**无监督对比 / 有监督 / 稀疏 / 晚期交互**四类代表：Contriever、DPR、ANCE、BM25、ColBERT |
 | **系统级扫描** | **GASLITE**（**9 个**先进检索模型）、**Benchmarking**（13 攻击 × 7 防御 × 15 数据集） | 多模型/多配置的系统性扫掠 |
 
 > **观察**：**Contriever 几乎是通用默认选项**（在 30+ 篇中出现），这既利于横向比较，也意味着**其上的结论可能不自动外推到有监督检索器**——与 §7.2「"白盒"实为本地影子系统」的判断相互印证；**AdvPassage 与 Poisoning Retrieval Corpora 的"迁移性失败"（同族 <0.5%）也说明跨检索器迁移并不可靠**。
@@ -1240,6 +1249,7 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 | **训练/优化开销** | **DIGA**：**时间省 6.5–9.3×、显存省 6.0–10.5×**（相对 HotFlip），且**无需训练任何模型**——是本库中**唯一把"算力开销"本身作为核心贡献**的工作；BRIDGE：**8×H100**（80GB）训 Llama3-8B；PoisonedRAG：白盒每毒文本 **≈26 秒**（黑盒启发式 ≈1e-6 秒）；InceptionRAG：ZOSO **234 分钟** vs 穷举 **6,622 分钟**（**28.3× 加速**）；**MIRAGE**：全部实验跑在**单张 H200**上，作者把"**TPO 迭代带来的高计算成本**"列为第一项局限；**FlippedRAG**：需先在黑盒系统上**枚举查询/候选训练替代检索器**，再优化触发器；**CamoDocs**：每目标查询的离线构造约 **3.22 分钟**（每目标 10 篇），但**不影响受害者推理延迟**；**AdversarialCoT**：每查询需 **3 轮**黑盒交互，成本随轮次与上下文长度快速上升 | 训练类与优化类开销差 6–7 个数量级 |
 | **推理/延迟** | RADE：**3.9× 延迟**（3.91s→3.24s 双 GPU，等效 **1.21× 加速**）；RAGPart & RAGMask：RAGPart 可承受更大 k 以降低开销；GMTP：比生成式防御**低约 80% 延迟** | 防御侧的可部署性关键 |
 | **端到端防御开销** | RAGDefender：**仅 CPU**，而 RobustRAG 需 GPU（Vicuna-7B **$1.22**、GPT-4o 高至 **$59.00**）；SeCon-RAG：100% 投毒下 **1.06 min** vs TrustRAG 0.67 min / AstuteRAG 0.70 min | 常以"秒/分钟/美元"直接可比 |
+| **查询次数开销** | **Machine Against the RAG**：BBO 每轮需**批量调用目标 RAG**（batch=32），平均 **160 轮**、上限 **1000 轮**；单轮在 A40 上约 **8s（7B）/ 12s（13B）**——是本库**唯一把"目标系统查询预算"当作核心成本**的工作 | 与 §7.2 的"查询级黑盒"直接对应；也提示防御方可**用调用频次限流**（论文自陈"现实中对手往往只能查询有限的次数"列为未来工作） |
 | **API / 金费开销** | **Benchmarking**：NQ 上跑一次 BPRAG 约 **$10**（GPT-4o-mini）/ **$390**（GPT-4）；全部 15 数据集合计 **≈$150** vs **$5,850**（GPT-4） | LLM-judge 类方法的主要成本瓶颈 |
 | **可扩展性** | **DIGA**：对抗段落数 1→10→50 的**时间/显存/ASR 曲线**（HotFlip 在 50 篇后因成本过高被排除）——本库**唯一报告"规模化投毒"成本曲线**的工作 | 直接回答"攻击能否从受控实验走向大规模真实语料" |
 | **真实服务/人工开销** | **RAG Paradox**：在线实验需**在 LinkedIn / Wikipedia / Blogger 等平台实际发帖**并等待系统索引，且各目标仅 **5–10 个 QA 对**——受限于**平台合规与索引延迟**，而非算力 | 「真实世界验证」的隐性成本，**难以规模化** |
@@ -1255,18 +1265,18 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 |------|------|
 | **E1｜语料来源被"基准名"掩盖** | 写"我们使用 NQ"却不交代是原始 Wikipedia 页还是 BEIR 加工版；而这些差异会导致成功率从 38% 直落至 0%（Semantic Chameleon） |
 | **E2｜"白盒"实为本地影子系统，却常被表述为对目标系统的访问权** | RADE/CRCP/ProGRank 均明说用**代理模型**（same-family surrogate / cross-encoder trained on MS MARCO / surrogate-based variant），但摘要层面往往只写"white-box" |
-| **E3｜定向投毒不区分优化集与测试集** | 仅 Poisoning Retrieval Corpora、GASLITE、GCG、ProGRank、RADE、**MIRAGE** 做了严格隔离；其余定向攻击（含 ToxicRAG、**FlippedRAG**、**CamoDocs**、**DenialRAG**、**AdversarialCoT**、**RAG Paradox**）的 ASR **不应被解读为泛化能力**（**DIGA 例外**——它在训练集生成、测试集评估，属严格隔离） |
+| **E3｜定向投毒不区分优化集与测试集** | 仅 Poisoning Retrieval Corpora、GASLITE、GCG、ProGRank、RADE、**MIRAGE** 做了严格隔离；其余定向攻击（含 ToxicRAG、**FlippedRAG**、**CamoDocs**、**DenialRAG**、**AdversarialCoT**、**RAG Paradox**、**Machine Against the RAG**）的 ASR **不应被解读为泛化能力**（**DIGA 例外**——它在训练集生成、测试集评估，属严格隔离） |
 | **E4｜问题集普遍是 100–1,000 条的小样本，且常用"零目标答案/答案明确"筛选** | Benchmarking、P3A 的筛选会系统性抬高 ASR；仅少数工作报告多种子/置信区间。**ToxicRAG** 是另一极端——它把 100 个目标问题的**关联干净段落**单独建索引（NQ 仅 115–127 篇），且 12 格结果均为**单次运行、无区间**。**MIRAGE** 虽把试验数提到 **1,000 次**、语料也换成自建长文档基准（BioASQ 40.1K / FinQA 2.11K / TiEBe 3.11K），但每格仍**不报告区间**。**CamoDocs** 同样把试验数提到 **1,000 次**（10 次 × 100 查询），**DenialRAG / AdversarialCoT** 则分别为 100 与 100 条目标查询，三者**均不报区间** |
 | **E5｜ASR 判定口径不统一，跨文献不可直接比较** | 检索侧命中率 vs 字符串匹配 vs LLM 评判三者数值差异显著（Cordon-MAS 同时给出两套即为明证；**MIRAGE 更进一步，把 *ASR_S*（引用）、*ASR_L*（LLM 判官）、*ASR_N*（NLI）三套口径并列报告**，并实测出 NLI 口径在长文档上与人工标注的一致性仅约 **0.5**、而 LLM 判官 > **0.96**）；**SilentRetrieval 直接给出同攻击、不同协议的对照：PoisonedRAG 报 97%（substring）而其协议下仅 48.2%（ASR-LLM），Joint-GCG 报 near-100% 而其协议下 62.8%**（详见 §7.5 ASR 专项分析 (d)）；另有“排除性/净增益”分母（Overcoming the Retrieval Barrier）与“相对降幅 vs 绝对降幅”两种降幅口径 |
 | **E6｜投毒率缺少统一定义的分母** | 从 **115–127 篇**（ToxicRAG 的 NQ 子集）到 2,101 万段落（SDAG），"0.04%"的实际含金量相差数个量级；RAGShield 的 **500** 段落、MIRAGE 的 **2.11K–40.1K 文档**亦属同列；**RAG Paradox 更极端——它的语料边界由系统披露的来源动态决定，**连"分母"都不可先验给出** |
 | **E7｜"安全-效用-成本"三方权衡普遍未被报告** | 训练/优化类可达**多张 H100 + 数小时**，而轻量检测类**仅需 CPU**（§7.7(6)），但仅少数文献给出延迟或费用；这使得**声称的防御优势无法在部署层面比较**。**DIGA 是少数把"成本"当作一等指标的攻击工作**（报告时间/显存相对开销与可扩展性曲线），但**防御侧仍无一篇以"单位攻击者成本下的鲁棒性"为度量** |
 | **E8｜检索器选型高度集中于 Contriever** | Contriever 在 30+ 篇中出现，成为事实上的默认选项（§7.7(1)）；而 AdvPassage、Poisoning Retrieval Corpora 均报告**跨检索器迁移失败（同族 <0.5%）**——单一检索器上的结论未必外推 |
 | **E9｜ACC 的“分子/分母”口径不统一，且极少声明** | 分子从“子串包含”到“标签+证据均正确”不一（FEVER 同文即差 19 个百分点：31.87% vs 50.91%）；分母从“全部查询”、“仅目标查询”、“仅毒被检索子集”到“非目标查询”皆不一样（§7.5 ACC 专项分析）；同一文献常同时报告攻击下 ACC 与 CACC（GMTP、PRA-RAG）却常被后人混用 |
-| **E10｜ASR 的分母与立场未声明，且降幅口径混用** | **ASR 不可比性高于 ACC**：分子由攻击者自选（同一攻击换 target 即变）、存在“排除性/净增益”分母（Overcoming the Retrieval Barrier、ToxicRAG）、攻防两侧读法相反；同文内定义层分母（“总查询”）与实验层分母（“100 条目标查询”）可并存（Benchmarking）；“相对降幅”与“绝对百分点”混用（CEG-RAG “93.7% reduction” vs “16.26%”）（详见 §7.5 ASR 专项分析）；**RAG Paradox 的 ASR 是一个复合口径**——*"the percentage of queries where at least one poisoned document is retrieved **and** the correct answer span is not included in the response"*，即**把"被检索到"与"答案被覆盖"合并为一个数**，与纯生成侧或纯检索侧的 ASR 都不可直接比较 |
+| **E10｜ASR 的分母与立场未声明，且降幅口径混用** | **ASR 不可比性高于 ACC**：分子由攻击者自选（同一攻击换 target 即变）、存在“排除性/净增益”分母（Overcoming the Retrieval Barrier、ToxicRAG）、攻防两侧读法相反；同文内定义层分母（“总查询”）与实验层分母（“100 条目标查询”）可并存（Benchmarking）；“相对降幅”与“绝对百分点”混用（CEG-RAG “93.7% reduction” vs “16.26%”）（详见 §7.5 ASR 专项分析）；**Machine Against the RAG 更进一步：它的"阻塞率"只统计"干净时能答、投毒后不答"的查询**（排除本就拒答者），与"全部查询"为分母的口径不可直接比较；**RAG Paradox 的 ASR 也是一个复合口径**——*"the percentage of queries where at least one poisoned document is retrieved **and** the correct answer span is not included in the response"*，即**把"被检索到"与"答案被覆盖"合并为一个数**，与纯生成侧或纯检索侧的 ASR 都不可直接比较 |
 | **E11｜检索语料的“时间维度”未被建模** | 本库全部工作均**不限制检索文档的时间戳**，而真实事实核查要求证据在**声明发表之前**可得；Complex Claim Verification 实测**同一查询相隔两月的搜索结果 URL 重叠仅 30%**——"同一份语料"在时间上并不成立（详见 §7.1 第 4 点） |
 | **E12｜“知情而失守”与“本就不知”未区分** | 现有评测只报 ACC/ASR，无法区分模型是"**有正确知识但被带偏**"还是"**本来就不知道**"；MedMisBench 证明二者差异巨大（干净 **71.1%** → 误导下 **38.0%**，且**干净最强的模型韧性最差**）。**TRIS** 是少数同时报 CleanAcc 与 ASR 的工作 |
 
-> **综合判断**：在统一的五维框架下审视**全部 82 篇本地文献**，可见研究版图的扩张（推荐系统 Poison-RAG、CTI RAGRank、立场 ReGENT、架构级去中心化 DeRAG、冲突感知 Astute RAG/CARE-RAG/BRIDGE、叙事式单文档投毒 ToxicRAG、**黑盒观点操纵 FlippedRAG、严格黑盒且查询无关的多阶段投毒 MIRAGE、投毒追溯 RAGForensics**、三层纵深 TRIS、认知韧性 MedMisBench、**推理链污染 AdversarialCoT、嵌入分散式规避 CamoDocs、单文档嵌入式否认 DenialRAG、透明度悖论利用 RAG Paradox、重要性引导高效黑盒投毒 DIGA** 等）**并未消除**上述共性缺陷——语料来源仍被"基准名"掩盖（§7.1）、"白盒"仍多为本地影子系统（§7.2）、定向投毒仍不隔离（§7.3）、样本仍偏小且存在筛选偏差（§7.4）、**ASR 口径仍分散（E5/E10）、ACC 分子分母仍不统一（E9）**（§7.5）、投毒率分母仍不统一（E6）、成本普遍未报（E7）、检索器过度集中于 Contriever（E8）、**时间维度未建模（E11）、韧性未与准确率分离（E12）**。再叠加 §7.6 的机理实验分布（**统计检验仅 41%**），可见这些缺陷是**领域结构性**的，而非个别文献的疏漏。
+> **综合判断**：在统一的五维框架下审视**全部 83 篇本地文献**，可见研究版图的扩张（推荐系统 Poison-RAG、CTI RAGRank、立场 ReGENT、架构级去中心化 DeRAG、冲突感知 Astute RAG/CARE-RAG/BRIDGE、叙事式单文档投毒 ToxicRAG、**黑盒观点操纵 FlippedRAG、严格黑盒且查询无关的多阶段投毒 MIRAGE、投毒追溯 RAGForensics**、三层纵深 TRIS、认知韧性 MedMisBench、**推理链污染 AdversarialCoT、嵌入分散式规避 CamoDocs、单文档嵌入式否认 DenialRAG、透明度悖论利用 RAG Paradox、重要性引导高效黑盒投毒 DIGA、拒答式拒绝服务 Machine Against the RAG** 等）**并未消除**上述共性缺陷——语料来源仍被"基准名"掩盖（§7.1）、"白盒"仍多为本地影子系统（§7.2）、定向投毒仍不隔离（§7.3）、样本仍偏小且存在筛选偏差（§7.4）、**ASR 口径仍分散（E5/E10）、ACC 分子分母仍不统一（E9）**（§7.5）、投毒率分母仍不统一（E6）、成本普遍未报（E7）、检索器过度集中于 Contriever（E8）、**时间维度未建模（E11）、韧性未与准确率分离（E12）**。再叠加 §7.6 的机理实验分布（**统计检验仅 41%**），可见这些缺陷是**领域结构性**的，而非个别文献的疏漏。
 
 ---
 
@@ -1344,11 +1354,11 @@ $$
 | 仓库已 404（仅曾开源） | BadRAG | 0.10 | 0.60 |
 | **无任何可验证制品（明确闭源）** | Phantom、SilentRetrieval、CRCP、ShieldRAG、Astute RAG 等 | 0.00 | **0.50** |
 
-> **保守性说明**：对"论文未给出链接"者一律按**明确闭源**（$O_i=0.5$）处理，而非按"信息缺失"给 1.0——因本库已对全部 83 个 PDF 做过全文链接扫描，**"扫不到"在本库中等价于"未公开"**。此处理会**低估**那些实际有仓库但作者未在论文中标注的工作（约占本库 1/3），故 §8.5 建议对 $O_i=0.5$ 的条目在精读时人工复查一次。
+> **保守性说明**：对"论文未给出链接"者一律按**明确闭源**（$O_i=0.5$）处理，而非按"信息缺失"给 1.0——因本库已对全部 84 个 PDF 做过全文链接扫描，**"扫不到"在本库中等价于"未公开"**。此处理会**低估**那些实际有仓库但作者未在论文中标注的工作（约占本库 1/3），故 §8.5 建议对 $O_i=0.5$ 的条目在精读时人工复查一次。
 
 **分级**（全局分位数）：S 级 $P_i\ge P_{90}$；A 级 $P_{75}\le P_i<P_{90}$；B 级 $P_{50}\le P_i<P_{75}$；C 级 $P_i<P_{50}$。计算脚本：`tmp/calc_priority.py`（输出 `tmp/priority_table.md`）。
 
-> **数据说明**：Venue、引用数、年份取自《文献调研表.xlsx》与本地 PDF 实际出处；标"xlsx 未收录"者为补充条目、表内无引用数者**保守计 0**（因此其 $P_i$ 偏低，需结合 §6.1 / §6.2 的「方法论类别」列与第六章解读）；**P3A** 在 xlsx 中置于防御列，但按其内容（重排器盲点投毒）在本表归入攻击类，防御表中同步保留以保证一致性；**GARAG** 在 xlsx 开源列标 "-"，但其 PDF 正文明确给出 `github.com/zomss/GARAG`，按**正文证据优先**计 $O_i^{\text{raw}}=0.50$；**MIRAGE** 的 venue 按其正文自述的正式出处（**CCS '26**）计入，引用数与预印本月份取自《文献总结表.xlsx》；**AuthChain** 已由预印本升级为 **EMNLP Findings 2025 正式版**（引用 40），其匿名制品在双盲期结束后已失效；**RAGForensics** 与 **RAGOrigin** 出自同一作者团队的"追溯—归因"研究线，故共用同一开源仓库；**ReGENT** 已由预印本升级为 **ACL Findings 2025 正式版**（引用 12，仓库 `ruyisy/ReGENT`）；**CamoDocs** 已由预印本升级为 **EMNLP 2026 正式收录**（引用数尚未累积，仍按 0 计）；**RAG Paradox** 的 Venue 与引用数取自《文献总结表.xlsx》（**EMNLP Findings 2025**，引用 26），其**开源列标 "-"**，经全文扫描亦未发现仓库或工件链接，故按**明确闭源**计 $O_i^{\text{raw}}=0.00$；**DIGA** 的 Venue 与引用数取自《文献总结表.xlsx》（**NAACL 2025**，引用 11），其**开源列同样标 "-"**，全文亦未见仓库或工件链接，故同样按**明确闭源**计 $O_i^{\text{raw}}=0.00$。
+> **数据说明**：Venue、引用数、年份取自《文献调研表.xlsx》与本地 PDF 实际出处；标"xlsx 未收录"者为补充条目、表内无引用数者**保守计 0**（因此其 $P_i$ 偏低，需结合 §6.1 / §6.2 的「方法论类别」列与第六章解读）；**P3A** 在 xlsx 中置于防御列，但按其内容（重排器盲点投毒）在本表归入攻击类，防御表中同步保留以保证一致性；**GARAG** 在 xlsx 开源列标 "-"，但其 PDF 正文明确给出 `github.com/zomss/GARAG`，按**正文证据优先**计 $O_i^{\text{raw}}=0.50$；**MIRAGE** 的 venue 按其正文自述的正式出处（**CCS '26**）计入，引用数与预印本月份取自《文献总结表.xlsx》；**AuthChain** 已由预印本升级为 **EMNLP Findings 2025 正式版**（引用 40），其匿名制品在双盲期结束后已失效；**RAGForensics** 与 **RAGOrigin** 出自同一作者团队的"追溯—归因"研究线，故共用同一开源仓库；**ReGENT** 已由预印本升级为 **ACL Findings 2025 正式版**（引用 12，仓库 `ruyisy/ReGENT`）；**CamoDocs** 已由预印本升级为 **EMNLP 2026 正式收录**（引用数尚未累积，仍按 0 计）；**RAG Paradox** 的 Venue 与引用数取自《文献总结表.xlsx》（**EMNLP Findings 2025**，引用 26），其**开源列标 "-"**，经全文扫描亦未发现仓库或工件链接，故按**明确闭源**计 $O_i^{\text{raw}}=0.00$；**DIGA** 的 Venue 与引用数取自《文献总结表.xlsx》（**NAACL 2025**，引用 11），其**开源列同样标 "-"**，全文亦未见仓库或工件链接，故同样按**明确闭源**计 $O_i^{\text{raw}}=0.00$；**Machine Against the RAG** 的 Venue 与引用数取自《文献总结表.xlsx》（**USENIX Security 2025**，引用 131），其开源地址为 **Zenodo `records/14730889`**（论文 Open Science 节明确给出复现 Table 1 的代码），按"代码已公开"计 $O_i^{\text{raw}}=0.75$。
 
 ### 8.2 攻击方法类优先级（降序）
 
@@ -1356,37 +1366,38 @@ $$
 
 | 排名 | 文献 | Venue | 年份 | 引用 | ā(月) | r̃ᵢ | Rᵢ | Tᵢ | Vᵢ | **Oᵢ** | 权重 | **Pᵢ** | 级别 | 开源证据 / 备注 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | PoisonedRAG | USENIX Security | 2025 | 788 | 13.8 | 41.17 | 1.000 | 0.487 | 1.00 | **1.05** | 0.45/0.40/0.15 | **0.917** | S | 自有仓库 `sleeepeer/PoisonedRAG`；领域最权威投毒基线 |
-| 2 | Overcoming the Retrieval Barrier | USENIX Security | 2026 | 23 | 1.6 | 6.57 | 0.436 | 0.918 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.765** | S | Zenodo 代码+数据工件；IPI 端到端 |
-| 3 | MIRAGE | CCS | 2026 | 7 | 1.6 | 4.48 | 0.329 | 0.918 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.686** | S | 代码+数据集+脚本 `SuburbiaXX/MIRAGE`；严格黑盒 / 查询无关的多阶段投毒 |
-| 4 | CorruptRAG | SACMAT | 2026 | 62 | 2.7 | 10.29 | 0.567 | 0.870 | 0.80 | **0.80** | 0.45/0.40/0.15 | **0.666** | S | 仅第三方实现（SecRAG/flashrag）；单文档实用投毒 |
-| 5 | InceptionRAG | CCS | 2026 | 0 | 0.6 | 4.12 | 0.307 | 0.969 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.630** | A | 正文自述 release artifacts（`ZJU-TrustAID/InceptionRAG`）；分段逻辑诱导 |
-| 6 | CamoDocs | EMNLP | 2026 | 0 | 1.6 | 3.56 | 0.269 | 0.918 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.593** | A | 自有仓库 `jaewonalive/CamoDocs`；抗查询检测与抗聚类检测的嵌入分散式隐蔽投毒（EMNLP 2026 正式收录） |
-| 7 | Joint-GCG | AAAI | 2026 | 25 | 7.7 | 3.82 | 0.287 | 0.671 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.581** | A | 自有仓库 `NicerWang/Joint-GCG`；双阶段统一梯度攻击 |
-| 8 | FlippedRAG | CCS | 2025 | 32 | 11.8 | 3.33 | 0.252 | 0.542 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.572** | A | Zenodo `records/17036325`（代码+数据）；黑盒检索器模仿 + 触发器迁移的观点操纵 |
-| 9 | Poisoning Retrieval Corpora | EMNLP | 2023 | 234 | 34.1 | 6.51 | 0.433 | 0.169 | 1.00 | **1.05** | 0.45/0.40/0.15 | **0.566** | A | 自有仓库 `princeton-nlp/corpus-poisoning`；对抗段落注入奠基 |
-| 10 | AdversarialCoT | SIGIR | 2026 | 3 | 2.7 | 3.48 | 0.263 | 0.870 | 1.00 | **0.80** | 0.45/0.40/0.15 | **0.546** | A | 仅单个 case study（`ruyisy/AdversarialCoT_case`）；推理链（CoT）单文档投毒 |
-| 11 | GASLITE | CCS | 2025 | 25 | 11.8 | 2.94 | 0.221 | 0.542 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.544** | A | Zenodo `records/16928473`（代码+数据）；检索 SEO 系统评估 |
-| 12 | Topic-FlipRAG | USENIX Security | 2025 | 36 | 13.8 | 3.19 | 0.241 | 0.487 | 1.00 | **1.05** | 0.45/0.40/0.15 | **0.526** | B | 自有工件 `LauJames/Topic-FlipRAG`；话题级观点操纵 |
-| 13 | AuthChain (One Shot Dominance) | EMNLP Findings | 2025 | 40 | 10.7 | 4.01 | 0.300 | 0.572 | 0.80 | **0.90** | 0.45/0.40/0.15 | **0.506** | B | 匿名制品（4open.science `AuthChain-45E8`，双盲期后已失效）；单文档+权威链（EMNLP Findings 正式版） |
-| 14 | SilentRetrieval | KDD | 2026 | 2 | 1.6 | 3.82 | 0.287 | 0.918 | 1.00 | **0.50** | 0.45/0.40/0.15 | **0.495** | B | 未见自有制品；语义保持投毒 |
-| 15 | GARAG (Typos) | EMNLP Findings | 2024 | 99 | 22.9 | 4.37 | 0.322 | 0.303 | 0.80 | **1.00** | 0.45/0.40/0.15 | **0.489** | B | PDF 正文：Code is available at `zomss/GARAG`；低层扰动遗传攻击 |
-| 16 | P3A (Reranker Helps) | ICML | 2026 | 0 | 7.7 | 1.99 | 0.130 | 0.671 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.430** | B | PDF 正文：Code is available at `YyyxKun/P3A`；重排器盲点投毒 |
-| 17 | RAG Paradox (PARADOX) | EMNLP Findings | 2025 | 26 | 10.7 | 3.18 | 0.240 | 0.572 | 0.80 | **0.50** | 0.45/0.40/0.15 | **0.389** | B | 未见自有制品（xlsx 开源列标 "-"）；透明度悖论：利用被披露的检索来源作为投毒通道 |
-| 18 | Phantom | ACM TAI Sec Priv | 2026 | 19 | 6.7 | 3.63 | 0.274 | 0.704 | 0.60 | **0.50** | 0.45/0.40/0.15 | **0.371** | B | 未见自有制品（仅引用第三方仓库）；单文档通用后门 |
-| 19 | ReGENT (Silent Saboteur) | ACL Findings | 2025 | 12 | 15.8 | 1.79 | 0.108 | 0.438 | 0.80 | **1.25** | 0.45/0.40/0.15 | **0.365** | B | 自有仓库 `ruyisy/ReGENT`（代码+基准）；不可察觉 RL 攻击（ACL Findings 2025 正式版） |
-| 20 | DenialRAG | arXiv | 2026 | 0 | 1.6 | 3.56 | 0.269 | 0.918 | 0.20 | **0.80** | 0.57/0.16/0.27 | **0.299** | C | 正文声明 code will be released on GitHub after acceptance（尚无公开仓库）；单文档「嵌入式否认」投毒 |
-| 21 | Micro-Collaborative Poisoning | arXiv | 2026 | 0 | 0.6 | 4.12 | 0.307 | 0.969 | 0.20 | **0.50** | 0.57/0.16/0.27 | **0.269** | C | 未见自有制品；分布式投毒 |
-| 22 | ToxicRAG | arXiv | 2026 | 0 | 0.6 | 4.12 | 0.307 | 0.969 | 0.20 | **0.50** | 0.57/0.16/0.27 | **0.269** | C | 未见自有制品（仅声明后续以非索引方式发布合成样例）；叙事式单文档知识投毒 |
-| 23 | TrojanRAG | arXiv | 2024 | 146 | 29.0 | 4.94 | 0.356 | 0.220 | 0.20 | **1.00** | 0.45/0.40/0.15 | **0.260** | C | 自有仓库 `CTZhou-byte/TrojanRAG`；RAG 后门（已投稿中） |
-| 24 | SIREN | arXiv | 2026 | 0 | 2.7 | 3.14 | 0.237 | 0.870 | 0.20 | **0.50** | 0.57/0.16/0.27 | **0.251** | C | 未见自有制品；排名/偏好操纵 |
-| 25 | DIGA (Influential Tokens) | NAACL | 2025 | 11 | 17.9 | 1.60 | 0.084 | 0.394 | 0.80 | **0.50** | 0.45/0.40/0.15 | **0.249** | C | 未见自有制品（xlsx 开源列标 "-"）；动态重要性引导遗传算法：黑盒高效语料投毒 |
-| 26 | Semantic Chameleon | arXiv | 2026 | 1 | 6.7 | 2.21 | 0.154 | 0.704 | 0.20 | **1.00** | 0.45/0.40/0.15 | **0.224** | C | 正文：sanitized examples 部分公开；双文档/跨语料依赖 |
-| 27 | CRCP (When Poison Fails) | arXiv | 2026 | 1 | 3.7 | 2.92 | 0.219 | 0.826 | 0.20 | **0.50** | 0.45/0.40/0.15 | **0.212** | C | 未见自有制品；分块-重排一致投毒 |
-| 28 | CatPoison | IEEE Conf | 2025 | 0 | 9.7 | 1.73 | 0.100 | 0.602 | 0.40 | **0.50** | 0.45/0.40/0.15 | **0.207** | C | 未见自有制品（xlsx 未收录）；类目导向投毒 |
-| 29 | HijackRAG | arXiv | 2024 | 28 | 23.9 | 1.84 | 0.114 | 0.288 | 0.20 | **1.00** | 0.45/0.40/0.15 | **0.175** | C | 自有仓库 `BarryZYC/HijackRAG`；检索提示劫持 |
-| 30 | BadRAG | arXiv | 2024 | 14 | 28.0 | 1.21 | 0.031 | 0.233 | 0.20 | **0.60** | 0.45/0.40/0.15 | **0.094** | C | 仓库 `zxqiang98/BadRAG` 已 404；检索后门 |
-| 31 | Poison-RAG (Recommender) | arXiv | 2025 | 0 | 20.9 | 1.01 | 0.010 | 0.337 | 0.20 | **1.25** | 0.45/0.40/0.15 | **0.092** | C | 正文：code and data `atenanaz/Poison-RAG`；推荐系统投毒 |
+| 1 | PoisonedRAG | USENIX Security | 2025 | 788 | 13.8 | 41.22 | 1.000 | 0.487 | 1.00 | **1.05** | 0.45/0.40/0.15 | **0.917** | S | 自有仓库 `sleeepeer/PoisonedRAG`；领域最权威投毒基线 |
+| 2 | Overcoming the Retrieval Barrier | USENIX Security | 2026 | 23 | 1.6 | 6.70 | 0.438 | 0.918 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.767** | S | Zenodo 代码+数据工件；IPI 端到端 |
+| 3 | Machine Against the RAG (Jamming) | USENIX Security | 2025 | 131 | 13.8 | 8.04 | 0.491 | 0.487 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.730** | S | Zenodo `records/14730889`（代码，论文 Open Science 节给出）；单文档 DoS：令 RAG 拒答的「阻塞文档」 |
+| 4 | MIRAGE | CCS | 2026 | 7 | 1.6 | 4.60 | 0.333 | 0.918 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.689** | S | 代码+数据集+脚本 `SuburbiaXX/MIRAGE`；严格黑盒 / 查询无关的多阶段投毒 |
+| 5 | CorruptRAG | SACMAT | 2026 | 62 | 2.7 | 10.40 | 0.567 | 0.870 | 0.80 | **0.80** | 0.45/0.40/0.15 | **0.666** | A | 仅第三方实现（SecRAG/flashrag）；单文档实用投毒 |
+| 6 | InceptionRAG | CCS | 2026 | 0 | 0.6 | 4.26 | 0.312 | 0.969 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.633** | A | 正文自述 release artifacts（`ZJU-TrustAID/InceptionRAG`）；分段逻辑诱导 |
+| 7 | CamoDocs | EMNLP | 2026 | 0 | 1.6 | 3.68 | 0.273 | 0.918 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.597** | A | 自有仓库 `jaewonalive/CamoDocs`；抗查询检测与抗聚类检测的嵌入分散式隐蔽投毒（EMNLP 2026 正式收录） |
+| 8 | Joint-GCG | AAAI | 2026 | 25 | 7.7 | 3.89 | 0.288 | 0.671 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.581** | A | 自有仓库 `NicerWang/Joint-GCG`；双阶段统一梯度攻击 |
+| 9 | FlippedRAG | CCS | 2025 | 32 | 11.8 | 3.38 | 0.252 | 0.542 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.572** | A | Zenodo `records/17036325`（代码+数据）；黑盒检索器模仿 + 触发器迁移的观点操纵 |
+| 10 | Poisoning Retrieval Corpora | EMNLP | 2023 | 234 | 34.1 | 6.54 | 0.431 | 0.169 | 1.00 | **1.05** | 0.45/0.40/0.15 | **0.565** | A | 自有仓库 `princeton-nlp/corpus-poisoning`；对抗段落注入奠基 |
+| 11 | AdversarialCoT | SIGIR | 2026 | 3 | 2.7 | 3.59 | 0.267 | 0.870 | 1.00 | **0.80** | 0.45/0.40/0.15 | **0.549** | A | 仅单个 case study（`ruyisy/AdversarialCoT_case`）；推理链（CoT）单文档投毒 |
+| 12 | GASLITE | CCS | 2025 | 25 | 11.8 | 2.99 | 0.221 | 0.542 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.544** | B | Zenodo `records/16928473`（代码+数据）；检索 SEO 系统评估 |
+| 13 | Topic-FlipRAG | USENIX Security | 2025 | 36 | 13.8 | 3.24 | 0.241 | 0.487 | 1.00 | **1.05** | 0.45/0.40/0.15 | **0.525** | B | 自有工件 `LauJames/Topic-FlipRAG`；话题级观点操纵 |
+| 14 | AuthChain (One Shot Dominance) | EMNLP Findings | 2025 | 40 | 10.7 | 4.07 | 0.300 | 0.572 | 0.80 | **0.90** | 0.45/0.40/0.15 | **0.506** | B | 匿名制品（4open.science `AuthChain-45E8`，双盲期后已失效）；单文档+权威链（EMNLP Findings 正式版） |
+| 15 | SilentRetrieval | KDD | 2026 | 2 | 1.6 | 3.94 | 0.291 | 0.918 | 1.00 | **0.50** | 0.45/0.40/0.15 | **0.497** | B | 未见自有制品；语义保持投毒 |
+| 16 | GARAG (Typos) | EMNLP Findings | 2024 | 99 | 22.9 | 4.40 | 0.320 | 0.303 | 0.80 | **1.00** | 0.45/0.40/0.15 | **0.488** | B | PDF 正文：Code is available at `zomss/GARAG`；低层扰动遗传攻击 |
+| 17 | P3A (Reranker Helps) | ICML | 2026 | 0 | 7.7 | 2.06 | 0.133 | 0.671 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.433** | B | PDF 正文：Code is available at `YyyxKun/P3A`；重排器盲点投毒 |
+| 18 | RAG Paradox (PARADOX) | EMNLP Findings | 2025 | 26 | 10.7 | 3.23 | 0.240 | 0.572 | 0.80 | **0.50** | 0.45/0.40/0.15 | **0.389** | B | 未见自有制品（xlsx 开源列标 "-"）；透明度悖论：利用被披露的检索来源作为投毒通道 |
+| 19 | Phantom | ACM TAI Sec Priv | 2026 | 19 | 6.7 | 3.70 | 0.275 | 0.704 | 0.60 | **0.50** | 0.45/0.40/0.15 | **0.371** | B | 未见自有制品（仅引用第三方仓库）；单文档通用后门 |
+| 20 | ReGENT (Silent Saboteur) | ACL Findings | 2025 | 12 | 15.8 | 1.84 | 0.108 | 0.438 | 0.80 | **1.25** | 0.45/0.40/0.15 | **0.365** | B | 自有仓库 `ruyisy/ReGENT`（代码+基准）；不可察觉 RL 攻击（ACL Findings 2025 正式版） |
+| 21 | DenialRAG | arXiv | 2026 | 0 | 1.6 | 3.68 | 0.273 | 0.918 | 0.20 | **0.80** | 0.57/0.16/0.27 | **0.299** | C | 正文声明 code will be released on GitHub after acceptance（尚无公开仓库）；单文档「嵌入式否认」投毒 |
+| 22 | Micro-Collaborative Poisoning | arXiv | 2026 | 0 | 0.6 | 4.26 | 0.312 | 0.969 | 0.20 | **0.50** | 0.57/0.16/0.27 | **0.269** | C | 未见自有制品；分布式投毒 |
+| 23 | ToxicRAG | arXiv | 2026 | 0 | 0.6 | 4.26 | 0.312 | 0.969 | 0.20 | **0.50** | 0.57/0.16/0.27 | **0.269** | C | 未见自有制品（仅声明后续以非索引方式发布合成样例）；叙事式单文档知识投毒 |
+| 24 | TrojanRAG | arXiv | 2024 | 146 | 29.0 | 4.97 | 0.354 | 0.220 | 0.20 | **1.00** | 0.45/0.40/0.15 | **0.260** | C | 自有仓库 `CTZhou-byte/TrojanRAG`；RAG 后门（已投稿中） |
+| 25 | SIREN | arXiv | 2026 | 0 | 2.7 | 3.24 | 0.241 | 0.870 | 0.20 | **0.50** | 0.57/0.16/0.27 | **0.251** | C | 未见自有制品；排名/偏好操纵 |
+| 26 | DIGA (Influential Tokens) | NAACL | 2025 | 11 | 17.9 | 1.64 | 0.084 | 0.394 | 0.80 | **0.50** | 0.45/0.40/0.15 | **0.249** | C | 未见自有制品（xlsx 开源列标 "-"）；动态重要性引导遗传算法：黑盒高效语料投毒 |
+| 27 | Semantic Chameleon | arXiv | 2026 | 1 | 6.7 | 2.29 | 0.156 | 0.704 | 0.20 | **1.00** | 0.45/0.40/0.15 | **0.225** | C | 正文：sanitized examples 部分公开；双文档/跨语料依赖 |
+| 28 | CRCP (When Poison Fails) | arXiv | 2026 | 1 | 3.7 | 3.01 | 0.222 | 0.826 | 0.20 | **0.50** | 0.45/0.40/0.15 | **0.214** | C | 未见自有制品；分块-重排一致投毒 |
+| 29 | CatPoison | IEEE Conf | 2025 | 0 | 9.7 | 1.79 | 0.102 | 0.602 | 0.40 | **0.50** | 0.45/0.40/0.15 | **0.208** | C | 未见自有制品（xlsx 未收录）；类目导向投毒 |
+| 30 | HijackRAG | arXiv | 2024 | 28 | 23.9 | 1.87 | 0.112 | 0.288 | 0.20 | **1.00** | 0.45/0.40/0.15 | **0.174** | C | 自有仓库 `BarryZYC/HijackRAG`；检索提示劫持 |
+| 31 | Poison-RAG (Recommender) | arXiv | 2025 | 0 | 20.9 | 1.05 | 0.010 | 0.337 | 0.20 | **1.25** | 0.45/0.40/0.15 | **0.092** | C | 正文：code and data `atenanaz/Poison-RAG`；推荐系统投毒 |
+| 32 | BadRAG | arXiv | 2024 | 14 | 28.0 | 1.24 | 0.030 | 0.233 | 0.20 | **0.60** | 0.45/0.40/0.15 | **0.092** | C | 仓库 `zxqiang98/BadRAG` 已 404；检索后门 |
 
 ### 8.3 防御方法类优先级（降序）
 
@@ -1435,10 +1446,10 @@ $$
 
 ### 8.5 优先级结果的读法提示
 
-1. **开源因子的作用幅度温和、重在"同层级内重排"**：$O_i^{0.3}$ 在 $O_i\in[0.5,1.5]$ 上产生 $0.5^{0.3}\approx0.81$ 至 $1.5^{0.3}\approx1.13$ 的乘子（约 −19% ~ +13%），**无一篇因 $O_i$ 而跨越大层级**。其实际效果是把"能复现、能上手"的文献提前：攻击类中 GASLITE（Zenodo 代码+数据，$O{=}1.25$）位列第 **11**，FlippedRAG 与 MIRAGE（均 $O{=}1.25$，代码与数据/基准一并公开）分列第 **8** 位与第 **3** 位；防御类中依赖开源因子未跨层级，但 **PRA-RAG 与 ShieldRAG 之间的位次明显收紧**；**RAG Paradox** 与 **DIGA** 则因 $O{=}0.50$（无任何可验证制品）而**未见开源因子加分**，其位次完全来自 venue 与引用；基准类中 BEIR（$O{=}1.30$，全库最高）居**第 1**，FEVER 则因**引用量级高**且**代码与数据均公开**（$O{=}1.25$）而位列**第 5**。
+1. **开源因子的作用幅度温和、重在"同层级内重排"**：$O_i^{0.3}$ 在 $O_i\in[0.5,1.5]$ 上产生 $0.5^{0.3}\approx0.81$ 至 $1.5^{0.3}\approx1.13$ 的乘子（约 −19% ~ +13%），**无一篇因 $O_i$ 而跨越大层级**。其实际效果是把"能复现、能上手"的文献提前：攻击类中 GASLITE（Zenodo 代码+数据，$O{=}1.25$）位列第 **11**，FlippedRAG 与 MIRAGE（均 $O{=}1.25$，代码与数据/基准一并公开）分列第 **8** 位与第 **3** 位；防御类中依赖开源因子未跨层级，但 **PRA-RAG 与 ShieldRAG 之间的位次明显收紧**；**RAG Paradox** 与 **DIGA** 则因 $O{=}0.50$（无任何可验证制品）而**未见开源因子加分**，其位次完全来自 venue 与引用；**Machine Against the RAG**（Zenodo 代码，$O{=}1.25$）是攻击类中**唯一同时具备顶会 venue、高引用与公开代码**的工作，因而位列第 **3**；基准类中 BEIR（$O{=}1.30$，全库最高）居**第 1**，FEVER 则因**引用量级高**且**代码与数据均公开**（$O{=}1.25$）而位列**第 5**。
 2. **引用数为 0 的新文献仍被系统性低估**：公式的核心项为"引用速度"，近期 arXiv（如 InceptionRAG、SIREN、Micro-Collaborative）即使 venue 档次高，$\tilde r_i$ 也接近局部先验，故 $P_i$ 偏低；**开源因子与冷启动保护都不能凭空生成引用**——这是**有意为之**的保守设计。《文献筛选方案》§11.4 的"人工兜底"正为此设：本库中 **InceptionRAG、CatPoison、Poison-RAG、ToxicRAG、CamoDocs、DenialRAG** 建议不论级别一律进入人工复核（其方法论定级见 §6.1 / §6.2）。
 3. **$V$ 与 $O$ 的复合效应**：闭源顶会论文与开源普通会议论文可能倒挂——例如 Astute RAG（ACL，$V{=}1.00$ 但 $O{=}0.50$，$P{=}0.175$）反而低于 CEG-RAG（Canadian Conf AI，$V{=}0.40$ 但 $O{=}1.00$，$P{=}0.352$）、以及低于 GMTP（ACL Findings，$V{=}0.80$、$O{=}1.00$，$P{=}0.315$）。因 $V^{0.45}$ 的差异（$1.00^{0.45}$ vs $0.40^{0.45}$）被 $O^{0.3}$ 部分抵消（CEG-RAG 虽 $O{=}1.00$，仍居 **C 级**）。**若目标是"能跑起来复现"，应同时看 $V$ 与 $O$ 两列，而不只看 venue。**
-4. **Venue 仍是单一主导因素**：相同引用水平下，顶会（$V{=}1.00$）相对预印本（$V{=}0.20$）产生约 $0.2^{0.45}\approx1.95$ 倍的乘性差异；因此**"arXiv 但已被顶会接收"的文献若未更新 venue 会被低估**（如 TrojanRAG 已投稿中即按 arXiv 计，导致其虽 $O{=}1.00$ 仍居 C 级）。反过来说，**出处一旦更新，位次会立刻跟上**——AuthChain 计入 EMNLP Findings 2025 正式版（引用 40）后，$V$ 由 0.20 升至 0.80，P 由 0.145 升至 **0.506**，从 C 级末段进入 **B 级**；**MIRAGE** 虽引用仅 7，但凭 **CCS '26** 的 $V{=}1.00$ 与新近度直接进入 **S 级**（第 3）；**AdversarialCoT** 同样以 **SIGIR '26** 的 $V{=}1.00$ 直接进入 **A 级**（第 10）；**ReGENT** 由预印本更新为 **ACL Findings 2025** 正式版（引用 12）后，$V$ 由 0.20 升至 0.80、$P$ 由 0.135 升至 **0.365**，从 C 级进入 **B 级**（第 18）；**CamoDocs** 更新为 **EMNLP 2026** 后，$V$ 由 0.20 升至 1.00、$P$ 由 0.320 升至 **0.593**，从 C 级直接跃入 **A 级**（第 6）——是本轮更新中跨度最大的一例；**RAG Paradox** 亦凭 **EMNLP Findings 2025** 的 $V{=}0.80$ 与 26 次引用直接落在 **B 级**（第 17）；**DIGA** 凭 **NAACL 2025** 的 $V{=}0.80$ 与 11 次引用落在 **C 级**（第 25）——其 $P{=}0.249$ 与 SIREN（0.251）几乎持平，**venue 的抬升被"零引用速度 + 无开源制品"抵消**。反之，**venue 仍为预印本的**攻击类工作（如 DenialRAG）即使方法新颖、并配有公开代码，也只能落在 C 级——这是 §8.5 提示 2 所述保守设计的具体体现。
+4. **Venue 仍是单一主导因素**：相同引用水平下，顶会（$V{=}1.00$）相对预印本（$V{=}0.20$）产生约 $0.2^{0.45}\approx1.95$ 倍的乘性差异；因此**"arXiv 但已被顶会接收"的文献若未更新 venue 会被低估**（如 TrojanRAG 已投稿中即按 arXiv 计，导致其虽 $O{=}1.00$ 仍居 C 级）。反过来说，**出处一旦更新，位次会立刻跟上**——AuthChain 计入 EMNLP Findings 2025 正式版（引用 40）后，$V$ 由 0.20 升至 0.80，P 由 0.145 升至 **0.506**，从 C 级末段进入 **B 级**；**MIRAGE** 虽引用仅 7，但凭 **CCS '26** 的 $V{=}1.00$ 与新近度直接进入 **S 级**（第 3）；**AdversarialCoT** 同样以 **SIGIR '26** 的 $V{=}1.00$ 直接进入 **A 级**（第 10）；**ReGENT** 由预印本更新为 **ACL Findings 2025** 正式版（引用 12）后，$V$ 由 0.20 升至 0.80、$P$ 由 0.135 升至 **0.365**，从 C 级进入 **B 级**（第 18）；**CamoDocs** 更新为 **EMNLP 2026** 后，$V$ 由 0.20 升至 1.00、$P$ 由 0.320 升至 **0.593**，从 C 级直接跃入 **A 级**（第 6）——是本轮更新中跨度最大的一例；**RAG Paradox** 亦凭 **EMNLP Findings 2025** 的 $V{=}0.80$ 与 26 次引用直接落在 **B 级**（第 17）；**DIGA** 凭 **NAACL 2025** 的 $V{=}0.80$ 与 11 次引用落在 **C 级**（第 25）——其 $P{=}0.249$ 与 SIREN（0.251）几乎持平，**venue 的抬升被"零引用速度 + 无开源制品"抵消**；**Machine Against the RAG** 则凭 **USENIX Security 2025** 与 **131 次引用**直接进入 **S 级**（第 3）。反之，**venue 仍为预印本的**攻击类工作（如 DenialRAG）即使方法新颖、并配有公开代码，也只能落在 C 级——这是 §8.5 提示 2 所述保守设计的具体体现。
 5. **三类间的 $P_i$ 不可直接横向比较**：因 $R_i$ 在**类内**归一、且各类 $\bar r_g$ 不同（数据集类引用量级远高于攻击/防御类）。跨类比较应看**级别（S/A/B/C）**而非 $P_i$ 数值。
 6. **$O_i{=}0.50$ 条目需人工复查**：本表对"论文未给出链接"者一律按明确闭源计 $O_i{=}0.5$（见 §8.1.1 保守性说明）。因部分工作（如 ShieldRAG、CARE-RAG、BRIDGE、Astute RAG、RAGPart&RAGMask、CRCP、SilentRetrieval、ToxicRAG、**RAG Paradox**、**DIGA**）可能实际有未标注的仓库；反之 **AuthChain** 的匿名制品在双盲期后已 404，属于"曾开源、现已不可核验"，其 $O_i{=}0.90$ 已按当年发布的制品厚道保留，故对 $O_i{=}0.5$ 的条目建议在精读时人工复查一次再定最终阅读优先级。
 7. **与其余章节的配合**：本章回答"**先读哪篇**"，§6.1 / §6.2 的「方法论类别」列回答"**它是哪类方法**"，第六章回答"**它具体做了什么、怎么做的**"，§7.6/§7.7 回答"**其证据链与开销是否可信**"，§8.1.1 回答"**能不能跑起来**"——五者叠加才构成完整的阅读优先级。
@@ -1552,7 +1563,7 @@ $$
 
 ```mermaid
 flowchart TB
-    subgraph ORIG["本地文献（84 篇）：核心攻防机理"]
+    subgraph ORIG["本地文献（85 篇）：核心攻防机理"]
         O1["攻击：PoisonedRAG / BadRAG / GASLITE<br/>InceptionRAG / TrojanRAG / Joint-GCG / CatPoison"]
         O2["防御：RobustRAG / PRA-RAG / GMTP<br/>CEG-RAG / GRADA / TrustRAG / SeCon-RAG / Astute RAG"]
     end
@@ -1570,7 +1581,7 @@ flowchart TB
     NEW --> C["完整 SLOT 攻防地图<br/>+ 两处结构性错配"]
 ```
 
-> **互补性说明**：本地 84 篇聚焦**攻防核心机理的深度**（投毒优化算法、可证明鲁棒性、单文档/类目级攻击、冲突感知融合等）；而综述补充文献补齐了**体系完整性**——尤其是 **L1 上游防线（溯源/校验/补救）**、**追溯归因（traceback）**、**机密性（L4）** 与 **S1 上游（Agent 记忆/图 RAG）** 这四类在本地文献中**几乎完全缺失**的方向。两处共同构成完整攻防地图。
+> **互补性说明**：本地 85 篇聚焦**攻防核心机理的深度**（投毒优化算法、可证明鲁棒性、单文档/类目级攻击、冲突感知融合等）；而综述补充文献补齐了**体系完整性**——尤其是 **L1 上游防线（溯源/校验/补救）**、**追溯归因（traceback）**、**机密性（L4）** 与 **S1 上游（Agent 记忆/图 RAG）** 这四类在本地文献中**几乎完全缺失**的方向。两处共同构成完整攻防地图。
 
 ### 9.5 由综述补充引入的关键研究缺口
 
@@ -1622,7 +1633,7 @@ flowchart TB
 
 10. **垂直领域的威胁模型与防御几乎空白**：推荐（Poison-RAG）、CTI（RAGRank）、医疗（On the Vulnerability）、软件工程（SE 综述）各有独特脆弱面，且 CTI 场景下攻击者可**完美模仿合法格式**使通用防御失效。**领域专向的可信度机制**可作为开题的一个差异化方向。
 
-11. **方法论层面的空白在"防御侧的纯算法"**（源自 §6.1 / §6.2 的逐篇判定）：本库中**攻击类以算法优化为主（42%）**，而**防御类的算法优化仅占 14%**（13 篇为混合、6 篇为纯系统机制）。这意味着——**"保持既有防御插入点不变、但把其核心信号/聚合换成更优算法"仍是一条尚未被充分占据的路线**；而仅靠"重新编排流程"的系统机制类防御已相对饱和。若开题选择防御方向，建议在 **§6.2** 中优先考虑那些**已定位控制点但核心算法仍较朴素**的机制（如聚类一致性、TF-IDF 统计、图连通性、迭代剔除规则）作为改造对象。
+11. **方法论层面的空白在"防御侧的纯算法"**（源自 §6.1 / §6.2 的逐篇判定）：本库中**攻击类以算法优化为主（41%）**，而**防御类的算法优化仅占 14%**（13 篇为混合、6 篇为纯系统机制）。这意味着——**"保持既有防御插入点不变、但把其核心信号/聚合换成更优算法"仍是一条尚未被充分占据的路线**；而仅靠"重新编排流程"的系统机制类防御已相对饱和。若开题选择防御方向，建议在 **§6.2** 中优先考虑那些**已定位控制点但核心算法仍较朴素**的机制（如聚类一致性、TF-IDF 统计、图连通性、迭代剔除规则）作为改造对象。
 
 12. **"查询无关"与"观点操纵"是两条尚可占据的新战线**：**MIRAGE** 证明"攻击者不知道用户会问什么"不再是障碍，但它只把这条路线做到了"守住单篇文档的检索可见性"，**尚未触及重排器与多轮对话**；**FlippedRAG** 与 Topic-FlipRAG 则把战场从"事实"搬到"立场"，而**评测仍以模型输出为准**（§5.2 缺口 15）——**"立场偏移如何可靠地映射到人的认知偏移"仍是一个空缺**，开题若做 Agent 或人机交互场景，这条线上的空白比"再刷一个事实型 ASR"更有说服力。在此之外，**AdversarialCoT 又开出第三条战线**——**推理链污染**：它指出经 RL 优化的推理模型会把自己的推理骨架写出来，因而可用**伪 CoT** 说服，且只需决策式黑盒（读回输出即可）。但该工作只做了**单轮检索**，作者本人也把"面向多轮检索与动态规划的 agentic RAG"列为首要未来方向。**"推理轨迹能否与检索证据、嵌入几何并列为第三类可交叉校验的防御信号"目前尚无人回答**，而 §5.2 缺口 14 已证明"多类必要条件的与运算"是可行的替代路线——这把两处空白直接接在了一起。
 
@@ -1634,7 +1645,7 @@ flowchart TB
 
 ---
 
-*报告生成：基于 PyMuPDF 批量摘要提取（`tmp/rag_abstracts.json`，84 篇）+ 三篇综述全文精读（`tmp/survey_text/`）+ alphaxiv 联网原文核实（`tmp/key_sentences.txt`）+ 实验设计逐篇提取（`tmp/experiment_design_extract.txt`、`tmp/experiment_design_compact.txt`）+ 机理分析实验逐篇提取（`tmp/extract_mechanism.py`）+ 实验设置与开销提取（`tmp/extract_setup.py`）+ 方法论类别证据（`tmp/extract_methodology.py`、`tmp/count_methodology.py`）+ 优先级计算（`tmp/calc_priority.py`）+ 文献逐篇精读与全文页级抽取（`tmp/read_incr.py`、`tmp/read_pages.py`、`tmp/read_new3.py`、`tmp/read_paradox.py`、`tmp/read_tricking.py`、`tmp/read_machine.py`）+ ACC / ASR 分子分母口径提取（`tmp/extract_acc_definitions.py`、`tmp/extract_acc_denominator.py`、`tmp/extract_asr_definitions.py`、`tmp/check_benchmarking_acc.py`、`tmp/check_saferag_gmtp.py`），均覆盖全部 84 篇本地文献；文献优先级按 `tmp/calc_priority.py` 计算（含开源因子，参数 γ=0.3），开源因子证据来自《文献调研表.xlsx》「开源地址」列与本地 PDF 全文链接扫描（`tmp/scan_pdf_repos.py` → `tmp/pdf_repo_scan.txt` / `tmp/pdf_repo_context.txt`）。所有技术数据均引自各文献原文或摘要，未做外推；本地文献的逐篇解读与实验设计要点以**第六章**为准，机理实验分布以 **§7.6** 为准，设置与开销以 **§7.7** 为准，优先级评定（含开源因子）见**第八章**。*
+*报告生成：基于 PyMuPDF 批量摘要提取（`tmp/rag_abstracts.json`，85 篇）+ 三篇综述全文精读（`tmp/survey_text/`）+ alphaxiv 联网原文核实（`tmp/key_sentences.txt`）+ 实验设计逐篇提取（`tmp/experiment_design_extract.txt`、`tmp/experiment_design_compact.txt`）+ 机理分析实验逐篇提取（`tmp/extract_mechanism.py`）+ 实验设置与开销提取（`tmp/extract_setup.py`）+ 方法论类别证据（`tmp/extract_methodology.py`、`tmp/count_methodology.py`）+ 优先级计算（`tmp/calc_priority.py`）+ 文献逐篇精读与全文页级抽取（`tmp/read_incr.py`、`tmp/read_pages.py`、`tmp/read_new3.py`、`tmp/read_paradox.py`、`tmp/read_tricking.py`、`tmp/read_machine.py`）+ ACC / ASR 分子分母口径提取（`tmp/extract_acc_definitions.py`、`tmp/extract_acc_denominator.py`、`tmp/extract_asr_definitions.py`、`tmp/check_benchmarking_acc.py`、`tmp/check_saferag_gmtp.py`），均覆盖全部 85 篇本地文献；文献优先级按 `tmp/calc_priority.py` 计算（含开源因子，参数 γ=0.3），开源因子证据来自《文献调研表.xlsx》「开源地址」列与本地 PDF 全文链接扫描（`tmp/scan_pdf_repos.py` → `tmp/pdf_repo_scan.txt` / `tmp/pdf_repo_context.txt`）。所有技术数据均引自各文献原文或摘要，未做外推；本地文献的逐篇解读与实验设计要点以**第六章**为准，机理实验分布以 **§7.6** 为准，设置与开销以 **§7.7** 为准，优先级评定（含开源因子）见**第八章**。*
 
 ### 附：联网检索 / 获取原文的文献清单
 
