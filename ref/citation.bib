@@ -15209,3 +15209,19 @@
   url           = {https://arxiv.org/abs/2405.13401},
   urldate       = {2026-10-09}
 }
+
+@inproceedings{jones2023arca,
+  title     = {Automatically Auditing Large Language Models via Discrete Optimization},
+  author    = {Jones, Erik and Dragan, Anca and Raghunathan, Aditi and Steinhardt, Jacob},
+  booktitle = {Proceedings of the 40th International Conference on Machine Learning},
+  pages     = {15307--15329},
+  year      = {2023},
+  editor    = {Krause, Andreas and Brunskill, Emma and Cho, Kyunghyun and Engelhardt, Barbara and Sabato, Sivan and Scarlett, Jonathan},
+  volume    = {202},
+  series    = {Proceedings of Machine Learning Research},
+  month     = {23--29 Jul},
+  publisher = {PMLR},
+  pdf       = {https://proceedings.mlr.press/v202/jones23a/jones23a.pdf},
+  url       = {https://proceedings.mlr.press/v202/jones23a.html},
+  abstract  = {Auditing large language models for unexpected behaviors is critical to preempt catastrophic deployments, yet remains challenging. In this work, we cast auditing as an optimization problem, where we automatically search for input-output pairs that match a desired target behavior. For example, we might aim to find a non-toxic input that starts with “Barack Obama” that a model maps to a toxic output. This optimization problem is difficult to solve as the set of feasible points is sparse, the space is discrete, and the language models we audit are non-linear and high-dimensional. To combat these challenges, we introduce a discrete optimization algorithm, ARCA, that jointly and efficiently optimizes over inputs and outputs. Our approach automatically uncovers derogatory completions about celebrities (e.g. "Barack Obama is a legalized unborn" –$&gt;$ "child murderer"), produces French inputs that complete to English outputs, and finds inputs that generate a specific name. Our work offers a promising new tool to uncover models’ failure-modes before deployment. Content Warning: This paper contains examples that may be offensive in nature.}
+}
