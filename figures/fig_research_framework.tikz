@@ -16,9 +16,9 @@
 \node[box,below=5mm of a1] (a2) {阶段一：竞争上下文下的双块载荷构造\\槽位隔离、语义垫片、生成可行性判据};
 \node[box,below=5mm of a2] (a3) {阶段二：分块感知的检索触发器优化\\存活权重、鲁棒检索损失、交替坐标搜索};
 \node[box,below=5mm of d0] (d1) {服务端防御问题形式化\\期望开销与二阶段审查触发率$p_{\mathrm{esc}}$};
-\node[box,below=5mm of d1] (d2) {阶段一：检索统计特征与单类分位校准\\四维统计量、三向分流机制};
+\node[box,below=5mm of d1] (d2) {阶段一：检索统计特征与单类分位校准\\统计量初筛机制};
 \node[box,below=5mm of d2] (d3) {阶段二：结构证据升级与结构化判别\\同源异位与罕见桥接、异源锚点核对};
-\node[head,below=10mm of $(a3.south)!0.5!(d3.south)$] (eval) {统一实验环境与评价协议\\三数据集、五检索器、多档分块，检索层与生成层指标及开销并列报告};
+\node[head,below=10mm of $(a3.south)!0.5!(d3.south)$] (eval) {统一实验环境与评价协议};
 \node[head,below=6mm of eval] (system) {RAG投毒攻防联合测试系统};
 \draw[arr] (title.south) -- ++(0,-3mm) -| (pa.north);
 \draw[arr] (title.south) -- ++(0,-3mm) -| (pd.north);
