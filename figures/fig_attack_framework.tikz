@@ -25,7 +25,7 @@
 \draw[arr] (gate.south) -- node[right,font=\scriptsize]{通过} (freeze.north);
 % 阶段二
 \node[box,below=12mm of freeze] (t2) {分块鲁棒检索损失$\mathcal L_{\mathrm{rob}}$\\存活权重$w(\xi)^p$\\尺寸与相位上取期望};
-\node[box,left=6mm of t2] (t1) {多副本触发器布局\\垫片句界插入$R$个\\定长触发器$\mathbf t_j$};
+\node[box,left=6mm of t2] (t1) {多副本触发器布局\\语义垫片自然句边界处\\插入$R$个定长触发器$\mathbf t_j$};
 \node[box,right=6mm of t2] (t3) {预算受限交替坐标搜索\\瓶颈块优先、一阶提议\\词法检查与局部流畅度};
 \node[stage,fit=(t1)(t3)] (st2) {};
 \node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：分块感知的检索触发器优化（检索可达性）};
