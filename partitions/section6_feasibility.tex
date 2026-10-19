@@ -1,28 +1,48 @@
-﻿\section{研究基础与可行性分析}
+\section{研究基础与可行性分析}
 
 \subsection{理论可行性分析}
 
-研究点一建立在RAG投毒攻击的两条研究脉络之上。第一条脉络关注检索可达性：Ebrahimi等\cite{ebrahimi-etal-2018-hotflip}提出的HotFlip以词元嵌入梯度的一阶近似为离散替换排序，Zou等\cite{zou2023universal}提出的GCG进一步采用“梯度筛选候选、前向精确验证”的贪心坐标搜索，Zhong等\cite{zhong-etal-2023-poisoning}与Ben-Tov等\cite{ben2025gasliteing}将这类方法用于稠密检索器，证明少量离散替换即可使对抗段落获得较高检索排名。第二条脉络关注生成诱导与载荷组织：Zou等\cite{zou2025poisonedrag}在PoisonedRAG中将投毒形式化为同时满足检索条件与生成条件的优化问题，AuthChain\cite{chang2025oneshot}与CorruptRAG\cite{zhang2026corruptrag}把投毒预算压缩到单个文档，InceptionRAG\cite{zhang2026inceptionrag}证明互补的休眠文本在共同检索后可经多跳推理诱导目标答案，CRCP\cite{nie2026crcp}则指出文档级攻击信号会被受害者侧分块打散，须在优化中显式建模分块变换。研究点一位于两条脉络的交汇处：以单文档投毒的预算口径承载InceptionRAG式的互补前提，并以CRCP的分块感知思想处理同源角色块的保持问题。
+\textbf{攻击侧理论支撑（单源预算约束$\times$分块变换期望建模$\times$离散梯度坐标搜索）。}研究点一将单源文档预算约束下的分布式逻辑组合\cite{chang2025oneshot,zhang2026inceptionrag}与分块变换下的鲁棒离散优化\cite{nie2026crcp,ebrahimi-etal-2018-hotflip,zou2023universal}统一于同一理论闭环。首先，依据Top-$K$检索的次序统计量性质，同源双块联合召回的离散集合事件在无并列分时等价于较弱角色块的检索得分超越干净竞争块第$K-1$名阈值$\tau_q=s_{(K-1)}(q)$，从而转化为连续可微的间隔损失。其次，将未知分块尺寸与切分相位建模为随机变换，针对均匀切分相位下保留比例一阶期望恒为常数（$\mathbb E_\xi[w_j(\xi)]\equiv 1$）导致梯度消失的问题，利用区间$[0,1]$上幂函数$w^p\le w$（$p>1$，仅在边界$\{0,1\}$取等）的严格凹性构造$p$次幂截断惩罚，确保只要存在正概率边界截断即有$\mathbb E_\xi[w_j(\xi)^p]<1$，提供连续惩罚向完整存活硬约束（$p\to\infty$）平滑过渡的梯度信号。最后，通过“生成可行性先行、检索可达性后置”的两阶段解耦与局部三句窗口流畅度正则，将一阶泰勒梯度坐标搜索限制于外围语义垫片的自然句边界处，在理论上规避了词元替换破坏跨块推理链语义闭环与触发困惑度过滤的风险\cite{liu2024autodan,alon2023detecting,jain2023baseline}。
 
-在此基础上，研究点一的各项设计均有明确的理论依据。联合召回的充要条件来自Top-$K$检索的次序统计量性质：两块同时入选，等价于较弱角色块的得分高于其余竞争块中的第$K-1$名，离散的集合事件因而转化为连续的得分间隔，可直接作为GCG式坐标搜索的优化目标。存活权重把受害者分块尺寸与切分相位视为随机变换，在其分布上对检索损失求期望，与CRCP将分块边界鲁棒性写入损失函数的思路一致；在均匀相位下，存活比例的一次幂期望恒为1；由于$w\in[0,1]$时$w^p\le w$，且仅在$w\in\{0,1\}$时取等，当截断以正概率发生时，取$p$次幂后的期望严格小于1，从而提供随截断程度变化的有效信号。两阶段解耦则回应了AutoDAN\cite{liu2024autodan}指出的问题：词元级搜索产生的文本语义不连贯，易被困惑度过滤识别\cite{alon2023detecting,jain2023baseline}。本研究以大语言模型提议并冻结承载推理逻辑的自然语言载荷，延续AuthChain与InceptionRAG以内容组织诱导生成的做法，梯度搜索的作用范围限定在外围定长触发器上，局部流畅度约束相应地在触发器邻域内计算。
-
-研究点二的统计信号来自表示空间分布外检测的经典理论。马氏距离\cite{mahalanobis1936generalized}以协方差的逆度量样本偏离分布中心的程度，Lee等\cite{lee2018simple}以此在深度表示上同时检测分布外样本与对抗样本；稠密检索向量维数较高而干净锚点有限，样本协方差病态，Ledoit与Wolf的收缩估计\cite{ledoit2004well}给出条件数良好的替代。尾谱距离保留低方差方向上的分量，干净样本在这些方向上的期望贡献为常数，而为提升检索得分引入的偏移按特征值倒数被放大。稀疏侧的残差比沿用潜在语义分析\cite{deerwester1990indexing}以截断奇异值分解刻画词项共现主结构的思想，在BM25\cite{robertson2009probabilistic}向量上度量偏离主子空间的能量。这与GMTP\cite{kim2025gmtp}、RAGDefender\cite{kim2025ragdefender}等工作的观察相互印证：投毒文本为获得检索竞争力，会在词元贡献或集合分布上留下可度量的痕迹。
-
-阈值校准依据次序统计量与共形预测理论。干净校准样本可交换时，第$k$个次序统计量对应的分布函数值服从Beta分布\cite{david2003order}，以经验分位作阈值即可在有限样本下控制干净流量的误触发率，这正是共形预测构造无分布保证的基本工具\cite{vovk2005algorithmic,angelopoulos2023conformal}；RADE\cite{yin2026rade}同样以正常校准样本的经验分位设定门控阈值，无需标注的投毒样本。结构证据面向单块统计量难以覆盖的组合风险：InceptionRAG的属性文本与桥接文本共享代理实体，研究点一的两个角色块共享来源标识与低频代号，二者均可由系统记录的元数据与规则式实体抽取直接判定，其在干净查询上的自然出现率可预先统计，再由并集界给出判别升级率的上界。精判环节采用LLM-as-a-Judge范式，Zheng等\cite{chiang2023judging}的系统评测表明强模型判别与人类判断具有较高一致性，RAGForensics\cite{zhang2025traceback}进一步证明以专门提示引导大语言模型逐条判定投毒文本可以取得较高的定位准确率。本研究将判别调用限制在存疑子集上，并以异源锚点和结构线索约束判别输入，使统计信号、结构信号与判别LLM的复核各自承担可单独检验的职责。
+\textbf{防御侧理论支撑（高维协方差收缩估计$\times$无分布次序统计量分位校准$\times$跨源图结构证据核验）。}研究点二构建的双阶段级联机制具备坚实的统计与图论基础。首先，针对高维稠密检索空间样本协方差易病态的问题，引入Ledoit-Wolf线性收缩估计\cite{ledoit2004well}保证协方差逆矩阵条件数良态；干净样本在低方差尾谱方向上的马氏距离期望恒为常数$d-r_0$，而对抗触发器引入的正交扰动则按尾谱特征值倒数被显著放大\cite{mahalanobis1936generalized,lee2018simple}，配合稀疏词项矩阵截断奇异值分解残差\cite{deerwester1990indexing,robertson2009probabilistic}与查询切法向分解，形成完备的单块统计表征。其次，基于可交换干净校准样本次序统计量服从$\operatorname{Beta}(k,n-k+1)$分布的无分布性质\cite{david2003order,vovk2005algorithmic,angelopoulos2023conformal}，仅凭干净语料即可严格将阶段一的误触发率控制在预设预算$\alpha$以内，对未知攻击保持中立。最后，针对单块统计特征趋近正常的跨块协同投毒，上下文实体—命题有向多重图与干净开发集结构基率由并集界严格限定了二阶段审查触发率$p_{\mathrm{esc}}$的上界，结合异源可信锚点约束下的生成式判别器三步核查\cite{chiang2023judging,zhang2025traceback}，在理论上阻断了同源伪事实自证并保障了正常多跳桥接证据的留存\cite{yin2026rade}。
 
 \subsection{实验设计与评价方法}
 
-实验采用自然问题数据集（Natural Questions，NQ）、MS MARCO和多跳问答数据集HotpotQA\cite{kwiatkowski-etal-2019-natural,bajaj2018msmarcohumangenerated,yang-etal-2018-hotpotqa}，按独立查询划分开发集与测试集，所有阈值、权重与预算在干净开发数据上确定后用于测试。检索器以Izacard等\cite{izacard2022unsupervised}提出的Contriever为白盒优化对象，并以Contriever-MS、Xiong等\cite{xiong2021approximate}提出的ANCE、BGE-m3\cite{chen2024m3}和BM25\cite{robertson2009probabilistic}检验同一载荷的跨检索器迁移；分块尺寸覆盖128、256和512三档，生成模型采用公开的开源大语言模型。各实验的论证职责如下。
+本研究在统一的实验环境与评测协议下对两个研究点开展系统验证。整体实验环境配置、核心对比基线与多维评价指标体系如\autoref{tab:exp_setup}所示，所有超参数、分位阈值与正则权重均在独立划分的干净开发集上标定后固定用于测试集评测。
 
-攻击实验论证单一源文档即可形成跨块组合攻击。在与PoisonedRAG\cite{zou2025poisonedrag}、AuthChain\cite{chang2025oneshot}、CRCP\cite{nie2026crcp}和InceptionRAG\cite{zhang2026inceptionrag}相同的评测环境中，统一以被篡改或注入的源文档数作为攻击预算口径，比较检索层的CoRecall@$K$与攻击源召回率、生成层的攻击成功率（Attack Success Rate，ASR）。组合机制实验在同一背景下比较$A$、$B$与$A+B$三种上下文，验证单块不足、双块导出的组合效应；同时报告影子通过率、受害者通过率与生成鸿沟率。分块鲁棒性实验在三档分块尺寸与不同切分相位下报告CoRecall@$K$，并对存活权重幂次$p$、触发器副本数和局部流畅度约束开展消融，验证分块感知设计对联合召回的作用。
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{实验环境配置、对比基线与核心评价指标总览}
+  \label{tab:exp_setup}
+  \begin{tabularx}{\textwidth}{>{\bfseries}p{2.7cm} X}
+    \toprule
+    实验评测维度 & 具体配置、对比基线与评价指标内容 \\
+    \midrule
+    评测数据集 & Natural Questions（NQ）\cite{kwiatkowski-etal-2019-natural}、MS MARCO\cite{bajaj2018msmarcohumangenerated}、HotpotQA（多跳问答）\cite{yang-etal-2018-hotpotqa} \\
+    受害者分块尺度 & $K_{\mathrm{size}}\in\{128, 256, 512\}$（主实验三档标准容量，含跨尺度与跨切分相位鲁棒性测试） \\
+    五检索器矩阵 & Contriever（白盒代理优化端）\cite{izacard2022unsupervised}；Contriever-MS、ANCE\cite{xiong2021approximate}、BGE-m3\cite{chen2024m3}、BM25\cite{robertson2009probabilistic}（黑盒跨检索器迁移端） \\
+    核心攻击对比基线 & PoisonedRAG\cite{zou2025poisonedrag}、CorruptRAG\cite{zhang2026corruptrag}、AuthChain\cite{chang2025oneshot}、CRCP\cite{nie2026crcp}、InceptionRAG\cite{zhang2026inceptionrag}、CamoDocs \\
+    核心防御对比基线 & RAGDefender\cite{kim2025ragdefender}、TrustRAG\cite{zhou2025trustrag}、GRADA\cite{zheng2025grada}、RobustRAG\cite{xiang2024certifiably}、TRIS \\
+    评价指标体系 & \textbf{检索层}：双块联合召回率$\mathrm{CoRecall}@K$、投毒源召回率（SRR / CRRR）；\newline
+    \textbf{生成层}：攻击成功率（ASR）、回答准确率（ACC）、干净准确率变化量（$\Delta\mathrm{CACC}$）、缺口率$1-(\mathrm{ACC}+\mathrm{ASR})$、生成鸿沟率$\mathrm{Gap}$；\newline
+    \textbf{开销层}：二阶段审查触发率$p_{\mathrm{esc}}$、额外生成调用次数、单查询平均延迟（ms） \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
-防御实验论证低开销级联能够覆盖组合式投毒。攻击集同时包含公开攻击与研究点一的组合式载荷，正常集保留同源多块与跨源多跳问答。主表固定四列：残余ASR、攻击下准确率（ACC）、干净ACC及其变化量、缺口率$1-(\mathrm{ACC}+\mathrm{ASR})$，缺口率用于区分“被攻破”与“被过度过滤”。基线覆盖RAGDefender\cite{kim2025ragdefender}、TrustRAG\cite{zhou2025trustrag}等过滤方法与RobustRAG\cite{xiang2024certifiably}等隔离聚合方法，并统一报告额外生成调用次数、LLM判别升级率与单查询延迟，以安全、效用和开销三者的联合表现进行比较。消融分别移除四维统计量、结构证据通道与异源锚点，给出各通道的独立贡献，并报告同源远距块对在干净查询上的自然出现率。
+围绕\autoref{tab:exp_setup}，各核心实验模块的论证职责组织如下：
+\begin{itemize}[leftmargin=2em,itemsep=2pt]
+  \item \textbf{单源跨块协同攻击效能与机制消融实验}：在与PoisonedRAG、CorruptRAG、AuthChain、CRCP、InceptionRAG及CamoDocs相同的受控源文档预算口径下，对比检索层$\mathrm{CoRecall}@K$与生成层ASR；通过在同一竞争背景$C^{(-K)}$下对比单块$c_A$、单块$c_B$与双块$c_A+c_B$三种上下文，验证“单块证据不足、双块协同导出”的组合效应，并报告影子通过率、受害者通过率与生成鸿沟率$\mathrm{Gap}$。
+  \item \textbf{未知分块边界鲁棒性与跨检索器迁移实验}：在$128/256/512$三档分块尺寸及随机切分相位下评估角色块完整保持率与$\mathrm{CoRecall}@K$，对存活权重幂次$p$、触发器副本数$R$及局部三句流畅度损失$\mathcal L_{\mathrm{ppl}}$开展逐项消融，并在五检索器矩阵上检验同一投毒源文档的跨检索器迁移攻击能力。
+  \item \textbf{多类投毒鲁棒防御与开销消融实验}：在涵盖公开单点/分布式攻击与研究点一组合式攻击的混合评测集，以及包含同源多块与跨源多跳证据的干净评测集上，对比RAGDefender、TrustRAG、GRADA、RobustRAG及TRIS；联合报告残余ASR、攻击下ACC、$\Delta\mathrm{CACC}$、区分“被攻破”与“过度过滤”的缺口率$1-(\mathrm{ACC}+\mathrm{ASR})$、多跳桥接保留率$\mathrm{BR}$、二阶段审查触发率$p_{\mathrm{esc}}$及单查询延迟，并对四维统计特征、多重图结构指示器与异源锚点约束开展逐通道消融。
+\end{itemize}
 
 \subsection{实验可行性分析}
 
-本研究前期已围绕RAG技术、知识库投毒与防御完成系统的文献调研，整理了检索操纵、单文档投毒、分块条件投毒和分布式组合投毒等攻击路线，以及局部异常检测、上下文结构分析、鲁棒聚合和责任归因等防御路线，并完成了三十余个公开攻防方法源码实现的本地部署，与统一的数据、索引、检索与判分层对接后即可开展同口径复现。初步实验已观察到同一攻击源文档产生的多个目标块同时进入检索上下文，并操纵生成模型输出目标答案，为研究点一的组合机制与研究点二的检测对象提供了直接依据。本研究已建成覆盖NQ、MS MARCO和HotpotQA三个数据集的完整实验底座。语料按64、128、256和512四档分块完成Contriever全量索引，并为BM25、Contriever-MS、ANCE和BGE-m3建立同分块索引，形成分块方式一致、检索器作为唯一变量的五检索器对照环境。在三个数据集共20,428个查询上完成了五检索器的干净检索与生成评测，为攻击效用损失和防御干净准确率提供了统一参照。每个查询已缓存深度为1000的精确检索排名与查询向量，追加或替换攻击文档后，对新文档编码并与缓存排名归并即可精确得到新的Top-$K$，单组100个查询的检索复算在1秒内完成，大规模攻防矩阵实验因此可以复用已有的全库检索结果。
+\textbf{前期研究基础。}本研究前期已围绕RAG知识库投毒与防御完成系统文献调研与核心代码库建设，并建成了覆盖NQ、MS MARCO和HotpotQA三个标准数据集的完整实验底座。语料库已按64、128、256和512四档分块完成Contriever全量编码索引，同时为BM25、Contriever-MS、ANCE和BGE-m3建立了同分块对齐索引，形成分块边界严格一致、检索模型作为唯一变量的五检索器对照环境。前期已在三个数据集共20,428条查询上完成了五检索器的干净检索与生成基准评测，并为每条查询预计算缓存了Top-1000精确检索排名与查询向量。在攻防实验中替换或追加源文档后，仅需对新切分出的文本块执行编码并与Top-1000缓存排名归并即可精确还原新的Top-$K$上下文，单组100条查询的增量检索复算耗时不足1秒。
 
-实验基础设施方面，本研究具有足够的基础设施支持。前期已经在RTX 4090与RTX A6000 GPU上完成了关键环节的开销实测：检索编码器批量前向在批大小32时约9.06毫秒，单次梯度替换步约5.53毫秒，本地部署的Qwen3.8-27B-FP8 LLM单次短回答生成约1.84秒。据此估算，研究点一阶段二的触发器优化在单卡上每题约需2至4分钟，预计实验全集的300个查询的完整优化可在24h内完成。研究点二阶段一的谱运算每查询低于2毫秒，子窗编码约20至40毫秒，仅对升级查询调用一次LLM-as-a-Judge，干净查询的防御路径不增加生成调用。
+\textbf{硬件与实验开销可行性。}本研究依托实验室现有的高性能计算节点（配备NVIDIA RTX A6000 48GB与RTX 4090 24GB GPU服务器）开展实验，前期已完成核心算子与生成服务的基准耗时实测：在RTX 4090上，稠密检索编码器批处理前向（Batch=32）耗时约$9.06\text{ ms}$，单步HotFlip梯度替换约$5.53\text{ ms}$；本地部署的\texttt{Qwen3.8-27B-FP8}生成服务单次短回答生成耗时约$1.84\text{ s}$。
 
-基线复现方面，按文献调研整理的约55个攻防方法、每个方法覆盖3个数据集与4档分块、每组100个查询估算，受害者侧生成共约9.36万次，按本地生成服务的调用配额折算约15.4小时。依单轮成本量级将基线分三批推进：第一批为追加式攻击与过滤检测类防御，约27个方法，单轮约5小时；第二批为需要重排阶段、多次生成聚合或投毒溯源的方法，约19个方法，单轮约8至10小时；第三批为迭代式攻击及需要重训检练索器或双端白盒梯度的方法，约10个方法，单轮约310至435小时。第三批以离线GPU计算为主，与生成服务的调用配额相互独立，可先在查询子集上完成复现。除第三批外，全矩阵单轮复现约需45小时，总体实验成本可控。
+据此测算，研究点一阶段二的分块鲁棒触发器优化在单张RTX 4090上单条目标查询耗时约$2\sim 4$分钟，300条标准测试查询集的完整离线优化可在$15\sim 20$小时内完成。研究点二阶段一的矩阵谱运算每查询耗时低于$2\text{ ms}$，块内子窗编码约$20\sim 40\text{ ms}$，绝大多数干净查询在阶段一即可直接放行，仅对少量触发结构告警或处于存疑待审区的查询执行单次结构化判别。围绕前期已本地化部署的PoisonedRAG、CorruptRAG、CRCP、InceptionRAG、CamoDocs及RAGDefender、TrustRAG、RobustRAG、TRIS等十余项核心代表性攻防基线，结合本地预计算的Top-1000精确检索排名缓存（单组100条查询的增量检索归并复算耗时$<1\text{ s}$），全套主实验与消融实验矩阵的单轮评估总耗时可控制在$30\sim 45$小时以内，实验算力与时间成本可控。
 
