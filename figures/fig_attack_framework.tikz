@@ -10,30 +10,30 @@
 \node[wide] (input) {输入：查询$q$、正确答案$y_{\mathrm{true}}$、目标答案$a^*$、载体长文档$D$、影子背景Top-$K$缓存$C_{\mathrm{clean}}^{-d,s}(q)$与中性替代块$N_A,N_B$};
 % 阶段一
 \node[box,below=12mm of input] (s2) {核心载荷与语义垫片\\$\mathcal P_A$：规则注入块\\$\mathcal P_B$：实例桥接块};
-\node[box,left=6mm of s2] (s1) {两步槽位锚定与校验\\段落分位点$\rho_A,\rho_B$\\试组装间距$\ge\gamma K_{\max}$};
-\node[box,right=6mm of s2] (s3) {固定背景$B_0$受控上下文\\$C_{00},C_{10},C_{01},C_{11}$\\（容量恒为$K$、背景一致）};
-\node[wide,below=6mm of s2] (gate) {受控组合生成判据$\mathcal V_{\mathrm{comp}}$：相同背景$B_0$下$C_{00},C_{10},C_{01}$均不命中$a^*$\ \ $\land$\ \ 双块$C_{11}=[B_0,c_A,c_B]$命中$a^*$};
+\node[box,left=6mm of s2] (s1) {两步槽位锚定与校验\\段落预筛与跨度复核\\核心间距$\ge\gamma K_{\max}$};
+\node[box,right=6mm of s2] (s3) {固定背景$B_0$受控上下文\\$C_{00},C_{10},C_{01},C_{11}$\\容量恒为$K$且背景一致};
+\node[wide,below=6mm of s2] (gate) {受控组合生成判据$\mathcal V_{\mathrm{comp}}$：相同背景$B_0$下$C_{00},C_{10},C_{01}$均输出非目标响应\ \ $\land$\ \ 双块$C_{11}=[B_0,c_A,c_B]$命中$a^*$};
 \node[stage,fit=(s1)(s3)(gate)] (st1) {};
-\node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：等背景受控竞争上下文下的双块载荷构造（生成可行性）};
+\node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：等背景受控竞争上下文下的双块载荷构造};
 \draw[arr] (input.south) -- ++(0,-4mm) -| (s1.north);
 \draw[arr] (s1.east) -- (s2.west);
 \draw[arr] (s2.east) -- (s3.west);
 \draw[arr] (s3.south) -- (s3.south |- gate.north);
-\draw[arr,dashed] (gate.west) -- ++(-3mm,0) |- node[pos=0.25,left,font=\scriptsize,rotate=90,anchor=south]{未通过则修订} (s1.west);
+\draw[arr,dashed] (gate.west) -- ++(-3mm,0) |- node[pos=0.25,left,font=\scriptsize,rotate=90,anchor=south]{按分项判据修订} (s1.west);
 % 冻结与初始化
 \node[wide,below=12mm of gate] (freeze) {冻结$(\mathcal P_A,\mathcal P_B,\mathcal S_A,\mathcal S_B)$并评估布局截断量$h_p(w)$\quad DoC2Query初始化定长触发器，设定搜索代理阈值$\tau_{q,s}=s_s(q,d_{(K-1)})$};
 \draw[arr] (gate.south) -- node[right,font=\scriptsize]{通过} (freeze.north);
 % 阶段二
-\node[box,below=12mm of freeze] (t2) {跨视图检索损失$\mathcal L_{\mathrm{rob}}$\\固定视图集$\Phi_{\mathrm{shadow}}$\\加权间隔与跨相位波动项};
+\node[box,below=12mm of freeze] (t2) {跨视图检索损失$\mathcal L_{\mathrm{rob}}$\\有效视图集$\Phi_j^+$加权间隔\\与跨相位波动项};
 \node[box,left=6mm of t2] (t1) {对称双副本触发器布局\\垫片自然句边界插入$\mathbf t_j$\\包络$\le K_{\mathrm{size}}$享覆盖引理};
-\node[box,right=6mm of t2] (t3) {固定视图集坐标搜索\\瓶颈块优先、一阶提议\\词法掩码与局部流畅度};
+\node[box,right=6mm of t2] (t3) {有效视图集坐标搜索\\瓶颈块优先、一阶提议\\词法掩码与局部流畅度};
 \node[stage,fit=(t1)(t3)] (st2) {};
-\node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：分块感知的检索触发器优化（检索可达性）};
+\node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：分块感知的检索触发器优化};
 \draw[arr] (freeze.south) -- ++(0,-4mm) -| (t1.north);
 \draw[arr] (t1.east) -- (t2.west);
 \draw[arr] (t2.east) -- (t3.west);
 % 输出与受害者处理链路
-\node[wide,below=10mm of st2] (out) {组装$D_{\mathrm{adv}}$并跨视图全文重切分：在最终切分块上复核完整共现与联合召回事件$Z_\phi$、$\widehat p_{\mathrm{joint}}$及最终组合判据$\mathcal V_{\mathrm{comp}}^{\mathrm{final}}$};
+\node[wide,below=10mm of st2] (out) {组装$D_{\mathrm{adv}}$并跨视图全文重切分：按角色完整性分支复核联合召回事件$Z_\phi$、$\widehat p_{\mathrm{joint}}$及终态组合判据$\mathcal V_{\mathrm{comp}}^{\mathrm{final}}$};
 \node[wide,below=6mm of out] (victim) {受害者评估链路：替换摄入$\rightarrow$受害者分块$\phi_v$$\rightarrow$自然Top-$K$检索与自然回填消融$\rightarrow$评估目标命中率ASR与迁移差$\Delta_{\mathrm{gen}}$};
 \draw[arr] (t3.south) -- ++(0,-6.5mm) -| (out.north);
 \draw[arr] (out.south) -- (victim.north);
