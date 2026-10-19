@@ -1,14 +1,24 @@
-﻿\section{研究基础与可行性分析}
+\section{研究基础与可行性分析}
 
 \subsection{理论可行性分析}
 
-\textbf{攻击侧理论支撑。}研究点一将单源文档预算约束下的分布式逻辑组合\cite{chang2025oneshot,zhang2026inceptionrag}与分块变换下的鲁棒离散优化\cite{nie2026crcp,ebrahimi-etal-2018-hotflip,zou2023universal}统一于两阶段解耦框架。首先，在除载体文档外的固定背景库$\mathcal C_{-d}$上，当投毒源文档的非载荷普通块得分低于背景第$K-1$名阈值$\tau_q=s(q,d_{(K-1)})$且得分无并列时，同源双块共同进入自然Top-$K$的离散集合事件等价于较弱角色块得分超越$\tau_q$（即$\min_{j\in\{A,B\}}s(q,c_j)>\tau_q$），从而为阶段二提供了连续可微的间隔优化目标。其次，在跨块槽位跨度满足$\operatorname{start}(\mathcal P_B)-\operatorname{end}(\mathcal P_A)\ge\gamma K_{\max}$的几何隔离下，任意容量$K_{\mathrm{size}}\le K_{\max}$的分块窗口至多覆盖单一核心载荷；当窗口容量大于“核心载荷 + 单个触发器副本”跨度且切分边界落在外围语义垫片内时，对称布置于核心载荷两侧自然句边界的触发器副本保证至少一个完整触发器与完整核心载荷共处同一文本块。同时，利用区间$(0,1)$上幂函数$w^p<w$（$p>1$）的严格不等式构造凹幂次截断惩罚$1-w_j(\xi)^p$，对发生部分截断的切分相位施加非线性放大惩罚，并在$p\to\infty$时逐点逼近零截断硬完整性指示器。最后，通过将阶段一的等容量（$K$块）受控组合生成验证与阶段二的外围边界触发器梯度搜索解耦，配合局部三句窗口流畅度正则，从机制上避免了离散词元替换破坏跨块三段论语义闭环或引起局部困惑度突变\cite{liu2024autodan,alon2023detecting,jain2023baseline}。
+\textbf{攻击侧条件性理论支撑与方法动机。}研究点一将单源文档受控预算下的跨块前提分离\cite{chang2025oneshot,zhang2026inceptionrag}与分块感知的离散触发器搜索\cite{nie2026crcp,ebrahimi-etal-2018-hotflip,zou2023universal}组织为两阶段解耦框架，其核心数学性质在以下显式条件下成立：
+\begin{enumerate}[leftmargin=2em,itemsep=1pt]
+  \item \textbf{共同召回的一般排名条件与搜索代理}：对任意分块视图$\phi$，记非角色候选块集合为$\mathcal O_\phi(x)=\mathcal C_v^\phi(x)\setminus\{c_A^{(\phi)},c_B^{(\phi)}\}$，其第$K-1$高分为$t_\phi(x)$。当$K\ge 2$、$|\mathcal O_\phi(x)|\ge K-1$、$c_A^{(\phi)}\neq c_B^{(\phi)}$且候选得分严格全序时，双角色块共同进入Top-$K$当且仅当$\min_{j\in\{A,B\}}s(q,c_j^{(\phi)})>t_\phi(x)$。影子背景阈值$\tau_{q,s}=s_s(q,d_{(K-1)})$作为搜索阶段的常值计算代理，当$D_{\mathrm{adv}}$的其余非角色块得分均低于$\tau_{q,s}$时与$t_\phi(x)$一致；最终验收则直接在完整更新池上按确定性全序统计有效联合召回事件$Z_\phi(x)$。
+  \item \textbf{条件性窗口覆盖引理与布局—词元变量分离}：在同一分词器坐标系下，设角色段内左触发器、核心载荷与右触发器的半开词元区间分别为$L=[\ell_0,\ell_1)$、$P=[p_0,p_1)$、$R=[\tilde r_0,\tilde r_1)$（$\ell_1\le p_0<p_1\le\tilde r_0$）。对任意容量为$K_{\mathrm{size}}$的窗口$W=[a,a+K_{\mathrm{size}})$，若$P\subseteq W$且含中间垫片在内的双触发器总包络跨度满足$\tilde r_1-\ell_0\le K_{\mathrm{size}}$，则必有$L\subseteq W$或$R\subseteq W$。同时，凹幂次函数$h_p(w)=1-w^p$（$p>1$）在$(0,1)$上满足$h_p''(w)=-p(p-1)w^{p-2}<0$且$\lim_{p\to\infty}h_p(w)=\mathbb I[w<1]$；在固定分词器坐标、槽位与定长词元替换下有$\partial h_p(w_j(\phi))/\partial e_{t_i}=0$，故$h_p(w_j(\phi))$专门作为阶段间几何布局筛选与完整性评价指标，而固定布局下的定长词元内环则通过跨视图检索间隔损失调整检索信号。
+  \item \textbf{等背景受控组合判据}：阶段一固定前$K-2$个高分干净块$B_0$与长度匹配的中性替代块$N_A,N_B$，在相同背景$B_0$下比较$C_{00},C_{10},C_{01},C_{11}$，从实验设计上隔离了“挤占干净竞争块名额”与“跨块前提语义组合”两类效应\cite{liu2024autodan,alon2023detecting,jain2023baseline}。
+\end{enumerate}
 
-\textbf{防御侧理论支撑。}研究点二构建的双阶段级联机制具备严谨的高维统计与图结构基础。首先，离线阶段将干净开发数据划分为互不相交的特征拟合集$\mathcal D_{\mathrm{fit}}$与检索后分位校准集$\mathcal D_{\mathrm{cal}}$：在$\mathcal D_{\mathrm{fit}}$上引入Ledoit-Wolf线性收缩估计\cite{ledoit2004well}保证高维协方差逆矩阵条件数良态，利用低方差尾谱特征值倒数放大对抗触发词引入的正交尾谱扰动\cite{mahalanobis1936generalized,lee2018simple}，并结合BM25词项矩阵截断奇异值分解残差\cite{deerwester1990indexing,robertson2009probabilistic}、候选池内查询切法向散度比及块内首尾子窗余弦漂移构成四维互补表征。其次，针对在线受检对象均为检索后Top-$K$高分块的特点，在检索后干净校准集$\mathcal D_{\mathrm{cal}}$上取次序统计量下标$k(\alpha)=\lceil(n+1)(1-\alpha)\rceil$设定分位阈值$\tau(\alpha)=A_{(k(\alpha))}$；依据连续可交换样本次序统计量满足$F(A_{(k)})\sim\operatorname{Beta}(k,n-k+1)$的无分布性质\cite{david2003order,vovk2005algorithmic,angelopoulos2023conformal}，新到达的干净检索候选块严格满足有限样本边际误警率上界$\Pr(A_{n+1}>\tau(\alpha))=1-\frac{k(\alpha)}{n+1}\le\alpha$。最后，针对单块统计特征趋近正常的跨块组合投毒，在线构建的上下文实体—命题有向多重图将同源远距、低频桥接与命题极性冲突仅作为升级至阶段二的触发信号，由并集界给出查询级二阶段审查触发率上界$p_{\mathrm{esc}}\le\min(1,K\alpha_{\mathrm{low}})+\rho_{\mathrm{prov}}^{\mathrm{clean}}+\rho_{\mathrm{bridge}}^{\mathrm{clean}}+\rho_{\mathrm{conflict}}^{\mathrm{clean}}$；在单源及少源受控投毒预算下，结合异源可信锚点约束与生成式判别器三步核查\cite{chiang2023judging,zhang2025traceback}，阻断了同源段落伪事实自证并保留正常多跳桥接证据\cite{yin2026rade}。
+\textbf{防御侧条件性理论支撑与方法动机。}研究点二构建的双阶段级联机制将经验特征初筛、无分布分位校准与结构化核查相结合：
+\begin{enumerate}[leftmargin=2em,itemsep=1pt]
+  \item \textbf{拟合—校准划分与经验统计表征}：离线阶段按独立查询与源文档将干净开发数据划分为互不相交的特征拟合集$\mathcal D_{\mathrm{fit}}$与查询级校准集$\mathcal D_{\mathrm{cal}}$。在$\mathcal D_{\mathrm{fit}}$上，当$\beta\in(0,1)$且样本协方差迹$\operatorname{tr}(S)>0$时，Ledoit-Wolf线性收缩估计\cite{ledoit2004well}保证协方差矩阵正定可逆；结合低方差尾谱马氏距离\cite{mahalanobis1936generalized,lee2018simple}、BM25截断奇异值残差\cite{deerwester1990indexing,robertson2009probabilistic}、候选池内查询切法向散度比及块内子窗余弦漂移，提供待在真实攻击流上检验的经验异常评分$A(q,c_i)$。
+  \item \textbf{查询级最大异常度校准定理}：针对同一查询内$K$个候选块得分耦合的特性，以独立查询为交换单元，在$\mathcal D_{\mathrm{cal}}$的$n$条可交换干净查询上计算查询级最大异常度$M_j=\max_{1\le i\le K}A(q_j,c_{j,i})$，取$k(\alpha)=\lceil(n+1)(1-\alpha)\rceil$与$\tau_\alpha=M_{(k(\alpha))}$（当$k(\alpha)=n+1$时置$\tau_\alpha=+\infty$）。当新干净查询$q_{\mathrm{new}}$与校准查询在冻结检索与评分协议下可交换时，由秩均匀性与并列分保守秩性质\cite{vovk2005algorithmic,angelopoulos2023conformal}可得有限样本边际误警率上界$\Pr(\exists i:A(q_{\mathrm{new}},c_{\mathrm{new},i})>\tau_\alpha)=\Pr(M_{\mathrm{new}}>\tau_\alpha)\le\alpha$。
+  \item \textbf{查询级送审触发率上界与来源分离核查}：在统计通道查询级误警率受$\alpha_{\mathrm{low}}$控制的前提下，由并集界得干净查询的二阶段审查触发率上界$p_{\mathrm{esc}}\le\min\{1,\alpha_{\mathrm{low}}+\rho_{\mathrm{prov}}^{\mathrm{clean}}+\rho_{\mathrm{bridge}}^{\mathrm{clean}}+\rho_{\mathrm{conflict}}^{\mathrm{clean}}\}$；阶段二通过来源标识分离条件$z_{\mathrm{doc}}(c)\notin z_{\mathrm{doc}}(\mathcal S_{\mathrm{judge}})$确保参照锚点来自独立于待审块的外部文档\cite{chiang2023judging,zhang2025traceback,yin2026rade}。
+\end{enumerate}
 
 \subsection{实验设计与评价方法}
 
-本研究在统一的实验环境与分层评测协议下对两个研究点开展系统验证。整体实验配置、对比基线与多维评价指标体系如\autoref{tab:exp_setup}所示，所有特征拟合参数、检索后分位阈值与正则超参数均在独立划分的开发集（$\mathcal D_{\mathrm{fit}}\cup\mathcal D_{\mathrm{cal}}$）上标定后固定用于测试集评测。
+本研究在统一的实验环境与分层评测协议下对两个研究点开展系统验证。整体实验配置、对比基线与多维评价指标体系如\autoref{tab:exp_setup}所示，所有特征拟合参数、查询级校准阈值与超参数均在独立开发集（$\mathcal D_{\mathrm{fit}}\cup\mathcal D_{\mathrm{cal}}$）上固定后再用于测试集评测。记语义判定器判定回答命中标准答案$y_{\mathrm{true}}$的事件为$C=\{J(q,y_{\mathrm{true}},\hat y)=1\}$，命中攻击目标$a^*$的事件为$T=\{J(q,a^*,\hat y)=1\}$；为涵盖模型拒答、输出无关内容或双重命中情形，将其余输出情形的残余响应率定义为$\mathrm{Gap}_{\mathrm{other}}=\Pr(\neg C\land\neg T)=1-\mathrm{ACC}-\mathrm{ASR}+\Pr(C\cap T)$（互斥判分协议$\Pr(C\cap T)=0$下化简为$1-\mathrm{ACC}-\mathrm{ASR}$；拒答、双命中与布局受限样本统一纳入固定查询总分母统计），同时以$\Delta_{\mathrm{gen}}$独立表示影子生成器与受害者生成器之间的迁移命中率之差。
 
 \begin{table}[htbp]
   \centering
@@ -19,31 +29,31 @@
     \toprule
     实验评测维度 & 具体配置、对比基线与评价指标内容 \\
     \midrule
-    评测数据集 & Natural Questions（NQ）\cite{kwiatkowski-etal-2019-natural}、MS MARCO\cite{bajaj2018msmarcohumangenerated}、HotpotQA（多跳问答）\cite{yang-etal-2018-hotpotqa} \\
+    评测数据集 & Natural Questions（NQ）\cite{kwiatkowski-etal-2019-natural}、MS MARCO\cite{bajaj2018msmarcohumangenerated}、HotpotQA（多跳问答）\cite{yang-etal-2018-hotpotqa}（准入源文档长$>512$词元） \\
     分块与验证层次 & \textbf{主验证配置}：$K_{\mathrm{size}}=256$、白盒代理检索器Contriever\cite{izacard2022unsupervised}；\newline
-    \textbf{跨尺度与跨相位泛化层}：$K_{\mathrm{size}}\in\{128, 256, 512\}$及随机切分相位偏移$\xi$ \\
+    \textbf{跨尺度与跨相位泛化层}：$K_{\mathrm{size}}\in\{128, 256, 512\}$及多相位视图集$\Phi_{\mathrm{shadow}}$ \\
     检索器评测矩阵 & Contriever（白盒代理优化端）\cite{izacard2022unsupervised}；Contriever-MS、ANCE\cite{xiong2021approximate}、BGE-m3\cite{chen2024m3}、BM25\cite{robertson2009probabilistic}（黑盒跨检索器迁移端） \\
-    核心攻击对比基线 & PoisonedRAG\cite{zou2025poisonedrag}、CorruptRAG\cite{zhang2026corruptrag}、AuthChain\cite{chang2025oneshot}、InceptionRAG\cite{zhang2026inceptionrag}、CamoDocs\cite{jung2026camodocs} \\
+    核心攻击对比基线 & PoisonedRAG\cite{zou2025poisonedrag}、CorruptRAG\cite{zhang2026corruptrag}、AuthChain\cite{chang2025oneshot}、CRCP\cite{nie2026crcp}、InceptionRAG\cite{zhang2026inceptionrag}、CamoDocs\cite{jung2026camodocs} \\
     核心防御对比基线 & RAGDefender\cite{kim2025ragdefender}、TrustRAG\cite{zhou2025trustrag}、GRADA\cite{zheng2025grada}、RobustRAG\cite{xiang2024certifiably}、TRIS\cite{munir2026tris} \\
-    评价指标体系 & \textbf{检索与结构层}：重切分角色完整保持率、双块联合召回率$\mathrm{CoRecall}@K$、投毒源召回率（SRR / CRRR）、多跳桥接证据保留率$\mathrm{BR}$；\newline
-    \textbf{生成与安全层}：受控组合通过率$\mathcal V_{\mathrm{gen}}$、端到端攻击成功率（ASR）、回答准确率（ACC）、干净准确率变化量（$\Delta\mathrm{CACC}$）、缺口率$1-(\mathrm{ACC}+\mathrm{ASR})$、影子—受害者生成鸿沟率$\mathrm{Gap}$；\newline
-    \textbf{开销与延迟层}：单块误警率、二阶段审查触发率$p_{\mathrm{esc}}$、四项分阶段延迟分解与单查询总延迟（ms） \\
+    评价指标体系 & \textbf{检索与结构层}：重切分角色—触发器完整共存率、单视图有效联合召回$Z_\phi$与跨视图通过率$\widehat p_{\mathrm{joint}}$、投毒源召回率（SRR / CRRR）、多跳桥接保留率$\mathrm{BR}$；\newline
+    \textbf{生成与安全层}：等背景受控组合通过率$\mathcal V_{\mathrm{comp}}$、端到端攻击成功率（ASR）、回答准确率（ACC）、干净准确率变化量（$\Delta\mathrm{CACC}$）、残余缺口率$\mathrm{Gap}_{\mathrm{other}}=1-\mathrm{ACC}-\mathrm{ASR}+\Pr(C\cap T)$、影子—受害者迁移差$\Delta_{\mathrm{gen}}$；\newline
+    \textbf{开销与延迟层}：查询级统计误警率、二阶段审查触发率$p_{\mathrm{esc}}$、条件期望延迟分解与单查询总延迟（ms） \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-围绕\autoref{tab:exp_setup}，实验遵循“主设置机制闭环$\rightarrow$攻防对抗与效用权衡$\rightarrow$跨尺度与跨检索器泛化边界”的三层递进结构组织：
+围绕\autoref{tab:exp_setup}，实验按“主设置机制闭环$\rightarrow$攻防对抗与效用权衡$\rightarrow$跨尺度与跨检索器泛化边界”三层递进组织：
 \begin{itemize}[leftmargin=2em,itemsep=2pt]
-  \item \textbf{第一层：主配置下的单源跨块协同机制验证与消融实验}：在主设置（$K_{\mathrm{size}}=256$、Contriever）及相同受控源文档预算（$|\mathcal D_{\mathrm{adv}}|=1$）下，对比研究点一与各攻击基线的$\mathrm{CoRecall}@K$及端到端ASR；分别汇报阶段一等容量（$K$块）受控竞争上下文（单块$C_{\mathrm{single}}^{(A)}$、单块$C_{\mathrm{single}}^{(B)}$、双块$C_{\mathrm{mix}}$）与阶段二全文重切分后自然Top-$K$回填消融上下文（$C_{-A}^{\mathrm{nat}},C_{-B}^{\mathrm{nat}},R_K$）下的目标答案诱导率，严格验证“单块证据不足、双块协同导出”的组合机制，并统计影子模型向受害者模型迁移的生成鸿沟率$\mathrm{Gap}$。
-  \item \textbf{第二层：多类投毒下的鲁棒防御、多跳证据保留与延迟分解实验}：在涵盖检索操纵、单点投毒与研究点一跨块组合投毒的混合攻击评测集，以及包含同源多段与跨源多跳证据的干净评测集上，对比研究点二与五项代表性防御基线；联合报告残余ASR、攻击下ACC、$\Delta\mathrm{CACC}$、缺口率$1-(\mathrm{ACC}+\mathrm{ASR})$、多跳桥接保留率$\mathrm{BR}$、查询级触发率$p_{\mathrm{esc}}$及式\eqref{eq:latency_decomp}的四项延迟分量，并对四维统计特征、三类多重图结构指示器及异源锚点约束开展逐通道消融。
-  \item \textbf{第三层：未知分块边界鲁棒性与跨检索器迁移泛化实验}：将主设置下构造的投毒源文档拓展至$K_{\mathrm{size}}\in\{128,256,512\}$三档分块容量、随机切分相位偏移及BM25、Contriever-MS、ANCE、BGE-m3四类黑盒检索器，系统评估角色完整保持率、$\mathrm{CoRecall}@K$与跨模型迁移ASR，并对触发器副本数$R$、凹幂次指数$p$及局部三句流畅度权重$\lambda_{\mathrm{ppl}}$开展超参数敏感性分析，明确方法在不同分块粒度与检索范式下的性能边界。
+  \item \textbf{第一层：主配置下的单源跨块协同机制验证与归因实验}：在主设置（$K_{\mathrm{size}}=256$、Contriever、$|\mathcal D_{\mathrm{adv}}|=1$）下，完整跑通“源文档改写$\rightarrow$全文分块$\rightarrow$自然Top-$5$检索$\rightarrow$生成”链路，逐题记录布局可行率、重切分后$Z_{\phi_s}$通过率、$\mathcal V_{\mathrm{comp}}^{\mathrm{final}}$通过率与端到端ASR；同时对比固定$K-2$背景$B_0$与中性替代块的四组受控上下文（$C_{00},C_{10},C_{01},C_{11}$及$BA$反序对照）与自然检索回填消融上下文，分别度量受控语义协同效应与自然检索竞争行为，并统计影子至受害者模型的迁移差$\Delta_{\mathrm{gen}}$。
+  \item \textbf{第二层：多类投毒下的鲁棒防御、多跳证据保留与延迟分解实验}：在涵盖检索操纵、单点投毒与研究点一跨块组合投毒的混合攻击集及多跳干净集上，对比五项代表性防御基线；联合报告查询级校准下的经验误警率、检出率、残余ASR、攻击下ACC、$\Delta\mathrm{CACC}$、$\mathrm{Gap}_{\mathrm{other}}$、多跳桥接保留率$\mathrm{BR}$、触发率$p_{\mathrm{esc}}$及式\eqref{eq:latency_decomp}的各阶段耗时均值，并对四维统计特征、三类多重图结构指示器与异源锚点分离约束开展逐通道消融。
+  \item \textbf{第三层：未知分块边界鲁棒性与跨检索器迁移边界实验}：在$K_{\mathrm{size}}\in\{128,256,512\}$三档分块容量、多相位验收视图集及BM25、Contriever-MS、ANCE、BGE-m3四类黑盒检索器上评测跨配置有效联合召回率$\widehat p_{\mathrm{joint}}$、逐分词器重算跨度后的角色保持率与迁移ASR，明确方法在不同分块粒度与检索范式下的实证性能边界。
 \end{itemize}
 
 \subsection{实验可行性分析}
 
-\textbf{前期研究基础与基线实测支撑。}本研究前期已完成RAG投毒与防御核心代码库建设，搭建了覆盖NQ、MS MARCO和HotpotQA三个数据集的统一评测底座。语料库已按多档分块容量完成Contriever、Contriever-MS、ANCE、BGE-m3和BM25五类检索器的同分块对齐索引，并在三个数据集共20,428条查询上完成了干净检索与语义判别生成基准评测（在$K_{\mathrm{size}}=256,K=5$主设置下，Contriever在NQ、HotpotQA、MS MARCO上的干净语义回答准确率ACC分别为$71.31\%$、$47.68\%$与$60.13\%$，BGE-m3分别为$80.01\%$、$62.75\%$与$71.75\%$，BM25分别为$71.81\%$、$64.43\%$与$63.61\%$）。同时，前期已在三个数据集的真实干净Top-$5$竞争上下文中完成了研究点一跨块角色解耦载荷的先导机制验证：在保持上下文总块数恒为$K=5$的受控替换测试中，单独置入规则块$c_A$或实例桥接块$c_B$时目标答案泄露率保持为$0\%$，而在$c_A,c_B$共同置入时均能压倒前3个干净高分证据块稳定导出预设目标答案$a^*$，直接验证了等容量竞争下“单块弱毒性、双块协同导出”机制的可行性。此外，系统已为每条查询预计算缓存了Top-1000精确检索排名与查询向量，在攻防实验中替换或追加源文档后，仅需对新切分出的文本块执行编码并与Top-1000缓存排名归并即可精确还原更新后的Top-$K$上下文，单组100条查询的增量检索复算耗时低于1秒。
+\textbf{前期研究基础。}本研究前期已建成覆盖NQ、MS MARCO和HotpotQA三个数据集的统一评测底座，完成了Contriever、Contriever-MS、ANCE、BGE-m3和BM25五类检索器在多档分块容量下的同分块对齐索引。在基线评测方面，已完成全量20,428条查询的检索与生成覆盖运行，并在具备标准QA参考标签的17,036条查询/检索器分母上完成了$K_{\mathrm{size}}=256,K=5$主设置的干净语义回答准确率（ACC）标定（Contriever在NQ、HotpotQA、MS MARCO上的语义ACC分别为$71.31\%$、$47.68\%$与$60.13\%$，BGE-m3分别为$80.01\%$、$62.75\%$与$71.75\%$，BM25分别为$71.81\%$、$64.43\%$与$63.61\%$）。在攻击先导探索方面，前期手工Top-5概念验证（4个干净回答正确的目标实例）中有3例实现双块共同进入自然Top-5并命中目标答案，其中1例医院计数查询展现出自然双角色块依赖；在50条查询、150个候选载荷的独立增补诊断实验中，Contriever下后缀触发与前后缀触发分别在$49.0\%$与$24.1\%$的样本上保持了高检索排名；同时，前期闭环验收脚本已调通完整角色跨度判定与精确排名核验门禁。上述前期结果为本研究提供了可复现的工程底座与存在性先导证据，而在等背景受控判据$\mathcal V_{\mathrm{comp}}$与全文重切分约束下实现稳定的自动化双块联合Top-$K$搜索及跨配置迁移，正是本课题拟重点攻克与评测的核心研究内容。
 
-\textbf{硬件与实验开销可行性。}本研究依托自筹的高性能计算工作站开展实验，前期已完成核心算子与生成服务的基准耗时实测：在RTX 4090上，稠密检索编码器批处理前向（Batch=32）耗时约$9.06\text{ ms}$，单步HotFlip梯度替换约$5.53\text{ ms}$；本地部署的Qwen3.8-27B-FP8 LLM生成服务单次短回答生成耗时约$1.84\text{s}$。
+\textbf{检索缓存适用条件与评测协议可行性。}系统已为每条查询预计算缓存了Top-1000检索排名与查询向量。对于编码器参数固定、背景块向量恒定的稠密检索器（Contriever、Contriever-MS、ANCE、BGE-m3），当替换更新源文档时，只要完整移除旧源文档所属的全部切分块、纳入新源文档切分出的全部文本块、采用一致的确定性并列分全序，且移除旧块后缓存深度内仍保留至少$K$个有效候选块，增量归并即可精确还原全库Top-$K$排序。对于BM25检索器，由于替换源文档会更新语料库逆文档频率（IDF）与平均文档长度，进而影响背景文档之间的相对得分顺序，实验中将明确区分“冻结语料IDF的快速近似归并协议”与“更新语料统计量的完整BM25重算协议”，保持跨基线对比口径一致。
 
+\textbf{硬件资源条件可行性。}本研究依托自筹的高性能计算工作站开展实验，前期已完成核心算子与生成服务的基准耗时实测：在RTX 4090上，稠密检索编码器批处理前向（Batch=32）耗时约$9.06\text{ ms}$，单步HotFlip梯度替换约$5.53\text{ ms}$；本地部署的Qwen3.8-27B-FP8 LLM生成服务单次短回答生成耗时约$1.84\text{s}$。
 据此测算，研究点一阶段二的分块鲁棒触发器优化在单张RTX 4090上单条目标查询耗时约$2\sim 4$分钟，标准评测查询集的离线载荷构造可在$15\sim 20$小时内完成。研究点二阶段一的矩阵谱运算耗时$T_{\mathrm{stat}}<2\text{ ms}$，块内子窗编码$T_{\mathrm{sub}}$约$20\sim 40\text{ ms}$，轻量级实体—命题构图$T_{\mathrm{graph}}$约$10\sim 25\text{ ms}$，绝大多数干净查询在阶段一即可直接放行，仅对少量进入待审集$\mathcal S_{\mathrm{judge}}$的查询按概率$p_{\mathrm{esc}}$执行单次结构化判别。围绕前期已本地化集成的PoisonedRAG、CorruptRAG、InceptionRAG、CamoDocs及RAGDefender、TrustRAG、RobustRAG、TRIS等十余项代表性攻防基线，结合本地检索归并缓存，整个实验矩阵的单轮评估总耗时可控制在$30\sim 45$小时以内，实验算力与时间成本可控。
-

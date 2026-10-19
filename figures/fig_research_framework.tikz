@@ -13,11 +13,11 @@
 \node[rp,below=7mm of pa] (a0) {\textbf{研究点一}\\基于同源多文本块协同的分布式投毒攻击框架};
 \node[rp,below=7mm of pd] (d0) {\textbf{研究点二}\\基于检索上下文表征分析的\\检索增强生成安全防御方法};
 \node[box,below=5mm of a0] (a1) {单源威胁模型与问题形式化\\检索与生成双端点、单块证据不足与双块协同导出};
-\node[box,below=5mm of a1] (a2) {阶段一：受控竞争上下文下的双块载荷构造\\槽位跨度隔离、语义垫片、组合生成判据};
-\node[box,below=5mm of a2] (a3) {阶段二：分块感知的检索触发器优化\\凹幂次截断惩罚、鲁棒检索损失、重切分复核};
-\node[box,below=5mm of d0] (d1) {服务端防御问题形式化\\端到端期望延迟与二阶段审查触发率$p_{\mathrm{esc}}$};
-\node[box,below=5mm of d1] (d2) {阶段一：检索统计特征与检索后分位校准\\高危/可疑/可信三向初筛机制};
-\node[box,below=5mm of d2] (d3) {阶段二：结构证据升级与结构化判别\\同源异位与低频桥接、异源锚点核对};
+\node[box,below=5mm of a1] (a2) {阶段一：等背景受控双块载荷构造\\两步槽位校验、语义垫片、受控组合判据$\mathcal V_{\mathrm{comp}}$};
+\node[box,below=5mm of a2] (a3) {阶段二：分块感知的检索触发器优化\\布局截断评价、跨视图检索损失、重切分验收$Z_\phi$};
+\node[box,below=5mm of d0] (d1) {服务端防御问题形式化\\条件期望延迟分解与二阶段审查触发率$p_{\mathrm{esc}}$};
+\node[box,below=5mm of d1] (d2) {阶段一：检索统计特征与查询级分位校准\\查询最大异常度$M_j$校准与高危/可疑/可信分流};
+\node[box,below=5mm of d2] (d3) {阶段二：结构证据升级与结构化判别\\同源异位与低频桥接、异源锚点分离核对};
 \node[head,below=10mm of $(a3.south)!0.5!(d3.south)$] (eval) {统一实验环境与评价协议};
 \node[head,below=6mm of eval] (system) {RAG投毒攻防联合测试系统};
 \draw[arr] (title.south) -- ++(0,-3mm) -| (pa.north);
