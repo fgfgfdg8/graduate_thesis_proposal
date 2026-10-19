@@ -1,28 +1,31 @@
 % 整体研究思路，黑白框图
 \begin{tikzpicture}[
   font=\small,
-  box/.style={draw=black,thick,fill=white,align=center,text width=49mm,minimum height=12mm,inner sep=3pt},
-  head/.style={draw=black,thick,fill=white,align=center,text width=132mm,minimum height=12mm,inner sep=3pt},
+  box/.style={draw=black,thick,fill=white,align=center,text width=58mm,minimum height=11mm,inner sep=3pt},
+  rp/.style={draw=black,very thick,fill=white,align=center,text width=58mm,minimum height=12mm,inner sep=3pt},
+  head/.style={draw=black,thick,fill=white,align=center,text width=144mm,minimum height=11mm,inner sep=3pt},
+  prob/.style={draw=black,dashed,fill=white,align=center,text width=58mm,minimum height=10mm,inner sep=3pt,font=\footnotesize},
   arr/.style={-{Stealth[length=2mm]},thick,black}
 ]
-\node[head] (title) {面向大语言模型检索增强生成系统的安全攻防研究};
-\node[box,below=9mm of title,xshift=-36mm] (a0) {研究点一：基于多文本分块协同的\\组合式投毒攻击框架};
-\node[box,below=9mm of title,xshift=36mm] (d0) {研究点二：基于检索上下文表征分析的\\检索增强生成安全防御方法};
-\node[box,below=5mm of a0] (a1) {单一源文档构造\\互补前提与内容布局};
-\node[box,below=5mm of a1] (a2) {受害者侧分块\\角色保持与联合召回};
-\node[box,below=5mm of a2] (a3) {离散候选搜索\\分级评价与预算调度};
-\node[box,below=5mm of a3] (a4) {组合对照与完整上下文\\检索、生成效果评价};
-\node[box,below=5mm of d0] (d1) {局部与结构分析\\组合候选及探索抽样};
-\node[box,below=5mm of d1] (d2) {组合影响审查\\正常多跳分布校准};
-\node[box,below=5mm of d2] (d3) {证据选择与上下文修复\\桥接证据保护及复查};
-\node[box,below=5mm of d3] (d4) {攻击抑制与效用评价\\误报、覆盖率及开销};
-\node[head,below=10mm of $(a4.south)!0.5!(d4.south)$] (eval) {统一实验环境与评价协议\\数据划分、源文档标识、分块记录、独立查询统计};
+\node[head] (title) {\textbf{面向大语言模型检索增强生成系统的安全攻防研究}\\核心问题：文档级摄入与块级检索之间的粒度差};
+\node[prob,below=8mm of title,xshift=-43mm] (pa) {攻击侧：单个文本承载完整攻击逻辑，\\未利用同源文本块之间的信息分工};
+\node[prob,below=8mm of title,xshift=43mm] (pd) {防御侧：依赖单块异常或多轮隔离生成，\\难以兼顾组合检测、多跳证据与开销};
+\node[rp,below=7mm of pa] (a0) {\textbf{研究点一}\\基于同源多文本块协同的分布式投毒攻击框架};
+\node[rp,below=7mm of pd] (d0) {\textbf{研究点二}\\基于检索上下文表征分析的\\检索增强生成安全防御方法};
+\node[box,below=5mm of a0] (a1) {单源威胁模型与问题形式化\\检索层与生成层双端点、单块不足双块导出};
+\node[box,below=5mm of a1] (a2) {阶段一：竞争上下文下的双块载荷构造\\槽位隔离、语义垫片、生成可行性判据};
+\node[box,below=5mm of a2] (a3) {阶段二：分块感知的检索触发器优化\\存活权重、鲁棒检索损失、交替坐标搜索};
+\node[box,below=5mm of d0] (d1) {服务端防御问题形式化\\期望成本与判官升级概率};
+\node[box,below=5mm of d1] (d2) {阶段一：检索动力学特征与单类分位校准\\四维统计量、三区分流};
+\node[box,below=5mm of d2] (d3) {阶段二：结构证据升级与结构化精判\\同源异位与罕见桥接、异源锚点核对};
+\node[head,below=10mm of $(a3.south)!0.5!(d3.south)$] (eval) {统一实验环境与评价协议\\三数据集、五检索器、多档分块，检索层与生成层指标及开销并列报告};
 \node[head,below=6mm of eval] (system) {RAG投毒攻防联合测试系统};
-\draw[arr] (title.south) -- ++(0,-4mm) -| (a0.north);
-\draw[arr] (title.south) -- ++(0,-4mm) -| (d0.north);
-\foreach \u/\v in {a0/a1,a1/a2,a2/a3,a3/a4,d0/d1,d1/d2,d2/d3,d3/d4}{\draw[arr] (\u.south)--(\v.north);}
-\draw[arr,dashed] (a2.east) -- node[above,font=\scriptsize,align=center]{攻击样本} (d2.west);
-\draw[arr] (a4.south) -- ++(0,-4mm) -| (eval.north);
-\draw[arr] (d4.south) -- ++(0,-4mm) -| (eval.north);
+\draw[arr] (title.south) -- ++(0,-3mm) -| (pa.north);
+\draw[arr] (title.south) -- ++(0,-3mm) -| (pd.north);
+\foreach \u/\v in {pa/a0,pd/d0,a0/a1,a1/a2,a2/a3,d0/d1,d1/d2,d2/d3}{\draw[arr] (\u.south)--(\v.north);}
+\draw[arr,dashed] (a3.east) -- node[above,font=\scriptsize,align=center]{组合式}node[below,font=\scriptsize,align=center]{攻击样本} (d3.west);
+\draw[arr,dashed] (a0.east) -- node[above,font=\scriptsize]{检测对象} (d0.west);
+\draw[arr] (a3.south) -- ++(0,-4mm) -| (eval.north);
+\draw[arr] (d3.south) -- ++(0,-4mm) -| (eval.north);
 \draw[arr] (eval.south) -- (system.north);
 \end{tikzpicture}

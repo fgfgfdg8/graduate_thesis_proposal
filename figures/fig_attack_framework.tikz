@@ -1,0 +1,40 @@
+% 研究点一：两阶段解耦的跨块组合式投毒攻击框架，黑白框图
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw=black,thick,fill=white,align=center,text width=44mm,minimum height=11mm,inner sep=3pt},
+  wide/.style={draw=black,thick,fill=white,align=center,text width=144mm,minimum height=10mm,inner sep=3pt},
+  stage/.style={draw=black,dashed,inner sep=4mm},
+  lab/.style={font=\footnotesize\bfseries,fill=white,inner sep=1pt},
+  arr/.style={-{Stealth[length=2mm]},thick,black}
+]
+\node[wide] (input) {输入：目标查询$q$、正确答案$y_{\mathrm{true}}$、目标答案$a^*$、可篡改的长源文档$D$、干净Top-$K$检索缓存};
+% 阶段一
+\node[box,below=12mm of input] (s2) {核心载荷与语义垫片\\$\mathcal P_A$：规则定义\\$\mathcal P_B$：实例绑定};
+\node[box,left=6mm of s2] (s1) {槽位锚定与几何隔离\\段落分位点$\rho_A,\rho_B$\\间距$\ge\gamma K_{\mathrm{size}}$};
+\node[box,right=6mm of s2] (s3) {竞争上下文构造\\替换干净Top-$K$最低分块\\阈值$\tau_q=s_{(K-1)}(q)$};
+\node[wide,below=6mm of s2] (gate) {生成可行性判据$\mathcal V_{\mathrm{gen}}$：检索下限\ \ $\land$\ \ 单块$A$、$B$均不足\ \ $\land$\ \ 双块联合导出$a^*$};
+\node[stage,fit=(s1)(s3)(gate)] (st1) {};
+\node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：竞争上下文下的双块载荷构造（生成可行性）};
+\draw[arr] (input.south) -- ++(0,-4mm) -| (s1.north);
+\draw[arr] (s1.east) -- (s2.west);
+\draw[arr] (s2.east) -- (s3.west);
+\draw[arr] (s3.south) -- (s3.south |- gate.north);
+\draw[arr,dashed] (gate.west) -- ++(-3mm,0) |- node[pos=0.25,left,font=\scriptsize,rotate=90,anchor=south]{未通过则修订} (s1.west);
+% 冻结与复核
+\node[wide,below=12mm of gate] (freeze) {冻结核心载荷与语义垫片\quad 受害者生成器复核$\mathcal V_{\mathrm{victim}}$，记录生成鸿沟率$\mathrm{Gap}$};
+\draw[arr] (gate.south) -- node[right,font=\scriptsize]{通过} (freeze.north);
+% 阶段二
+\node[box,below=12mm of freeze] (t2) {分块鲁棒检索损失$\mathcal L_{\mathrm{rob}}$\\存活权重$w(\xi)^p$\\尺寸与相位上取期望};
+\node[box,left=6mm of t2] (t1) {多副本触发器布局\\垫片句界插入$R$个\\定长触发器$\mathbf t_j$};
+\node[box,right=6mm of t2] (t3) {预算受限交替坐标搜索\\瓶颈块优先、一阶提议\\词法检查与局部流畅度};
+\node[stage,fit=(t1)(t3)] (st2) {};
+\node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：分块感知的检索触发器优化（检索可达性）};
+\draw[arr] (freeze.south) -- ++(0,-4mm) -| (t1.north);
+\draw[arr] (t1.east) -- (t2.west);
+\draw[arr] (t2.east) -- (t3.west);
+% 输出与受害者处理链路
+\node[wide,below=10mm of st2] (out) {组装单一投毒源文档$D_{\mathrm{adv}}$：在槽位$k_A,k_B$分别植入$P_A(\mathbf t_A)$与$P_B(\mathbf t_B)$};
+\node[wide,below=6mm of out] (victim) {受害者处理链路：替换摄入$\rightarrow$受害者侧分块$\phi_v$$\rightarrow$Top-$K$检索（$c_A,c_B$联合召回）$\rightarrow$生成目标答案$a^*$};
+\draw[arr] (t3.south) -- ++(0,-6.5mm) -| (out.north);
+\draw[arr] (out.south) -- (victim.north);
+\end{tikzpicture}

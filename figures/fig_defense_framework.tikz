@@ -1,0 +1,39 @@
+% 研究点二：统计—结构初筛与结构化精判的两阶段级联防御框架，黑白框图
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw=black,thick,fill=white,align=center,text width=44mm,minimum height=11mm,inner sep=3pt},
+  half/.style={draw=black,thick,fill=white,align=center,text width=69mm,minimum height=11mm,inner sep=3pt},
+  wide/.style={draw=black,thick,fill=white,align=center,text width=144mm,minimum height=10mm,inner sep=3pt},
+  stage/.style={draw=black,dashed,inner sep=4mm},
+  lab/.style={font=\footnotesize\bfseries,fill=white,inner sep=1pt},
+  arr/.style={-{Stealth[length=2mm]},thick,black}
+]
+\node[wide] (input) {输入：查询$q$、Top-$K$候选文本块（稠密向量、BM25向量、来源标识与块偏移）、逐检索器干净谱参数与分位阈值};
+% 阶段一
+\node[half,below=12mm of input,xshift=-37.5mm] (dyn) {通道一：四维检索动力学特征\\$s_{\mathrm{tail}}$、$\tau_{\mathrm{svd}}$、$\rho_{\mathrm{tan}}$、$d_{\mathrm{intra}}$\\标准化加权得到单块异常度$A_i$};
+\node[half,below=12mm of input,xshift=37.5mm] (str) {通道二：上下文结构证据\\临时实体与命题多重图\\$\Phi_{\mathrm{prov}}$、$\Phi_{\mathrm{bridge}}$、$\Phi_{\mathrm{conflict}}$（仅作升级信号）};
+\node[box,below=12mm of $(dyn.south)!0.5!(str.south)$] (gray) {灰区或结构告警\\$\tau_{\mathrm{low}}\le A_i\le\tau_{\mathrm{high}}$\\附带取证线索升级};
+\node[box,left=6mm of gray] (red) {红区：强统计离群\\$A_i>\tau_{\mathrm{high}}$\\直接剪除};
+\node[box,right=6mm of gray] (green) {绿区：无异常无告警\\统计运算直接放行\\不调用判官};
+\node[lab,above=1mm of gray] (calib) {单类干净分位校准：$\Pr\big(F(A_{(k)})>1-\alpha\big)\le\alpha$};
+\node[stage,fit=(dyn)(str)(red)(green)(calib)] (st1) {};
+\node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：统计—结构初筛与三区分流};
+\draw[arr] (input.south) -- ++(0,-4mm) -| (dyn.north);
+\draw[arr] (input.south) -- ++(0,-4mm) -| (str.north);
+\draw[arr] (dyn.south) -- ++(0,-3mm) -| (red.north);
+\draw[arr] (dyn.south) -- ++(0,-3mm) -| (green.north);
+\draw[arr] (str.south) -- ++(0,-3mm) -| (calib.north);
+% 阶段二
+\node[box,below=14mm of gray] (j2) {结构化三步核查\\命题分解、跨块桥接审计\\锚点一致性核对};
+\node[box,left=6mm of j2] (j1) {异源参照锚点\\绿区最高分且来源\\不同于存疑块};
+\node[box,right=6mm of j2] (j3) {剥离判定攻击块\\保留其余证据\\每查询至多一次调用};
+\node[stage,fit=(j1)(j3)] (st2) {};
+\node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：结构化精判（仅针对存疑子集）};
+\draw[arr] (gray.south) -- (j2.north);
+\draw[arr] (j1.east) -- (j2.west);
+\draw[arr] (j2.east) -- (j3.west);
+% 输出
+\node[wide,below=10mm of st2] (out) {净化后上下文$\mathcal C^*$按原始排名截取\quad$\rightarrow$\quad{}生成模型单次生成最终回答，输出审计记录$\mathcal H$};
+\draw[arr] (j3.south) -- ++(0,-6.5mm) -| (out.north);
+\draw[arr] (green.east) -- ++(4mm,0) |- (out.east);
+\end{tikzpicture}
