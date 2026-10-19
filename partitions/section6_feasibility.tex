@@ -23,8 +23,8 @@
     分块与验证层次 & \textbf{主验证配置}：$K_{\mathrm{size}}=256$、白盒代理检索器Contriever\cite{izacard2022unsupervised}；\newline
     \textbf{跨尺度与跨相位泛化层}：$K_{\mathrm{size}}\in\{128, 256, 512\}$及随机切分相位偏移$\xi$ \\
     检索器评测矩阵 & Contriever（白盒代理优化端）\cite{izacard2022unsupervised}；Contriever-MS、ANCE\cite{xiong2021approximate}、BGE-m3\cite{chen2024m3}、BM25\cite{robertson2009probabilistic}（黑盒跨检索器迁移端） \\
-    核心攻击对比基线 & PoisonedRAG\cite{zou2025poisonedrag}、CorruptRAG\cite{zhang2026corruptrag}、AuthChain\cite{chang2025oneshot}、CRCP\cite{nie2026crcp}、InceptionRAG\cite{zhang2026inceptionrag}、CamoDocs \\
-    核心防御对比基线 & RAGDefender\cite{kim2025ragdefender}、TrustRAG\cite{zhou2025trustrag}、GRADA\cite{zheng2025grada}、RobustRAG\cite{xiang2024certifiably}、TRIS \\
+    核心攻击对比基线 & PoisonedRAG\cite{zou2025poisonedrag}、CorruptRAG\cite{zhang2026corruptrag}、AuthChain\cite{chang2025oneshot}、InceptionRAG\cite{zhang2026inceptionrag}、CamoDocs\cite{jung2026camodocs} \\
+    核心防御对比基线 & RAGDefender\cite{kim2025ragdefender}、TrustRAG\cite{zhou2025trustrag}、GRADA\cite{zheng2025grada}、RobustRAG\cite{xiang2024certifiably}、TRIS\cite{munir2026tris} \\
     评价指标体系 & \textbf{检索与结构层}：重切分角色完整保持率、双块联合召回率$\mathrm{CoRecall}@K$、投毒源召回率（SRR / CRRR）、多跳桥接证据保留率$\mathrm{BR}$；\newline
     \textbf{生成与安全层}：受控组合通过率$\mathcal V_{\mathrm{gen}}$、端到端攻击成功率（ASR）、回答准确率（ACC）、干净准确率变化量（$\Delta\mathrm{CACC}$）、缺口率$1-(\mathrm{ACC}+\mathrm{ASR})$、影子—受害者生成鸿沟率$\mathrm{Gap}$；\newline
     \textbf{开销与延迟层}：单块误警率、二阶段审查触发率$p_{\mathrm{esc}}$、四项分阶段延迟分解与单查询总延迟（ms） \\
