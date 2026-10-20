@@ -33,7 +33,7 @@
 \draw[arr] (t1.east) -- (t2.west);
 \draw[arr] (t2.east) -- (t3.west);
 % 输出与受害者处理链路
-\node[wide,below=10mm of st2] (out) {将$P_A(\mathbf t_A),P_B(\mathbf t_B)$写入位置$(k_A,k_B)$组装$D_{\mathrm{adv}}$，重切分检查$Z_{\phi_0}(D_{\mathrm{adv}})=1\land\mathcal V_{\mathrm{comp}}(D_{\mathrm{adv}})=1$};
+\node[wide,below=10mm of st2] (out) {将$P_A(\mathbf t_A),P_B(\mathbf t_B)$写入位置$(k_A,k_B)$组装$D_{\mathrm{adv}}(x)$，重切分检查$Z_{\phi_0}(x)=1\land\mathcal V_{\mathrm{comp}}(x)=1$};
 \node[wide,below=6mm of out] (victim) {评估：源文档替换$\rightarrow$分块$\rightarrow$Top-$K$检索$\rightarrow$生成与消融};
 \draw[arr] (t3.south) -- ++(0,-6.5mm) -| (out.north);
 \draw[arr] (out.south) -- (victim.north);

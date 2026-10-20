@@ -10,22 +10,22 @@
 ]
 \node[wide] (input) {输入：查询$q$、Top-$K$候选文本块、拟合集$\mathcal D_{\mathrm{fit}}$参数与校准集$\mathcal D_{\mathrm{cal}}$查询级阈值};
 % 阶段一
-\node[half,below=12mm of input,xshift=-37.5mm] (dyn) {单块检索统计特征\\$s_{\mathrm{tail}}$、$\tau_{\mathrm{svd}}$、$\rho_{\mathrm{tan}}$、$d_{\mathrm{intra}}$\\标准化加权得到单块异常度$A(q,c_i)$};
-\node[half,below=12mm of input,xshift=37.5mm] (str) {上下文实体—命题多重图\\检查同源距离、桥接实体和命题冲突\\$\Phi_{\mathrm{prov}}$、$\Phi_{\mathrm{bridge}}$、$\Phi_{\mathrm{conflict}}$};
-\node[box,below=12mm of $(dyn.south)!0.5!(str.south)$] (gray) {送审\\$\tau_{\mathrm{low}}<A(q,c_i)\le\tau_{\mathrm{high}}$\\或触发成对检查指标};
+\node[half,below=12mm of input,xshift=-37.5mm] (dyn) {单块检索统计筛选\\$s_{\mathrm{tail}}$、$\tau_{\mathrm{svd}}$、$\rho_{\mathrm{tan}}$、$d_{\mathrm{intra}}$与$A(q,c_i)$\\查询级校准：$M_j=\max_i A(q_j,c_{j,i})$};
+\node[half,below=12mm of input,xshift=37.5mm] (str) {保留块$\mathcal C_{\mathrm{surv}}$跨块关系检查\\构建上下文实体—命题多重图\\检查$\Phi_{\mathrm{prov}}$、$\Phi_{\mathrm{bridge}}$、$\Phi_{\mathrm{conflict}}$};
+\node[box,below=12mm of $(dyn.south)!0.5!(str.south)$] (gray) {送审待审集$\mathcal S_{\mathrm{judge}}$\\$\tau_{\mathrm{low}}<A(q,c_i)\le\tau_{\mathrm{high}}$\\或触发成对检查指标};
 \node[box,left=6mm of gray] (red) {剔除\\$A(q,c_i)>\tau_{\mathrm{high}}$};
-\node[box,right=6mm of gray] (green) {保留\\$A(q,c_i)\le\tau_{\mathrm{low}}$\\且未触发成对检查指标};
-\node[lab,above=1mm of gray] (calib) {查询级阈值校准：$M_j=\max_i A(q_j,c_{j,i})$，$\Pr_{\mathcal D_{\mathrm{cal}},q_{\mathrm{new}}}\big(M_{\mathrm{new}}>\tau_\alpha\big)\le\alpha$};
-\node[stage,fit=(dyn)(str)(red)(green)(calib)] (st1) {};
-\node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：统计与跨块检查};
+\node[box,right=6mm of gray] (green) {保留且未触发待审\\$A(q,c_i)\le\tau_{\mathrm{low}}$\\且未触发成对检查指标};
+\node[stage,fit=(dyn)(str)(red)(green)] (st1) {};
+\node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：统计筛选与跨块关系检查};
 \draw[arr] (input.south) -- ++(0,-4mm) -| (dyn.north);
-\draw[arr] (input.south) -- ++(0,-4mm) -| (str.north);
-\draw[arr] (dyn.south) -- ++(0,-3mm) -| (red.north);
-\draw[arr] (dyn.south) -- ++(0,-3mm) -| (green.north);
-\draw[arr] (str.south) -- ++(0,-3mm) -| (calib.north);
+\draw[arr] (dyn.east) -- node[above,font=\scriptsize]{$A\le\tau_{\mathrm{high}}$} (str.west);
+\draw[arr] (dyn.south) -- ++(0,-4mm) -| (red.north);
+\draw[arr] (dyn.south) -- ++(0,-4mm) -| ([xshift=-8mm]gray.north);
+\draw[arr] (str.south) -- ++(0,-4mm) -| ([xshift=8mm]gray.north);
+\draw[arr] (str.south) -- ++(0,-4mm) -| (green.north);
 % 阶段二
 \node[box,below=14mm of gray] (j2) {LLM检查\\命题、跨块关系、参照文本};
-\node[box,left=6mm of j2] (j1) {选择其他来源的参照文本\\保留块中来源标识不同者};
+\node[box,left=6mm of j2] (j1) {选择其他来源的参照文本\\非待审保留块中，与待审块来源不同者};
 \node[box,right=6mm of j2] (j3) {移除判为投毒的块\\输出剩余上下文};
 \node[stage,fit=(j1)(j3)] (st2) {};
 \node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：对待审块调用一次LLM};

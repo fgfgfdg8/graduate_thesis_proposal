@@ -11,13 +11,13 @@
 \node[prob,below=8mm of title,xshift=-43mm] (pa) {攻击侧：单个文本承载完整攻击逻辑，\\未利用同源文本块之间的信息分工};
 \node[prob,below=8mm of title,xshift=43mm] (pd) {防御侧：依赖单块异常或多轮隔离生成，\\难以兼顾组合检测、多跳证据与开销};
 \node[rp,below=7mm of pa] (a0) {\textbf{研究点一}\\同源跨块投毒方法};
-\node[rp,below=7mm of pd] (d0) {\textbf{研究点二}\\基于检索上下文表征分析的\\检索增强生成安全防御方法};
+\node[rp,below=7mm of pd] (d0) {\textbf{研究点二}\\检索上下文投毒检测方法};
 \node[box,below=5mm of a0] (a1) {单源威胁模型与问题形式化\\共同检索与目标答案生成};
 \node[box,below=5mm of a1] (a2) {阶段一：构造双块载荷\\插入位置、背景句、组合检验$\mathcal V_{\mathrm{comp}}$};
 \node[box,below=5mm of a2] (a3) {阶段二：检索触发器优化\\双侧触发器、跨视图检索损失、交替优化};
-\node[box,below=5mm of d0] (d1) {服务端防御目标与延迟分解\\期望延迟分解与阶段二触发率$p_{\mathrm{esc}}$};
-\node[box,below=5mm of d1] (d2) {阶段一：检索统计特征与查询级阈值校准\\查询最大异常度$M_j$与阈值筛选};
-\node[box,below=5mm of d2] (d3) {阶段二：跨块关系检查与LLM检查\\同源距离与桥接实体、与参照文本比较};
+\node[box,below=5mm of d0] (d1) {服务端防御目标\\检测、证据保留与延迟约束};
+\node[box,below=5mm of d1] (d2) {阶段一：统计筛选与跨块关系检查\\查询级阈值校准与实体—命题多重图};
+\node[box,below=5mm of d2] (d3) {阶段二：对待审块调用LLM\\结合其他来源参照文本检查并过滤};
 \node[head,below=10mm of $(a3.south)!0.5!(d3.south)$] (eval) {统一实验环境与评价协议};
 \node[head,below=6mm of eval] (system) {RAG投毒攻防联合测试系统};
 \draw[arr] (title.south) -- ++(0,-3mm) -| (pa.north);
