@@ -1,4 +1,4 @@
-% 研究点二：统计—结构初筛与结构化精判的两阶段级联防御框架，黑白框图
+% 研究点二：检索上下文投毒检测方法流程，黑白框图
 \begin{tikzpicture}[
   font=\small,
   box/.style={draw=black,thick,fill=white,align=center,text width=44mm,minimum height=11mm,inner sep=3pt},
@@ -8,32 +8,32 @@
   lab/.style={font=\footnotesize\bfseries,fill=white,inner sep=1pt},
   arr/.style={-{Stealth[length=2mm]},thick,black}
 ]
-\node[wide] (input) {输入：查询$q$、Top-$K$候选文本块、拟合集$\mathcal D_{\mathrm{fit}}$冻结参数与校准集$\mathcal D_{\mathrm{cal}}$查询级阈值};
+\node[wide] (input) {输入：查询$q$、Top-$K$候选文本块、拟合集$\mathcal D_{\mathrm{fit}}$参数与校准集$\mathcal D_{\mathrm{cal}}$查询级阈值};
 % 阶段一
-\node[half,below=12mm of input,xshift=-37.5mm] (dyn) {通道一：四维检索统计特征\\$s_{\mathrm{tail}}$、$\tau_{\mathrm{svd}}$、$\rho_{\mathrm{tan}}$、$d_{\mathrm{intra}}$\\标准化加权得到单块异常度$A(q,c_i)$};
-\node[half,below=12mm of input,xshift=37.5mm] (str) {通道二：上下文实体—命题多重图\\成对结构证据升级信号\\$\Phi_{\mathrm{prov}}$、$\Phi_{\mathrm{bridge}}$、$\Phi_{\mathrm{conflict}}$};
-\node[box,below=12mm of $(dyn.south)!0.5!(str.south)$] (gray) {可疑块或结构告警\\$\tau_{\mathrm{low}}<A(q,c_i)\le\tau_{\mathrm{high}}$\\附带告警子类型送审};
-\node[box,left=6mm of gray] (red) {高危块\\$A(q,c_i)>\tau_{\mathrm{high}}$\\直接剪除};
-\node[box,right=6mm of gray] (green) {暂可信块\\$A(q,c_i)\le\tau_{\mathrm{low}}$且无结构告警\\直接放行};
-\node[lab,above=1mm of gray] (calib) {查询级最大异常度校准：$M_j=\max_i A(q_j,c_{j,i})$，$\Pr\big(M_{\mathrm{new}}>\tau_\alpha\big)\le\alpha$};
+\node[half,below=12mm of input,xshift=-37.5mm] (dyn) {单块检索统计特征\\$s_{\mathrm{tail}}$、$\tau_{\mathrm{svd}}$、$\rho_{\mathrm{tan}}$、$d_{\mathrm{intra}}$\\标准化加权得到单块异常度$A(q,c_i)$};
+\node[half,below=12mm of input,xshift=37.5mm] (str) {上下文实体—命题多重图\\检查同源距离、桥接实体和命题冲突\\$\Phi_{\mathrm{prov}}$、$\Phi_{\mathrm{bridge}}$、$\Phi_{\mathrm{conflict}}$};
+\node[box,below=12mm of $(dyn.south)!0.5!(str.south)$] (gray) {送审\\$\tau_{\mathrm{low}}<A(q,c_i)\le\tau_{\mathrm{high}}$\\或触发成对检查指标};
+\node[box,left=6mm of gray] (red) {剔除\\$A(q,c_i)>\tau_{\mathrm{high}}$};
+\node[box,right=6mm of gray] (green) {保留\\$A(q,c_i)\le\tau_{\mathrm{low}}$\\且未触发成对检查指标};
+\node[lab,above=1mm of gray] (calib) {查询级阈值校准：$M_j=\max_i A(q_j,c_{j,i})$，$\Pr_{\mathcal D_{\mathrm{cal}},q_{\mathrm{new}}}\big(M_{\mathrm{new}}>\tau_\alpha\big)\le\alpha$};
 \node[stage,fit=(dyn)(str)(red)(green)(calib)] (st1) {};
-\node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：统计—结构初筛与高危/可疑/可信三向分流};
+\node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：统计与跨块检查};
 \draw[arr] (input.south) -- ++(0,-4mm) -| (dyn.north);
 \draw[arr] (input.south) -- ++(0,-4mm) -| (str.north);
 \draw[arr] (dyn.south) -- ++(0,-3mm) -| (red.north);
 \draw[arr] (dyn.south) -- ++(0,-3mm) -| (green.north);
 \draw[arr] (str.south) -- ++(0,-3mm) -| (calib.north);
 % 阶段二
-\node[box,below=14mm of gray] (j2) {结构化三步核查\\命题分解、跨块桥接审计\\跨源锚点一致性判定};
-\node[box,left=6mm of j2] (j1) {异源参照锚点选择\\暂可信块中来源ID不同者\\提供跨源比对基准};
-\node[box,right=6mm of j2] (j3) {剥离被判定的投毒块\\保留正常多跳与背景证据};
+\node[box,below=14mm of gray] (j2) {LLM检查\\命题、跨块关系、参照文本};
+\node[box,left=6mm of j2] (j1) {选择其他来源的参照文本\\保留块中来源标识不同者};
+\node[box,right=6mm of j2] (j3) {移除判为投毒的块\\输出剩余上下文};
 \node[stage,fit=(j1)(j3)] (st2) {};
-\node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：结构化判别模型审查，按需针对待审子集$\mathcal S_{\mathrm{judge}}$单次调用};
+\node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：对待审块调用一次LLM};
 \draw[arr] (gray.south) -- (j2.north);
 \draw[arr] (j1.east) -- (j2.west);
 \draw[arr] (j2.east) -- (j3.west);
 % 输出
-\node[wide,below=10mm of st2] (out) {输出净化后上下文$\mathcal C^*$，交由生成模型单次生成最终回答};
+\node[wide,below=10mm of st2] (out) {输出过滤后上下文$\mathcal C^*$，交由生成模型生成回答};
 \draw[arr] (j3.south) -- ++(0,-6.5mm) -| (out.north);
 \draw[arr] (green.east) -- ++(4mm,0) |- (out.east);
 \end{tikzpicture}

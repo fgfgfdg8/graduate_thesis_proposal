@@ -7,8 +7,8 @@
 ]
 \node[wide] (vis) {可视化模块\\实验配置、攻防过程展示与结果比较};
 \node[box,below=10mm of vis,xshift=-36mm] (attack) {攻击测试模块\\单源载荷、分块检索\\组合生成与预算记录};
-\node[box,below=10mm of vis,xshift=36mm] (defense) {防御测试模块\\特征分析、组合审查\\证据修复与基线对比};
-\node[wide,below=10mm of $(attack.south)!0.5!(defense.south)$] (audit) {日志审计模块\\来源与块偏移、检索结果、干预决策及独立查询统计};
+\node[box,below=10mm of vis,xshift=36mm] (defense) {防御测试模块\\统计筛选、跨块检查\\文本过滤与基线对比};
+\node[wide,below=10mm of $(attack.south)!0.5!(defense.south)$] (audit) {日志记录模块\\来源与块偏移、检索结果、过滤决策及独立查询统计};
 \node[wide,below=7mm of audit] (db) {数据库模块\\数据划分、索引版本、载荷配置、运行日志及评价结果};
 \draw[arr] (vis.south) -- ++(0,-4mm) -| (attack.north);
 \draw[arr] (vis.south) -- ++(0,-4mm) -| (defense.north);
