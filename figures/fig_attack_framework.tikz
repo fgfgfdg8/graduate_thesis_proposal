@@ -21,20 +21,20 @@
 \draw[arr] (s3.south) -- (s3.south |- gate.north);
 \draw[arr,dashed] (gate.west) -- ++(-3mm,0) |- node[pos=0.25,left,font=\scriptsize,rotate=90,anchor=south]{按分项判据修订} (s1.west);
 % 冻结与初始化
-\node[wide,below=12mm of gate] (freeze) {冻结$(\mathcal P_A,\mathcal P_B,\mathcal S_A,\mathcal S_B)$并评估布局截断量$h_p(w)$\quad DoC2Query初始化定长触发器，设定搜索代理阈值$\tau_{q,s}=s_s(q,d_{(K-1)})$};
+\node[wide,below=12mm of gate] (freeze) {冻结核心载荷$(\mathcal P_A,\mathcal P_B)$与外围语义垫片$(\mathcal S_A,\mathcal S_B)$，设定联合召回排名阈值$\tau_q=s(q,d_{(K-1)})$};
 \draw[arr] (gate.south) -- node[right,font=\scriptsize]{通过} (freeze.north);
 % 阶段二
-\node[box,below=12mm of freeze] (t2) {跨视图检索损失$\mathcal L_{\mathrm{rob}}$\\有效视图集$\Phi_j^+$加权间隔\\与跨相位波动项};
-\node[box,left=6mm of t2] (t1) {对称双副本触发器布局\\垫片自然句边界插入$\mathbf t_j$\\包络$\le K_{\mathrm{size}}$享覆盖引理};
-\node[box,right=6mm of t2] (t3) {有效视图集坐标搜索\\瓶颈块优先、一阶提议\\词法掩码与局部流畅度};
+\node[box,below=12mm of freeze] (t2) {跨视图检索损失$\mathcal L_{\mathrm{rob}}$\\存活权重加权间隔损失\\凹截断惩罚与波动抑制};
+\node[box,left=6mm of t2] (t1) {对称双副本触发器布局\\前后垫片对称植入定长触发器\\防切块边界截断};
+\node[box,right=6mm of t2] (t3) {双块交替坐标梯度搜索\\瓶颈块优先、一阶梯度提议\\词法约束与局部流畅度正则};
 \node[stage,fit=(t1)(t3)] (st2) {};
 \node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：分块感知的检索触发器优化};
 \draw[arr] (freeze.south) -- ++(0,-4mm) -| (t1.north);
 \draw[arr] (t1.east) -- (t2.west);
 \draw[arr] (t2.east) -- (t3.west);
 % 输出与受害者处理链路
-\node[wide,below=10mm of st2] (out) {组装$D_{\mathrm{adv}}$并跨视图全文重切分：按角色完整性分支复核联合召回事件$Z_\phi$、$\widehat p_{\mathrm{joint}}$及终态组合判据$\mathcal V_{\mathrm{comp}}^{\mathrm{final}}$};
-\node[wide,below=6mm of out] (victim) {受害者评估链路：替换摄入$\rightarrow$受害者分块$\phi_v$$\rightarrow$自然Top-$K$检索与自然回填消融$\rightarrow$评估目标命中率ASR与迁移差$\Delta_{\mathrm{gen}}$};
+\node[wide,below=10mm of st2] (out) {将优化后段落$P_A(\mathbf t_A),P_B(\mathbf t_B)$植入槽位$(k_A,k_B)$，组装投毒源文档$D_{\mathrm{adv}}$};
+\node[wide,below=6mm of out] (victim) {受害者评估链路：替换摄入$\rightarrow$受害者分块$\phi_v$$\rightarrow$自然Top-$K$检索与消融对照$\rightarrow$评估目标命中率ASR与迁移差$\Delta_{\mathrm{gen}}$};
 \draw[arr] (t3.south) -- ++(0,-6.5mm) -| (out.north);
 \draw[arr] (out.south) -- (victim.north);
 \end{tikzpicture}

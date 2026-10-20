@@ -15,7 +15,7 @@
 \node[box,below=12mm of $(dyn.south)!0.5!(str.south)$] (gray) {可疑块或结构告警\\$\tau_{\mathrm{low}}<A(q,c_i)\le\tau_{\mathrm{high}}$\\附带告警子类型送审};
 \node[box,left=6mm of gray] (red) {高危块\\$A(q,c_i)>\tau_{\mathrm{high}}$\\直接剪除};
 \node[box,right=6mm of gray] (green) {暂可信块\\$A(q,c_i)\le\tau_{\mathrm{low}}$且无结构告警\\直接放行};
-\node[lab,above=1mm of gray] (calib) {查询级最大异常度校准：$M_j=\max_i A(q_j,c_{j,i})$，$\Pr_{\mathcal D_{\mathrm{cal}},q_{\mathrm{new}}}\big(M_{\mathrm{new}}>\tau_\alpha\big)\le\alpha$};
+\node[lab,above=1mm of gray] (calib) {查询级最大异常度校准：$M_j=\max_i A(q_j,c_{j,i})$，$\Pr\big(M_{\mathrm{new}}>\tau_\alpha\big)\le\alpha$};
 \node[stage,fit=(dyn)(str)(red)(green)(calib)] (st1) {};
 \node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：统计—结构初筛与高危/可疑/可信三向分流};
 \draw[arr] (input.south) -- ++(0,-4mm) -| (dyn.north);
@@ -25,15 +25,15 @@
 \draw[arr] (str.south) -- ++(0,-3mm) -| (calib.north);
 % 阶段二
 \node[box,below=14mm of gray] (j2) {结构化三步核查\\命题分解、跨块桥接审计\\跨源锚点一致性判定};
-\node[box,left=6mm of j2] (j1) {异源参照锚点选择\\暂可信块中来源ID不同者\\缺失时独立裁决待审块};
-\node[box,right=6mm of j2] (j3) {剥离判定攻击块\\解析异常保全存活块\\空集返回显式拒答状态};
+\node[box,left=6mm of j2] (j1) {异源参照锚点选择\\暂可信块中来源ID不同者\\提供跨源比对基准};
+\node[box,right=6mm of j2] (j3) {剥离被判定的投毒块\\保留正常多跳与背景证据};
 \node[stage,fit=(j1)(j3)] (st2) {};
 \node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：结构化判别模型审查，按需针对待审子集$\mathcal S_{\mathrm{judge}}$单次调用};
 \draw[arr] (gray.south) -- (j2.north);
 \draw[arr] (j1.east) -- (j2.west);
 \draw[arr] (j2.east) -- (j3.west);
 % 输出
-\node[wide,below=10mm of st2] (out) {非空净化上下文$\mathcal C^*$按原始排名截取交付生成，空上下文$\mathcal C^*=\varnothing$直接拒答，输出审计记录$\mathcal H$};
+\node[wide,below=10mm of st2] (out) {输出净化后上下文$\mathcal C^*$，交由生成模型单次生成最终回答};
 \draw[arr] (j3.south) -- ++(0,-6.5mm) -| (out.north);
 \draw[arr] (green.east) -- ++(4mm,0) |- (out.east);
 \end{tikzpicture}
