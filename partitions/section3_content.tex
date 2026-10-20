@@ -1,4 +1,4 @@
-﻿\section{研究内容及方法}
+\section{研究内容及方法}
 
 \subsection{研究目标}
 
@@ -19,27 +19,33 @@
 
 \textbf{威胁模型。}
 \begin{enumerate}
-  \item \textbf{目标RAG系统模型}：目标系统由外部知识库、文档分块器$\phi_v$、检索器$R_v$与生成模型$G_\omega$构成，其中$\omega$表示生成解码随机性。系统定期摄入外部源文档，经受害者侧分块器切分为固定容量的文本块并编码入库；用户提交查询$q$后，检索器按相关性得分$s_v(q,\cdot)$降序返回前$K$个文本块构成上下文$R_K(q)$，交由生成模型输出回答。攻击者仅能篡改\textbf{单一}可被系统重新摄入的外部源文档$d\in\mathcal D$，以替换更新为基本设置，追加新文档作为辅助设置单独评价。\todo[inline,size=\small]{\textbf{S3-01｜补系统式，沿用已有符号。}用一行串起摄入、检索与生成：$\hat y=G_\omega(q,R_K(q;\phi_v(\mathcal D)))$。单文档替换只需将语料写为$(\mathcal D\setminus\{d\})\cup\{D_{\mathrm{adv}}(x)\}$，后文沿用。不要另造系统函数、阶段名称或重复定义检索算子。}
-  \item \textbf{攻击者目标}：攻击者旨在通过篡改开放域语料库中的单一源文档，使目标RAG系统在经过摄取、分块、向量化等管线后，在处理目标查询时输出预设的错误答案。
-  \item \textbf{攻击者能力与知识}：攻击者掌握目标查询$q$及其原始正确答案$y_{\mathrm{true}}$，旨在诱导系统输出预设的错误目标答案$a^*$，且$a^*$与$y_{\mathrm{true}}$语义互斥。攻击者仅能通过黑盒接口访问受害者系统，无法读取其内部检索得分$s_v$、模型梯度、分块边界或召回顺序。与前序工作\cite{nie2026crcp,chaudhari2026phantom}一致，攻击者可在本地搭建由影子分块器集合$\Phi_{\mathrm{shadow}}$、代理检索编码器$E_s$及其影子检索得分$s_s$和影子生成模型$G_{\mathrm{shadow}}$构成的影子系统，用于离线构造与筛选攻击载荷；受害者侧的实际检索排名与生成结果仅用于实验评估。本研究以$|\mathcal D_{\mathrm{adv}}|=1$的单一受控源文档作为攻击预算单位\cite{chang2025oneshot,zhang2026corruptrag}。
-  \item \textbf{防御者目标}：防御者旨在在不显著降低干净查询的语义准确率的前提下，识别并移除潜在投毒文本块，保障RAG系统对问题的准确回答率，尤其是需要多跳推理的问题的正确率，同时需要保持开销可控。
-  \item \textbf{防御者能力与知识}：防御者将防御机制部署于服务端检索阶段之后、生成阶段之前，防御机制可读取候选文本块的检索向量、词项表示及系统摄入时记录的文档来源标识$z_{\mathrm{doc}}(c)$与文本块在源文档中的起止词元偏移，在固定检索器与生成模型参数的前提下过滤检索上下文。
+  \item \textbf{目标RAG系统模型}：目标系统由外部知识库、文档分块器$\phi_v$、检索器$R_v$与生成模型$G_\omega$构成，其中$\omega$表示生成解码随机性。端到端生成过程表示为$\hat y=G_\omega(q,R_K(q;\phi_v(\mathcal D)))$，其中外部语料库$\mathcal D$经分块器切分为文本块集合$\phi_v(\mathcal D)$，检索器按相关性得分$s_v(q,\cdot)$降序返回前$K$个文本块$R_K(q)=\operatorname{TopK}(q;\phi_v(\mathcal D))$构成上下文，交由生成模型输出回答。攻击者仅能篡改单一可被系统重新摄入的外部源文档$d\in\mathcal D$，更新后语料库为$\mathcal D_{\mathrm{adv}}(x)=(\mathcal D\setminus\{d\})\cup\{D_{\mathrm{adv}}(x)\}$，参与检索的分块语料库记为$\mathcal C_v^{\phi_v}(x)=\phi_v(\mathcal D_{\mathrm{adv}}(x))$。以替换更新为基本设置，追加新文档作为辅助设置单独评价。
+  \item \textbf{攻击者目标}：攻击者旨在通过篡改开放域语料库中的单一源文档，使目标RAG系统在经过摄入、分块与检索后，在处理目标查询时输出预设的错误目标答案$a^*$，且$a^*$与原始正确答案$y_{\mathrm{true}}$语义互斥。
+  \item \textbf{攻击者能力与知识}：攻击者掌握目标查询$q$及其正确答案$y_{\mathrm{true}}$，仅能通过黑盒接口访问受害者系统，无法读取其内部检索得分$s_v$、模型梯度、分块边界或召回顺序。与前序工作\cite{nie2026crcp,chaudhari2026phantom}一致，攻击者可在本地搭建由影子分块器集合$\Phi_{\mathrm{shadow}}$、代理检索编码器$E_s$及其影子检索得分$s_s$和影子生成模型$G_{\mathrm{shadow}}$构成的影子系统，用于离线构造与筛选攻击载荷；受害者侧的实际检索排名与生成结果仅用于实验评估。本研究以$|\mathcal D_{\mathrm{adv}}|=1$的单一受控源文档作为攻击预算单位\cite{chang2025oneshot,zhang2026corruptrag}。
+  \item \textbf{防御者目标}：防御者旨在在不显著降低干净查询准确率的前提下，识别并移除潜在投毒文本块，保障RAG系统对问题的准确回答率（特别是正常多跳问答推理的正确率），同时将在线防御延迟控制在给定预算内。
+  \item \textbf{防御者能力与知识}：防御者部署于服务端检索阶段之后、生成阶段之前，可读取候选文本块的检索向量、词项表示及系统摄入时记录的文档来源标识$z_{\mathrm{doc}}(c)$与文本块在源文档中的起止词元偏移，在固定检索器与生成模型参数的前提下过滤检索上下文。
 \end{enumerate}
 
-\textbf{问题形式化。}遵循文献\cite{zou2025poisonedrag}的框架，定向RAG投毒需同时满足检索条件与生成条件。\todo[inline,size=\small]{\textbf{S3-02｜先讲成功条件，再引入计算记号。}先说明：检索要求同一源文档中的两个完整角色块分别落入不同分块并共同进入Top-$K$；生成要求联合上下文命中目标答案，单块对照不命中。随后给联合召回事件与组合判据，背景库、主块选择等记号在使用处解释即可。下文“四组词元长度恒为$K$”有单位错误，应为“四组均含$K$个文本块”；块数相等不等于词元数严格相等。}设除载体文档$d$外的背景分块索引库为$\mathcal C_{-d}^\phi=\phi(\mathcal D\setminus\{d\})$，$D_{\mathrm{adv}}(x)$为候选状态$x$下的完整投毒源文档，在分块算子$\phi$下更新后的分块语料库为$\mathcal C_v^\phi(x)=\mathcal C_{-d}^\phi\cup\phi(D_{\mathrm{adv}}(x))$。对角色$j\in\{A,B\}$与文档分块策略$\phi$，当$\phi(D_{\mathrm{adv}}(x))$中存在完整包含核心载荷$\mathcal P_j$的分块窗口时，记角色完整性指示器$I_j(\phi)=1$并记对应主块为$c_j^{(\phi)}$；若多个窗口完整包含同一核心，主块取对应检索排序中最高者，并沿用该系统的并列分排序规则；否则记$I_j(\phi)=0$。定义单视图$\phi$下两核心分别完整落入不同块且共同进入Top-$K$的\textbf{联合召回事件}$Z_\phi(x)$为：
+\textbf{问题形式化。}遵循文献\cite{zou2025poisonedrag}的框架，定向RAG投毒需同时满足检索条件与生成条件：检索要求同一源文档切分出的两个完整角色块分别落入不同分块并共同进入Top-$K$；生成要求联合上下文命中目标答案，单块对照均不命中。设除载体文档$d$外的背景分块索引库为$\mathcal C_{-d}^\phi=\phi(\mathcal D\setminus\{d\})$，$D_{\mathrm{adv}}(x)$为候选状态$x$下的完整投毒源文档，在分块算子$\phi$下更新后的分块语料库为$\mathcal C_v^\phi(x)=\mathcal C_{-d}^\phi\cup\phi(D_{\mathrm{adv}}(x))$。对角色$j\in\{A,B\}$与文档分块策略$\phi$，当$\phi(D_{\mathrm{adv}}(x))$中存在完整包含核心载荷$\mathcal P_j$的分块窗口时，记角色完整性指示器$I_j(\phi)=1$并记对应主块为$c_j^{(\phi)}$；若多个窗口完整包含同一核心，主块取对应检索排序中最高者，并沿用该系统的并列分排序规则；否则记$I_j(\phi)=0$。定义单视图$\phi$下两核心分别完整落入不同块且共同进入Top-$K$的\textbf{联合召回事件}$Z_\phi(x)$为：
 \begin{equation}
   Z_\phi(x)=\mathbb I\Big[I_A(\phi)=1\;\land\;I_B(\phi)=1\;\land\;c_A^{(\phi)}\neq c_B^{(\phi)}\;\land\;\big\{c_A^{(\phi)},c_B^{(\phi)}\big\}\subseteq R_K\big(q;\mathcal C_v^\phi(x)\big)\Big],
   \label{eq:attack_corpus}
 \end{equation}
 其中$R_K(q;\mathcal C_v^\phi(x))=\operatorname{TopK}(q;\mathcal C_v^\phi(x))$为Top-$K$检索集合；当任一角色核心被切分截断（$I_A(\phi)=0$或$I_B(\phi)=0$）时，$Z_\phi(x)=0$。
 
-\todo[inline,size=\small]{\textbf{S3-03｜概率后给出优化问题。}保留$F(x)$作为端到端目标命中概率，补$x^*\in\arg\max_{x\in\mathcal X}F(x)$，并说明$\mathcal X$限定单源文档编辑及所需的跨块结构；组合约束沿用后文判据。若要评价“联合召回且命中目标”，应另统计其联合事件，不能将现有$F$直接叫作该事件的概率。实际求解使用影子系统反馈，不把受害者概率或内部得分写成可获得的优化量。}设语义答案判定器为$J(q,y_{\mathrm{ref}},\hat y)\in\{0,1\}$，在受害者分块配置分布$\Pi_v$与解码随机性$\omega$下，端到端目标答案$a^*$生成概率$F(x)$定义为：
+设语义答案判定器为$J(q,y_{\mathrm{ref}},\hat y)\in\{0,1\}$，在受害者分块配置分布$\Pi_v$与解码随机性$\omega$下，端到端目标答案$a^*$生成概率$F(x)$定义为：
 \begin{equation}
   F(x)=\Pr_{\phi_v\sim\Pi_v,\,\omega}\Big[J\big(q,a^*,G_\omega(q,R_K(q;\mathcal C_v^{\phi_v}(x)))\big)=1\Big].
   \label{eq:attack_generation}
 \end{equation}
+攻击者的理论优化问题可形式化为：
+\begin{equation}
+  \max_{x\in\mathcal X}\ F(x),
+  \label{eq:attack_ideal}
+\end{equation}
+其中$\mathcal X$限定对单一源文档$d$的编辑且满足跨块布局结构约束。由于受害者侧的分块边界$\phi_v$与内部检索得分对黑盒攻击者不可见，攻击者在本地借助影子系统离线求解。
 
-本研究考虑两个同源文本块$c_A$和$c_B$分别承担互补推理角色的情形，$c_A$承载抽象规则定义，$c_B$承载查询实体的实例归属绑定\cite{zhang2026inceptionrag}。为比较单块与双块的目标生成效果，从除载体文档外的影子背景库$\mathcal C_{-d}^s$中取前$K-2$个高分干净块固定为有序序列$B_0=[d_{(1)},\dots,d_{(K-2)}]$，并设置与角色块长度及主题匹配的干净中性替代块$N_A,N_B$，按固定槽位构造四组词元长度恒为$K$的对比上下文：
+本研究令两个同源文本块$c_A$和$c_B$分别承担互补推理角色：$c_A$承载抽象规则定义，$c_B$承载查询实体的实例归属绑定\cite{zhang2026inceptionrag}。为比较单块与双块的目标生成效果，从除载体文档外的影子背景库$\mathcal C_{-d}^s$中取前$K-2$个高分干净块固定为有序序列$B_0=[d_{(1)},\dots,d_{(K-2)}]$，并设置与角色块长度及主题匹配的干净中性替代块$N_A,N_B$，按固定槽位构造四组均包含$K$个文本块的对比上下文：
 \begin{equation}
   C_{00}=[B_0,N_A,N_B],\qquad
   C_{10}=[B_0,c_A,N_B],\qquad
@@ -52,13 +58,13 @@
   \mathcal V_{\mathrm{comp}}(x)=\mathbb I\big[Y_{11}=1\;\land\;Y_{10}=0\;\land\;Y_{01}=0\;\land\;Y_{00}=0\big].
   \label{eq:gen_gate}
 \end{equation}
-在全文重切分后的端到端评估中，同时统计自然Top-$K$上下文$R_K(q;\mathcal C_v^{\phi_v}(x))$的目标答案$a^*$命中率及单块消融表现。\todo[inline,size=\small]{\textbf{S3-04｜从求解困难引出两步设计。}简要交代三点：文档编辑是离散的，Top-$K$选择不连续，黑盒受害者不提供梯度与检索得分。因此先用影子生成检验保留组合关系，再用影子检索得分构造可微损失搜索触发器。当前期望召回式用于说明代理目标，后文连续损失用于生成候选，真实重切分与检索用于检验候选；三者的作用应接起来。避免将连续损失写成端到端成功概率的等价表达，也无需增加求解复杂度证明。}在流畅度权重$\lambda_{\mathrm{ppl}}\ge 0$时，单源跨块投毒构造在影子分块视图分布$\Pi_\Phi$下的代理优化目标为：
+在全文重切分后的端到端评估中，同时统计自然Top-$K$上下文$R_K(q;\mathcal C_v^{\phi_v}(x))$的目标答案$a^*$命中率及单块消融表现。在实际求解中，由于源文档编辑是离散的、Top-$K$检索选择不连续且受害者系统为黑盒，直接优化式\eqref{eq:attack_ideal}的端到端概率面向无梯度的组合搜索难题。本研究因此采用两步策略：首先利用影子生成模型在固定背景下检验并筛选满足$\mathcal V_{\mathrm{comp}}(x)=1$的双块核心载荷与背景句；随后在影子分块视图分布$\Pi_\Phi$上以连续可微的检索损失优化外围触发器，其代理优化目标为：
 \begin{equation}
   \max_{x\in\mathcal X}\ \mathbb E_{\phi\sim\Pi_\Phi}\big[Z_\phi(x)\big]-\lambda_{\mathrm{ppl}}\mathcal L_{\mathrm{ppl}}(x),\qquad
   \text{s.t.}\quad \mathcal V_{\mathrm{comp}}(x)=1,\;\mathcal M_{\mathrm{lex}}(x)=1.
   \label{eq:attack_objective}
 \end{equation}
-由于直接在逻辑正文上执行基于梯度的离散词元替换\cite{ebrahimi-etal-2018-hotflip,zou2023universal}可能破坏跨块推理关系\cite{liu2024autodan}，载荷构造分为两步：阶段一在相同背景$B_0$下构造并筛选满足$\mathcal V_{\mathrm{comp}}(x)=1$的双块核心载荷与前后背景句；阶段二保持核心载荷与背景句不变，仅在背景句的自然句边界处优化定长检索触发器，并在组装完整文档后经重切分检验$Z_\phi(x)$与$\mathcal V_{\mathrm{comp}}(x)$，整体流程如\autoref{fig:attack_framework}所示。
+直接在逻辑正文上执行词元替换容易破坏跨块推理链\cite{liu2024autodan}，因此阶段一固定核心载荷与背景句，阶段二仅优化背景句自然句边界处的外围检索触发器，并在组装完整文档后经真实重切分检验$Z_\phi(x)$与$\mathcal V_{\mathrm{comp}}(x)$，整体流程如\autoref{fig:attack_framework}所示。
 
 \begin{figure}[htbp]
   \centering
@@ -69,21 +75,19 @@
 
 \subsubsection{阶段一：双块载荷构造}
 
-\textbf{1) 规则块、实例块与背景句构造。}每个植入段落$P_j$依次拼接前置背景句$\mathcal S_j^{\mathrm{pre}}$、核心载荷$\mathcal P_j$和后置背景句$\mathcal S_j^{\mathrm{post}}$：
+\textbf{1) 规则块、实例块与背景句设计。}每个植入段落$P_j$依次拼接前置背景句$\mathcal S_j^{\mathrm{pre}}$、核心载荷$\mathcal P_j$和后置背景句$\mathcal S_j^{\mathrm{post}}$：
 \begin{equation}
   P_j=\mathcal S_j^{\mathrm{pre}}\oplus\mathcal P_j\oplus\mathcal S_j^{\mathrm{post}},\qquad j\in\{A,B\},
   \label{eq:payload_layout}
 \end{equation}
-
-\todo[inline,size=\small]{\textbf{S3-05｜补反馈驱动的构造循环。}采用参考草案已有的“提出—检验—按失败项修订”，无需另加遗传算法：由查询、参考答案、目标答案及载体语境提出规则／实例核心，组装完整源文档并实际分块，以得到的完整角色块构造四组对照。规则块保存代号到属性的映射，实例块保存主体到代号的绑定；从完整块检查是否单独泄露目标。单块命中则修订泄露信息，双块不命中则澄清对应关系，核心截断则调整位置或背景句。正文已有第3步的修订逻辑，可前移并合并，避免重复。至多$T_{\mathrm{gen}}$轮，只将已检验通过的状态交给下一阶段；最后一次修订后未经检验的新状态不能直接输出。}
-其中$\oplus$表示文本拼接。各部分内容如下：
+其中$\oplus$表示文本拼接。两类核心载荷分别承担规则映射与实体绑定的分工：
 \begin{itemize}[leftmargin=2em,itemsep=0pt]
-  \item \textbf{核心载荷$\mathcal P_A$}：作为规则块，定义符合源文档领域语境的分类标准或属性映射规则，并以勘误陈述指出早期记录隐含的原答案$y_{\mathrm{true}}$已按分类代号重新核定，用于影响模型对$y_{\mathrm{true}}$的采信，同时将文本内容限定在规则层，与查询实体保持分离。
-  \item \textbf{核心载荷$\mathcal P_B$}：作为实例块，陈述查询主体在档案记录中对应的分类代号，建立查询实体与分类代号之间的关联，使生成模型在同时读取$\mathcal P_A$与$\mathcal P_B$时结合规则与实例导出目标答案$a^*$。
-  \item \textbf{背景句$\mathcal S_j^{\mathrm{pre}},\mathcal S_j^{\mathrm{post}}$}：由$2\sim 3$句与插入段落前后文主题衔接的句子构成，置于核心载荷$\mathcal P_j$两侧以减少窗口边界直接截断核心载荷的情况，并在自然句边界处提供阶段二检索触发器的插入位置。
+  \item \textbf{核心载荷$\mathcal P_A$（规则块）}：定义符合源文档领域语境的分类标准或属性映射规则，声明早期记录隐含的原答案$y_{\mathrm{true}}$已按分类代号重新核定，用于改变模型对原答案的采信，同时文本限定在规则层面，与查询实体解耦。
+  \item \textbf{核心载荷$\mathcal P_B$（实例块）}：陈述查询主体在档案记录中对应的分类代号，建立查询实体与分类代号的绑定关系，使生成模型必须在同时读取$\mathcal P_A$与$\mathcal P_B$时结合规则与实例导出目标答案$a^*$。
+  \item \textbf{背景句$\mathcal S_j^{\mathrm{pre}},\mathcal S_j^{\mathrm{post}}$}：由$2\sim 3$句与插入段落前后文主题衔接的句子构成，置于核心载荷两侧以降低窗口边界直接截断核心载荷的概率，并在自然句边界处提供阶段二检索触发器的插入位置。
 \end{itemize}
 
-\textbf{2) 载荷插入位置与分布式性质保证。}将干净源文档$D$按自然段解析为$\{p_1,\dots,p_M\}$，记第$k$段末尾的累积词元偏移为$t_k$，全文总长为$t_M$；影子分块配置集$\Phi_{\mathrm{shadow}}$的最大窗口容量为$K_{\max}=\max_{\phi\in\Phi_{\mathrm{shadow}}}K_{\mathrm{size}}(\phi)$。\todo[inline,size=\small]{\textbf{S3-06｜位置选择服务于真实分块。}目的只有两个：核心内容完整、两个角色位于不同块。现有$0.33/0.66$、$\gamma$及预估长度只是候选位置的启发式，且间距约束偏保守；可简化为选择自然段插入点，组装后用影子分块器验证角色完整与分离，再比较可行位置的召回表现。若保留现式，说明其用于预筛，不将其写成实现跨块投毒的必要条件或创新性质。}给定间距系数$\gamma\ge 1.0$与单段前置背景句及核心长度预估上界$L_{\mathrm{est}}\ge 0$，先按$t_j-t_i\ge\gamma K_{\max}+L_{\mathrm{est}}$预选段落对，生成候选段落$P_A,P_B$并组装为$D_{\mathrm{adv}}$后，再核对两核心载荷的实际词元跨度间距，构成可行位置集合$\mathcal F_{\mathrm{slot}}$：
+\textbf{2) 载荷插入位置预选与分块验证。}为保证组装后两个载荷角色落入不同分块且核心内容完整，将干净源文档$D$按自然段解析为$\{p_1,\dots,p_M\}$，记第$k$段末尾的累积词元偏移为$t_k$，全文总长为$t_M$；影子分块配置集$\Phi_{\mathrm{shadow}}$的最大窗口容量为$K_{\max}=\max_{\phi\in\Phi_{\mathrm{shadow}}}K_{\mathrm{size}}(\phi)$。给定间距系数$\gamma\ge 1.0$与单段前置背景句及核心长度预估上界$L_{\mathrm{est}}\ge 0$，以式\eqref{eq:slot_anchor}作为候选插入段落的启发式预选准则：
 \begin{equation}
 \begin{aligned}
   (k_A,k_B)&=\arg\min_{(i,j)\in\mathcal F_{\mathrm{slot}}}\Big(\big|t_i-\rho_A\,t_M\big|+\big|t_j-\rho_B\,t_M\big|\Big),\\
@@ -91,81 +95,99 @@
 \end{aligned}
   \label{eq:slot_anchor}
 \end{equation}
-其中$\rho_A=0.33,\rho_B=0.66$为目标相对分位点。由于容量$K_{\mathrm{size}}\le K_{\max}$的单个分块窗口至多覆盖连续$K_{\max}$个词元，式\eqref{eq:slot_anchor}保证了同一分块窗口不会同时完整包含$\mathcal P_A$与$\mathcal P_B$，以维持载荷的分布式隐蔽性质。
+其中$\rho_A=0.33,\rho_B=0.66$为目标相对分位点。式\eqref{eq:slot_anchor}用于预筛满足物理间距的可行插入点，防止单分块窗口同时覆盖两段载荷。在选定插入位置后，将生成段落组装为临时载体文档$D_{\mathrm{adv}}$，并经影子分块器实际切分验证，确保在影子视图下两个角色均保持完整且分离（$I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}$）。
 
-\textbf{3) 组合效果检验。}按式\eqref{eq:attack_composition}构造四组对比上下文$C_{00},C_{10},C_{01},C_{11}$，并按式\eqref{eq:gen_gate}的判据$\mathcal V_{\mathrm{comp}}(x)$检验候选载荷。当$\mathcal V_{\mathrm{comp}}(x)=0$时，按分项结果修正载荷：若$Y_{10}=1$或$Y_{01}=1$，则删除对应块中可独立导出目标答案的信息；若$Y_{11}=0$，则明确$\mathcal P_A$中的规则表述及$\mathcal P_A,\mathcal P_B$之间的代号对应关系，并重新检查式\eqref{eq:slot_anchor}的位置约束。若达到最大迭代步数$T_{\mathrm{gen}}$仍未满足$\mathcal V_{\mathrm{comp}}(x)=1$，则丢弃该候选；通过检验后固定$(\mathcal P_A,\mathcal P_B)$与背景句$(\mathcal S_A,\mathcal S_B)$，进入阶段二。
+\textbf{3) 反馈驱动的“提出—检验—修订”循环。}系统采用反馈驱动的循环生成两块核心载荷。初始时由查询$q$、参考答案$y_{\mathrm{true}}$、目标答案$a^*$及源文档语境提出初始载荷与背景句$(\mathcal P_A,\mathcal P_B,\mathcal S_A,\mathcal S_B)$。组装进源文档并由影子分块器真实切分后，提取实际角色块构造四组对比上下文$C_{00},C_{10},C_{01},C_{11}$，依式\eqref{eq:gen_gate}检验$\mathcal V_{\mathrm{comp}}(x)$。当检验未通过时，按失败原因针对性修订：
+\begin{itemize}[leftmargin=2em,itemsep=0pt]
+  \item 若$Y_{10}=1$或$Y_{01}=1$（单块命中），表明单块泄露了独立推导目标答案的信息，则修订删除对应块中的泄露信息；
+  \item 若$Y_{11}=0$（双块不命中），表明规则与实例未能协同生效，则澄清$\mathcal P_A$中的规则表述及$\mathcal P_A,\mathcal P_B$之间的代号对应关系；
+  \item 若影子分块出现核心截断（$I_j(\phi)=0$），则调整段落插入位置$(k_A,k_B)$或微调背景句长度。
+\end{itemize}
+该循环至多执行$T_{\mathrm{gen}}$轮；仅当候选状态在实际重切分后通过全部对照检验（$\mathcal V_{\mathrm{comp}}(x)=1$）时才固定载荷与位置并输出至阶段二；若达到$T_{\mathrm{gen}}$轮仍未通过，或最后一次修订未经检验，则不输出未验证状态。
 
 \subsubsection{阶段二：分块感知的检索触发器优化}
 
-\textbf{1) 双侧触发器布局。}在保持核心载荷不变的前提下，于核心载荷前后背景句的自然句边界处各放置一个长度为$L_{\mathrm{trig}}$的触发器词元序列$\mathbf t_j=(t_{j,1},\dots,t_{j,L_{\mathrm{trig}}})$，共$R$个副本：
+\textbf{1) 双侧触发器布局。}在保持核心载荷不变的前提下，于核心载荷前后背景句的自然句边界处各放置一个长度为$L_{\mathrm{trig}}$的触发器词元序列$\mathbf t_j=(t_{j,1},\dots,t_{j,L_{\mathrm{trig}}})$，共$R$个副本（文中设$R=2$）：
 \begin{equation}
   P_j(\mathbf t_j)=s_{j,1}^{\mathrm{pre}}\oplus\mathbf t_j^{(1)}\oplus s_{j,2}^{\mathrm{pre}}\oplus\mathcal P_j\oplus s_{j,1}^{\mathrm{post}}\oplus\mathbf t_j^{(2)}\oplus s_{j,2}^{\mathrm{post}}.
   \label{eq:trigger_layout}
 \end{equation}
-由于前后两个触发器副本被中间的核心载荷$\mathcal P_j$隔开，当三者与中间背景句的总包络跨度不超过分块容量$K_{\mathrm{size}}$时，任何完整包含核心载荷$\mathcal P_j$的分块窗口必至少完整包含其中一个触发器副本。设影子分块视图集合为$\Phi_{\mathrm{shadow}}=\{\phi_m\}_{m=1}^M$，单视图配置$\phi_m=(K_{\mathrm{size},m},O_m,\xi_m)$包含窗口容量$K_{\mathrm{size},m}$、重叠词元数$O_m$与切分起始相位$\xi_m$。记角色段$j$中核心载荷$\mathcal P_j$、第$r$个触发器副本及二者之间背景句构成的包络词元长度为$n^{(r)}>0$；当$I_j(\phi)=1$时，主块$c_j^{(\phi)}$保留的该包络词元长度记为$n^{(r)}(\phi)$。\todo[inline,size=\small]{\textbf{S3-07｜删除不参与更新的布局量。}固定词元长度和位置时，$h_p(w)$不随替换词元身份变化，不能提供触发器搜索梯度。当前正文只称它“比较布局”，却未把比较写入选择步骤：若确实保留，就说明如何按平均截断量选可行布局；否则删除$h_p$及指数$p$。同时解释$w$为什么进入检索损失：减小权重也会减轻受截断视图的惩罚，不能直接称为提高其鲁棒性。前述包络条件成立时，完整核心至少保留一个完整副本，对这些视图$w=1$，此时权重可省。勿从旧草案恢复错误的存活期望推导。}定义视图$\phi$下的\textbf{存活权重}$w_j(\phi)$与布局评价所用的\textbf{截断量}$h_p(w)$为：
-\begin{equation}
-  w_j(\phi)=\begin{cases}
-    \max_{r\in\{1,\dots,R\}}\dfrac{n^{(r)}(\phi)}{n^{(r)}}\in[0,1], & I_j(\phi)=1,\\
-    0, & I_j(\phi)=0,
-  \end{cases}\qquad
-  h_p(w)=1-w^p\quad(p>1),
-  \label{eq:survival_weight}
-\end{equation}
-其中平均截断量$\frac{1}{M}\sum_{\phi\in\Phi_{\mathrm{shadow}}}h_p(w_j(\phi))$用于在进入词元搜索前比较并筛选插入布局。
+由于前后两个触发器副本被中间的核心载荷$\mathcal P_j$隔开，当三者与中间背景句的总包络跨度不超过分块容量$K_{\mathrm{size}}$时，任何完整包含核心载荷$\mathcal P_j$的分块窗口必至少完整包含其中一个触发器副本。设影子分块视图集合为$\Phi_{\mathrm{shadow}}$，令$\Phi^+=\{\phi\in\Phi_{\mathrm{shadow}}:I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}\}$为两核心载荷均完整落入不同分块的影子视图集合。当$\Phi^+=\emptyset$时中止该候选的触发器优化；当$\Phi^+\neq\emptyset$时，包络条件确保对任意$\phi\in\Phi^+$，完整核心所在的主块必保留至少一个完整触发器副本。
 
-\textbf{2) 跨视图检索损失。}\todo[inline,size=\small]{\textbf{S3-08｜把损失接到现有梯度步骤。}softplus项惩罚相对参考阈值的得分不足，跨视图项抑制不同分块配置的得分差异；将两者通过影子编码器反向传播到触发器输入嵌入，供后文一阶替换排序使用。梯度须经过完整上下文编码器，共享触发器在多个副本与视图的梯度贡献应相加；不能套用旧草案省略编码器雅可比的闭式式子。干净背景第$K-1$名只是优化参考；更新文档的其他分块也参与竞争，达阈值不能替代实际联合召回检验。}以影子干净背景第$K-1$名得分$\tau_q=s(q,d_{(K-1)})$作为检索优化的参考阈值。令$\Phi^+=\{\phi\in\Phi_{\mathrm{shadow}}:I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}\}$为两个核心载荷角色均完整落入不同分块的影子视图集合；当$\Phi^+=\emptyset$时不执行该候选的触发器优化，当$\Phi^+\neq\emptyset$时任取参考视图$\phi_0\in\Phi^+$，在$\Phi^+$上定义角色$j$的检索损失$\mathcal L_{\mathrm{rob}}(\mathbf t_j)$：
+\textbf{2) 跨视图检索损失与梯度累积。}以干净背景第$K-1$名得分$\tau_q=s(q,d_{(K-1)})$作为检索优化的参考阈值。在$\Phi^+$中任取参考视图$\phi_0\in\Phi^+$，角色$j$在视图集合$\Phi^+$上的跨视图检索损失定义为：
 \begin{equation}
 \begin{aligned}
   \mathcal L_{\mathrm{rob}}(\mathbf t_j)&=
   \frac{1}{|\Phi^+|}\sum_{\phi\in\Phi^+}\Big[
-  w_j(\phi)\,\ell_{\mathrm{ret}}\big(c_j^{(\phi)}(\mathbf t_j)\big)
+  \ell_{\mathrm{ret}}\big(c_j^{(\phi)}(\mathbf t_j)\big)
   +\lambda_{\mathrm{var}}\big|s\big(q,c_j^{(\phi_0)}(\mathbf t_j)\big)-s\big(q,c_j^{(\phi)}(\mathbf t_j)\big)\big|\Big],\\
   \ell_{\mathrm{ret}}(c)&=\operatorname{softplus}\!\left(\frac{\tau_q+\delta-s(q,c)}{T}\right),
 \end{aligned}
   \label{eq:chunk_rob_loss}
 \end{equation}
-其中$\delta>0$为得分裕度，$T>0$为平滑温度，$\lambda_{\mathrm{var}}\ge 0$为跨视图得分波动权重。
+其中$\delta>0$为得分裕度，$T>0$为平滑温度，$\lambda_{\mathrm{var}}\ge 0$为跨视图得分波动权重。$\ell_{\mathrm{ret}}$惩罚相对参考阈值的得分不足，跨视图项抑制不同分块配置下的得分差异。
+触发器$\mathbf t_j$在主块中包含$R$个副本，且同时存在于多个有效视图$\phi\in\Phi^+$中。反向传播时，损失函数通过影子稠密编码器$E_s$计算触发器各位置词元嵌入的梯度，并将各副本与各视图的梯度贡献累加：
+\begin{equation}
+  \mathbf g_i=\nabla_{e_{t_i}}\mathcal L_{\mathrm{rob}}(\mathbf t_j)=\frac{1}{|\Phi^+|}\sum_{\phi\in\Phi^+}\sum_{r=1}^R \nabla_{e_{t_{j,i}^{(r)}}}\mathcal L_{\mathrm{rob}}\big(c_j^{(\phi)}(\mathbf t_j)\big).
+  \label{eq:grad_accum}
+\end{equation}
+反向传播经过完整的Transformer编码器以获取准确的一阶梯度方向。参考阈值$\tau_q$仅作为引导触发器优化的软性基准；在实际检索中，更新源文档的其他分块与背景语料共同竞争Top-$K$，优化达标不替代最终的联合召回检验。
 
-\textbf{3) 局部流畅度与词法约束。}\todo[inline,size=\small]{\textbf{S3-09｜给局部NLL及统一候选评分。}保留局部窗口定义，补$\mathcal L_{\mathrm{ppl}}(\mathbf t_j)=-R^{-1}\sum_r |W_j^{(r)}|^{-1}\sum_m\log P_{\mathrm{LM}}(w_m^{(r)}\mid w_{<m}^{(r)})$；解释为先对窗口词元取平均，再对副本取平均。候选按$\mathcal L=\sum_{j\in\{A,B\}}[\mathcal L_{\mathrm{rob}}(\mathbf t_j)+\lambda_{\mathrm{ppl}}\mathcal L_{\mathrm{ppl}}(\mathbf t_j)]$比较。梯度用于检索候选提议，冻结本地语言模型提供NLL前向评分，符合现有黑盒权限。NLL是困惑度的对数，不把二者数值混用；词法约束仍作候选过滤。将相邻两节合为“检索与流畅度目标”即可。}为提高投毒攻击的隐蔽性，需要约束触发器的语言可读性\cite{alon2023detecting,jain2023baseline}。这一步截取每个触发器副本及其前后相邻句构成的局部文本窗口$W_j^{(r)}=s_{j,1}^{(r)}\oplus\mathbf t_j^{(r)}\oplus s_{j,2}^{(r)}$，利用冻结的本地因果语言模型计算平均负对数似然作为局部流畅度损失$\mathcal L_{\mathrm{ppl}}(\mathbf t_j)$。采用Doc2Query\cite{nogueira2019document}生成的候选序列初始化$\mathbf t=(t_1,\dots,t_{L_{\mathrm{trig}}})$，并使用词法检查器$\mathcal M_{\mathrm{lex}}(\mathbf t;q,a^*,y_{\mathrm{true}})\in\{0,1\}$，要求序列满足：
+\textbf{3) 检索与流畅度联合目标及词法约束。}为约束触发器的语言可读性，截取每个触发器副本及其前后相邻句构成的局部文本窗口$W_j^{(r)}=s_{j,1}^{(r)}\oplus\mathbf t_j^{(r)}\oplus s_{j,2}^{(r)}$，利用冻结的本地因果语言模型计算局部负对数似然（NLL）作为流畅度损失：
+\begin{equation}
+  \mathcal L_{\mathrm{ppl}}(\mathbf t_j)=-\frac{1}{R}\sum_{r=1}^R \frac{1}{|W_j^{(r)}|}\sum_{m=1}^{|W_j^{(r)}|} \log P_{\mathrm{LM}}\big(w_m^{(r)}\mid w_{<m}^{(r)}\big),
+  \label{eq:local_ppl}
+\end{equation}
+即先对局部窗口内的词元取平均，再对各副本取平均。候选更新按综合评分函数进行比较：
+\begin{equation}
+  \mathcal L=\sum_{j\in\{A,B\}}\big[\mathcal L_{\mathrm{rob}}(\mathbf t_j)+\lambda_{\mathrm{ppl}}\mathcal L_{\mathrm{ppl}}(\mathbf t_j)\big],
+  \label{eq:total_attack_loss}
+\end{equation}
+其中$\lambda_{\mathrm{ppl}}\ge 0$为平衡超参数。梯度用于快速筛选检索端有利的候选词元，冻结语言模型则执行前向计算提供NLL评分。
+
+为避免无意义搜索并保证隐蔽性，触发器词元从受限候选池中选取。利用Doc2Query\cite{nogueira2019document}根据载荷段落生成候选伪查询文本，经影子编码器$E_s$的分词器转换为候选词元集合$\mathcal V_{\mathrm{cand}}\leftarrow\operatorname{Tokens}_{E_s}(\operatorname{Doc2Query}(P_A,P_B))$，以保证词元编号与检索编码器一致并缩小搜索范围。同时采用词法检查器$\mathcal M_{\mathrm{lex}}(\mathbf t;q,a^*,y_{\mathrm{true}})\in\{0,1\}$对触发器施加硬约束：
 \begin{enumerate}[label=(\alph*),leftmargin=2.2em,itemsep=0pt]
   \item 每个词元均为完整ASCII英文词元，且相邻位置词元满足$t_i\neq t_{i+1}$；
   \item 序列$\mathbf t$与查询$q$的最长公共连续词组长度小于2；
-  \item 序列不含属于$a^*$或$y_{\mathrm{true}}$的词元，避免触发器直接包含答案词元。
+  \item 序列不含属于$a^*$或$y_{\mathrm{true}}$的词元，避免触发器直接泄露答案。
 \end{enumerate}
 
-\textbf{4) 交替优化与重切分检查。}\todo[inline,size=\small]{\textbf{S3-10｜串起交替更新，并修正伪代码对象。}本段已有梯度式与严格下降规则，主要缺少上下文：选择损失较大的角色，按梯度筛候选，把候选写回完整源文档并重切，以真实角色块批量计算检索与NLL总损失，接受最优且严格改善的替换。固定用于比较的影子视图集，不因候选失败而删去困难视图。达到$T_{\mathrm{ret}}$或无合法改善即停止，输出经检验的状态。阶段一伪代码目前把独立拼接段落直接当$c_j$，应改为“组装全文—实际分块—定位完整角色块”。最终在包含该源文档全部新块的更新语料上检索，再做完整块组合检验；参考视图通过与多视图成功率分别表述。}求解步骤如算法\ref{alg:attack}所示。每轮迭代选择当前检索损失较大的角色块$j^\star=\arg\max_{j\in\{A,B\}}\mathcal L_{\mathrm{rob}}(\mathbf t_j)$，计算触发器各位置词元嵌入梯度，在满足$\mathcal M_{\mathrm{lex}}(\mathbf t_{j^\star}[i\to v];q,a^*,y_{\mathrm{true}})=1$的候选词元上按一阶内积筛选前$B_{\mathrm{cand}}$个替换项\cite{ebrahimi-etal-2018-hotflip,zou2023universal}：
+\textbf{4) 交替优化与真实重切分检验。}求解步骤如算法\ref{alg:attack}所示。在每轮优化中，选择当前检索损失较大的角色$j^\star=\arg\max_{j\in\{A,B\}}\mathcal L_{\mathrm{rob}}(\mathbf t_j)$执行坐标更新。对每个位置$i$，在满足词法约束且$v\in\mathcal V_{\mathrm{cand}}$的候选词元上，按一阶线性近似排序筛选前$B_{\mathrm{cand}}$个替换候选：
 \begin{equation}
-  \mathbf g_i=\nabla_{e_{t_i}}\mathcal L_{\mathrm{rob}}(\mathbf t_{j^\star}),\qquad
-  \Delta_{i,v}=-\mathbf g_i^\top(e_v-e_{t_i}),
+  \Delta_{i,v}=-\mathbf g_i^\top(e_v-e_{t_i}).
   \label{eq:first_order}
 \end{equation}
-随后在$\Phi^+$上批量计算$\mathcal L_{\mathrm{rob}}+\lambda_{\mathrm{ppl}}\mathcal L_{\mathrm{ppl}}$，采纳使总损失严格下降的最优替换。迭代结束后将$P_A(\mathbf t_A),P_B(\mathbf t_B)$写入位置$(k_A,k_B)$组装完整文档$D_{\mathrm{adv}}(x)$，在参考视图$\phi_0$上重切分并提取角色块，检验$Z_{\phi_0}(x)=1\land\mathcal V_{\mathrm{comp}}(x)=1$。
+将候选词元写回段落并组装为完整载体文档$D_{\mathrm{adv}}$，在固定视图集$\Phi^+$上实际切分并定位真实角色块，批量前向计算总损失式\eqref{eq:total_attack_loss}，贪婪采纳使总损失严格下降的最优替换$(i^\star, v^\star)$。若达到最大步数$T_{\mathrm{ret}}$或无合法替换能严格降低总损失，则中止优化。
 
-\todo[inline,size=\small]{\textbf{S3-11｜保留手工批注的Doc2Query候选池要求。}初始化处用两行即可：$\mathcal V_{\mathrm{cand}}\leftarrow\operatorname{Tokens}_{E_s}(\operatorname{Doc2Query}(P_A,P_B))$；$\mathbf t_A,\mathbf t_B\leftarrow\operatorname{SampleLegal}(\mathcal V_{\mathrm{cand}})$。候选构造行补$v\in\mathcal V_{\mathrm{cand}}$并保留逐候选词法检查，注释可用“Initialize from document-generated queries”。说明生成文本须经影子编码器的分词器转为候选词元，不能复用生成模型的词元编号。“缩小搜索范围”是设计理由，加速与效果仍由实验比较；不扩写为工程配置表。}
+优化结束后，将最终触发器组装为源文档$D_{\mathrm{adv}}(x)$，在参考视图$\phi_0$上执行真实分块与检索，检验是否同时满足联合召回$Z_{\phi_0}(x)=1$与组合生成验证$\mathcal V_{\mathrm{comp}}(x)=1$；同时可在多视图上分别统计跨分块成功率。
+
 \begin{algorithm}[htbp]
   \small
   \caption{Cross-Chunk Payload Construction}
   \label{alg:attack}
-  \KwIn{query $q$, answers $y_{\mathrm{true}},a^*$, carrier document $D$, clean Top-$K$ chunks $\{d_{(1)},\dots,d_{(K)}\}$ with $\tau_q=s(q,d_{(K-1)})$, shadow chunkers $\Phi_{\mathrm{shadow}}$, shadow generator $G_{\mathrm{shadow}}$}
+  \KwIn{query $q$, answers $y_{\mathrm{true}},a^*$, carrier document $D$, clean Top-$K$ chunks $\{d_{(1)},\dots,d_{(K)}\}$ with $\tau_q=s(q,d_{(K-1)})$, shadow chunkers $\Phi_{\mathrm{shadow}}$, shadow generator $G_{\mathrm{shadow}}$, shadow encoder $E_s$}
   \KwOut{poisoned source document $D_{\mathrm{adv}}(x)$ or $\varnothing$}
   \tcp{Stage 1: Construct paired payloads}
   $(\mathcal P_A,\mathcal P_B,\mathcal S_A,\mathcal S_B)\leftarrow\operatorname{PROPOSE}(q,y_{\mathrm{true}},a^*,D;G_{\mathrm{shadow}})$\;
   \For{$r\leftarrow1$ \KwTo $T_{\mathrm{gen}}$}{
     \lIf{$\mathcal F_{\mathrm{slot}}=\emptyset$}{\Return{$\varnothing$}}
     Select $(k_A,k_B)\in\mathcal F_{\mathrm{slot}}$ on $D$ satisfying Eq.~\eqref{eq:slot_anchor}\;
-    $c_j\leftarrow\mathcal S_j^{\mathrm{pre}}\oplus\mathcal P_j\oplus\mathcal S_j^{\mathrm{post}}$ for $j\in\{A,B\}$;\quad Construct $C_{00},C_{10},C_{01},C_{11}$ via Eq.~\eqref{eq:attack_composition}\;
+    $D_{\mathrm{cand}}\leftarrow\operatorname{ASSEMBLE}(D, k_A, P_A, k_B, P_B)$;\quad Extract chunks $\{c_A,c_B\}$ by chunking $D_{\mathrm{cand}}$\;
+    Construct $C_{00},C_{10},C_{01},C_{11}$ via Eq.~\eqref{eq:attack_composition}\;
     \lIf{$\mathcal V_{\mathrm{comp}}(x)=1$ \textnormal{in Eq.~\eqref{eq:gen_gate}}}{\textbf{break}}
     $(\mathcal P_A,\mathcal P_B,\mathcal S_A,\mathcal S_B)\leftarrow\operatorname{REVISE}(\mathcal P_A,\mathcal P_B,\mathcal S_A,\mathcal S_B;G_{\mathrm{shadow}})$\;
   }
   \lIf{$\mathcal V_{\mathrm{comp}}(x)=0$}{\Return{$\varnothing$}}
   \tcp{Stage 2: Optimize retrieval triggers}
-  Initialize $\mathbf t_A,\mathbf t_B$ via Doc2Query s.t.\ $\mathcal M_{\mathrm{lex}}(\mathbf t_j;q,a^*,y_{\mathrm{true}})=1$;\quad $\Phi^+\leftarrow\{\phi\in\Phi_{\mathrm{shadow}}:I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}\}$\;
+  $\mathcal V_{\mathrm{cand}}\leftarrow\operatorname{Tokens}_{E_s}(\operatorname{Doc2Query}(P_A,P_B))$; \tcp{Tokens from doc-generated queries}
+  $\mathbf t_A,\mathbf t_B\leftarrow\operatorname{SampleLegal}(\mathcal V_{\mathrm{cand}})$ s.t.\ $\mathcal M_{\mathrm{lex}}(\mathbf t_j;q,a^*,y_{\mathrm{true}})=1$\;
+  $\Phi^+\leftarrow\{\phi\in\Phi_{\mathrm{shadow}}:I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}\}$\;
   \lIf{$\Phi^+=\emptyset$}{\Return{$\varnothing$}}
   \For{$t\leftarrow1$ \KwTo $T_{\mathrm{ret}}$}{
-    $j^\star\leftarrow\arg\max_{j\in\{A,B\}}\mathcal L_{\mathrm{rob}}(\mathbf t_j)$;\quad Compute $\mathbf g_i=\nabla_{e_{t_i}}\mathcal L_{\mathrm{rob}}(\mathbf t_{j^\star})$ for $i=1,\dots,L_{\mathrm{trig}}$ via Eq.~\eqref{eq:first_order}\;
-    $\mathcal B\leftarrow\operatorname{TOP}_{B_{\mathrm{cand}}}\big\{(i,v):\Delta_{i,v}=-\mathbf g_i^\top(e_v-e_{t_i}),\ \mathcal M_{\mathrm{lex}}(\mathbf t_{j^\star}[i\to v];q,a^*,y_{\mathrm{true}})=1\big\}$\;
+    $j^\star\leftarrow\arg\max_{j\in\{A,B\}}\mathcal L_{\mathrm{rob}}(\mathbf t_j)$;\quad Compute $\mathbf g_i=\nabla_{e_{t_i}}\mathcal L_{\mathrm{rob}}(\mathbf t_{j^\star})$ via Eq.~\eqref{eq:grad_accum}\;
+    $\mathcal B\leftarrow\operatorname{TOP}_{B_{\mathrm{cand}}}\big\{(i,v):v\in\mathcal V_{\mathrm{cand}},\ \Delta_{i,v}=-\mathbf g_i^\top(e_v-e_{t_i}),\ \mathcal M_{\mathrm{lex}}(\mathbf t_{j^\star}[i\to v];q,a^*,y_{\mathrm{true}})=1\big\}$\;
     $(i^\star,v^\star)\leftarrow\arg\min_{(i,v)\in\mathcal B}\big[\mathcal L_{\mathrm{rob}}+\lambda_{\mathrm{ppl}}\mathcal L_{\mathrm{ppl}}\big](\mathbf t_{j^\star}[i\to v])$\;
-    \lIf{\textnormal{total loss decreases}}{$\mathbf t_{j^\star}\leftarrow\mathbf t_{j^\star}[i^\star\to v^\star]$} \lElse{\textbf{break}}
+    \lIf{\textnormal{total loss strictly decreases}}{$\mathbf t_{j^\star}\leftarrow\mathbf t_{j^\star}[i^\star\to v^\star]$} \lElse{\textbf{break}}
   }
   $D_{\mathrm{adv}}(x)\leftarrow\operatorname{ASSEMBLE}(D, k_A, P_A(\mathbf t_A), k_B, P_B(\mathbf t_B))$\;\quad Re-chunk $D_{\mathrm{adv}}(x)$ on reference view $\phi_0\in\Phi^+$\;
   \lIf{$Z_{\phi_0}(x)=1\land\mathcal V_{\mathrm{comp}}(x)=1$}{\Return{$D_{\mathrm{adv}}(x)$}} \lElse{\Return{$\varnothing$}}
@@ -187,16 +209,10 @@
 \end{aligned}
   \label{eq:defense_objective}
 \end{equation}
+\addtocounter{equation}{-1}\refstepcounter{equation}\label{eq:latency_decomp}
 其中$\mathrm{ASR}_a(\pi)$为攻击$a$下经防御后的攻击成功率，$\mathrm{ACC}_{\mathrm{clean}}(\pi)$与$\mathrm{ACC}_{\mathrm{clean}}(\mathrm{id})$分别为干净查询集在启用防御策略$\pi$与无防御基线$\mathrm{id}$下的回答准确率，$\epsilon_{\mathrm{acc}}$为允许的准确率损失，$\mathrm{BR}(\pi)$为正常多跳问答中桥接证据的保留率，$\beta_{\mathrm{br}}$为其下限，$T(\pi)$为单查询的端到端防御延迟，$T_{\max}$为延迟预算。
 
-本研究先依据统计特征和跨块关系筛选候选块，仅在待审触发事件$E_{\mathrm{esc}}(q)=\{\mathcal S_{\mathrm{judge}}(q)\neq\emptyset\}$发生时使用LLM检查待审文本并移除判为投毒的块。
-
-\todo[inline,size=\small]{\textbf{S3-12｜把延迟放回评价部分。}现有期望分解只是按是否调用判别模型拆分耗时，并不决定筛选或复核动作。删除此处独立公式及仅为它引入的阶段耗时符号，在实验设计中一句话说明统计各阶段延迟和LLM触发比例即可。保留防御目标中的在线延迟要求；不需要为删式再加一段解释。}设阶段一谱统计、子窗编码与构图耗时为$T_{\mathrm{stat}},T_{\mathrm{sub}},T_{\mathrm{graph}}$，阶段二LLM检查耗时为$T_{\mathrm{judge}}$，阶段二触发率为$p_{\mathrm{esc}}=\Pr(E_{\mathrm{esc}}(q))$，则单查询期望防御延迟分解为：
-\begin{equation}
-  \mathbb E\big[T(\pi)\big]=\mathbb E\big[T_{\mathrm{stat}}+T_{\mathrm{sub}}+T_{\mathrm{graph}}\big]+p_{\mathrm{esc}}\cdot\mathbb E\big[T_{\mathrm{judge}}\mid E_{\mathrm{esc}}(q)\big],
-  \label{eq:latency_decomp}
-\end{equation}
-整体流程如\autoref{fig:defense_framework}所示。
+本研究先依据统计特征和跨块关系筛选候选块，仅在待审集非空（$\mathcal S_{\mathrm{judge}}\neq\emptyset$）时调用判别模型复核待审文本并移除判为投毒的块。两阶段级联架构使绝大多数正常候选在轻量统计和规则层直接通过，将耗时较高的语言模型判别限制在可疑子集，以满足式\eqref{eq:defense_objective}中的在线推理延迟预算$T_{\max}$。整体流程如\autoref{fig:defense_framework}所示。
 
 \begin{figure}[htbp]
   \centering
@@ -237,17 +253,24 @@
 \end{enumerate}
 \end{subequations}
 
-\todo[inline,size=\small]{\textbf{S3-13｜明确特征融合的训练与输出。}四项特征量纲不同，先用拟合集统计量标准化；采用逻辑回归，理由是维度少、推理开销低且权重可解释。令干净样本标签为0、合成扰动样本为1，以二元交叉熵学习$(b,\mathbf w)$；给$A_i=b+\mathbf w^\top\tilde{\mathbf f}_i$与$p_i=\sigma(A_i)$，训练最小化$-N^{-1}\sum_i[y_i\log p_i+(1-y_i)\log(1-p_i)]$。校准可直接使用单调等价的$A_i$，无需再建一套概率阈值。当前“扰动负样本”容易混淆标签，应明确异常标签。拟合后固定评分器，再在独立干净查询上校准；合成扰动只用于学习统计偏离，$p_i$不解释为真实投毒概率。同步补算法2的已拟合参数输入与评分式。}记拟合集$\mathcal D_{\mathrm{fit}}$在第$r\in\{1,2,3,4\}$维特征上的均值与标准差为$\mu_{f,r},\sigma_{f,r}$，逐维标准化为$\tilde f_{i,r}=(f_{i,r}-\mu_{f,r})/\max(\sigma_{f,r},\epsilon)$以构成$\tilde{\mathbf f}_i$。在$\mathcal D_{\mathrm{fit}}$干净块上施加随机边界词元替换构造扰动负样本，训练逻辑回归得到权重$\mathbf w$，计算单块统计风险值$A(q,c_i)=\mathbf w^\top\tilde{\mathbf f}_i$。
+\textbf{特征标准化与逻辑回归融合。}四项统计特征的物理量纲与数值尺度各异，在融合前先以拟合集$\mathcal D_{\mathrm{fit}}$上计算的各维均值$\mu_{f,r}$与标准差$\sigma_{f,r}$（$r\in\{1,2,3,4\}$）进行逐维标准化：$\tilde f_{i,r}=(f_{i,r}-\mu_{f,r})/\max(\sigma_{f,r},\epsilon)$，构成标准化特征向量$\tilde{\mathbf f}_i=(\tilde f_{i,1},\tilde f_{i,2},\tilde f_{i,3},\tilde f_{i,4})^\top$。考虑到特征维度低、在线推理开销小且线性权重具备直接可解释性，采用逻辑回归模型融合上述特征。在$\mathcal D_{\mathrm{fit}}$上，以原始干净文本块作为正常类样本（$y_i=0$），在干净块的自然句边界处施加随机词元替换或插入扰动构造样本作为异常类样本（$y_i=1$），通过最小化二元交叉熵损失学习截距$b$与权重向量$\mathbf w$：
+\begin{equation}
+  \min_{\mathbf w,b}\ -\frac{1}{N}\sum_{i=1}^N \Big[y_i\log p_i + (1-y_i)\log(1-p_i)\Big],\qquad p_i=\sigma(A_i)=\frac{1}{1+e^{-A_i}},
+  \label{eq:lr_fusion}
+\end{equation}
+其中单块线性风险评分为$A(q,c_i)=b+\mathbf w^\top\tilde{\mathbf f}_i$。合成扰动仅用于引导模型识别文本在统计表征子空间上的异常偏离方向，输出概率$p_i$不解释为真实世界的投毒后验概率；后续校准与筛选直接使用与$p_i$严格单调等价的连续风险评分$A(q,c_i)$。拟合完成后固定评分器参数$(\mathbf w,b)$与标准化统计量$(\boldsymbol\mu_f,\boldsymbol\sigma_f)$。
 
-\textbf{查询级阈值校准。}\todo[inline,size=\small]{\textbf{S3-14｜说明校准流程，保留现有正确公式。}按“固定评分器—逐条干净查询计算块风险最大值—取上分位数—用于新查询”叙述即可。查询最大值使阈值控制的是一次查询中出现任意统计误报的概率。现有$\lceil(n+1)(1-\alpha)\rceil$与第$n+1$顺序统计量取无穷大的写法可保留；说明$\alpha_{\mathrm{high}}<\alpha_{\mathrm{low}}$对应$\tau_{\mathrm{high}}\ge\tau_{\mathrm{low}}$，分别用于直接过滤与转交检查。该界对应统计筛选，不延伸成后续结构检查和LLM判断的整体保证；无需添定理或证明，也不恢复旧稿的Beta分布结论。}以每个查询作为一个校准单元，允许同一查询内的候选块的风险值得分相关。在校准集$\mathcal D_{\mathrm{cal}}$的$n$条干净查询$\{q_1,\dots,q_n\}$上分别计算候选集合最大风险值$M_j=\max_{1\le i\le K}A(q_j,c_{j,i})$，按升序排列为$M_{(1)}\le M_{(2)}\le\dots\le M_{(n)}$。
-
-在查询级统计假阳性率$\alpha\in(0,1)$的约束下，当校准查询与新查询可交换时\cite{vovk2005algorithmic,angelopoulos2023conformal}，阈值$\tau_\alpha$满足如下边际假阳性率上界：
+\textbf{查询级阈值校准与分级筛选。}为将假阳性严格控制在查询级别，在独立于拟合集的干净校准集$\mathcal D_{\mathrm{cal}}$（包含$n$条独立查询$\{q_1,\dots,q_n\}$）上固定已拟合评分器，计算每条查询的Top-$K$候选块最大风险值$M_j=\max_{1\le i\le K}A(q_j,c_{j,i})$，按升序排列得到顺序统计量$M_{(1)}\le M_{(2)}\le\dots\le M_{(n)}$。查询最大值统计量确保了阈值直接控制单次查询中发生任意良性块误报的边际概率。在查询级统计假阳性率$\alpha\in(0,1)$的约束下，当校准查询与新查询可交换时\cite{vovk2005algorithmic,angelopoulos2023conformal}，分位数阈值$\tau_\alpha$满足如下边际假阳性率上界：
 \begin{equation}
   \tau_\alpha=M_{\left(\lceil(n+1)(1-\alpha)\rceil\right)}\;(M_{(n+1)}=+\infty),\quad
   \Pr_{\mathcal D_{\mathrm{cal}},q_{\mathrm{new}}}\!\big(\exists i:A(q_{\mathrm{new}},c_{\mathrm{new},i})>\tau_\alpha\big)=\Pr_{\mathcal D_{\mathrm{cal}},q_{\mathrm{new}}}\!\big(M_{\mathrm{new}}>\tau_\alpha\big)\le\alpha.
   \label{eq:quantile_calib}
 \end{equation}
-设定两级假阳性率阈值$\alpha_{\mathrm{high}}<\alpha_{\mathrm{low}}$，按式\eqref{eq:quantile_calib}确定高阈值$\tau_{\mathrm{high}}=\tau_{\alpha_{\mathrm{high}}}$与低阈值$\tau_{\mathrm{low}}=\tau_{\alpha_{\mathrm{low}}}$：当$A(q,c_i)>\tau_{\mathrm{high}}$时直接剔除；所有$A(q,c_i)\le\tau_{\mathrm{high}}$的块进入保留集合$\mathcal C_{\mathrm{surv}}$并继续接受跨块关系检查，其中满足$A(q,c_i)>\tau_{\mathrm{low}}$的块同时加入待审集$\mathcal S_{\mathrm{judge}}$。
+设定两级目标假阳性率$\alpha_{\mathrm{high}}<\alpha_{\mathrm{low}}$，按式\eqref{eq:quantile_calib}校准得到高阈值$\tau_{\mathrm{high}}=\tau_{\alpha_{\mathrm{high}}}$与低阈值$\tau_{\mathrm{low}}=\tau_{\alpha_{\mathrm{low}}}$（满足$\tau_{\mathrm{high}}\ge\tau_{\mathrm{low}}$）：
+\begin{itemize}[leftmargin=2em,itemsep=0pt]
+  \item 若$A(q,c_i)>\tau_{\mathrm{high}}$，表明该块呈现极其显著的统计异常，直接予以剔除；
+  \item 所有$A(q,c_i)\le\tau_{\mathrm{high}}$的文本块进入存活集合$\mathcal C_{\mathrm{surv}}$并继续接受跨块关系检查；其中处于不确定风险区间的文本块（$A(q,c_i)>\tau_{\mathrm{low}}$）同步加入待审集$\mathcal S_{\mathrm{judge}}$。
+\end{itemize}
 
 \subsubsection{跨块关系检查与LLM复核}
 
@@ -268,43 +291,43 @@
   \end{aligned} \label{eq:phi_conflict}
 \end{align}
 \end{subequations}
-其中$\operatorname{gap}(c_i,c_j)$为同源两块在源文档中的词元跨度间隔；$\mathrm{DF}(u)$为实体$u$在全语料库中的文档频率\cite{zhang2026inceptionrag}；$v_1\perp v_2$表示单值属性关系下的互斥宾语取值。由于正常长文档多跳问答同样可能召回同源远距段落或包含桥接实体\cite{yin2026rade}，满足任一指标时，将该对中的两个文本块$c_i,c_j$加入待审集$\mathcal S_{\mathrm{judge}}$。
+其中$\operatorname{gap}(c_i,c_j)$为同源两块在源文档中的词元跨度间隔；$\mathrm{DF}(u)$为实体$u$在全语料库中的文档频率\cite{zhang2026inceptionrag}；$v_1\perp v_2$表示单值属性关系下的互斥宾语取值。由于正常长文档多跳问答同样可能召回同源远距段落或包含桥接实体\cite{yin2026rade}，因此任一结构指标的触发仅作为待复核线索，系统将满足$\Phi_{\mathrm{prov}}\lor\Phi_{\mathrm{bridge}}\lor\Phi_{\mathrm{conflict}}=1$的文本块对$(c_i,c_j)$加入待审集$\mathcal S_{\mathrm{judge}}$，由后续判别模型进行细粒度语义核验，而不做硬性误杀。
 
-\todo[inline,size=\small]{\textbf{S3-15｜删去不决定算法动作的并集界。}现式是各触发事件的并集上界，未用于选择阈值或改变复核策略，容易打断“筛选—复核”的叙述。正文直接说明统计风险超低阈值或任一结构指标触发时加入待审集，再进入一次联合LLM检查。将干净查询的实际触发比例放入实验评价即可；不再为这一普通关系设$p_{\mathrm{esc}}$及三项专用触发率定义。}记干净查询分布上三项指标的查询级触发率分别为$\rho_{\mathrm{prov}}^{\mathrm{clean}},\rho_{\mathrm{bridge}}^{\mathrm{clean}},\rho_{\mathrm{conflict}}^{\mathrm{clean}}$，结合式\eqref{eq:quantile_calib}并由并集界可得干净查询的阶段二触发率上界：
-\begin{equation}
-  p_{\mathrm{esc}}=\Pr_{\mathcal D_{\mathrm{cal}},q_{\mathrm{new}}}\big(E_{\mathrm{esc}}(q_{\mathrm{new}})\big)\le\min\Big\{1,\;\alpha_{\mathrm{low}}+\rho_{\mathrm{prov}}^{\mathrm{clean}}+\rho_{\mathrm{bridge}}^{\mathrm{clean}}+\rho_{\mathrm{conflict}}^{\mathrm{clean}}\Big\}.
-  \label{eq:pesc_bound}
-\end{equation}
-
-\textbf{2) 参照文本选择与LLM检查。}当$\mathcal S_{\mathrm{judge}}\neq\emptyset$时，从来源标识不同于待审块的保留块集合$\mathcal C_{\mathrm{clean\_cand}}=\{c\in\mathcal C_{\mathrm{surv}}\setminus\mathcal S_{\mathrm{judge}}:z_{\mathrm{doc}}(c)\notin z_{\mathrm{doc}}(\mathcal S_{\mathrm{judge}})\}$中选取检索得分最高的文本块作为参照文本$c_{\mathrm{anchor}}$：
+\textbf{2) 参照文本选择与LLM判别复核。}当$\mathcal S_{\mathrm{judge}}\neq\emptyset$时，从来源标识不同于待审块的存活文本块中选取检索得分最高的块作为参照文本$c_{\mathrm{anchor}}$：
 \begin{equation}
   c_{\mathrm{anchor}}=\begin{cases}
     \arg\max_{c\in\mathcal C_{\mathrm{clean\_cand}}} s(q,c), & \mathcal C_{\mathrm{clean\_cand}}\neq\emptyset,\\
-    \varnothing, & \mathcal C_{\mathrm{clean\_cand}}=\emptyset.
+    \varnothing, & \mathcal C_{\mathrm{clean\_cand}}=\emptyset,
   \end{cases}
   \label{eq:anchor}
 \end{equation}
-当$\mathcal C_{\mathrm{clean\_cand}}=\emptyset$时，直接检查待审文本自身的命题与跨块关系。系统将查询$q$、参照文本$c_{\mathrm{anchor}}$、待审集$\mathcal S_{\mathrm{judge}}$及触发的成对指标组织为结构化提示词，调用一次本地结构化判别模型$\mathcal M$\cite{zhang2025traceback,chiang2023judging}执行以下三项检查：
+其中$\mathcal C_{\mathrm{clean\_cand}}=\{c\in\mathcal C_{\mathrm{surv}}\setminus\mathcal S_{\mathrm{judge}}:z_{\mathrm{doc}}(c)\notin z_{\mathrm{doc}}(\mathcal S_{\mathrm{judge}})\}$。当$\mathcal C_{\mathrm{clean\_cand}}=\emptyset$时令$c_{\mathrm{anchor}}=\varnothing$。系统将查询$q$、参照文本$c_{\mathrm{anchor}}$、待审集合$\mathcal S_{\mathrm{judge}}$以及命题图$\mathcal G_q$中提取的成对可疑关系一并组织为结构化提示词，调用本地判别语言模型$\mathcal M$\cite{zhang2025traceback,chiang2023judging}执行一次联合判别。
+
+判别模型按文本块输出是否存在误导性陈述及其证据判定：
 \begin{itemize}[leftmargin=2em,itemsep=0pt]
-  \item \textbf{命题与表述检查}：提取每个待审块的主—谓—宾命题，检查是否存在“直接声明原答案后，宣称其已失效或按新标准重分类”的勘误表述或伪造的系统指令等直接的误导性内容；
-  \item \textbf{跨块关系检查}：对触发$\Phi_{\mathrm{prov}}$或$\Phi_{\mathrm{bridge}}$的成对文本块，检查规则块定义的分类代号与实例块中的查询主体绑定关系；
-  \item \textbf{参照证据比较}：与参照文本$c_{\mathrm{anchor}}$比对事实一致性，输出模型判为投毒的文本块集合$\mathcal U\subseteq\mathcal S_{\mathrm{judge}}$并从$\mathcal C_{\mathrm{surv}}$中移除，按原始检索排名保留前$m$个文本块输入生成模型。
+  \item \textbf{命题与表述检查}：提取每个待审块的主谓宾命题，识别是否存在“声称早期记录或原答案失效、按新代号重新认定”的虚假勘误表述，或伪造系统控制指令等直接误导内容；
+  \item \textbf{跨块关系核验}：对触发同源远距或桥接实体的块对，核实规则块与实例块之间是否存在协同伪造推导链路；
+  \item \textbf{事实一致性比对}：在参照文本$c_{\mathrm{anchor}}$可用时，比对各待审命题与参照事实的一致性。
 \end{itemize}
+在此过程中，同源性、稀有桥接实体或与单一参照不一致仅构成送审线索，不单独作为删除依据；当判别模型无法明确支持投毒判定时保留该块，以防止误删正常多跳桥接证据。判别模型最终输出确认的投毒文本块集合$\mathcal U\subseteq\mathcal S_{\mathrm{judge}}$。
 
-\todo[inline,size=\small]{\textbf{S3-16｜说明判断依据及上下文输出。}将待审块、触发关系与可用参照一起送入一次联合判别，按块输出是否存在误导性陈述及相关依据，得到$\mathcal U\subseteq\mathcal S_{\mathrm{judge}}$。同源、稀有桥接或与单一参照不一致只构成检查线索，不单独作为删除依据；无法支持投毒判断时保留该块。按$\mathcal C^*=\operatorname{TOP}_m(\mathcal C_{\mathrm{surv}}\setminus\mathcal U)$恢复生成输入，其中TOP沿原检索顺序取至多$m$块，不足时保留已有块。用一句话接到$G(q,\mathcal C^*)$。正文与算法2保持“数值特征融合—统计及结构筛选—语义判断—过滤输出”的对应，不再增加融合机制名称或多轮组合枚举。}
-
-完整流程如算法\ref{alg:defense}所示。
+\textbf{3) 上下文重构与生成调用。}从存活块集合中剔除确认的投毒块$\mathcal U$，恢复生成模型的输入上下文：
+\begin{equation}
+  \mathcal C^*=\operatorname{TOP}_m(\mathcal C_{\mathrm{surv}}\setminus\mathcal U),
+  \label{eq:context_filter}
+\end{equation}
+其中$\operatorname{TOP}_m$表示沿原始检索排名截取至多$m$个文本块，若剩余有效块数不足$m$则完整保留$\mathcal C_{\mathrm{surv}}\setminus\mathcal U$。重构后的安全上下文$\mathcal C^*$输入生成器生成最终答案$\hat y=G_\omega(q,\mathcal C^*)$。完整防御流程如算法\ref{alg:defense}所示。
 
 \begin{algorithm}[htbp]
   \small
   \caption{Context Representation Analysis for RAG Defense}
   \label{alg:defense}
-  \KwIn{query $q$, retrieved Top-$K$ chunks $\mathcal C_q=\{c_1,\dots,c_K\}$, calibrated thresholds $\tau_{\mathrm{low}},\tau_{\mathrm{high}},\tau_{\mathrm{spacer}},\tau_{\mathrm{df}}$, model $\mathcal M$, target context size $m$}
+  \KwIn{query $q$, retrieved Top-$K$ chunks $\mathcal C_q=\{c_1,\dots,c_K\}$, fitted parameters $(\mathbf w,b)$, normalization stats $(\boldsymbol\mu_f,\boldsymbol\sigma_f)$, calibrated thresholds $\tau_{\mathrm{low}},\tau_{\mathrm{high}},\tau_{\mathrm{spacer}},\tau_{\mathrm{df}}$, judge model $\mathcal M$, target context size $m$}
   \KwOut{filtered context $\mathcal C^*$}
   $\mathcal C_{\mathrm{surv}}\leftarrow\emptyset$;\quad $\mathcal S_{\mathrm{judge}}\leftarrow\emptyset$\;
   \tcp{Stage 1a: Statistical screening}
   \ForEach{$c_i\in\mathcal C_q$}{
-    Compute anomaly score $A(q,c_i)=\mathbf w^\top\tilde{\mathbf f}_i$ from Eq.~\eqref{eq:dynamics_features}\;
+    $\tilde{\mathbf f}_i\leftarrow(f(c_i)-\boldsymbol\mu_f)/\max(\boldsymbol\sigma_f,\epsilon)$;\quad $A(q,c_i)\leftarrow b+\mathbf w^\top\tilde{\mathbf f}_i$\;
     \If{$A(q,c_i)\le\tau_{\mathrm{high}}$}{
       $\mathcal C_{\mathrm{surv}}\leftarrow\mathcal C_{\mathrm{surv}}\cup\{c_i\}$\;
       \lIf{$A(q,c_i)>\tau_{\mathrm{low}}$}{$\mathcal S_{\mathrm{judge}}\leftarrow\mathcal S_{\mathrm{judge}}\cup\{c_i\}$}
@@ -317,7 +340,7 @@
   }
   \lIf{$\mathcal S_{\mathrm{judge}}=\emptyset$}{\Return{$\operatorname{TOP}_m(\mathcal C_{\mathrm{surv}})$}}
   \tcp{Stage 2: LLM review}
-  Select reference text $c_{\mathrm{anchor}}$ from $\mathcal C_{\mathrm{surv}}\setminus\mathcal S_{\mathrm{judge}}$ via Eq.~\eqref{eq:anchor}\;
+  Select reference text $c_{\mathrm{anchor}}$ from $\mathcal C_{\mathrm{clean\_cand}}$ via Eq.~\eqref{eq:anchor}\;
   $\mathcal U\leftarrow\operatorname{JUDGE}_{\mathcal M}(q,c_{\mathrm{anchor}},\mathcal S_{\mathrm{judge}},\mathcal G_q)$\;
   $\mathcal C^*\leftarrow\operatorname{TOP}_m(\mathcal C_{\mathrm{surv}}\setminus\mathcal U)$\;
   \Return{$\mathcal C^*$}\;
