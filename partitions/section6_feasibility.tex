@@ -32,11 +32,11 @@
   \end{tabularx}
 \end{table}
 
-围绕\autoref{tab:exp_setup}，实验按“主设置机制闭环$\rightarrow$攻防对抗与效用权衡$\rightarrow$跨尺度与跨检索器泛化边界”三层递进组织：
+围绕\autoref{tab:exp_setup}，拟开展以下几组实验：
 \begin{itemize}[leftmargin=2em,itemsep=2pt]
-  \item \textbf{第一层：主配置下的单源跨块协同机制验证与归因实验}：在主设置（$K_{\mathrm{size}}=256$、Contriever、$|\mathcal D_{\mathrm{adv}}|=1$）下，完整跑通“源文档改写$\rightarrow$全文分块$\rightarrow$自然Top-$5$检索$\rightarrow$生成”链路，逐条查询记录载荷构造成功率、重切分后$Z_{\phi_0}$通过率、$\mathcal V_{\mathrm{comp}}$通过率与端到端ASR；同时对比固定$K-2$背景$B_0$与中性替代块的四组受控上下文（$C_{00},C_{10},C_{01},C_{11}$及$BA$反序对照）与自然检索回填消融上下文，分别度量受控语义协同效应与自然检索竞争行为，并统计影子至受害者模型的迁移差$\Delta_{\mathrm{gen}}$。
-  \item \textbf{第二层：多类投毒下的鲁棒防御、多跳证据保留与延迟分解实验}：在涵盖检索操纵、单点投毒与研究点一跨块组合投毒的混合攻击集及多跳干净集上，对比五项代表性防御基线；联合报告查询级校准下的经验误警率、检出率、残余ASR、攻击下ACC、$\Delta\mathrm{CACC}$、$\mathrm{Gap}_{\mathrm{other}}$、多跳桥接保留率$\mathrm{BR}$、触发率$p_{\mathrm{esc}}$及式\eqref{eq:latency_decomp}的各阶段耗时均值，并对四维统计特征、三类多重图结构指示器与异源锚点分离约束开展逐通道消融。
-  \item \textbf{第三层：未知分块边界鲁棒性与跨检索器迁移边界实验}：在$K_{\mathrm{size}}\in\{128,256,512\}$三档分块容量、多相位验收视图集及BM25、Contriever-MS、ANCE、BGE-m3四类黑盒检索器上评测跨配置有效联合召回率$\widehat p_{\mathrm{joint}}$、角色保持率与迁移ASR，明确方法在不同分块粒度与检索范式下的实证性能边界。
+  \item \textbf{单源跨块协同机制验证与归因实验}：在主设置（$K_{\mathrm{size}}=256$、Contriever、$|\mathcal D_{\mathrm{adv}}|=1$）下，完整跑通“源文档改写$\rightarrow$全文分块$\rightarrow$自然Top-$5$检索$\rightarrow$生成”链路，逐条查询记录载荷构造成功率、重切分后$Z_{\phi_0}$通过率、$\mathcal V_{\mathrm{comp}}$通过率与端到端ASR；同时对比固定$K-2$背景$B_0$与中性替代块的四组受控上下文（$C_{00},C_{10},C_{01},C_{11}$及$BA$反序对照）与自然检索回填消融上下文，分别度量受控语义协同效应与自然检索竞争行为，并统计影子至受害者模型的迁移差$\Delta_{\mathrm{gen}}$。
+  \item \textbf{多类投毒下的鲁棒防御、多跳证据保留与延迟分解实验}：在涵盖检索操纵、单点投毒与研究点一跨块组合投毒的混合攻击集及多跳干净集上，对比五项代表性防御基线；联合报告查询级校准下的经验误警率、检出率、残余ASR、攻击下ACC、$\Delta\mathrm{CACC}$、$\mathrm{Gap}_{\mathrm{other}}$、多跳桥接保留率$\mathrm{BR}$、触发率$p_{\mathrm{esc}}$及式\eqref{eq:latency_decomp}的各阶段耗时均值，并对统计特征、多重图结构指示器与异源锚点分离约束开展消融实验。
+  \item \textbf{未知分块边界鲁棒性与跨检索器迁移边界实验}：在$K_{\mathrm{size}}\in\{128,256,512\}$三档分块容量、多相位验收视图集及BM25、Contriever-MS、ANCE、BGE-m3四类黑盒检索器上评测跨配置有效联合召回率$\widehat p_{\mathrm{joint}}$、角色保持率与迁移ASR，明确方法在不同分块粒度与检索范式下的实证性能边界。
 \end{itemize}
 
 \subsection{实验可行性分析}
