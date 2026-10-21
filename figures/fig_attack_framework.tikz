@@ -1,4 +1,4 @@
-% 研究点一：同源跨块投毒方法流程，黑白框图
+% 研究点一：基于同源多文本块协同的分布式投毒攻击框架流程，黑白框图
 \begin{tikzpicture}[
   font=\small,
   box/.style={draw=black,thick,fill=white,align=center,text width=44mm,minimum height=11mm,inner sep=3pt},
@@ -11,7 +11,7 @@
 % 阶段一
 \node[box,below=12mm of input] (s2) {选择插入位置\\预选段落与组装后间距检查\\核心间距$\ge\gamma K_{\max}$};
 \node[box,left=6mm of s2] (s1) {构造规则块与实例块\\$\mathcal P_A$：规则块，$\mathcal P_B$：实例块\\前后拼接背景句};
-\node[box,right=6mm of s2] (s3) {固定背景$B_0$对比上下文\\$C_{00},C_{10},C_{01},C_{11}$\\容量恒为$K$且背景一致};
+\node[box,right=6mm of s2] (s3) {固定背景$B_0$对比上下文\\$C_{00},C_{10},C_{01},C_{11}$\\块数均为$K$，背景相同};
 \node[wide,below=6mm of s2] (gate) {组合生成判据$\mathcal V_{\mathrm{comp}}(x)$：$C_{00},C_{10},C_{01}$均不命中$a^*$\ \ $\land$\ \ 双块$C_{11}=[B_0,c_A,c_B]$命中$a^*$};
 \node[stage,fit=(s1)(s3)(gate)] (st1) {};
 \node[lab,anchor=west] at ([xshift=3mm]st1.north west) {阶段一：双块载荷构造};
@@ -24,8 +24,8 @@
 \node[wide,below=12mm of gate] (freeze) {固定核心载荷$(\mathcal P_A,\mathcal P_B)$与背景句$(\mathcal S_A,\mathcal S_B)$，设定检索优化的参考阈值$\tau_q=s(q,d_{(K-1)})$};
 \draw[arr] (gate.south) -- node[right,font=\scriptsize]{通过} (freeze.north);
 % 阶段二
-\node[box,below=12mm of freeze] (t2) {跨视图检索损失$\mathcal L_{\mathrm{rob}}$\\有效视图集$\Phi^+$上计算\\存活权重加权与得分波动};
-\node[box,left=6mm of t2] (t1) {双侧触发器布局\\在核心前后放置触发器副本\\检查核心完整性与截断量};
+\node[box,below=12mm of freeze] (t2) {跨视图检索损失$\mathcal L_{\mathrm{rob}}$\\有效视图集$\Phi^+$上计算\\有效视图平均与得分差异};
+\node[box,left=6mm of t2] (t1) {放置触发器\\在核心前后放置触发器副本\\实际分块检查完整性与分离};
 \node[box,right=6mm of t2] (t3) {交替优化触发器\\更新损失较大角色块\\词法检查与局部流畅度约束};
 \node[stage,fit=(t1)(t3)] (st2) {};
 \node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：检索触发器优化};

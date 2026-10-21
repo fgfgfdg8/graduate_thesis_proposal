@@ -2,19 +2,19 @@
 \begin{tikzpicture}[
   font=\small,
   box/.style={draw=black,thick,fill=white,align=center,text width=58mm,minimum height=11mm,inner sep=3pt},
-  rp/.style={draw=black,very thick,fill=white,align=center,text width=58mm,minimum height=12mm,inner sep=3pt},
+  rp/.style={draw=black,very thick,fill=white,align=center,text width=58mm,minimum height=16mm,inner sep=3pt},
   head/.style={draw=black,thick,fill=white,align=center,text width=144mm,minimum height=11mm,inner sep=3pt},
   prob/.style={draw=black,dashed,fill=white,align=center,text width=58mm,minimum height=10mm,inner sep=3pt,font=\footnotesize},
   arr/.style={-{Stealth[length=2mm]},thick,black}
 ]
 \node[head] (title) {\textbf{面向大语言模型检索增强生成系统的安全攻防研究}\\核心问题：文档级摄入与块级检索之间的粒度差};
-\node[prob,below=8mm of title,xshift=-43mm] (pa) {攻击侧：单个文本承载完整攻击逻辑，\\未利用同源文本块之间的信息分工};
-\node[prob,below=8mm of title,xshift=43mm] (pd) {防御侧：依赖单块异常或多轮隔离生成，\\难以兼顾组合检测、多跳证据与开销};
-\node[rp,below=7mm of pa] (a0) {\textbf{研究点一}\\同源跨块投毒方法};
-\node[rp,below=7mm of pd] (d0) {\textbf{研究点二}\\检索上下文投毒检测方法};
+\node[prob,below=8mm of title,xshift=-43mm] (pa) {攻击侧：已引述的单文档方法由单个文本\\承载完整攻击逻辑，本文考察同源文本块的信息分工};
+\node[prob,below=8mm of title,xshift=43mm] (pd) {防御侧：现有方法依据的信号各异，本文关注\\同源跨块下的检测、桥接证据保留与开销};
+\node[rp,below=7mm of pa] (a0) {\textbf{研究点一}\\基于同源多文本块协同的\\分布式投毒攻击框架};
+\node[rp,below=7mm of pd] (d0) {\textbf{研究点二}\\基于检索上下文表征分析的\\检索增强生成安全防御方法};
 \node[box,below=5mm of a0] (a1) {单源威胁模型与问题形式化\\共同检索与目标答案生成};
 \node[box,below=5mm of a1] (a2) {阶段一：构造双块载荷\\插入位置、背景句、组合检验$\mathcal V_{\mathrm{comp}}$};
-\node[box,below=5mm of a2] (a3) {阶段二：检索触发器优化\\双侧触发器、跨视图检索损失、交替优化};
+\node[box,below=5mm of a2] (a3) {阶段二：检索触发器优化\\跨视图检索损失、交替优化};
 \node[box,below=5mm of d0] (d1) {服务端防御目标\\检测、证据保留与延迟约束};
 \node[box,below=5mm of d1] (d2) {阶段一：统计筛选与跨块关系检查\\查询级阈值校准与实体—命题多重图};
 \node[box,below=5mm of d2] (d3) {阶段二：对待审块调用LLM\\结合其他来源参照文本检查并过滤};
