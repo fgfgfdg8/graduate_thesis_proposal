@@ -1,10 +1,10 @@
-﻿\section{研究基础与可行性分析}
+\section{研究基础与可行性分析}
 
 \subsection{理论可行性分析}
 
 \textbf{攻击侧分析依据。}本研究将单一源文档篡改预算下的跨块前提分离\cite{chang2025oneshot,zhang2026inceptionrag}与分块感知的离散触发器搜索\cite{nie2026crcp}组织为两阶段框架。在上下文生成方面，本研究拟考察大语言模型在读取多个检索块时整合通用规则块$\mathcal P_A$与实例绑定块$\mathcal P_B$的信息组合行为，通过固定背景对照检验单块不触发目标答案、双块共同出现时触发目标答案的协同条件。在离散触发器搜索方面，本研究借鉴HotFlip与GCG的一阶词元嵌入梯度近似筛除候选替换词元，再通过组装重切分后的前向重评估比较实际目标得分\cite{ebrahimi-etal-2018-hotflip,zou2023universal}；同时结合插入位置选择、双侧触发器布局与有效切分视图上的软间隔检索损失，考察不同切分配置下角色核心完整性与双块联合召回率的变化。
 
-\textbf{防御侧分析依据。}本研究结合单块检索统计特征、分位阈值校准与跨块关系检查构建两阶段检测流程。在统计特征方面，利用Ledoit-Wolf线性收缩估计\cite{ledoit2004well}计算高维嵌入协方差矩阵及其正则逆，结合尾谱马氏距离\cite{mahalanobis1936generalized,lee2018simple}、查询对齐残差、块内子窗对齐落差与基于截断奇异值分解的词项—语义残差\cite{deerwester1990indexing,robertson2009probabilistic}，考察四类特征对触发器扰动与正常文本的区分能力。在阈值设定方面，当校准集上的良性查询最大块级风险分满足可交换性条件时，无分布分位校准\cite{vovk2005algorithmic,angelopoulos2023conformal}可将阶段一统计筛选的查询级边际误警率控制在目标水平$\alpha$以内。在跨块关系与复核方面，利用文档溯源元数据与实体—命题多重图将跨块连接表示为实体与命题之间的关系，并结合异源参照锚点开展单次LLM语义复核\cite{chiang2023judging,zhang2025traceback,yin2026rade}，后续实验将以投毒检出率、多跳桥接证据保留率、复核送审比例及阶段耗时评估整体防御效果。
+\textbf{防御侧分析依据。}本研究结合单块检索统计特征、分位阈值校准与跨块关系检查构建两阶段检测流程。在统计特征方面，利用Ledoit-Wolf线性收缩估计\cite{ledoit2004well}计算高维嵌入协方差矩阵及其正则逆，结合尾谱马氏距离平方\cite{mahalanobis1936generalized,lee2018simple}、词项子空间残差比\cite{deerwester1990indexing,robertson2009probabilistic}、查询方向的正交/平行分量比与首尾子窗余弦距离，考察四类特征对触发器扰动与正常文本的区分能力。在阈值设定方面，当校准集上的良性查询最大块级风险分满足可交换性条件时，无分布分位校准\cite{vovk2005algorithmic,angelopoulos2023conformal}可将阶段一统计筛选的查询级边际误警率控制在目标水平$\alpha$以内。在跨块关系与复核方面，利用文档溯源元数据与实体—命题多重图将跨块连接表示为实体与命题之间的关系，并结合异源参照锚点开展单次LLM语义复核\cite{chiang2023judging,zhang2025traceback,yin2026rade}，后续实验将以投毒检出率、多跳桥接证据保留率、复核送审比例及阶段耗时评估整体防御效果。
 
 \subsection{实验设计与评价方法}
 
