@@ -8,7 +8,7 @@
 
 \subsection{实验设计与评价方法}
 
-本研究在统一的实验环境与分层评测协议下对两个研究点开展评估。整体实验配置、对比基线与评价指标如\autoref{tab:exp_setup}所示，所有特征拟合参数、查询级校准阈值与超参数均在独立开发集（$\mathcal D_{\mathrm{fit}}\cup\mathcal D_{\mathrm{cal}}$）上固定后再用于测试集评测。在生成安全评价中，除统计回答准确率（ACC）与攻击成功率（ASR）外，在同一查询分母与互斥判分口径下定义正确回答与定向目标回答两类之外的回答比例$\mathrm{Gap}_{\mathrm{other}}=1-\mathrm{ACC}-\mathrm{ASR}$（涵盖拒答、无关回答及其他错误答案；若分别执行两次独立命中判定，则按两者均未命中直接计数），并以$\Delta_{\mathrm{gen}}$表示影子生成器与受害者生成器之间的迁移命中率之差。
+本研究在统一的实验环境与分层评测协议下对两个研究点开展评估。整体实验配置、对比基线与评价指标如\autoref{tab:exp_setup}所示，所有特征拟合参数、查询级校准阈值与超参数均在独立开发集（$\mathcal D_{\mathrm{fit}}\cup\mathcal D_{\mathrm{cal}}$）上固定后再用于测试集评测。在生成安全评价中，除统计回答准确率（ACC）与攻击成功率（ASR）外，在同一查询分母与互斥判分口径下定义正确回答与定向目标回答两类之外的回答比例$\mathrm{Gap}_{\mathrm{other}}=1-\mathrm{ACC}-\mathrm{ASR}$（涵盖拒答、无关回答及其他非目标错误答案），并以$\Delta_{\mathrm{gen}}$表示影子生成器与受害者生成器之间的迁移命中率之差。
 
 \begin{table}[htbp]
   \centering
