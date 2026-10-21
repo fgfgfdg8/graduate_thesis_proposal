@@ -75,7 +75,7 @@
 \end{equation}
 其中$\rho_A=0.33,\rho_B=0.66$为目标相对分位点。将候选段落插入所选位置组装为候选文档$D_{\mathrm{cand}}$后，检验实际核心间距$\operatorname{start}_{D_{\mathrm{cand}}}(\mathcal P_B)-\operatorname{end}_{D_{\mathrm{cand}}}(\mathcal P_A)\ge\gamma K_{\max}$，并经影子分块器切分提取满足双角色完整分离的有效视图集合$\Phi^+=\{\phi\in\Phi_{\mathrm{shadow}}:I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}\}$。当$\Phi^+\neq\emptyset$时，任取参考视图$\phi_0\in\Phi^+$提取切分后的角色块$c_A,c_B$。
 
-\textbf{2) 互补角色块结构与生成算子池。}每个植入段落$P_j=\mathcal S_j^{\mathrm{pre}}\oplus\mathcal P_j\oplus\mathcal S_j^{\mathrm{post}}$（$j\in\{A,B\}$）依次拼接前置背景句$\mathcal S_j^{\mathrm{pre}}$、核心载荷$\mathcal P_j$和后置背景句$\mathcal S_j^{\mathrm{post}}$，其中$\oplus$表示文本拼接。前后背景句由$2\sim 3$句与插入段落前后文主题衔接的句子构成，置于核心载荷两侧以降低分块边界直接截断核心载荷的概率，并在自然句边界处提供阶段二检索触发器的插入插槽。初始核心载荷$(\mathcal P_A,\mathcal P_B)$由$\operatorname{PROPOSE}$依据查询$q$、参考答案$y_{\mathrm{true}}$、目标答案$a^*$及源文档语境生成，维护四类互补构造算子构成的策略池：
+\textbf{2) 互补角色块结构与生成算子池。}每个植入段落$P_j=\mathcal S_j^{\mathrm{pre}}\oplus\mathcal P_j\oplus\mathcal S_j^{\mathrm{post}}$（$j\in\{A,B\}$）依次拼接前置背景句$\mathcal S_j^{\mathrm{pre}}$、核心载荷$\mathcal P_j$和后置背景句$\mathcal S_j^{\mathrm{post}}$，其中$\oplus$表示文本拼接。前后背景句由$2\sim 3$句与插入段落前后文主题衔接的句子构成，置于核心载荷两侧以保护核心载荷在分块下的完整性，并在自然句边界处提供阶段二检索触发器的插入插槽。初始核心载荷$(\mathcal P_A,\mathcal P_B)$由$\operatorname{PROPOSE}$依据查询$q$、参考答案$y_{\mathrm{true}}$、目标答案$a^*$及源文档语境生成，维护四类互补构造算子构成的策略池：
 \begin{enumerate}[label=(\alph*),leftmargin=2.2em,itemsep=0pt]
   \item \textbf{规则—代号映射与勘误否定}：$\mathcal P_A$定义领域分类标准并声明旧记录已按代号重核定，$\mathcal P_B$陈述查询主体对应的分类代号；
   \item \textbf{代理实体等价桥接}：$\mathcal P_A$赋予同域非查询参照实体目标属性，$\mathcal P_B$建立查询主体与参照实体的等价关联\cite{zhang2026inceptionrag}；
