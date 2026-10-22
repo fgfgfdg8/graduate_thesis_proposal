@@ -26,7 +26,7 @@
 % 阶段二
 \node[box,below=14mm of gray] (j2) {LLM复核\\命题、跨块关系、参照文本};
 \node[box,left=6mm of j2] (j1) {选择其他来源参照文本\\非待审保留块中来源不同者};
-\node[box,right=6mm of j2] (j3) {移除判为投毒的块\\输出剩余上下文};
+\node[box,right=6mm of j2] (j3) {移除判为投毒的块\\输出净化上下文};
 \node[stage,fit=(j1)(j3)] (st2) {};
 \node[lab,anchor=west] at ([xshift=3mm]st2.north west) {阶段二：对待审块调用LLM复核};
 \draw[arr] (gray.south) -- (j2.north);
