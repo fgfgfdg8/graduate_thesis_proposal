@@ -2,13 +2,27 @@
 
 \subsection{理论可行性分析}
 
-\textbf{攻击侧分析依据。}本研究将单一源文档篡改预算下的跨块前提分离\cite{chang2025oneshot,zhang2026inceptionrag}与分块感知的离散触发器搜索\cite{nie2026crcp}组织为两阶段框架。在上下文生成方面，本研究拟考察大语言模型在读取多个检索块时整合通用规则块$\mathcal P_A$与实例绑定块$\mathcal P_B$的信息组合行为，通过固定背景对照检验单块不触发目标答案、双块共同出现时触发目标答案的协同条件。在离散触发器搜索方面，本研究借鉴HotFlip与GCG的一阶词元嵌入梯度近似筛除候选替换词元，再通过组装重切分后的前向重评估比较实际目标得分\cite{ebrahimi-etal-2018-hotflip,zou2023universal}；同时结合插入位置选择、双侧触发器布局与有效切分视图上的软间隔检索损失，考察不同切分配置下角色核心完整性与双块联合召回率的变化。
+\textbf{攻击侧理论基础。}本研究提出的同源多文本块协同投毒框架建立在检索增强生成投毒建模与离散对抗优化两方面的成熟研究基础之上。在生成诱导与多文本协同方面，Zou等\cite{zou2025poisonedrag}提出的检索与生成双条件联合建模框架确立了知识库投毒的形式化分析范式，Chang等\cite{chang2025oneshot}与Zhang等\cite{zhang2026inceptionrag}进一步证实大语言模型在推理阶段具备整合跨段落证据链与三段论互补前提以导出指定结论的上下文演绎能力，为本研究在单一源文档内解耦通用规则块$\mathcal P_A$与实例绑定块$\mathcal P_B$提供了生成机理依据。在未知分块下的检索优化方面，Ebrahimi等\cite{ebrahimi-etal-2018-hotflip}提出的HotFlip与Zou等\cite{zou2023universal}提出的GCG证明利用词元嵌入的一阶泰勒梯度初筛结合前向精确重评可有效求解离散文本搜索问题，Nie等\cite{nie2026crcp}则验证了将分块切分建模为随机边界变换并在多切分视图上优化期望损失的可行性。上述前人工作为本研究采用两阶段解耦策略、在固定核心载荷语义的前提下通过双侧触发器交替坐标搜索提升双块共同召回率提供了扎实的理论支撑。
 
-\textbf{防御侧分析依据。}本研究结合单块检索统计特征、分位阈值校准与跨块关系检查构建两阶段检测流程。在统计特征方面，利用Ledoit-Wolf线性收缩估计\cite{ledoit2004well}计算高维嵌入协方差矩阵及其正则逆，结合尾谱马氏距离平方\cite{mahalanobis1936generalized,lee2018simple}、词项子空间残差比\cite{deerwester1990indexing,robertson2009probabilistic}、查询方向的正交/平行分量比与首尾子窗余弦距离，考察四类特征对触发器扰动与正常文本的区分能力。在阈值设定方面，当校准集上的良性查询最大块级风险分满足可交换性条件时，无分布分位校准\cite{vovk2005algorithmic,angelopoulos2023conformal}可将阶段一统计筛选的查询级边际假阳性率控制在目标水平$\alpha$以内。在跨块关系与复核方面，利用文档溯源元数据与实体—命题多重图将跨块连接表示为实体与命题之间的关系，并结合异源参照锚点开展单次LLM语义复核\cite{chiang2023judging,zhang2025traceback,yin2026rade}，后续实验将以投毒检出率、多跳桥接证据保留率、复核送审比例及阶段耗时评估整体防御效果。
+\textbf{防御侧理论基础。}本研究提出的两阶段级联防御方法依托于高维表示空间分布外检测、无分布共形分位校准以及结构化冲突核验的既有理论成果。在单块检索统计表征方面，Mahalanobis\cite{mahalanobis1936generalized}与Lee等\cite{lee2018simple}建立的马氏距离检测理论表明对抗扰动在低方差特征子空间中会产生显著的统计偏离，Ledoit与Wolf\cite{ledoit2004well}提出的线性收缩估计保证了高维有限样本下协方差矩阵的正定可逆性，而Deerwester等\cite{deerwester1990indexing}的潜在语义分析理论则为度量稀疏词项偏离语料主子空间的残差能量提供了数学工具，共同构成了阶段一构造四维检索统计特征的理论基础。在阈值设定方面，Vovk等\cite{vovk2005algorithmic}与Angelopoulos等\cite{angelopoulos2023conformal}发展的可交换样本顺序统计量与共形预测理论证明，基于独立干净校准集的分位数阈值可在无需先验分布假设的条件下严格约束新查询的边际假阳性率上界。在跨块关系与语义复核方面，成熟的开放域关系抽取技术\cite{honnibal2020spacy,angeli2015leveraging}以及经Zheng等\cite{chiang2023judging}、Zhang等\cite{zhang2025traceback}和Yin等\cite{yin2026rade}验证的大语言模型证据审计范式，为本研究利用实体—命题有向多重图捕获跨块关联并结合异源参照文本执行单次复核提供了可靠的方法学依据。综上，本课题在攻防两侧均具备坚实的理论基础。
 
 \subsection{实验设计与评价方法}
 
-本研究在统一的实验环境与分层评测协议下对两个研究点开展评估。整体实验配置、对比基线与评价指标如\autoref{tab:exp_setup}所示，所有特征拟合参数、查询级校准阈值与超参数均在独立开发集（$\mathcal D_{\mathrm{fit}}\cup\mathcal D_{\mathrm{cal}}$）上固定后再用于测试集评测。在生成安全评价中，除统计回答准确率（ACC）与攻击成功率（ASR）外，在同一查询分母与互斥判分口径下定义正确回答与定向目标回答两类之外的回答比例$\mathrm{Gap}_{\mathrm{other}}=1-\mathrm{ACC}-\mathrm{ASR}$（涵盖拒答、无关回答及其他非目标错误答案），并以$\Delta_{\mathrm{gen}}$表示影子生成器与受害者生成器之间的迁移命中率之差。
+\textbf{实验配置。}本研究在统一的实验环境与分层评测协议下对两个研究点开展实验评估，具体的数据集、分块尺度、检索器矩阵与对比基线配置如\autoref{tab:exp_setup}所示。
+
+\textbf{主要评价指标。}设评测查询集合为$\mathcal Q$（样本数$N=|\mathcal Q|$），固定评估分块视图集合为$\Phi_{\mathrm{eval}}$，查询$q\in\mathcal Q$对应的候选投毒源文档$x_q$在$\Phi_{\mathrm{eval}}$上的结构有效视图子集为$\Phi_{\mathrm{eval}}^+(x_q)=\{\phi\in\Phi_{\mathrm{eval}}:I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}\}$，各项评价指标的定义与计算式如下：
+\begin{itemize}[leftmargin=2em,itemsep=2pt]
+  \item \textbf{端到端攻击成功率（$\mathrm{ASR}$）}：度量目标系统最终生成的回答$\hat y_q$被语义判定器$J$判定为命中预设错误答案$a_q^*$的查询比例，计算式为 $\mathrm{ASR}=\frac{1}{N}\sum_{q\in\mathcal Q}\mathbb I\big[J(q,a_q^*,\hat y_q)=1\big]$。
+  % \item \textbf{结构有效覆盖率（$v$）}：度量候选投毒源文档在评估分块视图集中保持双角色完整且落入不同分块的比例，计算式为 $v=\frac{1}{N}\sum_{q\in\mathcal Q}\frac{|\Phi_{\mathrm{eval}}^+(x_q)|}{|\Phi_{\mathrm{eval}}|}$。
+  % \item \textbf{条件共同召回率（$r$）}：度量在结构有效视图非空的查询子集$\mathcal Q^+=\{q\in\mathcal Q:\Phi_{\mathrm{eval}}^+(x_q)\neq\emptyset\}$上两个角色块共同进入Top-$K$检索结果的比例，计算式为 $r=\frac{1}{|\mathcal Q^+|}\sum_{q\in\mathcal Q^+}\frac{1}{|\Phi_{\mathrm{eval}}^+(x_q)|}\sum_{\phi\in\Phi_{\mathrm{eval}}^+(x_q)}Z_\phi(x_q)$。
+  \item \textbf{总体共同召回率（$p$）}：度量攻击侧候选投毒源文档在全部评估分块视图上的总体双块共同召回率（无效视图计为$0$，单题满足$p_q=v_q r_q$），计算式为 $p=\frac{1}{N}\sum_{q\in\mathcal Q}\frac{1}{|\Phi_{\mathrm{eval}}|}\sum_{\phi\in\Phi_{\mathrm{eval}}}Z_\phi(x_q)$。
+  % \item \textbf{受控组合判据通过率（$\mathrm{Pass}_{\mathrm{comp}}$）}：度量固定背景四组对照上下文中满足单块均不命中、双块联合命中目标答案$a_q^*$的查询比例，计算式为 $\mathrm{Pass}_{\mathrm{comp}}=\frac{1}{N}\sum_{q\in\mathcal Q}\mathcal V_{\mathrm{comp}}(x_q)$。
+  \item \textbf{回答准确率（$\mathrm{ACC}$）与干净准确率变化量（$\Delta\mathrm{CACC}$）}：分别度量攻击侧系统输出命中标准答案$y_{q,\mathrm{true}}$的查询比例及部署防御策略$\pi$前后的干净准确率差值，计算式为 $\mathrm{ACC}=\frac{1}{N}\sum_{q\in\mathcal Q}\mathbb I\big[J(q,y_{q,\mathrm{true}},\hat y_q)=1\big]$ 与 $\Delta\mathrm{CACC}=\mathrm{ACC}_{\mathrm{clean}}(\pi)-\mathrm{ACC}_{\mathrm{clean}}(\mathrm{id})$。
+  % \item \textbf{非目标残余响应率（$\mathrm{Gap}_{\mathrm{other}}$）}：在互斥判分准则下度量既未命中标准答案也未命中目标答案（涵盖拒答、无关回答及其他非目标错误回答）的查询比例，计算式为 $\mathrm{Gap}_{\mathrm{other}}=\frac{1}{N}\sum_{q\in\mathcal Q}\mathbb I\big[J(q,y_{q,\mathrm{true}},\hat y_q)=0\land J(q,a_q^*,\hat y_q)=0\big]=1-\mathrm{ACC}-\mathrm{ASR}$。
+ %  \item \textbf{影子—受害者生成迁移差（$\Delta_{\mathrm{gen}}$）}：度量双块竞争上下文$C_{11}$在影子生成模型与受害者生成模型上的目标答案命中率之差，计算式为 $\Delta_{\mathrm{gen}}=\frac{1}{N}\sum_{q\in\mathcal Q}\Big(\mathbb I\big[J(q,a_q^*,G_{\mathrm{shadow}}(q,C_{11}))=1\big]-\mathbb I\big[J(q,a_q^*,G_\omega(q,C_{11}))=1\big]\Big)$。
+  % \item \textbf{多跳桥接证据保留率（$\mathrm{BR}$）}：设多跳查询集$\mathcal Q_{\mathrm{mh}}$中查询$q$在候选集$\mathcal C_q$内的真实支撑事实块子集为$\mathcal G_q^{\mathrm{gold}}\subseteq\mathcal C_q$，防御过滤后上下文为$\mathcal C_q^*=\pi(\mathcal C_q)$，计算式为 $\mathrm{BR}=\frac{1}{|\mathcal Q_{\mathrm{mh}}|}\sum_{q\in\mathcal Q_{\mathrm{mh}}}\frac{|\mathcal C_q^*\cap\mathcal G_q^{\mathrm{gold}}|}{|\mathcal G_q^{\mathrm{gold}}|}$。
+  \item \textbf{假阳性率（$\mathrm{FPR}_q$）}：度量防御侧干净查询集$\mathcal Q_{\mathrm{clean}}$中触发高阈值直接剔除的查询比例，计算式为 $\mathrm{FPR}_q=\frac{1}{|\mathcal Q_{\mathrm{clean}}|}\sum_{q\in\mathcal Q_{\mathrm{clean}}}\mathbb I\big[\max_{c_i\in\mathcal C_q}A(q,c_i)>\tau_{\mathrm{high}}\big]$。
+\end{itemize}
 
 \begin{table}[htbp]
   \centering
@@ -19,48 +33,26 @@
     \toprule
     实验评测维度 & 具体配置、对比基线与评价指标内容 \\
     \midrule
-    评测数据集 & Natural Questions（NQ）\cite{kwiatkowski-etal-2019-natural}、MS MARCO\cite{bajaj2018msmarcohumangenerated}、HotpotQA（多跳问答）\cite{yang-etal-2018-hotpotqa} \\
-    分块与验证层次 & \textbf{主验证配置}：$K_{\mathrm{size}}=256$、白盒代理检索器Contriever\cite{izacard2022unsupervised}；\newline
-    \textbf{跨尺度与跨相位泛化层}：$K_{\mathrm{size}}\in\{128, 256, 512\}$及多相位视图集$\Phi_{\mathrm{shadow}}$ \\
+    评测数据集 & Natural Questions（NQ）\cite{kwiatkowski-etal-2019-natural}、MS MARCO\cite{bajaj2018msmarcohumangenerated}、HotpotQA（多跳问答）\cite{yang-etal-2018-hotpotqa}（各100题，合计300题） \\
+    系统与验证层次 & \textbf{主验证配置}：第一阶段检索直接返回Top-$5$上下文（不配置外置交叉编码重排序器）、$K_{\mathrm{size}}=256$、白盒代理检索器Contriever\cite{izacard2022unsupervised}；\newline
+    \textbf{跨尺度与跨相位扩展层}：固定评估视图集$\Phi_{\mathrm{eval}}$（覆盖$K_{\mathrm{size}}\in\{128, 256, 512\}$） \\
     检索器评测矩阵 & Contriever（白盒代理优化端）\cite{izacard2022unsupervised}；Contriever-MS、ANCE\cite{xiong2021approximate}、BGE-m3\cite{chen2024m3}、BM25\cite{robertson2009probabilistic}（黑盒跨检索器迁移端） \\
-    核心攻击对比基线 & PoisonedRAG\cite{zou2025poisonedrag}、CorruptRAG\cite{zhang2026corruptrag}、AuthChain\cite{chang2025oneshot}、CRCP\cite{nie2026crcp}、InceptionRAG\cite{zhang2026inceptionrag}、CamoDocs\cite{jung2026camodocs} \\
-    核心防御对比基线 & RAGDefender\cite{kim2025ragdefender}、TrustRAG\cite{zhou2025trustrag}、GRADA\cite{zheng2025grada}、RobustRAG\cite{xiang2024certifiably}、TRIS\cite{munir2026tris} \\
-    评价指标体系 & \textbf{检索与结构层}：重切分角色—触发器完整共存率、单视图联合召回指示量$Z_\phi$的查询均值与跨视图通过率$\widehat p_{\mathrm{joint}}$、投毒源召回率（SRR / CRRR）、多跳桥接保留率$\mathrm{BR}$；\newline
-    \textbf{生成与安全层}：等背景受控组合判据$\mathcal V_{\mathrm{comp}}$的查询平均通过率、端到端攻击成功率（ASR）、回答准确率（ACC）、干净准确率变化量（$\Delta\mathrm{CACC}$）、正确回答与定向目标回答两类之外的回答比例$\mathrm{Gap}_{\mathrm{other}}=1-\mathrm{ACC}-\mathrm{ASR}$、影子—受害者迁移差$\Delta_{\mathrm{gen}}$；\newline
-    \textbf{开销与延迟层}：查询级统计假阳性率、二阶段审查触发率$p_{\mathrm{esc}}$、统计筛选、跨块构图与LLM复核的各阶段平均耗时及单查询总延迟（ms） \\
+    攻击侧基线 & PoisonedRAG\cite{zou2025poisonedrag}、CorruptRAG\cite{zhang2026corruptrag}、AuthChain\cite{chang2025oneshot}、CRCP\cite{nie2026crcp}、InceptionRAG\cite{zhang2026inceptionrag}、CamoDocs\cite{jung2026camodocs}（按相同预算适配与原生设置分组报告） \\
+    防御侧基线 & RAGDefender\cite{kim2025ragdefender}、TrustRAG\cite{zhou2025trustrag}、GRADA\cite{zheng2025grada}、RobustRAG\cite{xiang2024certifiably}、TRIS\cite{munir2026tris}（按相同预算适配与原生设置分组报告） \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-围绕\autoref{tab:exp_setup}，拟开展以下几组实验：
-% BEGIN R4-05
-\todo[inline,nolist]{\textbf{R4-05：具体改写主指标与对照说明。}
-\textbf{修改位置：}第4.2节第一组“单源跨块协同机制验证与归因实验”及表1“生成与安全层”。将该组开头表意改为：“在既定300题及单源文档改写预算下，文档经过受害者分块与真实Top-5检索，按返回排名直接构造上下文并生成回答，以自然检索端到端ASR为主要攻击指标；构造失败计入目标集分母。”
-\par 不强制插入角色块、不移动其位置，也不为自然主实验补齐两个角色。这里沿用已抽样的三个数据集各100题，共300题，原始gold文档长度筛选仍为大于512词元。记录每题对应哪些gold载体、采用哪个分词器计长、$\gamma,L_{\mathrm{est}},K_{\max}$取值；不得按构造是否成功重新抽题补足300。全量val/dev分别统计gold可匹配比例及长文档覆盖；在候选长文档中报告满足式（5）的文档比例，在查询层报告至少有一个可行载体的查询比例；实际重切分通过率另列，不能用预选可行代替。将已有“载荷构造成功率”写明为成功产出可评测文档的题数除以300，各数据集分母100；无可行槽位、实际分块无效及构造轮数耗尽分别计数，均留在该目标集分母。可行载体条件ASR另列并注明分母，这样同时说明方法覆盖多少查询与在覆盖范围内的效果，而不改变原有大于512词元的抽样口径。
-\par 明确指标标注，在指标列表中分别标注：自然目标答案命中ASR；同时满足结构有效、双块共同召回及目标命中的比例；固定背景下$\mathcal V_{\mathrm{comp}}$通过率。后两项分别解释自然跨块实现与受控组合机制，不能互相替代，也不能把自然目标命中一概归因于双块协同。按R4-01报告300题总体及各数据集100题分母；如另报干净回答正确或构造成功条件下的ASR，明确其子集题数。
-\par 将原“自然检索回填消融”移到该组后半句并明确它是配对归因对照，大意是：以自然返回上下文为起点，按事先说明的移除／回填规则比较，记录回填来源及位置变化；它不是未经干预的自然主实验。现有四组等背景对照及BA反序保持，用于说明单块与双块差异和顺序影响。理由是固定末尾槽位下的生成效应不能代替真实排序与检索竞争下的效果。}
-% END R4-05
+围绕\autoref{tab:exp_setup}，拟依次开展以下四组实验：
 \begin{itemize}[leftmargin=2em,itemsep=2pt]
-  \item \textbf{单源跨块协同机制验证与归因实验}：在主设置（$K_{\mathrm{size}}=256$、Contriever、单一源文档篡改预算）下，评估源文档改写、全文分块、自然Top-$5$检索与生成过程，记录载荷构造成功率、重切分后$Z_{\phi_0}$查询平均通过率、$\mathcal V_{\mathrm{comp}}$查询平均通过率与端到端ASR；同时对比固定$K-2$背景$B_0$与中性替代块的四组受控上下文（$C_{00},C_{10},C_{01},C_{11}$及$BA$反序对照）与自然检索回填消融上下文，分别评估受控组合效应与自然检索竞争影响，并统计影子至受害者生成器的迁移差$\Delta_{\mathrm{gen}}$。
-  \item \textbf{多类投毒下的鲁棒防御、多跳证据保留实验}：在涵盖检索操纵、单点投毒与研究点一跨块组合投毒的混合攻击集及多跳干净集上，对比五项代表性防御基线；联合报告查询级校准下的经验假阳性率、检出率、残余ASR、攻击下ACC、$\Delta\mathrm{CACC}$、$\mathrm{Gap}_{\mathrm{other}}$、多跳桥接保留率$\mathrm{BR}$、触发率$p_{\mathrm{esc}}$以及统计筛选、跨块构图与LLM复核三阶段的耗时均值，并对四维统计特征、多重图结构检查与异源锚点约束开展消融实验。
-  \item \textbf{未知分块边界鲁棒性与跨检索器迁移边界实验}：在$K_{\mathrm{size}}\in\{128,256,512\}$三档分块容量、多相位评估视图集及BM25、Contriever-MS、ANCE、BGE-m3四类黑盒检索器上评测跨配置有效联合召回率$\widehat p_{\mathrm{joint}}$、角色保持率与迁移ASR，比较方法在不同分块粒度与检索模型下的性能变化。
-  \item \textbf{组件有效性消融实验}：在研究点一阶段二的触发器优化中，分别去除插入位置选择、双侧触发器布局与有效切分视图上的软间隔检索损失，评估各组件对端到端ASR、$Z_{\phi_0}$查询平均通过率与$\mathcal V_{\mathrm{comp}}$查询平均通过率的贡献；在研究点二阶段一的防御中，分别去除四维统计特征、多重图结构检查与异源锚点约束，评估各组件对检出率、残余ASR、$\Delta\mathrm{CACC}$、$\mathrm{BR}$及$p_{\mathrm{esc}}$的贡献，以证明拟议机制的方法论有效性。
+  \item \textbf{攻击实验}：在主配置与单一源文档改写约束下，完整执行源文档改写、受害者侧分块、自然Top-$5$检索与回答生成流程，并结合固定背景四元组受控对照以及自然检索上下文的配对移除回填对照开展归因分析。该实验旨在解决单一源文档切分出的同源文本块能否在真实检索竞争中共同召回并协同操纵生成输出这一核心问题，用于分离检索席位挤占效应与跨块前提合成效应，验证单块证据不足而双块协同导出目标答案的攻击机制。
+  \item \textbf{防御实验}：在涵盖检索排名操纵、单点直接投毒与同源跨块组合投毒的混合攻击数据以及正常多跳问答数据上，将所提防御方法与代表性过滤及聚合基线进行同口径对比，并严格隔离未参与开发调参的攻击类型以检验跨攻击泛化能力。该实验旨在解决防御机制如何在阻断隐蔽组合投毒的同时避免误删正常跨块桥接证据并控制在线计算开销的问题，用于验证两阶段级联防御在安全性、问答效用与推理延迟三者之间的综合权衡效果。
+  \item \textbf{迁移实验}：将主配置下构造的投毒源文档与防御方法扩展至多种分块窗口容量、切分起始相位以及不同训练范式的词项与稠密检索器上进行测试。该实验旨在解决攻防方法对受害者侧未知分块参数与异构检索表示空间的适应性问题，通过考察跨分块配置下的角色完整性保持能力与跨检索器迁移表现，明确所提攻防框架在不同系统环境下的适用范围与性能边界。
+  \item \textbf{消融实验}：在主配置下分别对研究点一的段落插入位置预选、双侧触发器布局与跨视图软间隔检索损失，以及研究点二的四维检索统计特征、实体—命题有向多重图关系检查与异源参照文本约束开展逐项移除对照。该实验旨在回答攻防框架中各子模块是否提供独立增益的问题，通过考察移除单一组件前后的检索召回、组合生成、投毒检出与多跳证据保留变化，验证两阶段解耦构造与统计—关系级联复核设计的必要性。
 \end{itemize}
-% BEGIN R4-07
-\todo[inline,nolist]{\textbf{R4-07：调整现有四个实验条目的顺序与重复内容。}
-\textbf{具体编辑：}第4.2节现有四个$\backslash$item依次为（1）单源协同机制，（2）多类攻击防御，（3）跨分块／跨检索器迁移，（4）组件消融。重排为（1）$\rightarrow$（4）$\rightarrow$（2）$\rightarrow$（3），即把现有第四项整体移到第一项之后，不另增一组实验。
-\par 第四项中的攻击与防御消融仍分别描述，均先在主配置下进行。原第二项末尾已写四维特征、多重图及异源锚点消融，与独立组件项重复，删去该重复句或改为引用组件项；其余多家族效果、干净准确率和延迟指标保留。组件项末尾“以证明拟议机制的方法论有效性”改为“评估各组件的贡献”。
-\par 在条目之前补一句：主配置的自然效果、基本消融及多家族防御为核心实验，跨尺度和跨检索器为扩展实验；表1列可选维度，实际运行组合与重复次数另列用于工时估算，不默认全部笛卡尔积。这是现有条目重排、去重和范围说明，不重写研究方法，不增加新的实验层级。}
-% END R4-07
 
 \subsection{实验可行性分析}
 
 \textbf{前期研究基础。}本研究前期已建成覆盖NQ、MS MARCO和HotpotQA三个数据集的统一评测底座，完成了Contriever、Contriever-MS、ANCE、BGE-m3和BM25五类检索器在多档分块容量下的同分块对齐索引。在基线评测方面，已完成全量20,428条查询的检索与生成覆盖运行，并在具备标准QA参考标签的17,036条查询/检索器分母上完成了$K_{\mathrm{size}}=256,K=5$主设置的干净语义回答准确率（ACC）标定（Contriever在NQ、HotpotQA、MS MARCO上的语义ACC分别为$71.31\%$、$47.68\%$与$60.13\%$，BGE-m3分别为$80.01\%$、$62.75\%$与$71.75\%$，BM25分别为$71.81\%$、$64.43\%$与$63.61\%$）。在攻击先导探索方面，前期手工Top-5概念验证（4个干净回答正确的目标实例）中有3例实现双块共同进入自然Top-5并命中目标答案，其中1例医院计数查询展现出自然双角色块依赖；在50条查询、150个候选载荷的独立增补诊断实验中，Contriever下后缀触发与前后缀触发分别在$49.0\%$与$24.1\%$的样本上保持了高检索排名；同时，前期已完成完整角色跨度判定与精确排名核验流程的联调测试。上述前期工作为本研究提供了扎实的数据底座与先导实验依据，而在等背景受控组合判据与全文重切分约束下实现稳定的自动化双块联合Top-$K$搜索及跨配置迁移，正是本课题拟重点攻克与评测的核心研究内容。
 
-\textbf{研究资源可行性。}本研究依托自筹的高性能计算工作站开展实验，前期已完成核心算子与生成服务的基准耗时实测：在RTX 4090上，稠密检索编码器批处理前向（Batch=32）耗时约$9.06\text{ ms}$，单步HotFlip梯度替换约$5.53\text{ ms}$；本地部署的Qwen3.8-27B-FP8 LLM生成服务单次短回答生成耗时约$1.84\text{s}$。
-据此测算，研究点一阶段二的分块鲁棒触发器优化在单张RTX 4090上单条目标查询耗时约$2\sim 4$分钟，标准评测查询集的离线载荷构造可在$15\sim 20$小时内完成。研究点二阶段一的矩阵谱运算耗时$T_{\mathrm{stat}}<2\text{ ms}$，块内子窗编码$T_{\mathrm{sub}}$约$20\sim 40\text{ ms}$，轻量级实体—命题构图$T_{\mathrm{graph}}$约$10\sim 25\text{ ms}$，绝大多数干净查询在阶段一即可直接放行，仅对少量进入待审集$\mathcal S_{\mathrm{judge}}$的查询按概率$p_{\mathrm{esc}}$执行单次结构化判别。围绕前期已本地化集成的PoisonedRAG、CorruptRAG、InceptionRAG、CamoDocs及RAGDefender、TrustRAG、RobustRAG、TRIS等十余项代表性攻防基线，结合本地检索归并缓存，整个实验矩阵的单轮评估总耗时可控制在$30\sim 45$小时以内，实验算力与时间成本可控。% BEGIN R4-04
-\todo[inline,nolist]{\textbf{R4-04：按已确定的300题修订工时。}
-\textbf{已知事实：}本次攻击采用此前分层抽样的NQ、MS MARCO、HotpotQA各100题，合计300题；20,428是已有全量干净检索与生成覆盖量，17,036是其中有QA参考标签的评测分母，两者均不是本轮攻击优化题数。按稿件给出的阶段二每题2至4分钟，本轮Python核算$300\times(2\sim4)/60=10\sim20$小时，每数据集约3.3至6.7小时；这是算术推算，不是新测得的端到端攻击耗时。
-\par\textbf{怎么修改：}将本段前两句改为：“攻击实验沿用三个数据集各100题的300题子集。按阶段二单题2至4分钟的估算，单张RTX 4090完成一次300题阶段二优化约需10至20小时；阶段一构造及其重试、迁移评价和防御测试另行计时。”删除“标准评测查询集离线载荷构造15至20小时”的笼统表述；每题平均3至4分钟时才得到15至20小时，不能从2至4分钟直接推出该下限。
-\par 前段已有9.06\,ms编码前向、5.53\,ms梯度步骤、1.84\,s短回答生成的实测记录保留，注明它们是局部算子或单次服务测量，不能直接推出完整载荷构造耗时。将“整个实验矩阵30至45小时以内”改成按实际配置数、每配置题数、重复次数与阶段平均耗时估算，复用同一载荷的迁移评价和重新优化分别计费；没有完整计数与测量时不保留固定总工时。低送审比例同样以实测值或参数计算，不预设“绝大多数直接放行”。开发、联调时间与计算运行时间分开，不扩写硬件资源配置。}
-% END R4-04
+\textbf{研究资源可行性。}本研究依托自筹的高性能计算工作站开展实验，前期已完成局部算子与单次生成服务的基准耗时实测：在RTX 4090上，稠密检索编码器批处理前向（Batch=32）耗时约$9.06\text{ ms}$，单步HotFlip梯度替换约$5.53\text{ ms}$；本地部署的Qwen3.8-27B-FP8 LLM生成服务单次短回答生成耗时约$1.84\text{ s}$。攻击实验使用三个数据集中各抽样100题获取的300题子集，主要涵盖金融、法律、生物医学和科学事实问答等重要领域，以保证问题的典型性。按阶段二单题$2\sim 4$分钟的估算，单张RTX 4090完成一次300题阶段二优化约需$10\sim 20$小时；阶段一构造及其重试、迁移评价和防御测试另行计时。研究点二阶段一的矩阵谱运算耗时$T_{\mathrm{stat}}<2\text{ ms}$，块内子窗编码$T_{\mathrm{sub}}$约$20\sim 40\text{ ms}$，轻量级实体—命题构图$T_{\mathrm{graph}}$约$10\sim 25\text{ ms}$，阶段二LLM复核耗时按实测送审触发率$p_{\mathrm{esc}}$与单次判别耗时计算。围绕前期已本地化集成的PoisonedRAG、CorruptRAG、InceptionRAG、CamoDocs及RAGDefender、TrustRAG、RobustRAG、TRIS等代表性攻防基线，结合本地检索归并缓存，总体算力与时间成本可控。
