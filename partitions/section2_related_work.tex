@@ -43,3 +43,45 @@
 在多层级纵深防御与生成影响控制方面，为兼顾表层过滤与语义校验，Munir等\cite{munir2026tris}提出的TRIS构建了包含跨空间嵌入聚类、触发—载荷结构过滤与大语言模型一致性校验的三层筛查流水线；Yin等\cite{yin2026rade}提出的RADE在推理期执行探测生成，结合留一法得分变化评估候选块的有向风险以保留多跳桥接证据；而在事后取证归因方面，Zhang等先后提出的RAGForensics\cite{zhang2025traceback}与RAGOrigin\cite{zhang2026ragorigin}则通过多轮调用大语言模型逐条审计候选文本与生成结果的因果支撑关系。然而，深度引入大语言模型审查的方法普遍面临高昂的在线推理延迟瓶颈：例如TRIS在开启第三层大模型校验时单次查询延迟高达16至19秒，RADE亦需在探测生成与重解码中多次调用语言模型。若为了降低延迟而仅依赖前置的单块统计或无监督聚类，又难以识破经自然语言伪装的跨块互补逻辑载荷；反之，若对全部候选证据无差别执行多轮大模型审查，则会显著增加RAG系统的在线响应延迟。
 
 综上所述，在同源跨块组合投毒与正常多跳问答并存的场景下，现有防御方法难以同时兼顾自然语言组合载荷检出、正常跨块多跳桥接证据保留与在线推理延迟控制。如何在毫秒级单块检索统计特征与显式跨块实体—命题关系的协同初筛下，锁定具有同源远距共现、低频实体桥接或命题极性冲突的可疑文本块子集，并结合异源参照证据以至多单次大语言模型复核剥离投毒块，是本研究防御侧旨在解决的核心问题。
+
+为直观呈现上述两条研究脉络的差异，\autoref{tab:related_comparison}对代表性攻防工作进行了对比。由\autoref{tab:related_comparison}可见，攻击侧尚无工作同时具备单文档预算与受害者分块建模下的跨块语义协同；防御侧虽已有工作分别覆盖集合交互建模、多跳证据保留或低开销单块筛查，但尚无工作同时兼顾组合载荷检出、正常多跳证据保留与在线推理开销，构成了本研究的切入位置。
+
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \caption{RAG攻防代表工作的维度对比}
+  \label{tab:related_comparison}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.35cm}*{6}{c}@{}}
+    \toprule
+    代表性工作 & \shortstack{单文档\\投毒} & \shortstack{分块\\建模} & \shortstack{多块\\协同} & \shortstack{自然语言\\载荷} & \shortstack{多跳证据\\保留} & \shortstack{低推理\\开销} \\
+    \midrule
+    AdvPassage / GASLITE\cite{zhong-etal-2023-poisoning,ben2025gasliteing} & × & × & × & × & - & - \\
+    PoisonedRAG\cite{zou2025poisonedrag} & × & × & × & √ & - & - \\
+    CorruptRAG\cite{zhang2026corruptrag} & √ & × & × & √ & - & - \\
+    AuthChain\cite{chang2025oneshot} & √ & × & × & √ & - & - \\
+    AdversarialCoT\cite{song2026adversarialcot} & √ & × & × & √ & - & - \\
+    CPA-RAG\cite{li2026cparag} & × & × & × & √ & - & - \\
+    P3A\cite{yang2026p3a} & √ & × & × & √ & - & - \\
+    CRCP\cite{nie2026crcp} & √ & √ & × & √ & - & - \\
+    CamoDocs\cite{jung2026camodocs} & × & × & × & √ & - & - \\
+    InceptionRAG\cite{zhang2026inceptionrag} & × & × & √ & √ & - & - \\
+    \midrule
+    GMTP\cite{kim2025gmtp} & - & - & × & × & × & √ \\
+    RAGDefender\cite{kim2025ragdefender} & - & - & × & × & × & √ \\
+    TrustRAG\cite{zhou2025trustrag} & - & - & × & √ & × & × \\
+    GRADA\cite{zheng2025grada} & - & - & × & × & × & √ \\
+    CEG-RAG\cite{cegrag2026} & - & - & √ & √ & × & × \\
+    RobustRAG\cite{xiang2024certifiably} & - & - & × & √ & × & × \\
+    PRA-RAG / ShieldRAG\cite{tan2026prarag,he2026shieldrag} & - & - & × & √ & × & × \\
+    TRIS\cite{munir2026tris} & - & - & × & √ & × & × \\
+    RADE\cite{yin2026rade} & - & - & × & √ & √ & × \\
+    RAGForensics / RAGOrigin\cite{zhang2025traceback,zhang2026ragorigin} & - & - & × & √ & × & × \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.4em}
+  \begin{flushleft}
+    \footnotesize 注：“√”表示该方法具备该维度特征，“×”表示不具备，“-”表示该维度不适用于该侧方法。表中自上而下依次为攻击方法与防御方法。
+  \end{flushleft}
+\end{table}
