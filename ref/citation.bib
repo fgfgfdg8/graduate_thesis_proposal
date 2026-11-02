@@ -15444,3 +15444,44 @@
   primaryclass  = {cs.CL},
   url           = {https://arxiv.org/abs/2312.10997}
 }
+
+@inproceedings{hu2026confundo,
+  author    = {Hu, Haoyang and Jiang, Zhejun and Lyu, Yueming and Zhang, Junyuan and Liu, Yi and Chow, Ka-Ho},
+  title     = {Confundo: Learning to Generate Robust Poison for Practical RAG Systems},
+  year      = {2026},
+  isbn      = {978-1-939133-58-8},
+  publisher = {USENIX Association},
+  address   = {USA},
+  abstract  = {Retrieval-augmented generation (RAG) is increasingly deployed in real-world applications, where its reference-grounded design makes outputs appear trustworthy. This trust has spurred research on poisoning attacks that craft malicious content, inject it into knowledge sources, and manipulate RAG responses. However, when evaluated in practical RAG systems, existing attacks suffer from severely degraded effectiveness. This gap stems from two overlooked realities: (i) content is often processed before use, which can fragment the poison and weaken its effect, and (ii) users often do not issue the exact queries anticipated during attack design. These factors can lead practitioners to underestimate risks and develop a false sense of security. To better characterize the threat to practical systems, we present Confundo, a learning-to-poison framework that fine-tunes a large language model as a poison generator to achieve high effectiveness, robustness, and stealthiness. Confundo provides a unified framework supporting multiple attack objectives, demonstrated by manipulating factual correctness, inducing biased opinions, and triggering hallucinations. By addressing these overlooked challenges, Confundo consistently outperforms a wide range of purposebuilt attacks across datasets and RAG configurations by large margins, even in the presence of defenses. Beyond exposing vulnerabilities, we also present a defensive use case that protects web content from unauthorized incorporation into RAG systems via scraping, with no impact on user experience.},
+  booktitle = {Proceedings of the 35th USENIX Conference on Security Symposium},
+  articleno = {16},
+  numpages  = {20},
+  location  = {Baltimore, MD, USA},
+  series    = {SEC '26}
+}
+
+@inproceedings{chen2026radar,
+  title     = {{RADAR}: Defending {RAG} Dynamically against Retrieval Corruption},
+  author    = {Chen, Ziyuan and Lyu, Yueming and Liu, Yi and Han, Weixiang and Dong, Jing and Shan, Caifeng and Tan, Tieniu},
+  booktitle = {Proceedings of the 43rd International Conference on Machine Learning},
+  pages     = {15999--16021},
+  year      = {2026},
+  editor    = {Zhang, Tong and Dudik, Miroslav and Jaggi, Martin and Agarwal, Alekh and Li, Sharon and Schuurmans, Dale and Zhu, Jerry and Berkenkamp, Felix and Dong, Hanze and Bietti, Alberto},
+  volume    = {306},
+  series    = {Proceedings of Machine Learning Research},
+  month     = {06--11 Jul},
+  publisher = {PMLR},
+  pdf       = {https://raw.githubusercontent.com/mlresearch/v306/main/assets/chen26cw/chen26cw.pdf},
+  url       = {https://proceedings.mlr.press/v306/chen26cw.html},
+  abstract  = {While RAG systems are increasingly deployed in dynamic web search, temporal volatility amplifies their vulnerability to adversarial attacks. Existing static-oriented defenses struggle to handle evolving threats and incur prohibitive storage costs in dynamic settings. We propose RADAR, a framework that models reliable context selection as a graph-based energy minimization problem, solved exactly via Max-Flow Min-Cut. By incorporating a Bayesian memory node, RADAR recursively updates a belief state instead of archiving raw historical documents, effectively balancing stability against attacks with adaptability to genuine knowledge shifts. Experiments on a novel dynamic dataset show that RADAR achieves superior robustness and response quality with minimal storage overhead compared to the baselines.}
+}
+
+@online{fan2026rightfactswrongrule,
+  title         = {Right Facts, Wrong Rule: Scope-Transfer Poisoning of Retrieval-Augmented Generation},
+  author        = {Kaisheng Fan and Yishu Gao and Xunzhu Tang and Tegawend'e F. Bissyand'e and Weizhe Zhang},
+  year          = {2026},
+  eprint        = {2609.35155},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.CR},
+  url           = {https://arxiv.org/abs/2609.35155}
+}
