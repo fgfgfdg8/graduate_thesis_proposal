@@ -356,3 +356,4 @@ tmp/*
 #     !figures/**/*.pdf
 #   - 根目录 main.pdf 与 outputs/main.pdf 是编译产物，仍被忽略
 !figures/*.pdf
+docs/RAG安全证据地图_20261102/

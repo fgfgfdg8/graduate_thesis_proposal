@@ -16,13 +16,13 @@
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-03} 文献分类：本段将Phantom列入“仅优化检索召回”的总结不准确。Phantom原文第6--7页同时构造检索字符串与生成字符串，并用GCG类方法优化生成行为。将段末改为“上述工作提供了检索触发器及生成诱导字符串的离散优化方法，但尚未针对同一长源文档经受害者分块后的双角色完整性与共同召回建立联合目标”，避免否认已有生成优化。}
 
-在投毒载荷的底层优化工具方面，面向传统文本分类与生成模型的离散对抗攻击为RAG语料操控提供了梯度搜索算子。Ebrahimi等\cite{ebrahimi-etal-2018-hotflip}提出的HotFlip利用损失函数对词元独热（one-hot）表示的一阶泰勒梯度，在单次反向传播中估算词元替换引起的目标变化；Wallace等\cite{wallace2019universal}将该梯度引导搜索扩展为与输入上下文无关的通用对抗触发词序列；Zou等\cite{zou2023universal}提出的GCG进一步结合一阶梯度候选初筛与批量前向精确评估，通过贪心坐标迭代提升离散后缀在自回归生成模型上的优化稳定性。然而，纯梯度驱动的离散词元替换极易破坏局部语法结构并导致语言模型困惑度异常升高，据此Liu等\cite{liu2024autodan}在AutoDAN中以目标响应对数似然为适应度，改用保持句法结构的分层遗传搜索生成可读对抗文本。当上述离散优化算子被迁移至RAG场景时，其首要应用是操纵候选文本在稠密检索器中的相似度排名。Zhong等\cite{zhong-etal-2023-poisoning}提出的对抗段落注入方法在白盒检索器上复现HotFlip式坐标梯度替换，最大化恶意段落与训练查询簇质心的嵌入相似度；Ben-Tov等\cite{ben2025gasliteing}提出的GASLITE进一步在固定白盒检索器权重的条件下，将目标信息载荷与多坐标梯度触发器结合，使对抗文本在特定概念查询分布下稳定抢占Top-$K$席位；Chaudhari等\cite{chaudhari2026phantom}提出的Phantom则将该梯度优化思路拓展至触发式后门场景，在固定模型参数下构造仅对含特定自然触发词的查询高分召回并诱导目标行为的毒化文档。尽管此类方法验证了稠密检索排序与触发激活的可操纵性，但上述工作提供了检索触发器及生成诱导字符串的离散优化方法，未系统建模恶意文本进入上下文后如何压制同场召回的良性证据。
+在投毒载荷的底层优化工具方面，面向传统文本分类与生成模型的离散对抗攻击为RAG语料操控提供了梯度搜索算子。Ebrahimi等\cite{ebrahimi-etal-2018-hotflip}提出的HotFlip利用损失函数对词元独热（one-hot）表示的一阶泰勒梯度，在单次反向传播中估算词元替换引起的目标变化；Wallace等\cite{wallace2019universal}将该梯度引导搜索扩展为与输入上下文无关的通用对抗触发词序列；Zou等\cite{zou2023universal}提出的GCG进一步结合一阶梯度候选初筛与批量前向精确评估，通过贪心坐标迭代提升离散后缀在自回归生成模型上的优化稳定性。然而，纯梯度驱动的离散词元替换极易破坏局部语法结构并导致语言模型困惑度异常升高，据此Liu等\cite{liu2024autodan}在AutoDAN中以目标响应对数似然为适应度，改用保持句法结构的分层遗传搜索生成可读对抗文本。当上述离散优化算子被迁移至RAG场景时，其首要应用是优化投毒载荷中的检索触发器，以操纵候选文本在稠密检索器中的相似度排名。Zhong等\cite{zhong-etal-2023-poisoning}提出的对抗段落注入方法在白盒检索器上复现HotFlip式坐标梯度替换，最大化恶意段落与训练查询簇质心的嵌入相似度；Ben-Tov等\cite{ben2025gasliteing}提出的GASLITE进一步在固定白盒检索器权重的条件下，将承载预设信息的核心载荷与多坐标梯度检索触发器结合，使对抗文本在特定概念查询分布下稳定抢占Top-$K$席位；Chaudhari等\cite{chaudhari2026phantom}提出的Phantom则将该梯度优化思路拓展至触发式后门场景，在固定模型参数下协同构造检索触发字符串与生成诱导核心载荷，使毒化文档仅对含特定自然触发词的查询高分召回并诱导目标行为。尽管此类方法验证了稠密检索排序与触发激活的可操纵性，但上述工作主要聚焦于检索触发器及生成诱导字符串的离散优化，未系统建模核心载荷进入上下文后如何压制同场召回的良性证据。
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-04} 两处已核实的文献事实错误：PoisonedRAG原文第8页将每题5条列为默认设置，第10--11页另有数量消融，故“需注入5条方能压制”应改为“默认每题注入5条，并考察注入数量的影响”。CorruptRAG原文第4页式(4)明确保留查询前缀，第5页AK变体改写的是生成正文，故删除“消除显式检索前缀”，改为“保留查询前缀，并以旧信息否定与目标状态陈述构造单篇投毒文本，进一步通过LLM改写增强知识表述”。“首次”如无完整优先权核验，直接删去。}
 
-为同时满足检索召回与生成操纵条件，Zou等\cite{zou2025poisonedrag}在PoisonedRAG中首次将知识库投毒形式化为检索条件与生成条件联合满足的二元优化问题，将单条毒文本显式拆分为拉高相似度的检索前缀与陈述错误结论的生成正文；但在语料库中存在多数良性的候选竞争情况下，默认每题注入5条投毒文本，这易在向量空间形成高密度异常簇而被聚类防御识别。为此，后续研究致力于将投毒预算收敛至单篇文档，并重点强化单文本在良性证据竞争下的说服力：针对多文本注入引发的冗余聚集缺陷，Zhang等\cite{zhang2026corruptrag}提出的CorruptRAG在知识篡改场景下，通过单篇文本内紧凑耦合特征引导子句与目标状态断言子句，保留查询前缀，并以旧信息否定与目标状态陈述构造单篇投毒文本，进一步通过LLM改写增强知识表述；针对复杂问答中大模型易受参数先验与良性事实制约而忽略孤立断言的问题，Chang等\cite{chang2025oneshot}提出的AuthChain在单篇文档内围绕查询意图构造包含权威机构背书的自洽证据链，并通过判别器—修订器内环迭代补齐逻辑缺项，增强单文档在冲突证据中的采信优先级；针对具备显式推理链的大语言模型，Song等\cite{song2026adversarialcot}提出的AdversarialCoT通过探测目标模型的思维链骨架，在单文档内定制符合其推演习惯的伪推理链，以推导过程的表观合理性削弱模型的原生反思能力；针对黑盒环境下单文档跨模型迁移能力弱的问题，Li等\cite{li2026cparag}提出的CPA-RAG结合多模型跨模板重写与影子检索器相似度剪枝，在保持单文档语义自然度的同时优化了检索可达性。然而，上述单文档投毒方法均要求单一检索单元独立承载完整的虚假结论断言，在面对单块内容审查或冲突过滤时易暴露攻击意图。
+为同时满足检索召回与生成操纵条件，Zou等\cite{zou2025poisonedrag}在PoisonedRAG中首次将知识库投毒形式化为检索条件与生成条件联合满足的二元优化问题，将单条投毒载荷显式拆分为拉高检索相似度的检索触发器前缀与陈述错误结论的核心载荷正文；但在语料库中存在多数良性的候选竞争情况下，默认每题注入5条投毒文本，这易在向量空间形成高密度异常簇而被聚类防御识别。为此，后续研究致力于将投毒预算收敛至单篇文档，并重点强化单文本在良性证据竞争下的说服力：针对多文本注入引发的冗余聚集缺陷，Zhang等\cite{zhang2026corruptrag}提出的CorruptRAG在知识篡改场景下，通过单篇文本内紧凑耦合特征引导子句与目标状态断言子句，保留查询前缀，并以旧信息否定与目标状态陈述构造单篇投毒文本，进一步通过LLM改写增强知识表述；针对复杂问答中大模型易受参数先验与良性事实制约而忽略孤立断言的问题，Chang等\cite{chang2025oneshot}提出的AuthChain在单篇文档内围绕查询意图构造包含权威机构背书的自洽证据链，并通过判别器—修订器内环迭代补齐逻辑缺项，增强单文档在冲突证据中的采信优先级；针对具备显式推理链的大语言模型，Song等\cite{song2026adversarialcot}提出的AdversarialCoT通过探测目标模型的思维链骨架，在单文档内定制符合其推演习惯的伪推理链，以推导过程的表观合理性削弱模型的原生反思能力；针对黑盒环境下单文档跨模型迁移能力弱的问题，Li等\cite{li2026cparag}提出的CPA-RAG结合多模型跨模板重写与影子检索器相似度剪枝，在保持单文档语义自然度的同时优化了检索可达性。然而，上述单文档投毒方法均要求单一检索单元独立承载完整的虚假结论断言，在面对单块内容审查或冲突过滤时易暴露攻击意图。
 
-尽管上述单文档攻击降低了注入数量预算，但它们普遍隐含了两项脱离真实工程管线的假设：一是将输入文档直接等同于最终检索单元而忽略受害者侧的文档分块，二是要求单条文本独立包含导出错误结论的全部前提。在重排序与分块管线适应方面，Yang等\cite{yang2026p3a}提出的P3A通过提示改写与字符扰动攻破交叉编码重排序，但仍将各候选块视作孤立条目；Nie等\cite{nie2026crcp}提出的CRCP进一步将受害者侧分块建模为随机边界偏移变换，联合优化分块后的检索相关性、重排序得分与局部连贯性。然而，CRCP在语义设计上仍迫使切分后的单个局部块独立自包含完整恶意结论，依然面临单块强毒性带来的内容暴露风险。为摆脱单块强毒性限制，研究者尝试将对抗信息分散至多个文本块中：Jung等\cite{jung2026camodocs}提出的CamoDocs在离线阶段切分良性与对抗草稿并引入分散词元，向语料库注入多篇相互独立的伪装短文档以逃避聚类检测，但其子文档切分仅服务于向量空间分散，各块之间缺乏逻辑推导层面的语义互补；Zhang等\cite{zhang2026inceptionrag}提出的InceptionRAG首次引入三段论演绎逻辑，将完整虚假断言解耦为赋予虚构实体目标属性的属性文本与建立实体等价关系的桥接文本，显著降低了单块毒性，但该方法直接向知识库独立写入两个已切分完毕的短段落，规避了受害者侧长文档切分所带来的边界截断与多块失联问题。
+尽管上述单文档攻击降低了注入数量预算，但它们普遍隐含了两项脱离真实RAG系统工程管线的假设：一是将输入文档直接等同于最终检索单元而忽略受害者侧的文档分块，二是要求单条文本独立包含导出错误结论的全部前提。在重排序与分块管线适应方面，Yang等\cite{yang2026p3a}提出的P3A通过提示改写与字符扰动攻破交叉编码重排序，但仍将各候选块视作孤立条目；Nie等\cite{nie2026crcp}提出的CRCP进一步将受害者侧分块建模为随机边界偏移变换，联合优化分块后的检索相关性、重排序得分与局部连贯性。然而，CRCP在语义设计上仍迫使切分后的单个局部块独立自包含完整恶意结论，依然面临单块强毒性带来的内容暴露风险。为摆脱单块强毒性限制，研究者尝试将对抗信息分散至多个文本块中：Jung等\cite{jung2026camodocs}提出的CamoDocs在离线阶段切分良性与对抗草稿并引入分散词元，向语料库注入多篇相互独立的伪装短文档以逃避聚类检测，但其子文档切分仅服务于向量空间分散，各块之间缺乏逻辑推导层面的语义互补；Zhang等\cite{zhang2026inceptionrag}提出的InceptionRAG首次引入三段论演绎逻辑，将完整虚假断言解耦为赋予虚构实体目标属性的属性文本与建立实体等价关系的桥接文本，显著降低了单块毒性，但该方法直接向知识库独立写入两个已切分完毕的短段落，规避了受害者侧长文档切分所带来的边界截断与多块失联问题。
 
 综上所述，现有投毒研究在控制粒度与单块语义角色两个维度上仍存在分离：CRCP兼顾了源文档分块适应却局限于单块自包含强毒，InceptionRAG实现了双块前提互补却依赖多个独立短段落直接注入，而CamoDocs的切分仅面向向量抗聚类而非跨块逻辑协同。当攻击者仅能改写外部知识库中的单一长源文档、且该文档必须经过受害者侧未知的分块管线切分为检索单元时，如何确保切分产生的同源文本块在不直接暴露目标结论的前提下保持角色完整、实现联合召回并在竞争上下文中协同导出目标答案，是本研究攻击侧重点探索的问题。
 
@@ -47,9 +47,11 @@
 为直观呈现上述两条研究脉络的差异，\autoref{tab:related_comparison}对代表性攻防工作进行了对比。由\autoref{tab:related_comparison}可见，攻击侧尚无工作同时具备单文档预算与受害者分块建模下的跨块语义协同；防御侧虽已有工作分别覆盖集合交互建模、多跳证据保留或低开销单块筛查，但尚无工作同时兼顾组合载荷检出、正常多跳证据保留与在线推理开销，构成了本研究的切入位置。
 
 \begingroup
-  \footnotesize
-  \setlength{\tabcolsep}{3.5pt}
-  \begin{longtable}{@{}>{\raggedright\arraybackslash}p{4.35cm}*{6}{c}@{}}
+  \normalsize
+  \setlength{\tabcolsep}{3pt}
+  \setlength{\LTleft}{0pt plus 1fill}
+  \setlength{\LTright}{0pt plus 1fill}
+  \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.33\textwidth}*{6}{>{\centering\arraybackslash}p{\dimexpr(0.67\textwidth-12\tabcolsep)/6\relax}}@{}}
     \caption{RAG攻防代表工作的维度对比}\label{tab:related_comparison} \\
     \toprule
     代表性工作 & \shortstack{单文档\\投毒} & \shortstack{分块\\建模} & \shortstack{多块\\协同} & \shortstack{自然语言\\载荷} & \shortstack{多跳证据\\保留} & \shortstack{低推理\\开销} \\
@@ -65,27 +67,27 @@
     \endfoot
     \bottomrule
     \endlastfoot
-    AdvPassage / GASLITE\cite{zhong-etal-2023-poisoning,ben2025gasliteing} & × & × & × & × & - & - \\
-    PoisonedRAG\cite{zou2025poisonedrag} & × & × & × & √ & - & - \\
-    CorruptRAG\cite{zhang2026corruptrag} & √ & × & × & √ & - & - \\
-    AuthChain\cite{chang2025oneshot} & √ & × & × & √ & - & - \\
-    AdversarialCoT\cite{song2026adversarialcot} & √ & × & × & √ & - & - \\
-    CPA-RAG\cite{li2026cparag} & × & × & × & √ & - & - \\
-    P3A\cite{yang2026p3a} & √ & × & × & √ & - & - \\
-    CRCP\cite{nie2026crcp} & √ & √ & × & √ & - & - \\
-    CamoDocs\cite{jung2026camodocs} & × & × & × & √ & - & - \\
-    InceptionRAG\cite{zhang2026inceptionrag} & × & × & √ & √ & - & - \\
+    AdvPassage / GASLITE \cite{zhong-etal-2023-poisoning,ben2025gasliteing} & × & × & × & × & - & - \\
+    PoisonedRAG \cite{zou2025poisonedrag} & × & × & × & √ & - & - \\
+    CorruptRAG \cite{zhang2026corruptrag} & √ & × & × & √ & - & - \\
+    AuthChain \cite{chang2025oneshot} & √ & × & × & √ & - & - \\
+    AdversarialCoT \cite{song2026adversarialcot} & √ & × & × & √ & - & - \\
+    CPA-RAG \cite{li2026cparag} & × & × & × & √ & - & - \\
+    P3A \cite{yang2026p3a} & √ & × & × & √ & - & - \\
+    CRCP \cite{nie2026crcp} & √ & √ & × & √ & - & - \\
+    CamoDocs \cite{jung2026camodocs} & × & × & × & √ & - & - \\
+    InceptionRAG \cite{zhang2026inceptionrag} & × & × & √ & √ & - & - \\
     \midrule
-    GMTP\cite{kim2025gmtp} & - & - & × & × & × & √ \\
-    RAGDefender\cite{kim2025ragdefender} & - & - & × & × & × & √ \\
-    TrustRAG\cite{zhou2025trustrag} & - & - & × & √ & × & × \\
-    GRADA\cite{zheng2025grada} & - & - & × & × & × & √ \\
-    CEG-RAG\cite{cegrag2026} & - & - & √ & √ & × & × \\
-    RobustRAG\cite{xiang2024certifiably} & - & - & × & √ & × & × \\
-    PRA-RAG / ShieldRAG\cite{tan2026prarag,he2026shieldrag} & - & - & × & √ & × & × \\
-    TRIS\cite{munir2026tris} & - & - & × & √ & × & × \\
-    RADE\cite{yin2026rade} & - & - & × & √ & √ & × \\
-    RAGForensics / RAGOrigin\cite{zhang2025traceback,zhang2026ragorigin} & - & - & × & √ & × & × \\
+    GMTP \cite{kim2025gmtp} & - & - & × & × & × & √ \\
+    RAGDefender \cite{kim2025ragdefender} & - & - & × & × & × & √ \\
+    TrustRAG \cite{zhou2025trustrag} & - & - & × & √ & × & × \\
+    GRADA \cite{zheng2025grada} & - & - & × & × & × & √ \\
+    CEG-RAG \cite{cegrag2026} & - & - & √ & √ & × & × \\
+    RobustRAG \cite{xiang2024certifiably} & - & - & × & √ & × & × \\
+    PRA-RAG / ShieldRAG \cite{tan2026prarag,he2026shieldrag} & - & - & × & √ & × & × \\
+    TRIS \cite{munir2026tris} & - & - & × & √ & × & × \\
+    RADE \cite{yin2026rade} & - & - & × & √ & √ & × \\
+    RAGForensics / RAGOrigin \cite{zhang2025traceback,zhang2026ragorigin} & - & - & × & √ & × & × \\
   \end{longtable}
 
   \vspace{0.4em}

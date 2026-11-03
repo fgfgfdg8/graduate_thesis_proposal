@@ -1,4 +1,4 @@
-﻿\section{研究内容及方法}
+\section{研究内容及方法}
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-07} 图2与正文对齐：总标题统一为封面的“面向大语言模型检索增强生成系统的安全攻防研究”；统计特征与语义特征应画为并行提取后拼接，分类器“训练”放在离线分支，在线分支标为“评分”。按当前正文将超阈值块送入待审集合，并补出跨块检查与待审集合的连接。将“保证载荷的语言流畅性和隐蔽性”改为“约束语言流畅性”，删除“针对高效识别”的病句。}
 
@@ -12,7 +12,7 @@
   \label{fig:framework}
 \end{figure}
 
-\subsection{研究点一：基于同源多文本块协同的分布式投毒攻击框架}
+\subsection{研究点一：基于同源多文本块协同的投毒攻击框架}
 
 \subsubsection{威胁模型与问题形式化}
 
@@ -28,12 +28,12 @@
   其中外部语料库$\mathcal D$经分块器切分为文本块集合$\phi_v(\mathcal D)$，检索器按相关性得分$s_v(q,\cdot)$降序返回前$K$个文本块$R_K(q)=\operatorname{TopK}(q;\phi_v(\mathcal D))$构成上下文，交由生成模型输出回答。源文档$d\in\mathcal D$经替换更新后，语料库表示为$\mathcal D^{(x)}=(\mathcal D\setminus\{d\})\cup\{D_{\mathrm{adv}}(x)\}$，参与检索的分块语料库记为$\mathcal C_v^{\phi_v}(x)=\phi_v(\mathcal D^{(x)})$。
   \item \textbf{攻击者目标}：使目标RAG系统在处理目标查询$q$时输出预设的目标答案$a^*$，且$a^*$与正确答案$y_{\mathrm{true}}$语义互斥。
   \item \textbf{攻击者能力与知识}：攻击者掌握目标查询$q$及其正确答案$y_{\mathrm{true}}$，但仅能通过黑盒接口访问目标系统，不能访问目标系统的LLM或检索器的内部参数。攻击者可以利用公开的分块策略、检索器和生成器在本地搭建由影子分块器集合$\Phi_{\mathrm{shadow}}$、代理检索编码器$E_s$与影子生成模型$G_{\mathrm{shadow}}$构成的影子系统，用于离线构造与筛选攻击载荷\cite{nie2026crcp,chaudhari2026phantom}，优化仅使用影子系统得分，目标系统的接口不提供检索得分或logprob等内部信息；针对每个目标查询，攻击者只能篡改语料库中唯一一篇源文档$d$\cite{chang2025oneshot,zhang2026corruptrag}。
-  \item \textbf{防御者能力与目标}：防御者将防御部署于服务端检索阶段之后、生成阶段之前，可以控制检索器和生成器的参数，并对目标查询与检索上下文$\mathcal C_q$具有完整的访问和控制权，但是不能实时修改防御系统的防御策略，也不了解攻击者的投毒方式和具体的投毒文档。防御者的目标是在保持RAG系统问答准确率（尤其是正常开放多跳推理问题）的同时，剔除潜在投毒块的同时，并使防御开销维持在可接受范围内。
+  \item \textbf{防御者能力与目标}：防御者将防御部署于服务端检索阶段之后、生成阶段之前，可以控制检索器和生成器的参数，并对目标查询与检索上下文$\mathcal C_q$具有完整的访问和控制权，但是不能实时修改防御系统的防御策略，也不了解攻击者的投毒方式和具体的投毒文档。防御者的目标是在保持RAG系统问答准确率（尤其是正常开放多跳推理问题）的同时，剔除潜在投毒块，并使防御开销维持在可接受范围内。
 \end{enumerate}
 
-\textbf{问题形式化。}遵循文献\cite{zou2025poisonedrag}的框架，本研究所面向的定向RAG投毒需同时满足\textbf{检索条件}与\textbf{生成条件}：检索条件要求在检索过程中，由同一源文档切分出的两个完整子载荷块分别落入不同分块并共同进入Top-$K$；生成条件要求在攻击者操纵的上下文中，使生成模型对指定问题 $q$ 输出攻击者指定的目标答案$a^*$。
+\textbf{问题形式化。}为消除术语歧义，本研究将攻击者在外部源文档中植入的恶意文本总体称为\textbf{投毒载荷（Poisoning Payload）}，并按源文档分块前后的结构层次严格区分四组概念：1）\textbf{核心载荷（Core Payload，$\mathcal P_j, j\in\{A,B\}$）}，指分别承载互补推理前提（如抽象规则定义或实例归属绑定）、用于诱导生成模型导出目标答案$a^*$的核心语义语句；2）\textbf{检索触发器（Retrieval Trigger，$\mathbf t_j$）}，指嵌入在背景句自然边界处、通过离散词元搜索拉高文本块与查询$q$检索相似度的短词元序列；3）\textbf{植入子载荷段（Implanted Sub-payload Passage，$P_j$）}，指由前置背景句$\mathcal S_j^{\mathrm{pre}}$、核心载荷$\mathcal P_j$、后置背景句$\mathcal S_j^{\mathrm{post}}$及检索触发器$\mathbf t_j$按序拼接封装而成、直接写入源文档第$j$个槽位的完整段落；4）\textbf{同源角色块（Role Chunk，$c_j^{(\phi)}$）}，指植入子载荷段后的投毒源文档$D_{\mathrm{adv}}(x)$经受害者分块器$\phi$切分后生成的、完整包含对应核心载荷$\mathcal P_j$的检索文本块。遵循文献\cite{zou2025poisonedrag}的框架，本研究所面向的定向RAG投毒需同时满足\textbf{检索条件}与\textbf{生成条件}：检索条件要求在检索过程中，由同一源文档切分出的两个同源角色块分别完整保留各自的核心载荷并共同进入Top-$K$；生成条件要求在攻击者操纵的上下文中，使生成模型对指定问题$q$输出攻击者指定的目标答案$a^*$。
 
-\textbf{1) 检索条件}：设除载体文档$d$外的背景分块索引库为$\mathcal C_{-d}^\phi=\phi(\mathcal D\setminus\{d\})$，$D_{\mathrm{adv}}(x)$为候选状态$x$下的完整投毒源文档，在分块算子$\phi$下更新后的分块语料库为$\mathcal C_v^\phi(x)=\mathcal C_{-d}^\phi\cup\phi(D_{\mathrm{adv}}(x))$。对子载荷$j\in\{A,B\}$与文档分块策略$\phi$，当$\phi(D_{\mathrm{adv}}(x))$中存在完整包含核心载荷$\mathcal P_j$的块时，记子载荷完整性指示器$I_j(\phi)=1$，并取检索排序最高者作为对应主块$c_j^{(\phi)}$；否则记$I_j(\phi)=0$。则\textbf{检索条件}$Z_\phi(x)$为：
+\textbf{1) 检索条件}：设除载体文档$d$外的背景分块索引库为$\mathcal C_{-d}^\phi=\phi(\mathcal D\setminus\{d\})$，$D_{\mathrm{adv}}(x)$为候选投毒配置$x$下的完整投毒源文档，在分块算子$\phi$下更新后的分块语料库为$\mathcal C_v^\phi(x)=\mathcal C_{-d}^\phi\cup\phi(D_{\mathrm{adv}}(x))$。对角色索引$j\in\{A,B\}$与文档分块策略$\phi$，当$\phi(D_{\mathrm{adv}}(x))$中存在完整包含核心载荷$\mathcal P_j$的文本块时，记核心载荷完整性指示器$I_j(\phi)=1$，并取检索排序最高者作为对应同源角色块$c_j^{(\phi)}$；否则记$I_j(\phi)=0$。则\textbf{检索条件}$Z_\phi(x)$为：
 \begin{equation}
   Z_\phi(x)=\mathbb I\Big[I_A(\phi)=1\;\land\;I_B(\phi)=1\;\land\;c_A^{(\phi)}\neq c_B^{(\phi)}\;\land\;\big\{c_A^{(\phi)},c_B^{(\phi)}\big\}\subseteq R_K\big(q;\mathcal C_v^\phi(x)\big)\Big],
   \label{eq:attack_corpus}
@@ -47,7 +47,7 @@
 \end{equation}
 当 $S_{\phi,\omega}(x)=1$ 时，表示该次端到端生成输出命中预设目标答案 $a^*$。
 
-设端到端目标答案 $a^*$ 的生成概率为候选载荷 $x\in\mathcal X$ 的目标函数 $F(x)$，则攻击者的理想目标是在可行域 $\mathcal X$ 中寻找使该函数最大化的最优候选载荷 $x^*$，即：
+设端到端目标答案 $a^*$ 的生成概率为候选投毒配置 $x\in\mathcal X$ 的目标函数 $F(x)$，则攻击者的理想目标是在可行域 $\mathcal X$ 中寻找使该函数最大化的最优投毒配置 $x^*$，即：
 \begin{equation}
   \begin{aligned}
     F(x) &= \Pr_{\phi_v\sim\Pi_v,\,\omega}\Big[J\big(q,a^*,G_\omega(q,R_K(q;\mathcal C_v^{\phi_v}(x)))\big)=1\Big], \quad x\in\mathcal X,\\
@@ -58,9 +58,9 @@
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-09} 式(5)仅判断固定背景、固定槽位下的受控组合效应，不能命名为端到端“攻击成功判据”；建议标题改为“受控组合判据”，本段后续称呼同步修改，端到端目标命中沿用式(3)与ASR。单块不命中目标并不要求回答UNKNOWN，图3单块仍答正确答案与式(5)可以相容。图3是机制示意，图注补“示意”，不能将OpenAI例当作已执行的PoC。}
 
-\textbf{3) 攻击成功判据}：为研究分布式隐蔽投毒在RAG系统上的作用机理，本研究研究投毒载荷数量为2的最小情形。令两个同源文本块$c_A$和$c_B$分别承担互补推理子载荷：$c_A$承载抽象规则或前提定义，$c_B$承载查询实体的实例归属绑定。为比较单块与双块的目标生成效果，从除载体文档外的背景语料库$\mathcal C_{-d}^s$中取前$K-2$个高分干净块固定为有序序列$B_0=[d_{(1)},\dots,d_{(K-2)}]$，并设置与子载荷块长度及主题匹配的干净中性替代块$N_A,N_B$，按固定槽位构造四组均包含$K$个文本块的对照上下文$C_{00},C_{10},C_{01},C_{11}$。
+\textbf{3) 攻击成功判据}：为研究分布式隐蔽投毒在RAG系统上的作用机理，本研究考察同源角色块数量为2的最小协同情形。令两个同源角色块$c_A$和$c_B$分别承载互补的核心载荷$\mathcal P_A$和$\mathcal P_B$：其中$\mathcal P_A$陈述抽象规则或前提定义，$\mathcal P_B$陈述查询实体的实例归属绑定。为比较单块与双块的目标生成效果，从除载体文档外的背景语料库$\mathcal C_{-d}^s$中取前$K-2$个高分干净块固定为有序序列$B_0=[d_{(1)},\dots,d_{(K-2)}]$，并设置与同源角色块长度及主题匹配的干净中性替代块$N_A,N_B$，按固定槽位构造四组均包含$K$个文本块的对照上下文$C_{00},C_{10},C_{01},C_{11}$。
 
-记$Y_{uv}=J(q,a^*,G_{\mathrm{shadow}}(q,C_{uv}))\in\{0,1\}$，单块载荷不命中、双块命中目标答案$a^*$的\textbf{攻击成功判据}为：
+记$Y_{uv}=J(q,a^*,G_{\mathrm{shadow}}(q,C_{uv}))\in\{0,1\}$，单块核心载荷不命中、双块核心载荷协同命中目标答案$a^*$的\textbf{攻击成功判据}为：
 \begin{equation}
 \begin{aligned}
   C_{00}&=[B_0,N_A,N_B], & C_{10}&=[B_0,c_A,N_B],\\
@@ -70,15 +70,15 @@
   \label{eq:gen_gate}
 \end{equation}
 
-\textbf{4) 代理优化目标}：由于直接在核心载荷正文上执行离散词元替换易破坏跨块推理前提的语义连贯性，本研究将式\eqref{eq:attack_generation}转化为两阶段解耦求解问题：阶段一在固定竞争背景下利用影子生成模型构造并固定满足$\mathcal V_{\mathrm{comp}}(x)=1$的双块核心载荷与外围背景句；阶段二固定核心载荷与背景句，在影子分块配置集$\Phi_{\mathrm{shadow}}$的预设分布$\Pi_\Phi$下优化检索触发器的\textbf{代理优化目标}可表示为：
+\textbf{4) 代理优化目标}：由于直接在核心载荷正文上执行离散词元替换易破坏跨块推理前提的语义连贯性，本研究将式\eqref{eq:attack_generation}转化为两阶段解耦求解问题：阶段一在固定竞争背景下利用影子生成模型构造并固定满足$\mathcal V_{\mathrm{comp}}(x)=1$的双块核心载荷$(\mathcal P_A,\mathcal P_B)$与外围背景句；阶段二固定核心载荷与背景句，在影子分块配置集$\Phi_{\mathrm{shadow}}$的预设分布$\Pi_\Phi$下优化检索触发器$(\mathbf t_A,\mathbf t_B)$的\textbf{代理优化目标}可表示为：
 \begin{equation}
   \max_{x\in\mathcal X}\ \mathbb E_{\phi\sim\Pi_\Phi}\big[Z_\phi(x)\big]-\lambda_{\mathrm{ppl}}\mathcal L_{\mathrm{ppl}}(x),\qquad
   \text{s.t.}\quad \mathcal V_{\mathrm{comp}}(x)=1,\;\mathcal M_{\mathrm{lex}}(x)=1,
   \label{eq:attack_objective}
 \end{equation}
-其中$\mathcal L_{\mathrm{ppl}}(x)$为触发器邻域的局部流畅度损失，$\mathcal M_{\mathrm{lex}}(x)\in\{0,1\}$为词法合规约束。使用这两项约束的目的是为了尽可能提高攻击载荷与上下文的语义连贯性和隐蔽性，以逃逸现有基于词法检查器或语言困惑度的防御机制。
+其中$\mathcal L_{\mathrm{ppl}}(x)$为检索触发器邻域的局部流畅度损失，$\mathcal M_{\mathrm{lex}}(x)\in\{0,1\}$为检索触发器的词法合规约束。使用这两项约束的目的是尽可能提高植入子载荷段与源文档上下文的语义连贯性和隐蔽性，以逃逸现有基于词法检查器或语言模型困惑度的防御机制。
 
-上述威胁模型如\autoref{fig:threat_model}所示。整个投毒攻击载荷构造的流程分为双块载荷构造和分块感知的检索触发器优化两个阶段，一次具体的攻击流程如\autoref{fig:attack_framework}所示。
+上述威胁模型如\autoref{fig:threat_model}所示。整个投毒载荷构造的流程分为双块核心载荷构造和分块感知的检索触发器优化两个阶段，一次具体的攻击流程如\autoref{fig:attack_framework}所示。
 
 \begin{figure}[!htbp]
   \centering
@@ -87,12 +87,12 @@
   \label{fig:threat_model}
 \end{figure}
 
-\subsubsection{阶段一：双块载荷构造}
-由于分布式投毒载荷之间必须存在抽象的语义逻辑关联，而LLM则擅长处理复杂的逻辑关系或抽象语义，本研究拟采用通过黑盒方式构造分布式载荷的方法，以最大化载荷的逻辑关联、语义连贯性与攻击有效性。
+\subsubsection{阶段一：双块核心载荷构造}
+由于分布式投毒中的两个核心载荷之间必须存在严密的语义逻辑互补关联，而LLM擅长处理复杂的逻辑推演与自然语境衔接，本研究拟通过影子LLM协作构造双块核心载荷及外围背景句，以兼顾跨块逻辑关联、语义连贯性与攻击有效性。
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-10} 载体条件不能由长度门槛替代：原300题要求至少一篇gold文档超过512 tokens，但式(7)还约束段落位置和间距，因此仍可能无可行位置。正文定义$t_i$为第$i$段结束处的累计词元位置，并说明按固定顺序尝试该题候选源文档；无可行载体或构造耗尽均计为构造失败，保留在原300题分母。报告可行载体覆盖率与构造失败率，不在成功构造后重新抽题。“为了保证对比的公平性”改为“统一采用以下位置选择规则”。}
 
-\textbf{1) 载荷位置。}由于本研究模拟的是攻击者将载荷植入一份较长的正常源文档的过程，需要先确定载荷插入位置，具体做法如下：将干净源文档$D$按自然段解析为$\{p_1,\dots,p_M\}$，记全文总长为$t_M$，影子分块配置集$\Phi_{\mathrm{shadow}}$的最大窗口容量为$K_{\max}=\max_{\phi\in\Phi_{\mathrm{shadow}}}K_{\mathrm{size}}(\phi)$。统一采用以下位置选择规则：对每一个语料库源文档，统一选取最接近预设全文1/3和2/3分位点的段尾句后的一对槽位作为候选载荷插入位置：
+\textbf{1) 植入位置选择。}由于本研究模拟的是攻击者将两段互补子载荷植入一份较长的正常源文档的过程，需要先确定植入子载荷段的插入位置，具体做法如下：将干净源文档$D$按自然段解析为$\{p_1,\dots,p_M\}$，记全文总长为$t_M$，影子分块配置集$\Phi_{\mathrm{shadow}}$的最大窗口容量为$K_{\max}=\max_{\phi\in\Phi_{\mathrm{shadow}}}K_{\mathrm{size}}(\phi)$。统一采用以下位置选择规则：对每一个语料库源文档，统一选取最接近预设全文1/3和2/3分位点的段尾句后的一对槽位作为植入子载荷段的插入位置：
 \begin{equation}
 \begin{aligned}
   (k_A,k_B)&=\arg\min_{(i,j)\in\mathcal F_{\mathrm{pre}}}\Big(\big|t_i-\rho_A\,t_M\big|+\big|t_j-\rho_B\,t_M\big|\Big),\\
@@ -100,9 +100,9 @@
 \end{aligned}
   \label{eq:slot_anchor}
 \end{equation}
-其中$\gamma$为两个载荷之间的间距系数，$L_{\mathrm{est}}$ 为单段前置背景句及核心载荷的最大长度。选定插入位置后，将候选载荷插入$(k_A,k_B)$即可组装为候选文档。
+其中$\gamma$为两个植入子载荷段之间的间距系数，$L_{\mathrm{est}}$为单段前置背景句及核心载荷的最大长度。选定插入位置后，将两个植入子载荷段$P_A,P_B$分别插入$(k_A,k_B)$即可组装为候选源文档。
 
-\textbf{2) 子载荷块结构与生成策略。}为了保证载荷的隐蔽性，核心载荷不能单独直接插入源文档中，而是需要与其它辅助上下文一起封装为一个子载荷块。每个子载荷块$P_j=\mathcal S_j^{\mathrm{pre}}\oplus\mathcal P_j\oplus\mathcal S_j^{\mathrm{post}}$（$j\in\{A,B\}$）依次拼接前置背景句$\mathcal S_j^{\mathrm{pre}}$、核心载荷$\mathcal P_j$和后置背景句$\mathcal S_j^{\mathrm{post}}$，其中$\oplus$表示文本拼接。前后背景句由$2\sim 3$句与插入段落前后文主题衔接的句子构成，置于核心载荷两侧用于语境衔接，并在自然句边界处提供阶段二检索触发器的插槽。初始核心载荷$(\mathcal P_A,\mathcal P_B)$由$\operatorname{PROPOSE}$依据查询$q$、参考答案$y_{\mathrm{true}}$、目标答案$a^*$及源文档语境生成，可以使用四类互补载荷生成策略，由影子LLM生成一对互补的载荷：
+\textbf{2) 植入子载荷段结构与核心载荷生成策略。}为了保证投毒载荷的隐蔽性，核心载荷$\mathcal P_j$不能孤立写入源文档中，而是需要与上下文过渡句一起封装为植入子载荷段。阶段一的每个植入子载荷段$P_j=\mathcal S_j^{\mathrm{pre}}\oplus\mathcal P_j\oplus\mathcal S_j^{\mathrm{post}}$（$j\in\{A,B\}$）依次拼接前置背景句$\mathcal S_j^{\mathrm{pre}}$、核心载荷$\mathcal P_j$和后置背景句$\mathcal S_j^{\mathrm{post}}$，其中$\oplus$表示文本拼接。前后背景句由$2\sim 3$句与插入段落前后文主题衔接的句子构成，置于核心载荷两侧用于语境过渡，并在后置背景句的自然句边界处预留阶段二检索触发器的插槽。初始核心载荷$(\mathcal P_A,\mathcal P_B)$由$\operatorname{PROPOSE}$算子依据查询$q$、参考答案$y_{\mathrm{true}}$、目标答案$a^*$及源文档语境生成，具体包含四类互补核心载荷生成策略，由影子LLM生成一对逻辑互补的核心载荷：
 \begin{enumerate}[label=(\alph*),leftmargin=2.2em,itemsep=0pt]
   \item \textbf{规则—代号映射与勘误否定}：$\mathcal P_A$定义领域分类标准并声明旧记录已按代号重核定，$\mathcal P_B$陈述查询主体对应的分类代号；
   \item \textbf{代理实体等价桥接\cite{zhang2026inceptionrag}}：$\mathcal P_A$赋予同域非查询参照实体目标属性，$\mathcal P_B$建立查询主体与参照实体的等价关联；
@@ -110,7 +110,7 @@
   \item \textbf{条件推理前提拆分\cite{song2026adversarialcot}}：$\mathcal P_A$给出定量换算或因果大前提，$\mathcal P_B$给出查询主体的基准记录小前提。
 \end{enumerate}
 
-\textbf{3) 对照上下文构造与反馈修订。}在获得核心载荷块$c_A,c_B$后，按式\eqref{eq:gen_gate}构造$C_{00},C_{10},C_{01},C_{11}$，并检验生成条件$\mathcal V_{\mathrm{comp}}(x)$。若检验未通过，则执行$\operatorname{REVISE}$转写操作，迭代至成功满足生成条件或达到循环上界，获得可以在目标问题上稳定诱导目标答案生成的对抗性投毒核心载荷。
+\textbf{3) 对照上下文构造与反馈修订。}在候选文档经参考分块视图切分获得同源角色块$c_A,c_B$后，按式\eqref{eq:gen_gate}构造$C_{00},C_{10},C_{01},C_{11}$，并检验生成条件$\mathcal V_{\mathrm{comp}}(x)$。若检验未通过，则执行$\operatorname{REVISE}$转写操作，迭代至成功满足生成条件或达到循环上界，获得可以在目标问题上稳定诱导目标答案生成的互补核心载荷$(\mathcal P_A,\mathcal P_B)$及背景句。
 % \begin{itemize}[leftmargin=2em,itemsep=0pt]
 %   \item 若单块命中$Y_{10}=1\lor Y_{01}=1$，表明单块已含独立推导信息，则收窄对应子载荷块的信息外延；
 %   \item 若双块未命中$Y_{11}=0$，表明两块未能协同导出目标答案，则参考反馈改写策略\cite{zou2025poisonedrag,chang2025oneshot,song2026adversarialcot,li2026cparag}强化跨块绑定表述或切换策略池中的其它构造算子；
@@ -127,19 +127,19 @@
 \end{figure}
 
 \subsubsection{阶段二：分块感知的检索触发器优化}
-在完成分块核心载荷的构造满足生成条件后，需要在载荷中继续植入触发器$\mathbf t_j$以满足检索条件，从而使得目标载荷可以穿过RAG系统的文档摄取流程并成功进入Top-$K$的检索上下文中。触发器 $\mathbf t_j$ 放置于各子载荷段落核心载荷后背景句的自然句边界处，为一个长度为$L_{\mathrm{trig}}$的词元序列。候选载荷与触发器的布局如下：
+在完成双块核心载荷$\mathcal P_A,\mathcal P_B$的构造并满足生成条件后，需要在各植入子载荷段中进一步植入并优化检索触发器$\mathbf t_j$以满足检索条件，从而使分块后形成的两个同源角色块能够穿过RAG系统的文档摄入流程并共同进入Top-$K$检索上下文中。检索触发器$\mathbf t_j$放置于各植入子载荷段内核心载荷后置背景句的自然句边界处，为一个长度为$L_{\mathrm{trig}}$的词元序列。加入检索触发器后的植入子载荷段布局如下：
 \begin{equation}
   P_j(\mathbf t_j)=\mathcal S_j^{\mathrm{pre}}\oplus\mathcal P_j\oplus\mathcal S_{j,1}^{\mathrm{post}}\oplus\mathbf t_j\oplus\mathcal S_{j,2}^{\mathrm{post}}.
   \label{eq:trigger_layout}
 \end{equation}
-其中，$\mathcal P_j$表示子载荷$j$的核心载荷，$\mathbf t_j$表示子载荷$j$的触发器，$\mathcal S_j^{\mathrm{pre}}$和$\mathcal S_{j,1}^{\mathrm{post}}$、$\mathcal S_{j,2}^{\mathrm{post}}$分别表示子载荷$j$的前、后置背景句。
+其中，$\mathcal P_j$表示角色$j$的核心载荷，$\mathbf t_j$表示角色$j$的检索触发器，$\mathcal S_j^{\mathrm{pre}}$和$\mathcal S_{j,1}^{\mathrm{post}}$、$\mathcal S_{j,2}^{\mathrm{post}}$分别表示角色$j$的前置背景句与后置背景句的前后分句。
 
-本研究拟采用跨视图检索损失与局部流畅度损失进行联合优化，具体如下：
+本研究拟采用跨视图检索损失与局部流畅度损失对检索触发器进行联合优化，具体如下：
 
 % \todo{损失说清楚，这里的损失应当是构造trigger时候的损失，并且分块感知的意思是要考虑不同分块策略下的检索结果，损失函数应当是对不同分块策略下的检索结果求期望；此外，参照CRCP的做法，将分块边界偏移视为一个随机变量优化当分块边界落入trigger时，寻找被切分后剩余部分依旧保持检索亲和力的鲁棒trigger，而不仅仅只是几个离散分块视图条件下的损失。}
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-12} 总体目标与条件代理仍有差距：式(6)对全部影子视图计分，式(9)只平均当前有效视图。Python反例中，10个有效视图的平均损失0.598下降为仅1个有效视图的0.371，总体共同召回却由1降至0.1。不要写成等价转化；应明确阶段一比较结构有效覆盖，阶段二在确定的有效视图范围内优化检索代理，最终全部视图计入评价。跨尺度的参考阈值应由各自背景索引计算，记为$\tau_q^{(\phi)}$；$\phi_0$须在正文说明为阶段一选定的参考视图。有限视图实验支持所测配置下的迁移，不推出任意未知分块器上的保证。}
 
-\textbf{1) 跨视图检索损失。}候选文档经影子分块器切分后，可以获得满足双子载荷完整分离的有效视图子集$\Phi^+(x)=\{\phi\in\Phi_{\mathrm{shadow}}:I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}\}$（后文简记为$\Phi^+$）。本研究在当前候选$x$的影子视图子集$\Phi^+$上，按均匀权重计算条件平均检索损失，作为式\eqref{eq:attack_objective}总体目标的代理。以干净语料库中第$K-1$名候选语料块的检索得分$\tau_q=s(q,d_{(K-1)})$作为参考阈值，子载荷$j$的跨视图检索损失定义为：
+\textbf{1) 跨视图检索损失。}候选文档经影子分块器切分后，可以获得满足两个核心载荷各自完整且分离落入不同块的全部有效视图子集$\Phi^+(x)=\{\phi\in\Phi_{\mathrm{shadow}}:I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}\}$（后文简记为$\Phi^+$）。本研究在当前候选$x$的影子视图子集$\Phi^+$上，按均匀权重计算条件平均检索损失，作为式\eqref{eq:attack_objective}总体目标的代理。以干净语料库中第$K-1$名候选语料块的检索得分$\tau_q=s(q,d_{(K-1)})$作为参考阈值，角色$j$的检索触发器跨视图检索损失定义为：
 \begin{equation}
 \begin{aligned}
   \mathcal L_{\mathrm{rob}}(\mathbf t_j)&=
@@ -150,9 +150,9 @@
 \end{aligned}
   \label{eq:chunk_rob_loss}
 \end{equation}
-其中，$\delta>0$为得分裕度，$T>0$为平滑温度，$\lambda_{\mathrm{var}}\ge 0$为跨视图得分差异权重，是三个共同控制针对当前配置拟合强度的可调的超参数。式中第一项$\ell_{\mathrm{ret}}$促使有效视图下的子载荷块得分超越参考阈值$\tau_q$，第二项抑制不同分块视图间的得分波动。
+其中，$\delta>0$为得分裕度，$T>0$为平滑温度，$\lambda_{\mathrm{var}}\ge 0$为跨视图得分差异权重，是三个共同控制针对当前配置拟合强度的可调超参数。式中第一项$\ell_{\mathrm{ret}}$促使有效视图下的同源角色块得分超越参考阈值$\tau_q$，第二项抑制不同分块视图间的得分波动。
 
-\textbf{2) 检索与流畅度联合目标。}为提高触发器的隐蔽性，需要优化检索触发器的语言流畅性。本研究拟对每个子载荷$j\in\{A,B\}$，截取触发器及其前后相邻句构成一个局部文本窗口$W_j=s_{j,1}\oplus\mathbf t_j\oplus s_{j,2}$，其中$s_{j,1}$与$s_{j,2}$分别为触发器前、后相邻句。利用冻结的GPT-2\cite{radford2019language}因果语言模型计算局部平均负对数似然作为语言流畅性损失，并与跨视图检索损失组合为总损失目标$\mathcal L$：
+\textbf{2) 检索与流畅度联合目标。}为提高检索触发器的隐蔽性，需要约束检索触发器嵌入后的局部语言流畅性。本研究拟对每个角色$j\in\{A,B\}$，截取检索触发器及其前后相邻句构成一个局部文本窗口$W_j=s_{j,1}\oplus\mathbf t_j\oplus s_{j,2}$，其中$s_{j,1}$与$s_{j,2}$分别为触发器前、后相邻句。利用冻结的GPT-2\cite{radford2019language}因果语言模型计算局部平均负对数似然作为语言流畅性损失，并与跨视图检索损失组合为总损失目标$\mathcal L$：
 \begin{equation}
 \begin{aligned}
   \mathcal L_{\mathrm{ppl}}(\mathbf t_j)&=-\frac{1}{|W_j|}\sum_{m=1}^{|W_j|} \log P_{\mathrm{LM}}\big(w_{j,m}\mid w_{j,<m}\big),\\
@@ -164,24 +164,24 @@
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-13} 词法约束仍需一句可操作定义：式(6)和算法1调用$\mathcal M_{\mathrm{lex}}$，正文却仅列Doc2Query与语法检查器，未交代通过条件。说明它检查候选池、允许的词元形式及语法接受条件即可，无需堆砌工程规则。“计算开销爆炸”“巨大噪音”分别改为“候选重评开销较大”“低相关候选较多”。“转化梯度下降问题”改为“以一阶梯度筛选离散替换候选，再按前向损失选择”，因为该算法没有对离散词元执行连续梯度下降。}
 
-由于现代稠密检索器的词表往往很大（数万词元级别），如果在触发器搜索阶段将全词表中的词元均作为候选词元将带来计算开销爆炸的问题；同时，由于全词表中的大量词元与目标查询或源文档无关，在这些词元中搜索会产生大量低相关候选噪音，影响搜索收敛效率。为限定触发文本的形式与搜索范围，本研究利用Doc2Query\cite{nogueira2019document}根据载荷段落生成候选伪查询文本，经影子编码器$E_s$的分词器转换为候选词元集合$\mathcal V_{\mathrm{cand}}$，并采用语法检查器\cite{omelianchuk2020gector}剔除语法错误的载荷。
+由于现代稠密检索器的词表往往很大（数万词元级别），如果在检索触发器搜索阶段将全词表中的词元均作为候选词元将带来候选重评开销较大的问题；同时，由于全词表中的大量词元与目标查询或源文档无关，在这些词元中搜索会产生较多低相关候选干扰，影响搜索收敛效率。为限定检索触发器的词法形式与搜索范围，本研究利用Doc2Query\cite{nogueira2019document}根据植入子载荷段生成候选伪查询文本，经影子编码器$E_s$的分词器转换为候选词元集合$\mathcal V_{\mathrm{cand}}$，并采用语法检查器\cite{omelianchuk2020gector}剔除存在语法错误的候选触发器序列。
 % \begin{enumerate}[label=(\alph*),leftmargin=2.2em,itemsep=0pt]
 %   \item 每个词元均为完整ASCII英文词元，且相邻位置词元满足$t_i\neq t_{i+1}$；
 %   \item 序列$\mathbf t$与查询$q$的最长公共连续词组长度小于2；
 %   \item 序列不含属于$a^*$或$y_{\mathrm{true}}$的词元。
 % \end{enumerate}
 
-\textbf{3) 交替优化阶段。}在确定损失函数后，通过一阶泰勒近似\cite{ebrahimi-etal-2018-hotflip,zou2023universal}将离散载荷构造问题转化以一阶梯度筛选离散替换候选，再按前向损失选择的问题，迭代更新触发器词元，具体求解步骤如算法\ref{alg:attack}所示。为提高优化效率，每轮迭代仅选择当前跨视图检索损失较大的瓶颈子载荷$j^\star=\arg\max_{j\in\{A,B\}}\mathcal L_{\mathrm{rob}}(\mathbf t_j)$执行触发器的坐标更新。每次词元替换的具体做法为：在获得 $\mathcal L$ 后，通过在代理检索器上反向传播计算$\mathcal L_{\mathrm{rob}}(\mathbf t_{j^\star})$对触发器第$i$位词元嵌入的梯度$\mathbf g_i$，并在满足词法约束且$v\in\mathcal V_{\mathrm{cand}}$的候选词元上，按得分排序筛选前$B_{\mathrm{cand}}$个替换候选：
+\textbf{3) 交替优化阶段。}在确定损失函数后，通过一阶泰勒近似\cite{ebrahimi-etal-2018-hotflip,zou2023universal}将离散检索触发器搜索问题转化为以一阶梯度筛选离散替换候选、再按前向损失精确择优的问题，迭代更新检索触发器词元，具体求解步骤如算法\ref{alg:attack}所示。为提高优化效率，每轮迭代仅选择当前跨视图检索损失较大的瓶颈角色$j^\star=\arg\max_{j\in\{A,B\}}\mathcal L_{\mathrm{rob}}(\mathbf t_j)$执行检索触发器的坐标更新。每次词元替换的具体做法为：在获得$\mathcal L$后，通过在代理检索器上反向传播计算$\mathcal L_{\mathrm{rob}}(\mathbf t_{j^\star})$对检索触发器第$i$位词元嵌入的梯度$\mathbf g_i$，并在满足词法约束且$v\in\mathcal V_{\mathrm{cand}}$的候选词元上，按得分排序筛选前$B_{\mathrm{cand}}$个替换候选：
 \begin{equation}
   \mathbf g_i=\nabla_{e_{t_i}}\mathcal L_{\mathrm{rob}}(\mathbf t_{j^\star}),\qquad
   \Delta_{i,v}=-\mathbf g_i^\top(e_v-e_{t_i}).
   \label{eq:first_order}
 \end{equation}
-随后将触发器上的各个位置词元进行候选替换，并写回段落组装为载体文档$D_{\mathrm{adv}}$，在有效视图集$\Phi^+$上实际切分并定位子载荷块，批量前向计算式\eqref{eq:local_ppl}中的总损失$\mathcal L$，通过贪心策略采纳使$\mathcal L$严格下降的最优替换$(i^\star,v^\star)$，直至达到最大步数$T_{\mathrm{ret}}$或无严格改进候选时终止。优化结束后，将最终获得的触发器与载荷拼接，并加入源文档槽位中，得到投毒源文档$D_{\mathrm{adv}}(x)$。
+随后将检索触发器上的各个位置词元进行候选替换，并写回植入子载荷段组装为载体文档$D_{\mathrm{adv}}$，在有效视图集$\Phi^+$上实际切分并定位同源角色块，批量前向计算式\eqref{eq:local_ppl}中的总损失$\mathcal L$，通过贪心策略采纳使$\mathcal L$严格下降的最优替换$(i^\star,v^\star)$，直至达到最大步数$T_{\mathrm{ret}}$或无严格改进候选时终止。优化结束后，将最终获得的检索触发器嵌入植入子载荷段，并装入源文档槽位中，得到最终投毒源文档$D_{\mathrm{adv}}(x)$。
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-24} 算法1的一致性问题：阶段一验证的状态与后续加入触发器后的最终输出不是同一对象；合法候选不存在时的输出也未在伪代码中说明。因此，不能由阶段一通过直接推断最终输出仍满足组合判据。本轮保留原搜索流程，将这些接口缺口列为待核验项；正式实验应分别报告构造状态与最终输出的验证结果。}
 
-\begin{algorithm}[!htbp]
+\begin{algorithm}[H]
   \small
   \caption{Cross-Chunk Payload Construction}
   \label{alg:attack}
@@ -285,7 +285,7 @@
 
 \textbf{特征融合。}统计特征反映文本的分布特性，查询与文本块的联合语义表示则补充其具体内容及语境信息。本研究拟将四项统计特征与\mbox{ModernBERT}语义表示拼接，采用随机森林学习二者与投毒风险之间的关系。\mbox{ModernBERT}在特征提取时保持参数固定，利用预训练的语言表示能力编码查询与文本块；随机森林通过多棵决策树的分裂学习特征之间的非线性交互，并通过样本重采样和随机选择候选特征降低树间相关性，适合在现有标注样本规模下拟合统计与语义信息的组合。
 
-具体而言，将四项统计特征记为$\mathbf f_i=(s_{\mathrm{tail}}(z_i),\tau_{\mathrm{svd}}(c_i),\rho_{\mathrm{tan}}(c_i;\mathcal C_q),d_{\mathrm{intra}}(c_i))^\top$。将查询$q$与候选块$c_i$成对输入基于\mbox{ModernBERT}的预训练重排序编码模型，的末层隐藏状态均值，得到联合表示$\mathbf h_i$。随后，在拟合集的干净样本上拟合主成分分析（PCA），将$\mathbf h_i$投影至16维，并与$\mathbf f_i$拼接为20维融合特征：
+具体而言，将四项统计特征记为$\mathbf f_i=(s_{\mathrm{tail}}(z_i),\tau_{\mathrm{svd}}(c_i),\rho_{\mathrm{tan}}(c_i;\mathcal C_q),d_{\mathrm{intra}}(c_i))^\top$。将查询$q$与候选块$c_i$成对输入基于\mbox{ModernBERT}的预训练重排序编码模型，提取末层隐藏状态均值，得到联合表示$\mathbf h_i$。随后，在拟合集的干净样本上拟合主成分分析（PCA），将$\mathbf h_i$投影至16维，并与$\mathbf f_i$拼接为20维融合特征：
 \begin{equation}
   \mathbf u_i=\big[\mathbf f_i;\,W_{16}^{\top}(\mathbf h_i-\bar{\mathbf h})\big],
   \label{eq:defense_fusion}
