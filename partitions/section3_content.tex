@@ -5,7 +5,7 @@
 \subsection{研究目标}
 本研究面向大语言模型检索增强生成系统在知识库投毒场景下面临的安全问题，围绕同源多文本块协同投毒攻击与检索上下文安全防御两个子研究点开展研究。在攻击侧，针对攻击者仅能改写单一源文档、且该文档需经目标RAG系统的文档摄入流水线分块、编码后形成检索单元的场景，研究互补载荷的构造、分块完整性保持与联合召回优化方法，分析两个同源文本块在共同进入检索上下文时诱导目标答案生成的条件，并评估攻击在不同分块配置与检索环境下的有效性，以评估实用型RAG系统管线的脆弱面。在防御侧，面向多类检索增强生成投毒攻击，研究融合检索统计特征、查询与文本块的语义表示、跨块关系及异源参照证据的检索上下文净化方法，提升对可疑投毒内容的识别能力，同时尽可能保留正常多跳问答所需的桥接证据，提高RAG系统在攻击下的鲁棒性。最后，构建统一的实验环境与评价协议，通过对比实验和消融分析，综合评估所提方法的攻击效果、防御能力、问答效用及计算开销，并实现攻防联合测试原型，为检索增强生成系统的安全性分析与防护提供实验依据。整体研究思路如\autoref{fig:framework}所示。
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
   \centering
   \resizebox{0.92\textwidth}{!}{\includegraphics{figures/fig_research_framework.pdf}}
   \caption{整体研究思路}
@@ -31,7 +31,16 @@
   \item \textbf{防御者能力与目标}：防御者将防御部署于服务端检索阶段之后、生成阶段之前，可以控制检索器和生成器的参数，并对目标查询与检索上下文$\mathcal C_q$具有完整的访问和控制权，但是不能实时修改防御系统的防御策略，也不了解攻击者的投毒方式和具体的投毒文档。防御者的目标是在保持RAG系统问答准确率（尤其是正常开放多跳推理问题）的同时，剔除潜在投毒块，并使防御开销维持在可接受范围内。
 \end{enumerate}
 
-\textbf{问题形式化。}为消除术语歧义，本研究将攻击者在外部源文档中植入的恶意文本总体称为\textbf{投毒载荷（Poisoning Payload）}，并按源文档分块前后的结构层次严格区分四组概念：1）\textbf{核心载荷（Core Payload，$\mathcal P_j, j\in\{A,B\}$）}，指分别承载互补推理前提（如抽象规则定义或实例归属绑定）、用于诱导生成模型导出目标答案$a^*$的核心语义语句；2）\textbf{检索触发器（Retrieval Trigger，$\mathbf t_j$）}，指嵌入在背景句自然边界处、通过离散词元搜索拉高文本块与查询$q$检索相似度的短词元序列；3）\textbf{植入子载荷段（Implanted Sub-payload Passage，$P_j$）}，指由前置背景句$\mathcal S_j^{\mathrm{pre}}$、核心载荷$\mathcal P_j$、后置背景句$\mathcal S_j^{\mathrm{post}}$及检索触发器$\mathbf t_j$按序拼接封装而成、直接写入源文档第$j$个槽位的完整段落；4）\textbf{同源角色块（Role Chunk，$c_j^{(\phi)}$）}，指植入子载荷段后的投毒源文档$D_{\mathrm{adv}}(x)$经受害者分块器$\phi$切分后生成的、完整包含对应核心载荷$\mathcal P_j$的检索文本块。遵循文献\cite{zou2025poisonedrag}的框架，本研究所面向的定向RAG投毒需同时满足\textbf{检索条件}与\textbf{生成条件}：检索条件要求在检索过程中，由同一源文档切分出的两个同源角色块分别完整保留各自的核心载荷并共同进入Top-$K$；生成条件要求在攻击者操纵的上下文中，使生成模型对指定问题$q$输出攻击者指定的目标答案$a^*$。
+上述威胁模型如\autoref{fig:threat_model}所示。
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_ppt09_threat_model.pdf}
+  \caption{威胁模型}
+  \label{fig:threat_model}
+\end{figure}
+
+\textbf{问题形式化。}为消除术语歧义，本研究将攻击者在外部源文档中植入的恶意文本总体称为\textbf{投毒载荷（Poisoning Payload）}，并按源文档分块前后的结构层次严格区分四组概念：1）\textbf{核心载荷（Core Payload，$\mathcal P_j, j\in\{A,B\}$）}，指分别承载互补推理前提（如抽象规则定义或实例归属绑定）、用于诱导生成模型导出目标答案$a^*$的核心语义语句；2）\textbf{检索触发器（Retrieval Trigger，$\mathbf t_j$）}，指嵌入在背景句自然边界处、通过离散词元搜索拉高文本块与查询$q$检索相似度的短词元序列；3）\textbf{植入子载荷段（Implanted Sub-payload Passage，$P_j$）}，指由前置背景句$\mathcal S_j^{\mathrm{pre}}$、核心载荷$\mathcal P_j$、后置背景句$\mathcal S_j^{\mathrm{post}}$及检索触发器$\mathbf t_j$按序拼接封装而成、直接写入源文档第$j$个槽位的完整段落；4）\textbf{同源角色块（Role Chunk，$c_j^{(\phi)}$）}，指植入子载荷段后的投毒源文档$D_{\mathrm{adv}}(x)$经受害者分块器$\phi$切分后生成的、完整包含对应核心载荷$\mathcal P_j$的检索文本块。同时，本研究及\autoref{fig:threat_model}中所称的\textbf{分布式投毒（Distributed Poisoning）}，并非指多名攻击者合谋或多计算节点联合作战，而是指载荷在空间与检索单元上的分散化配置——即将原本集中于单块的恶意断言解耦为嵌入同一源文档不同位置的多个互补子载荷段，经系统分块后分布于多个检索单元中协同生效。遵循文献\cite{zou2025poisonedrag}的框架，本研究所面向的定向RAG投毒需同时满足\textbf{检索条件}与\textbf{生成条件}：检索条件要求在检索过程中，由同一源文档切分出的两个同源角色块分别完整保留各自的核心载荷并共同进入Top-$K$；生成条件要求在攻击者操纵的上下文中，使生成模型对指定问题$q$输出攻击者指定的目标答案$a^*$。
 
 \textbf{1) 检索条件}：设除载体文档$d$外的背景分块索引库为$\mathcal C_{-d}^\phi=\phi(\mathcal D\setminus\{d\})$，$D_{\mathrm{adv}}(x)$为候选投毒配置$x$下的完整投毒源文档，在分块算子$\phi$下更新后的分块语料库为$\mathcal C_v^\phi(x)=\mathcal C_{-d}^\phi\cup\phi(D_{\mathrm{adv}}(x))$。对角色索引$j\in\{A,B\}$与文档分块策略$\phi$，当$\phi(D_{\mathrm{adv}}(x))$中存在完整包含核心载荷$\mathcal P_j$的文本块时，记核心载荷完整性指示器$I_j(\phi)=1$，并取检索排序最高者作为对应同源角色块$c_j^{(\phi)}$；否则记$I_j(\phi)=0$。则\textbf{检索条件}$Z_\phi(x)$为：
 \begin{equation}
@@ -58,7 +67,7 @@
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-09} 式(5)仅判断固定背景、固定槽位下的受控组合效应，不能命名为端到端“攻击成功判据”；建议标题改为“受控组合判据”，本段后续称呼同步修改，端到端目标命中沿用式(3)与ASR。单块不命中目标并不要求回答UNKNOWN，图3单块仍答正确答案与式(5)可以相容。图3是机制示意，图注补“示意”，不能将OpenAI例当作已执行的PoC。}
 
-\textbf{3) 攻击成功判据}：为研究分布式隐蔽投毒在RAG系统上的作用机理，本研究考察同源角色块数量为2的最小协同情形。令两个同源角色块$c_A$和$c_B$分别承载互补的核心载荷$\mathcal P_A$和$\mathcal P_B$：其中$\mathcal P_A$陈述抽象规则或前提定义，$\mathcal P_B$陈述查询实体的实例归属绑定。为比较单块与双块的目标生成效果，从除载体文档外的背景语料库$\mathcal C_{-d}^s$中取前$K-2$个高分干净块固定为有序序列$B_0=[d_{(1)},\dots,d_{(K-2)}]$，并设置与同源角色块长度及主题匹配的干净中性替代块$N_A,N_B$，按固定槽位构造四组均包含$K$个文本块的对照上下文$C_{00},C_{10},C_{01},C_{11}$。
+\textbf{3) 攻击成功判据}：为研究同源跨块协同投毒在RAG系统上的作用机理，本研究考察同源角色块数量为2的最小协同情形。令两个同源角色块$c_A$和$c_B$分别承载互补的核心载荷$\mathcal P_A$和$\mathcal P_B$：其中$\mathcal P_A$陈述抽象规则或前提定义，$\mathcal P_B$陈述查询实体的实例归属绑定。为比较单块与双块的目标生成效果，从除载体文档外的背景语料库$\mathcal C_{-d}^s$中取前$K-2$个高分干净块固定为有序序列$B_0=[d_{(1)},\dots,d_{(K-2)}]$，并设置与同源角色块长度及主题匹配的干净中性替代块$N_A,N_B$，按固定槽位构造四组均包含$K$个文本块的对照上下文$C_{00},C_{10},C_{01},C_{11}$。
 
 记$Y_{uv}=J(q,a^*,G_{\mathrm{shadow}}(q,C_{uv}))\in\{0,1\}$，单块核心载荷不命中、双块核心载荷协同命中目标答案$a^*$的\textbf{攻击成功判据}为：
 \begin{equation}
@@ -78,17 +87,8 @@
 \end{equation}
 其中$\mathcal L_{\mathrm{ppl}}(x)$为检索触发器邻域的局部流畅度损失，$\mathcal M_{\mathrm{lex}}(x)\in\{0,1\}$为检索触发器的词法合规约束。使用这两项约束的目的是尽可能提高植入子载荷段与源文档上下文的语义连贯性和隐蔽性，以逃逸现有基于词法检查器或语言模型困惑度的防御机制。
 
-上述威胁模型如\autoref{fig:threat_model}所示。整个投毒载荷构造的流程分为双块核心载荷构造和分块感知的检索触发器优化两个阶段，一次具体的攻击流程如\autoref{fig:attack_framework}所示。
-
-\begin{figure}[!htbp]
-  \centering
-  \includegraphics[width=\textwidth]{figures/fig_ppt09_threat_model.pdf}
-  \caption{威胁模型}
-  \label{fig:threat_model}
-\end{figure}
-
 \subsubsection{阶段一：双块核心载荷构造}
-由于分布式投毒中的两个核心载荷之间必须存在严密的语义逻辑互补关联，而LLM擅长处理复杂的逻辑推演与自然语境衔接，本研究拟通过影子LLM协作构造双块核心载荷及外围背景句，以兼顾跨块逻辑关联、语义连贯性与攻击有效性。
+由于同源跨块协同投毒中的两个核心载荷之间必须存在严密的语义逻辑互补关联，而LLM擅长处理复杂的逻辑推演与自然语境衔接，本研究拟通过影子LLM协作构造双块核心载荷及外围背景句，以兼顾跨块逻辑关联、语义连贯性与攻击有效性。
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-10} 载体条件不能由长度门槛替代：原300题要求至少一篇gold文档超过512 tokens，但式(7)还约束段落位置和间距，因此仍可能无可行位置。正文定义$t_i$为第$i$段结束处的累计词元位置，并说明按固定顺序尝试该题候选源文档；无可行载体或构造耗尽均计为构造失败，保留在原300题分母。报告可行载体覆盖率与构造失败率，不在成功构造后重新抽题。“为了保证对比的公平性”改为“统一采用以下位置选择规则”。}
 
@@ -110,7 +110,7 @@
   \item \textbf{条件推理前提拆分\cite{song2026adversarialcot}}：$\mathcal P_A$给出定量换算或因果大前提，$\mathcal P_B$给出查询主体的基准记录小前提。
 \end{enumerate}
 
-\textbf{3) 对照上下文构造与反馈修订。}在候选文档经参考分块视图切分获得同源角色块$c_A,c_B$后，按式\eqref{eq:gen_gate}构造$C_{00},C_{10},C_{01},C_{11}$，并检验生成条件$\mathcal V_{\mathrm{comp}}(x)$。若检验未通过，则执行$\operatorname{REVISE}$转写操作，迭代至成功满足生成条件或达到循环上界，获得可以在目标问题上稳定诱导目标答案生成的互补核心载荷$(\mathcal P_A,\mathcal P_B)$及背景句。
+\textbf{3) 对照上下文构造与反馈修订。}在候选文档经参考分块视图切分获得同源角色块$c_A,c_B$后，按式\eqref{eq:gen_gate}构造$C_{00},C_{10},C_{01},C_{11}$，并检验生成条件$\mathcal V_{\mathrm{comp}}(x)$。若检验未通过，则执行$\operatorname{REVISE}$转写操作，迭代至成功满足生成条件或达到循环上界，获得可以在目标问题上稳定诱导目标答案生成的互补核心载荷$(\mathcal P_A,\mathcal P_B)$及背景句，并交由阶段二继续优化检索触发器。结合阶段一的双块核心载荷构造与阶段二的分块感知检索触发器优化，一次完整的同源多文本块协同投毒攻击流程如\autoref{fig:attack_framework}所示。
 % \begin{itemize}[leftmargin=2em,itemsep=0pt]
 %   \item 若单块命中$Y_{10}=1\lor Y_{01}=1$，表明单块已含独立推导信息，则收窄对应子载荷块的信息外延；
 %   \item 若双块未命中$Y_{11}=0$，表明两块未能协同导出目标答案，则参考反馈改写策略\cite{zou2025poisonedrag,chang2025oneshot,song2026adversarialcot,li2026cparag}强化跨块绑定表述或切换策略池中的其它构造算子；
@@ -122,7 +122,7 @@
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.9\textwidth]{figures/fig_ppt10_distributed_poisoning.pdf}
-  \caption{基于同源多文本块协同的分布式投毒攻击}
+  \caption{基于同源多文本块协同的投毒攻击流程}
   \label{fig:attack_framework}
 \end{figure}
 
@@ -239,7 +239,7 @@
 
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-14} 图4需重接流程：离线拟合与在线评分分开，新增“风险超过阈值／跨块关系告警→待审集合→LLM复核”的连接；当前风险评分框是断开的。正文及算法2将跨块初筛列为阶段1b，图中却放在Stage 2，统一为阶段1。图中“锚点一致性”属于LLM复核，不能与同源远距、低频桥接、命题冲突三个初筛指标互换。仅更新这些连接与标签，不需重画整张图。}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{figures/fig_ppt11_defense_framework.pdf}
   \caption{基于检索上下文表征分析的检索增强生成安全防御方法}
@@ -305,7 +305,7 @@
 
 \subsubsection{跨块关系检查与LLM复核}
 
-\textbf{1) 跨块关系检查。}在组合式投毒下，单块风险值可能满足$A(q,c_i)\le\tau_{\mathrm{low}}$\cite{zheng2025grada,zhou2025trustrag}，从而逃逸单纯依赖特征值的检查。本研究拟在风险筛选后保留的候选块集合$\mathcal C_{\mathrm{surv}}$上构建上下文实体—命题图$\mathcal G_q=(\mathcal V_q,\mathcal E_q)$：
+\textbf{1) 跨块关系检查。}在组合式投毒下，单块风险值可能满足$A(q,c_i)\le\tau_\alpha$\cite{zheng2025grada,zhou2025trustrag}，从而逃逸单纯依赖特征值的检查。本研究拟在风险筛选后保留的候选块集合$\mathcal C_{\mathrm{surv}}$上构建上下文实体—命题图$\mathcal G_q=(\mathcal V_q,\mathcal E_q)$：
 \begin{itemize}[leftmargin=2em,itemsep=0pt]
   \item \textbf{节点集$\mathcal V_q$}：采用spaCy\cite{honnibal2020spacy}执行词性标注、命名实体识别与名词短语提取，结合正则表达式匹配技术代号与分类编号，汇总各保留块$c_i\in\mathcal C_{\mathrm{surv}}$中的实体与属性节点构成$\mathcal V_q=\bigcup_{c_i\in\mathcal C_{\mathrm{surv}}}\mathcal E(c_i)$。
   \item \textbf{有向边集$\mathcal E_q$}：采用Stanford OpenIE\cite{angeli2015leveraging}抽取文本块中的主语—关系—宾语三元组$(u,r,v)$，结合依存句法与否定词规则判定极性$\mathrm{pol}\in\{+1,-1\}$，并抽取命题关联的时间或条件限定$\mathrm{ctx}$（如"2019年"、"按修订批次"，无显式限定时记为空），构成命题有向边$e=(u,v,r,\mathrm{pol},\mathrm{ctx})\in\mathcal E_q$，并记录所属块$\mathrm{chunk}(e)=c_i$与源文档标识$\mathrm{doc}(e)=z_{\mathrm{doc}}(c_i)$。
@@ -385,7 +385,7 @@
 
 系统结构如\autoref{fig:system_design}所示。
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{figures/fig_ppt12_joint_test_system.pdf}
   \caption{RAG投毒攻防联合测试系统}

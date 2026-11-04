@@ -10,8 +10,6 @@
 
 \subsection{实验设计与评价方法}
 
-\textbf{实验配置。}本研究在统一的实验环境与分层评测协议下对两个研究点开展实验评估，具体的数据集、分块尺度、检索器矩阵与对比基线配置如\autoref{tab:exp_setup}所示。
-
 % \todo[inline,color=yellow!12,size=\small]{\textbf{R5-19} 评价口径对齐：攻击优化固定原300题，载体不可行、构造失败不得移出分母；ASR另记录失败原因。若写$p_q=v_qr_q$，须用一句话定义$v_q$为结构有效视图比例、$r_q$为这些视图内共同召回比例；否则删去这段未定义符号。当前防御已按单阈值送审修正，原“高阈值直接剔除”的FPR公式只适用于旧筛选器实验。正式实验分别报告统计告警率、实际LLM调用率及最终干净查询误删率，不能用同一个校准上界覆盖三个事件。}
 
 \textbf{主要评价指标。}设评测查询集合为$\mathcal Q$（样本数$N=|\mathcal Q|$），固定评估分块视图集合为$\Phi_{\mathrm{eval}}$，查询$q\in\mathcal Q$对应的候选投毒源文档$x_q$在$\Phi_{\mathrm{eval}}$上的结构有效视图子集为$\Phi_{\mathrm{eval}}^+(x_q)=\{\phi\in\Phi_{\mathrm{eval}}:I_A(\phi)=1\land I_B(\phi)=1\land c_A^{(\phi)}\neq c_B^{(\phi)}\}$，各项评价指标的定义与计算式如下：
@@ -25,10 +23,12 @@
   % \item \textbf{非目标残余响应率（$\mathrm{Gap}_{\mathrm{other}}$）}：在互斥判分准则下度量既未命中标准答案也未命中目标答案（涵盖拒答、无关回答及其他非目标错误回答）的查询比例，计算式为 $\mathrm{Gap}_{\mathrm{other}}=\frac{1}{N}\sum_{q\in\mathcal Q}\mathbb I\big[J(q,y_{q,\mathrm{true}},\hat y_q)=0\land J(q,a_q^*,\hat y_q)=0\big]=1-\mathrm{ACC}-\mathrm{ASR}$。
  %  \item \textbf{影子—受害者生成迁移差（$\Delta_{\mathrm{gen}}$）}：度量双块竞争上下文$C_{11}$在影子生成模型与受害者生成模型上的目标答案命中率之差，计算式为 $\Delta_{\mathrm{gen}}=\frac{1}{N}\sum_{q\in\mathcal Q}\Big(\mathbb I\big[J(q,a_q^*,G_{\mathrm{shadow}}(q,C_{11}))=1\big]-\mathbb I\big[J(q,a_q^*,G_\omega(q,C_{11}))=1\big]\Big)$。
   % \item \textbf{多跳桥接证据保留率（$\mathrm{BR}$）}：设多跳查询集$\mathcal Q_{\mathrm{mh}}$中查询$q$在候选集$\mathcal C_q$内的真实支撑事实块子集为$\mathcal G_q^{\mathrm{gold}}\subseteq\mathcal C_q$，防御过滤后上下文为$\mathcal C_q^*=\pi(\mathcal C_q)$，计算式为 $\mathrm{BR}=\frac{1}{|\mathcal Q_{\mathrm{mh}}|}\sum_{q\in\mathcal Q_{\mathrm{mh}}}\frac{|\mathcal C_q^*\cap\mathcal G_q^{\mathrm{gold}}|}{|\mathcal G_q^{\mathrm{gold}}|}$。
-  \item \textbf{假阳性率（$\mathrm{FPR}_q$）}：度量防御侧干净查询集$\mathcal Q_{\mathrm{clean}}$中触发高阈值直接剔除的查询比例，计算式为 $\mathrm{FPR}_q=\frac{1}{|\mathcal Q_{\mathrm{clean}}|}\sum_{q\in\mathcal Q_{\mathrm{clean}}}\mathbb I\big[\max_{c_i\in\mathcal C_q}A(q,c_i)>\tau_{\mathrm{high}}\big]$。
+  \item \textbf{统计告警假阳性率（$\mathrm{FPR}_q$）}：度量防御侧干净查询集$\mathcal Q_{\mathrm{clean}}$中触发校准风险阈值$\tau_\alpha$而进入待审集合的查询比例，计算式为 $\mathrm{FPR}_q=\frac{1}{|\mathcal Q_{\mathrm{clean}}|}\sum_{q\in\mathcal Q_{\mathrm{clean}}}\mathbb I\big[\max_{c_i\in\mathcal C_q}A(q,c_i)>\tau_\alpha\big]$。
 \end{itemize}
 
-\begin{table}[htbp]
+\textbf{实验配置。}本研究在统一的实验环境与分层评测协议下对两个研究点开展实验评估，具体的数据集、分块尺度、检索器矩阵与对比基线配置如\autoref{tab:exp_setup}所示。
+
+\begin{table}[H]
   \centering
   \small
   \caption{实验环境配置、对比基线与核心评价指标总览}
@@ -51,10 +51,10 @@
 
 围绕\autoref{tab:exp_setup}，拟依次开展以下四组实验：
 \begin{itemize}[leftmargin=2em,itemsep=2pt]
-  \item \textbf{攻击实验}：在主配置与单一源文档改写约束下，完整执行源文档改写、受害者侧分块、自然Top-$K$检索与回答生成流程，并结合固定背景四元组受控对照以及自然检索上下文的配对移除回填对照开展归因分析。该实验旨在解决单一源文档切分出的同源文本块能否在真实检索竞争中共同召回并协同操纵生成输出这一核心问题，用于分离检索席位挤占效应与跨块前提合成效应，验证分布式投毒攻击机制。
+  \item \textbf{攻击实验}：在主配置与单一源文档改写约束下，完整执行源文档改写、受害者侧分块、自然Top-$K$检索与回答生成流程，并结合固定背景四元组受控对照以及自然检索上下文的配对移除回填对照开展归因分析。该实验旨在解决单一源文档切分出的同源角色块能否在真实检索竞争中共同召回并协同操纵生成输出这一核心问题，用于分离检索席位挤占效应与跨块前提合成效应，验证同源跨块协同投毒攻击机制。
   \item \textbf{防御实验}：在涵盖检索排名操纵、单点直接投毒与同源跨块组合投毒的混合攻击数据以及正常多跳问答数据上，将所提防御方法与代表性过滤及聚合基线进行同口径对比，并严格隔离未参与开发调参的攻击类型以检验跨攻击泛化能力。该实验旨在解决防御机制如何在阻断隐蔽组合投毒的同时避免误删正常跨块桥接证据并控制在线计算开销的问题，用于验证两阶段级联防御在安全性、问答效用与推理延迟三者之间的综合权衡效果。
   \item \textbf{迁移实验}：将主配置下构造的投毒源文档与防御方法扩展至多种分块窗口容量、切分起始相位以及不同训练范式的词项与稠密检索器上进行测试。该实验旨在解决攻防方法对受害者侧未知分块参数与异构检索表示空间的适应性问题，通过考察跨分块配置下的角色完整性保持能力与跨检索器迁移表现，明确所提攻防框架在不同系统环境下的适用范围与性能边界。
-  \item \textbf{消融实验}：在主配置下分别对研究点一的段落插入位置预选、双侧触发器布局与跨视图软间隔检索损失，以及研究点二的检索统计特征、ModernBERT语义表示、实体—命题图关系检查与异源参照文本约束开展逐项移除对照。该实验旨在回答攻防框架中各子模块是否提供独立增益的问题，通过考察移除单一组件前后的检索召回、组合生成、投毒检出与多跳证据保留变化，验证两阶段解耦构造与统计—关系级联复核设计的必要性。
+  \item \textbf{消融实验}：在主配置下分别对研究点一的段落插入位置预选、两角色检索触发器布局与跨视图软间隔检索损失，以及研究点二的检索统计特征、ModernBERT语义表示、实体—命题图关系检查与异源参照文本约束开展逐项移除对照。该实验旨在回答攻防框架中各子模块是否提供独立增益的问题，通过考察移除单一组件前后的检索召回、组合生成、投毒检出与多跳证据保留变化，验证两阶段解耦构造与统计—关系级联复核设计的必要性。
 \end{itemize}
 
 \subsection{实验可行性分析}
