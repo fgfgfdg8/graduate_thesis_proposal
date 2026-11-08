@@ -2681,3 +2681,17 @@ PaperNotes与AI Safety Daily发现渠道复核（[逐项记录](../research_data
 ## NeurIPS 2026新增RAG候选：摘要级定位（2026-11-08）
 
 对NeurIPS官方[Downloads目录](https://neurips.cc/Downloads/2026)新增核得四篇`Accept (poster)`摘要：ARGUS、top-k证据预算/分布迁移分析、CARE推理时表示编辑、以及以overthinking为线索的RAG幻觉检测。**最接近防御方法生态位的是CARE**，但摘要只涉及噪声检索下知识冲突缓解；其余三篇分别约束答案级幻觉检测、证据量/效用和冲突检测，均不能据此视为恶意语料投毒或来源鉴真方案。poster记录没有闭合主会/Workshop细分track，论文级CCF暂缓；四篇均为L1，OpenReview PDF端点403，未下载或绕过访问。另发现[Exposing Private Corpus Leakage in Multimodal RAG](https://neurips.cc/virtual/2026/poster/154898)，目前只有官方题名与poster链接，作为L0高优先级隐私候选等待摘要/全文核验。正式作者、OpenReview ID和各自边界见[元数据记录](RAG安全文献补查元数据_20261102.md#src-20261108-neurips26-rag-followup)及[证据地图](RAG安全证据地图_20261102.md#src-20261108-neurips26-rag-followup)。
+
+## ACL Findings 2025原序242–281：目录覆盖与近邻工作（2026-11-08）
+
+按ACL Anthology官方文章页及BibTeX连续筛查原序242–281，共40项；新增38条L1、复用2条既有摘要记录，摘要级分类为直接RAG安全撞车0、方法近邻18、外围近邻12、范围外10。Findings不继承ACL主会CCF-A。完整标题、官方ID与逐篇摘要边界见[证据地图](RAG安全证据地图_20261102.md#src-20261108-acl-findings-batch)。五篇最值得对照的论文已进一步读PDF：Amber、RCR、AiTM、CoS为L3；EXIT为选择性L2，不能把它写成全文精读。
+
+|文献|对现有攻防生态位的影响|边界 / 对开题的处理|
+|---|---|---|
+|[Amber](RAG安全证据地图_20261102.md#src-20261108-acl-findings-amber)|迭代记忆更新、自适应信息收集、多粒度过滤直接覆盖RAG冗余/无关内容抑制；是本批最强方法近邻。|目标是相关性和回答效用，不判来源真伪或恶意性，不测投毒。应撤回“首次提出RAG内容过滤”这类宽主张，将贡献限定为攻击者控制源、恶意/互补跨块识别和安全效用校准。|
+|[EXIT](RAG安全证据地图_20261102.md#src-bd4e53c66d15ad2e-l2-addendum)|检索结果句级抽取压缩、保留上下文依赖，说明生成前相关句筛选与多跳保留已有直接先例。|其约24%的相关句删除是任务相关性指标，不是恶意内容检测或clean-query误删率；应作为上下文压缩/正常效用对照，不能拿来替代安全真值。|
+|[Reinforcing Compositional Retrieval](RAG安全证据地图_20261102.md#src-31c514b3e7becdfc-l3-addendum)|序列决策模型显式处理组合检索项间依赖，约束“首次考虑多证据协同/依赖”的宽泛新颖性。|实验对象是组合式语义解析中的检索示例，不是RAG库中的互补恶意文本块；若研究攻击触发器跨同源块分布，须用实际共同召回与逐块/联合反事实来界定差异。|
+|[AiTM](RAG安全证据地图_20261102.md#src-20261108-acl-findings-aitm)|展示LLM多智能体消息通道可被拦截篡改，属于运行时协作攻击。|攻击面是agent通信，不是持久检索库、索引或retrieved chunks；若系统采用多agent，需把通信边界列为独立威胁面，而非合并为语料投毒。|
+|[Chain-of-Scrutiny](RAG安全证据地图_20261102.md#src-20261108-acl-findings-cos)|用推理步骤与最终输出一致性检测API模型的触发式后门，可作黑盒安全检测设计参照。|触发器由第三方服务放入query/提示；论文未验证训练集投毒防御，也不处理RAG语料真实性或检索块筛除。推理幻觉会造成误报，不能把一致性判断当作来源认证。|
+
+**对本课题的约束**：一般化的“RAG相关内容过滤”“上下文压缩”或“多证据协同检索”均已有方法近邻，不宜作为单独首创点。潜在差异必须落到攻击者可控的持久来源、实际未知分块后同query共召回、互补载荷的块级共同必要性，以及独立clean-query上的最终OR误删校准。该结论仅覆盖本批40篇摘要和5篇选读全文，不证明全队列或全领域无撞车。引用数仍为`not_observed`，按“先相关性、后核引用”处理。
