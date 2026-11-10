@@ -868,7 +868,7 @@ timeline
 | **灰盒** | On the Vulnerability、RADE | On the Vulnerability：*"the attacker lacks access to the exact queries but has access to their semantically equivalent counterparts"*；RADE：*"defense-aware grey-box semantic camouflage"* |
 | **无检索器访问** | RAGSieve（威胁模型侧）、Practical Poisoning | RAGSieve：*"The operator controls … but does not know the targeted queries, payloads, attack construction, or poisoned documents"* |
 
-> **补充说明**：**Human-Imperceptible Retrieval Poisoning** 面向 LLM 应用框架，**未给出形式化威胁模型**（仅有攻击目标描述），是本批文献中**评测规范性最弱**的一篇；其价值在于把投毒从"数据集层"下沉到**应用框架层的解析/引用环节**。
+> **补充说明**：**Human-Imperceptible Retrieval Poisoning** 面向 LLM 应用框架，**未给出形式化威胁模型**（仅有攻击目标描述），是本地已读文献中**评测规范性较弱**的一篇；其价值在于把投毒从"数据集层"下沉到**应用框架层的解析/引用环节**。
 
 <a id="src-fb1682dc8e7f28a5-h55"></a>
 #### （2）部署形态：直连目标系统 vs 本地影子系统
