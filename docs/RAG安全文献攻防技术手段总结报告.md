@@ -2489,209 +2489,61 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 |[Per-Step Conformal Calibration Does Not Transfer to Agent Trajectories](<RAG安全证据地图_20261102.md#src-a66728c12f001a64>)|B事件边界；EMNLP2026主会B；L2|p3–5逐step校准不能直接控制轨迹任一步误报；对B应以query任一块事件校准，仍不自动覆盖额外关系OR。原文漂移/有限样本松弛条件保留。|
 |[Conformalized Large Language Models under Configuration Shift](<RAG安全证据地图_20261102.md#src-9fd7940a0d34aae3>)|B配置边界；EMNLP2026主会B；L2|p3/5–7校准和部署配置改变会破坏score交换性；独立clean-query并不足够，Top-K/分块/编码器/评分配置需固定或另行处理。|
 
-> **表后说明**：以下为上述高相关工作的元数据核验进度、版本边界与材料存放位置。
-
-全作者、正式venue/track、CCF、DOI/arXiv及阅读进度集中见[独立元数据汇总Markdown](<RAG安全文献补查元数据_20261102.md#src-5b36637cbea9998b>)。
-
-AAAI2024历史21期原生2865条及含交存2866项已在Nov6重解析；当前官方入口受验证限制，当前总量和增删未知。EMNLP主会/Findings当前六卷10667研究+6前言已三路对账（Nov6；非摘要穷尽）；2024–2026 ACL Findings与六本期刊的逐卷期范围、工具、差异与2026未公开边界见[统一目录覆盖报告](<../research_data/RAG安全文献调研/原始证据/audit/catalog_coverage.md>)。全目录枚举、规则摘要筛查与人工原文阅读分别计数；未完成的候选仍标pending，不以目录条数冒充精读数。TIFS三年2314 DOI及TOIS44八期185 DOI曾按2026-11-02快照与官方目录逐项对账；2026-11-06刷新TIFS21卷为657条，比旧650条多7项归卷、无全局新DOI，2024/2025本轮未刷新；TOIS44八期185条为Nov2历史快照；Nov6刷新仅第2–8期156 DOI对账无增删，第1期受安全验证限制，当前全卷总数和差集未知。第8期仍在编10条，印刷2026-11-30晚于当前，不保证未来终版数量。
-
-GHP正式CCPE38(13)/2026/C、六作者及e70824文章号已补核；书目key为she-2026-GHP。VoR online2026-07-03不代替未知印刷确日或全球首发。正式PDF/正文仍缺，仅L1；原生Bib仅浏览器显示转录，DOI原件July宏缺陷原样保留，专属代码/数据/权重许可未知。详见[元数据审核](<../research_data/RAG安全文献调研/原始证据/catalogs/local_metadata288_parent_sources/parent_acceptance.json>)。
-
-Stealth正式出版/issued2026-09-29与会议2026-07-06至11分列，原生Bib会议月份及YAML month0原值保留；书目key为choudhary-2026-avfilter，month为9。官方仓库当前commit561bdaed5bae9be964684b3eb9ac66946d5b583b已核，不等论文时revision；完整许可、专属权重及结果payload未核，版本关联不授正文等同。见[元数据审核](<../research_data/RAG安全文献调研/原始证据/catalogs/local_metadata294_parent_sources/parent_acceptance.json>)。
-
-ACL Findings2024–2026三卷当前event/卷HTML/完整MODS有序目录已逐项独立核验，4528项含4525研究和3前言；27缺摘要与22字段变化项完整保留，目录核验与人工摘要、正文阅读分别记录。sAwMIL补正式两作者姓名、出版月和资源版本/许可，书目以正式来源为依据。
-
-HiEvi-RAG七作者正式姓名/机构/通讯作者及出版月核实，书目key为xiong-2026-HiEvi-RAG；代码/数据/权重与许可未建立，Scholar未提交查询，引用数未知。Findings22变化摘要已逐篇完整L1审读，27缺摘要官方文章页各回访一次仍未知，49项及两处作者表示差异保留；摘要与正文范围分别记录。
-
-eTracer正式10作者typed姓名/机构/通讯、EMNLP2026 B与出版月核实；保留Christoph Friedrich/M.来源差异，书目key为chu-2026-eTracer。专属仓库纸面指针已核但当前README/commit/license/data/weights未知。一次实际Scholar查询被拦，无结果卡/引用整数，引用数null。AAAI2024原序前46项中6项复用旧实读收据，新增40完整归档出版方交存摘要L1收据，摘要与正文范围分别记录。
-
-RACE与DTInspector正式元数据、typed作者/机构/通讯及DOI协商原Bib独立核；两个书目key已按正式来源记录。DTInspector官方2024-03-25和Crossref2024-03-24日期冲突保留；两次Scholar实际查询受阻，引用均null。TOIS2025 43(6)当前27条可见集合与旧集一致，逐DOI注册全作者163人次核对；出版社完整作者原文和目录PDF仍缺，不授整期完整元数据或全年信用。
-
-RECOMP的正式ICLR2024 Poster书目与固定作者版分列：正式题名含Context Compression，作者版题名不含Context、年份为2023；正式出版仅核到2024年，DOI、月、日和正式页码未知。作者仓库的固定commit和MIT许可已核；六个专属压缩模型及训练数据仅核公开元数据和文件目录，各自许可未知，资源行政日期不作论文发表日期。五篇所记Scholar查询均实际受阻，2026-11-06未取得新引用整数；RAGHalu10、DCGEval7仅属2026-11-04历史观测。
-
-Preference Gap正式六作者、2024-08月精度和原生ACL Bib已核；星号与匕首分别说明实习和访问，不推定共一或通讯。专属代码、数据和权重仍未知；ACL材料和arXiv版本许可分开。Power of Noise正式书目与固定作者版分列，出版方交存print/online、会期和arXiv提交日各保留角色；代码GPLv3不转授数据/权重许可。PARADE仅一次真实Scholar查询受阻，未取得新引用整数，未知保留null。
-
-全文按论文题名存于[科研数据库RAG安全文献](<../../../../科研数据库/20_Research/Papers/RAG安全文献>)，各版本入口见独立元数据表。
-
-其余候选、未读范围和完整登记见[逐篇索引](<RAG安全证据地图_20261102.md#src-c2aa1714998f8ac9>)及[证据地图](<RAG安全证据地图_20261102.md#src-8775d7fbe029251e>)。
-
-AttriGuard保留原键he2026attriguard并由misc显式更新为正式inproceedings；FiveQueries新增nguyen2026fivequeries。两篇使用实际主Bib的完整typed条目及各自publisher/source/report/PDF SHA合同，未知DOI/arXiv保持null；书目绑定不增加阅读或实验信用。 [两篇正式版本与实际GB/T增量](<../research_data/RAG安全文献调研/原始证据/audit/local_metadata226_20261106.md>)。
+全作者、正式venue/track、CCF、DOI/arXiv、版本及阅读级别见[元数据汇总](<RAG安全文献补查元数据_20261102.md>)；逐篇证据、原文页码、PDF与未读边界见[证据地图](<RAG安全证据地图_20261102.md>)。全文PDF集中存放于[科研数据库RAG安全文献](<../../../../科研数据库/20_Research/Papers/RAG安全文献>)。
 
 <a id="src-fb1682dc8e7f28a5-h119"></a>
 
-## 补充精读对开题定位的影响
+### 11.8 攻击机制与A方向近邻
 
-组合信息、支持集合、最小联合删除和逐块共同必要分别对应不同干预。[CIDR](RAG安全证据地图_20261102.md#src-dc0a607f8405fbd7)给出最小联合删除的方法近邻，[InfMasking会议版与期刊扩展比较](RAG安全证据地图_20261102.md#src-bb7d22e5ebb7f57f)给出交互表征与信息互补的版本脉络。开题A应比较真实长源、实际分块、同query共召回和逐块移除后的终点。
+组合信息、支持集合、最小联合删除和逐块共同必要是不同干预。[CIDR](<RAG安全证据地图_20261102.md#src-34d2248901beb800>)与[InfMasking](<RAG安全证据地图_20261102.md#src-bb7d22e5ebb7f57f>)分别提供最小联合删除和交互表征参照；开题A仍须验证真实长源、受害者实际分块、同query共同召回及逐块/联合删除后的端到端结果。
 
-[LDAR](RAG安全证据地图_20261102.md#src-fdf880a16bd82b0d)和[FrugalRAG](RAG安全证据地图_20261102.md#src-1fd93fc464feb121)补充证据选择、早停、预算与最终答案效用的直接参照；[Layer-Wise OOD](RAG安全证据地图_20261102.md#src-6088a1e9a703a8cb)补充多层分数聚合和参考分布的检测近邻。开题B应分别核对编码器与标签权限、参照集、判定单位、最终OR删块后的QA效用和实际成本。
-
-全部逐篇版本、页码、数值冲突与未决问题见[证据地图](RAG安全证据地图_20261102.md#paper-notes)，目录缺口见[元数据汇总](RAG安全文献补查元数据_20261102.md#catalog-coverage)。
+| 工作 | 已确认的机制与证据 | 对A的边界 |
+|---|---|---|
+| [Do Reasoning LLMs Refuse What They Infer in Long Contexts?](<RAG安全证据地图_20261102.md#src-20261110-do-reasoning-refuse>) | arXiv:2602.08874v2；NeurIPS 2026官方poster #149897，具体track未核。以中性query和语义不完整片段构成长上下文组合推理攻击，评测15个前沿模型、最长64k tokens。 | 直接限制“恶意意图拆分后由模型组合”这一宽泛首创，但没有持久RAG语料、真实检索器、受害者未知chunker或实际检索块的逐块必要性实验。 |
+| [DrAttack: Prompt Decomposition and Reconstruction Makes Powerful LLMs Jailbreakers](<RAG安全证据地图_20261110-drattack>) | Findings of EMNLP 2024，正式PDF pp.13891–13913；分解、良性示例重构和同义词搜索。正式PDF报告GPT-4成功率80%、较此前方法高65个百分点。 | 提示级越狱，不操纵持久语料或retrieved chunks；正式PDF与arXiv/项目页的指标不同，比较时以明确版本为单位。Findings不自动继承EMNLP主会CCF等级。 |
+| [MemPoison: Uncovering Persistent Memory Threats and Structural Blind Spots in LLM Agents](<RAG安全证据地图_20261102.md#src-20261108-mempoison>) | NeurIPS 2026官方poster #139557；正文选择性阅读。覆盖单记录、跨记录组合及触发式持久记忆污染。 | 约束跨多条无害表象记录组合生效的宽泛新颖性；Agent长期记忆与外部知识库单一长源的未知分块不是同一攻击面。 |
+| [FragFuse](<RAG安全证据地图_20261102.md#src-20261108-fragfuse>) | USENIX Security 2026，CCF-A；跨交互查询片段存入长期记忆、再检索融合，报告平均BSR 86.3%、有害任务成功率41.1%。 | 访问控制与Agent记忆通道攻击，不是外部RAG事实投毒或同源chunk检测。 |
+| [Context Contamination in LLM Analysis of Network Security Logs](<RAG安全证据地图_20261102.md#src-20261108-loginject>) | USENIX Security 2026，CCF-A；Context Stitching把分别通过逐条过滤的日志片段放入同一分析批次。 | 多条可控日志的批次共现限制“多检索单元协同拼接”的宽主张；不等于一份真实长源经未知chunker形成的同源块。 |
+| [CamoDocs](<RAG安全证据地图_20261102.md#src-4272f308bd3140ac>) | EMNLP 2026主会，CCF-B；查询条件下生成对抗草稿，并以梯度引导嵌入分散规避词面/聚类防御。 | 直接占据伪装与几何规避生态位；攻击者自行切分配对文档，不证明受害者未知分块和多块共同必要。 |
+| [CODE: A Contradiction-Based Overthinking Attack Framework for Prolonging Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-5b3d73674bd61b68>) | EMNLP 2026主会，CCF-B；持久语料中的单sample逻辑/证据矛盾使推理token增加。 | 目标是延长推理而保持答案正确；未测试真实长源、未知chunker或多块共同必要性。 |
+| [KidnapRAG](<RAG安全证据地图_20261102.md#src-24f92f6d01daa565>) | EMNLP 2026主会，CCF-B；跨轮检索链劫持Agentic RAG。 | 中间search/retrieved contents可见，且跨轮使用独立文档；不等于单一长源的同query同源块攻击。 |
+| [Poisoning the Neighborhood](<RAG安全证据地图_20261102.md#src-20261108-poisoning-neighborhood>) | arXiv:2610.21464v1，L3；HNSW Hub–Satellite多文档协同投毒，在2M规模报告RSR约72–74%、最高ASR 31.29%，并测试固定切块。 | 直接占据大规模图检索与多文档投毒生态位；多条独立注入文档不等于一份真实源的未知chunker产物，ASR规则也不等事实真值。 |
+| [MM-PoisonRAG](<RAG安全证据地图_20261102.md#src-20261108-mm-poisonrag>) | ACL 2026主会Long Papers，CCF-A；多模态RAG局部及全局知识投毒。 | 限制“单一注入材料影响范围”的宽主张；多模态载荷不能直接外推到文本同源chunk必要性。 |
+| [LogicPoison](<RAG安全证据地图_20261102.md#src-9ef336ebf4904e2f>) | ACL 2026主会Long Papers，CCF-A；GraphRAG实体变换与关系链攻击。 | 图结构攻击不等于真实长文本未知分块或来源真实性检测。 |
+| [Cite Unseen](<../research_data/RAG安全文献调研/原始证据/notes/20261108_CIKM2026_RAG_Security_Candidate_Scan.md>) | CIKM 2026官方摘要L1；更改注入文档来源URL可劫持引用通道，摘要报告最高C-ASR 71%。 | 属于引用通道攻击，不等于目标错误事实答案；需把引用选择与事实操纵作为不同终点。 |
+| [Corpus Poisoning via Approximate Greedy Gradient Descent](<RAG安全证据地图_20261102.md#src-9b395f09c5a170db>) | Findings of ACL 2025，L2；持久语料单passage投毒，并显示不同检索器结果有差异。 | Findings不继承ACL主会CCF-A；需做检索器敏感性分析，单passage不覆盖互补多块必要性。 |
+| [Same Evidence, Different Decisions: Document Segmentation Bias in RAG](<RAG安全证据地图_20261102.md#src-0e57f4bde3a3201b>) | Findings of EMNLP 2026，L2；固定证据内容而改变分段会改变答案选择。 | 是分段敏感性近邻，不是投毒检测；Findings不继承主会CCF-B。 |
+| DECEIVE-AFC、The Web Doesn’t Sit Still、Cross-User Poisoning、Asynchronous Agentic Poisoning | 分别涉及query操纵、运行时搜索结果注入、共享用户上下文越界和Agent自演化记忆后门；身份及阅读级别见证据地图。 | 这些工作扩展威胁模型，但攻击入口不是外部RAG长源chunk投毒；应与持久语料威胁分开报告。 |
+| [The RAG Paradox](<RAG安全证据地图_20261102.md#src-d4a42f7ad164d744>) | Findings of EMNLP 2025，L2；黑盒RAG攻击近邻。 | source visibility与材料条件不等于持久知识库中真实单源的未知分块攻击。 |
 
 <a id="src-fb1682dc8e7f28a5-h120"></a>
 
-## 十二、2026-11-08增量：检索上下文拼接与记忆污染近邻
+### 11.9 防御、来源治理与正常效用近邻
 
-本节依据 NeurIPS、USENIX Security、ECCV、ACL Anthology 官方记录及所列固定版本正文增量核读。CCF-A会议身份不代表论文方法与本课题同一；L1摘要项不作正文结论。引用数按“先相关性、后引用核验”的要求仍未核。
+[LDAR](<RAG安全证据地图_20261102.md#src-fdf880a16bd82b0d>)、[FrugalRAG](<RAG安全证据地图_20261102.md#src-1fd93fc464feb121>)与[Layer-Wise OOD](<RAG安全证据地图_20261102.md#src-6088a1e9a703a8cb>)补充证据选择、早停、多层异常分数及参考分布方面的比较基线；这些机制均不能替代恶意块检测和独立clean-query最终OR误删风险评估。
 
-### 12.1 直接限制攻击新颖性宽度的工作
-
-| 文献 | 本轮核读与最直接的生态位影响 | 不等同于开题目标的条件 |
+| 工作 | 已确认的机制与证据 | 对B的边界 |
 |---|---|---|
-|[DECEIVE-AFC: Adversarial Claim Attacks against Search-Enabled LLM-based Fact-Checking Systems](RAG安全证据地图_20261102.md#src-20261108-deceive-afc)|NeurIPS 2026官方Downloads条目链接Virtual Poster #150419；细分track未核、CCF暂缓；arXiv v2全12页L2。只操纵用户claim，经搜索词偏移、推理干扰和结构复杂化影响开放网页检索与核验；作者在DEFAME上报告准确率78.7%→53.7%、ASR 31.4%。|这是query/input攻击，不是知识库持久投毒；不证明真实长源未知分块、同源块逐块共同必要或最终上下文误删。应把在线query manipulation与语料污染分开建模。|
-|[MemPoison: Uncovering Persistent Memory Threats and Structural Blind Spots in LLM Agents](RAG安全证据地图_20261102.md#src-20261108-mempoison)|NeurIPS 2026官方Poster #139557；主会track未核，论文级CCF暂缓；主文p2–10。把持久记忆投毒分为单记录、跨多条合理记录的组合污染、以及触发式休眠污染；覆盖不同记忆底座和写入/检索防御。它直接否定“把恶意意图拆成多条单看无害、共同检索后生效”这一宽泛攻击机制首创。|对象是 Agent 的长期记忆记录及交互写入，不是向一份外部知识库长源文档写入后由受害分块器形成的同源块；不能替代开题A的真实源、未知chunker和逐块共同必要性实验。|
-|[Asynchronous Agentic Poisoning](RAG安全证据地图_20261102.md#src-20261108-asynchronous-agentic-poisoning)|NeurIPS 2026官方Poster #153307；track/CCF待核，摘要L1。供应侧恶意模型将隐藏marker写入看似正常的输出，随Agent记忆演化累积并在后续触发行为；作者摘要报告harmful rate由低于5%升至约90%。|威胁入口是恶意模型供应和Agent自演化记忆，不是攻击者向外部RAG知识库投毒。属于记忆后门边界参考，不计为开题A直接语料投毒撞车。|
-|[FragFuse: Bypassing Access Control of Large Language Model Agents via Memory-Based Query Fragmentation and Fusion](RAG安全证据地图_20261102.md#src-20261108-fragfuse)|USENIX Security 2026，CCF-A；主文p1–14。普通用户以黑盒交互找出访问控制拒绝相关片段，将其藏入可写入长期记忆的载体，再以检索和融合恢复受限意图；作者报告平均BSR 86.3%、端到端有害任务成功率41.1%，相对无访问控制设置的任务成功率下降4.4%。这是“跨交互分片—记忆召回—重组”的直接攻击近邻。|攻击对象是 Agent 记忆通道和访问控制，不是RAG知识库中由真实单源未知分块得到的块，也不是事实内容真实性检测。其可迁移启示是攻击威胁模型必须说明写入通道、跨轮持久性、共召回条件和最终动作。|
-|[Context Contamination in LLM Analysis of Network Security Logs: Poison with Passive Prompt Injection and Mitigation Evaluation](RAG安全证据地图_20261102.md#src-20261108-loginject)|USENIX Security 2026，CCF-A；选读正文p3–10。LogInject提出Context Stitching：攻击者把载荷拆到多个分别通过逐条过滤的日志项，要求这些片段进入同一分析批次；论文明确讨论语义检索、时间窗和关键词检索。它强力约束“多检索单元协同拼接”的宽泛新颖性。|日志由面向公众服务的可控字段写入，批次共现依赖时间/检索条件；不是一份长源文档经未知chunker分裂。结果引用须保留模型与分母：摘要报基线跨模型83.4%平均、最高88.2%，Context Stitching 76.4%；正文防御段出现87.3%基线但未在该句重述模型设置，不能把不同口径合并。|
-|[CamoDocs: A Poisoning Attack Against Retrieval-Augmented Language Models Using Camouflaged Documents](RAG安全证据地图_20261102.md#src-4272f308bd3140ac)|EMNLP 2026主会，CCF-B；正式PDF pp.1–26 L3。query-aware草稿合成、配对子文档、梯度引导嵌入分散和困惑度过滤，直接占据“自然内容伪装/规避词面与紧簇检测”生态位。|依赖目标query与答案信息；攻击者自选γ=2切分并拼接，不是受害者未知chunker切真实长源，也未证明块间共同必要。附录显示增大毒文档预算会降低TrustRAG下ASR，且过滤阈值会损害clean utility；不能把它泛化成所有chunking或所有设置均成功。|
-|[KidnapRAG: A Black-Box Attack for Hijacking Reasoning in Agentic Retrieval-Augmented Generation Systems](RAG安全证据地图_20261102.md#src-24f92f6d01daa565)|EMNLP 2026主会，CCF-B；选择性阅读作者版pp.1、3–7（L2）。Bait、Chain-Link、Mal-Ins角色构成跨轮顺序检索链，直接占据Agentic RAG多轮证据链劫持的攻击生态位；作者还比较去角色及合并文档条件。|接口可见中间search/retrieved contents/source，并非只读最终答案；每个已观察subquery的共同攻击预算为5份bait。独立文档在不同检索轮次使用，末端带恶意指令；合并消融支持顺序机制但不证明未知chunker下同源块逐块必要。EM与目标答案出现ASR可同时成立，数值不能并为strictASR。|
-|[CODE: A Contradiction-Based Overthinking Attack Framework for Prolonging Retrieval-Augmented Generation](RAG安全证据地图_20261102.md#src-5b3d73674bd61b68)|EMNLP 2026主会，CCF-B；ACL Anthology官方论文页/DOI `10.18653/2026.emnlp-main.917`；PDF 15页、SHA-256 `f328d6e48f5f025eb753b9733721092a5228ded23039bae4252bce7f9124eade`。选择性核读物理pp.1–9、13、15（L2）：攻击者预知/预期query，离线少量语料写入；将逻辑层与证据层矛盾置于单个可检索sample，报告五种商业模型上的推理token放大。|这是持久语料投毒和检索后跨层矛盾的高价值近邻，但目标是增加推理成本并保持答案正确，不是诱导错误答案；每任务一个sample，未测试真实长源未知chunker、互补同源多块同query共召回及逐块共同必要性。其TrustRAG风格过滤对照不能代替本课题的跨块检测及独立clean-query最终OR误删校准。|
-|[The Web Doesn’t Sit Still: Adversarial Self-Evolving Attacks on Search Agents](RAG安全证据地图_20261102.md#src-20261108-web)|NeurIPS 2026官方Poster #149493；主会track未核，论文级CCF暂缓；官方标题清单与arXiv v1一致，方法、实验设置和局限选择性阅读。CREO演化攻击策略并在搜索代理评测中向检索列表动态注入攻击材料，直接占据“搜索代理/RAG检索结果被操纵”的攻击生态位。|评测把材料注入运行时检索结果；这不同于持久摄入知识库，也未闭合开题A的单一真实源、未知分块、同源块联合召回与逐块必要性。应把运行时检索注入与预先语料投毒作为不同威胁模型。|
-|[Cross-User Poisoning: User-Task Boundary Failures in Multi-User Collaborative Language Agents](RAG安全证据地图_20261102.md#src-20261108-cross-user)|NeurIPS 2026官方目录可见题名，arXiv v2标注NeurIPS 2026；细分track未核，论文级CCF暂缓；主文p2–10。研究一位合法用户的偏好/指令如何越过用户与任务边界，污染共享持久上下文并影响后续用户的工具动作；并比较任务隔离、边界标注和摘要。|论文显式区分CUP与prompt injection：攻击来自合法用户消息而非不可信检索文档；不能算作知识库块投毒先例，但要求开题讨论Agent共享记忆/多租户边界时明确排除或纳入。|
-|[Adversarial Corpus Selection to Attack Subgraph Matching based Graph Retrieval](RAG安全证据地图_20261102.md#src-20261108-grap)|NeurIPS 2026官方Poster #148248；主会track/CCF待核，摘要L1。GRAP预算化选择图语料并作逐图边扰动，攻击子图匹配排序或top-K检索。|这是结构化图检索对抗类比，不涉及LLM生成、自然语言RAG语料或证据块清除；不构成开题A/B直接撞车。|
+| [SearchInject: Retrieval Exposure Control for Indirect Prompt Injection in Language-Model Search](<../research_data/RAG安全文献调研/原始证据/notes/20261108_SearchInject_2611.02643.md>) | arXiv:2611.02643v1，L3；检索候选指令风险打分、阈值隔离并从原列表补足top-10。以154条calibration query选择经验误隔离率0.498%；测试clean候选误隔离率为0.590%–0.650%。 | 生成前候选风险过滤的直接方法近邻；网页指令注入不同于虚假事实投毒。候选级误隔离率不等于最终query级OR删块率，经验校准值也不构成新样本保证。 |
+| [SAFE-Mem](<../research_data/RAG安全文献调研/原始证据/notes/20261108_SAFE-Mem_2610.22959.md>) | arXiv:2610.22959v2，L3；以claim来源、authority及scope治理Agent记忆检索，作者公开Apache-2.0代码。 | 强来源权限与持久记忆治理基线，但不判断来源陈述是否真实，也不检测外部RAG恶意块或提供clean-query最终OR误删保证。 |
+| [Forgetting is Not Always Bad (DREAM)](<RAG安全证据地图_20261102.md#src-20261108-dream>) | NeurIPS 2026官方poster #155114；方法与结果选择性阅读；动态记忆权重、异常诊断及功能性遗忘。 | Agent历史记忆防御，不等于外部固定知识库上的冻结检测器或query级误删校准。 |
+| [Deceptive Grounding](<RAG安全证据地图_20261102.md#src-20261108-deceptive-grounding>) | NeurIPS 2026官方poster #152927；arXiv v1 L3；逐claim检查证据实体与查询实体归属。 | 约束“首次核验claim—证据实体归属”宽主张；实体归因不证明事实真伪或攻击者投毒。 |
+| [ADMIT](<RAG安全证据地图_20261102.md#src-20261108-admit>) | NeurIPS 2026官方Main，CCF-A；以词面支持检查和有界RepairRead控制公共memory写入。 | 写入准入不等语义蕴含/事实真值，也未评估恶意块检测或正常query最终OR误删。 |
+| [TRIDENT](<RAG安全证据地图_20261102.md#src-20261108-trident>) | NeurIPS 2026官方poster #155841；摘要L1；对选择后的passage-claim支持证书作query级Bonferroni FWER控制。 | 支持证书错误控制不等恶意语料检测、事实来源认证或真实证据误删率；全文未取得。 |
+| [Knowing When Not to Answer](<RAG安全证据地图_20261102.md#src-20261108-knowing-when-answer>) | ACL 2026主会Long Papers，CCF-A，L2；固定KB上的轻量query级OOD门控。 | OOD拒答不同于检索块过滤；300例端到端测试中检出48/150 OOD并误拒16/150 ID，不能替代正常多跳保留和最终OR校准。 |
+| [When Poison Meets Structure](<RAG安全文献补查元数据_20261102.md#src-fe1fdb661d031149-h4>) | NeurIPS 2026官方poster #152350，摘要L1；图拓扑排序防御GraphRAG投毒。 | 当前无全文和可审计数值；仅列为待核图检索防御候选，不据摘要宣称效果。 |
+| [Learning to Erase Private Knowledge from Multi-Documents for Retrieval-Augmented Large Language Models (Eraser4RAG)](<RAG安全证据地图_20261102.md#src-20261108-eraser4rag>) | CIKM 2026主会，CCF-B；跨文档隐私擦除及良性知识保留；HotpotQA accuracy由0.2690降至0.2585。 | 预设private标签的擦除方法，不处理恶意注入、来源真伪或污染块检测；应作为效用/多文档治理基线，而非安全检测器。 |
+| [SCAR: Semantic Continuity-Aware Retrieval for Efficient Context Expansion in RAG](<../research_data/RAG安全文献调研/原始证据/notes/20261108_SCAR_2606.16661.md>) | CIKM 2026 Short，CCF-B，L3；按需恢复相邻块连续性，N=160时Recall 0.928/7.84块，固定±1窗口0.967/10.16块。 | 正常桥接证据保留基线，不处理恶意来源、非相邻互补块或未知chunker；收益与额外块数须同时报告。 |
+| LineageGuard、FortMem、PCD-RAG、CaseFlow、Beyond One-Shot Expansion | CIKM 2026官方摘要级候选，分别涉及记忆自引用/血缘、持久Agent记忆投毒、蒸馏污染、GraphRAG伪证据剪枝和多跳证据扩展。 | 全文和分母未核；它们分别属于来源回流、Agent memory、训练/蒸馏、图证据与正常检索效用，不可混写为外部知识库恶意块检测。 |
+| [From Static to Dynamic: Knowledge Metabolism for Large Language Models](<RAG安全证据地图_20261102.md#src-20261108-aaai24-dynamind>) | AAAI 2024 Demonstration Track；上下文可信度估计与外部记忆动态更新。 | 限制“首次按上下文重加权知识可信度”的宽主张，但不检测恶意来源或语料投毒。 |
+| [ESG Accountability Made Easy: DocQA at Your Service](<RAG安全证据地图_20261102.md#src-20261108-aaai24-docqa>) | AAAI 2024 Demonstration Track；文档RAG答案端做不当内容与grounding检查。 | 输出安全/质量近邻，不检测恶意检索文档、间接提示注入或来源真实性。 |
+| [Amber](<RAG安全证据地图_20261102.md#src-20261108-acl-findings-amber>)、[EXIT](<RAG安全证据地图_20261102.md#src-bd4e53c66d15ad2e-l2-addendum>)、[Reinforcing Compositional Retrieval](<RAG安全证据地图_20261102.md#src-31c514b3e7becdfc-l3-addendum>) | ACL Findings 2025方法近邻：迭代记忆更新/多粒度过滤、上下文依赖感知压缩、组合检索依赖建模。 | 目标主要是相关性和QA效用，不认证来源真实性或恶意性；Findings不继承ACL主会CCF-A。 |
 
-### 12.2 防御与检索效用参照
+<a id="src-fb1682dc8e7f28a5-h121"></a>
 
-| 文献 | 可迁移的方法/评价经验 | 与开题B的边界 |
-|---|---|---|
-|[Forgetting is Not Always Bad: A Neuro-Inspired Memory Repair Mechanism for Poisoned LLM Agents (DREAM)](RAG安全证据地图_20261102.md#src-20261108-dream)|NeurIPS 2026官方Poster #155114；主会track未核，论文级CCF暂缓；选择性核读方法p3–5及结果p7–8。DREAM把记忆权重乘入query-memory余弦检索分数，通过全记忆嵌入弱噪声扰动、多维异常诊断和动态权重衰减/良性记忆巩固，做training-free的功能性遗忘；它是Agent记忆RAG中动态异常权重和防御效用的直接方法近邻。|其目标是历史记忆中的AgentPoison/MINJA投毒，不能直接等同外部RAG知识块的固定四统计、冻结表征离线RF、正常query最终OR误删校准。修复版27页PDF已通过pdfinfo验证；原损坏文件另存临时备份。|
-|[Deceptive Grounding: Entity Attribution Failure in Clinical Retrieval-Augmented Generation](RAG安全证据地图_20261102.md#src-20261108-deceptive-grounding)|NeurIPS 2026官方Poster #152927；主会track未核，论文级CCF暂缓；24页arXiv v1 L3。提出逐claim的Entity-Attribution Verification (EAV)：核对支持文档主实体是否等于查询实体；作者报告IPW调整human gold n=88上precision 97.0%、EAF recall 98.7%，但有效EAF样本约18且区间较宽。它直接约束“首次检查生成claim与检索证据实体归属”的宽泛表述，可作claim-evidence对齐评测参考。|它研究临床回答把真实实体Y的证据错归给X，不是事实虚假性/来源可信度判定或攻击者投毒块检测；EAV对Entity Substitution按设计PASS，完整检测需另加ES组件。合成临床刺激和部署测量均不能替代同源多块共同必要性、冻结特征检测及最终query级OR误删校准。|
-|[When Does Graph Retrieval Become Answer-Supporting Evidence? A Diagnostic Audit of GraphRAG](RAG安全证据地图_20261102.md#src-20261108-graph-evidence-support)|NeurIPS 2026官方Poster #139414；track/CCF待核，摘要L1。在Medical/Novel两类benchmark追踪候选、证据选择、上下文到答案/成本；摘要报告证据侧改善未必提高答案正确率，部分图侧增益可由reranking解释，证据完整也不充分。|OpenReview全文403；摘要未给可审计数值，不能判断贡献大小、实现细节或因果效应，不计正文精读。对B的评测启示是同时报告evidence-to-answer转换、上下文组织和成本，而非只看检索指标。|
-|[MG2-RAG: Multi-Granularity Graph for Multimodal Retrieval-Augmented Generation](RAG安全证据地图_20261102.md#src-20261108-mg2-rag)|ECCV 2026，CCF-B；34页arXiv v2，主文p1–15 L2。多粒度多模态图及实体/命题关系检索，可作为正常结构化跨证据检索基线。|不是安全或投毒论文；多模态图不等恶意文本块检测，也没有未知chunker、块级共同必要性或query级OR误删校准。|
-|[BayesRAG: Probabilistic Mutual Evidence Corroboration for Multimodal Retrieval-Augmented Generation](RAG安全证据地图_20261102.md#src-20261108-bayesrag)|NeurIPS 2026官方Poster #154974；track未核，论文级CCF暂缓；17页arXiv v1，主文p1–9 L2。概率化多模态证据互证可作异源证据融合比较参考。|官方poster作者顺序与arXiv v1 PDF首页不一致，需正式出版版本裁决；证据融合不证明来源可信或事实为真，也不是恶意块检测。|
-|[ADMIT: Support-Gated Memory-Write Admission for Document QA Agents](RAG安全证据地图_20261102.md#src-20261108-admit)|NeurIPS 2026 Main，CCF-A；官方摘要L1。公开memory写入前以词面支持检查+一次有界RepairRead准入，写入失败时memory拒写、回答面可回退；作者报告动态诊断零污染轨迹。|对象是Document QA agent公共working memory，不是外部知识库恶意块检测；只保证词面审计，不等语义蕴含/事实真值，未评clean-query OR误删。|
-|[TRIDENT: Post-Selection Evidence Accountability for Token-Efficient RAG](RAG安全证据地图_20261102.md#src-20261108-trident)|NeurIPS 2026官方Poster #155841；track/CCF待核，摘要L1。Safe-Cover对选择后的passage-claim支持证书作query-level Bonferroni FWER控制并可拒答；Pareto-Knapsack复用facet表作预算化多跳QA选择。|是选择条件下证据支持/false-certificate控制，不是恶意语料块或来源真实性检测；不等真实证据误删率或clean-query OR校准。全文PDF未取。|
-|[Evidence Triangulation for Multimodal Fact-Checking in the Wild](RAG安全证据地图_20261102.md#src-20261108-evidence-triangulation)|ECCV 2026，CCF-B；14页arXiv v1，主文p1–10 L2。开放网页/社交内容的来源筛选与跨源关系核验可作外部事实核查参照。|这是运行时多模态事实核查，不是持久知识库投毒或未知分块同源块安全检测；代码页可达不等数据集可得。|
-|[MMAgent-R2: Learning to Rerank and Reject for Agentic mRAG](RAG安全证据地图_20261102.md#src-20261108-mmagent)|ECCV 2026，CCF-B；正文p1–15。该工作训练视觉重排与主动拒绝/补充检索，报告实体识别及多跳KB-VQA效用增益。它不是安全或投毒论文，但说明候选集不足时“拒绝当前批次、继续召回”是重要效用基线；B必须测正常困难/多跳证据是否误删、是否保留补召回路径。|视觉实体匹配、GRPO训练和KB-VQA监督不同于冻结文本表征的恶意块过滤；不应把其结果写作安全防御证据。|
-|[Untrusted Content Masking for Web Agents with Security Guarantees](RAG安全证据地图_20261102.md#src-20261108-ucm)|NeurIPS官方Downloads索引列出并链接Virtual Poster #150501；arXiv:2607.05277v1 L2选择性核读，合作者论文页列NeurIPS 2026，但另有ICML 2026 Agents in the Wild Workshop Spotlight记录。NeurIPS track与版本对应关系未核，论文级CCF暂缓。|其核心参考是为网页区域标注信任边界，并隔离/遮蔽不可信内容对Agent控制流的影响。信任标签和网页DOM边界是前提；不是一般RAG知识块真假判定或低误报离线检测器。|
-|[When Poison Meets Structure: Topology-based Defense against Poisoning Attack on Graph-based Retrieval-Augmented Generation](RAG安全证据地图_20261102.md#src-fe1fdb661d031149-h4)|NeurIPS 2026官方Poster #152350；track/CCF待核；官方摘要L1。TDP以检索证据构造冲突候选子图，并用成对拓扑排序区分clean稠密交叉验证与poison稀疏结构支持；作者称可plug-and-play且多基准有效。|论坛页无权读取、PDF 403；摘要无正文设置和具体数值，不据此判断实际优势、误报或与本课题的方法等价。|
-|[Knowing When Not to Answer: Lightweight KB-Aligned OOD Detection for Safe RAG](RAG安全证据地图_20261102.md#src-20261108-knowing-when-answer)|ACL 2026主会Long Papers，CCF-A；官方PDF 36页、SHA-256 `2c580461a287ebffaeb44870de7b0edb0531db1e857292b193d8d40bfa2a8030`；选择性阅读物理pp.1–8、10–12（L2）。PCA压缩KB文档嵌入后，以几何规则/轻量分类器做固定KB的query级OOD门控；16域评测含LLM生成及真实4chan query。端到端300例中GMM检出48/150个OOD、误拒16/150个ID。|这是低成本KB语义门控和拒答效用的B方法参照，不是语料投毒或恶意检索块检测。OOD输入攻击不等于持久知识库投毒；未删除块、未验证正常多跳证据保留，也未做独立clean-query最终OR误删校准。作者GitHub `main` 可达，检查时HEAD `9d5a393c67816f83c9a22a09ec48d2c6f60a8e6c`，与论文实验快照对应关系未核。|
+### 11.10 对开题定位的综合结论
 
-### 12.3 对开题表述的更新
-
-- **A的宽泛新颖性需收窄**：现在不能再把“把载荷拆成单条无害片段、让多条检索/记忆上下文协同后生效”或“搜索代理检索污染”单独作为首创点。MemPoison、FragFuse、LogInject和The Web分别覆盖记忆组合投毒、跨交互查询融合、日志上下文拼接和运行时搜索结果注入。
-- **A仍可检验的差异是条件交集，不是机制口号**：攻击者只写入一份真实长源；受害分块器和参数未知；同一正常query实际召回由该源产生的多个不同块；逐块删除与联合删除能证明多块共同必要；并测真实生成端点。这一交集在本轮已读工作中仍未被同一篇论文完整验证，但“本轮未找到”不是全球范围首创证明。
-- **B应显式对照写入准入、post-selection支持证书、动态记忆权重、claim级实体归因及拒绝/补召回**：ADMIT约束公共memory写入边界；TRIDENT对所选passage-claim支持证书提供query级FWER控制；DREAM已有记忆级扰动异常与动态功能性遗忘；Deceptive Grounding已提出claim级EAV；MMAgent-R2已有候选视觉核验、拒绝和补召回。不得再将这些单项机制或“首次核验生成claim与检索证据的实体归属”作为宽泛首创。可检验的差异应限定为外部恶意文本块/事实污染、冻结表征离线检测、独立正常query校准、最终query级OR删块风险与QA效用的联合协议，并逐项做同预算基线。TRIDENT的false-certificate FWER、ADMIT的词面写入不变量和EAV均不等同恶意块检测或事实真值保证。
-- **query级OOD拒答与块级投毒检测应分开**：[Knowing When Not to Answer](RAG安全证据地图_20261102.md#src-20261108-knowing-when-answer)以固定KB回答能力为对象，提供低成本KB语义空间门控基线；但它不删除检索块，且Table 3中OOD召回有限。它不能替代正常clean-query最终OR误删校准，也不能把KB外query攻击与持久语料投毒合并。
-- **证据等级和数值分母不可混写**：When Poison Meets Structure保持L1；DREAM、MemPoison等按本轮实际选读记L2，不升级为全篇附录精读；LogInject的跨模型平均、单模型值和分片条件分开报告。引用数未核，待相关性筛选完毕后再查。
-- **NeurIPS poster与主会track分开**：仅ADMIT作者发表页明确标注NeurIPS 2026 Main；其他本节仅由poster/年度目录/arXiv comments或“accepted at NeurIPS”支持的论文，track未独立核实时不据NeurIPS venue本身直接记为CCF-A。
-
-逐篇版本、正式身份、PDF哈希和精确阅读记录见[2026-11-08证据地图增量](RAG安全证据地图_20261102.md#src-20261108-rag-neighbors)及[元数据增量](RAG安全文献补查元数据_20261102.md#src-fe1fdb661d031149)。
-
-### 12.4 HNSW图拓扑协同投毒：直接A近邻
-
-[Poisoning the Neighborhood: A Topology-Aware Topic-Level Attack on Large-Scale HNSW-based RAG Systems](RAG安全证据地图_20261102.md#src-20261108-poisoning-neighborhood)（arXiv:2610.21464v1，2026-10-15；全文含附录L3；当前未核得正式会议/期刊身份，CCF不适用）。论文针对大规模HNSW检索提出Hub–Satellite污染文档集合，利用Satellite覆盖不同主题查询区域、Hub增强局部关联与图搜索级联，并用共同entity–claim文本目标推广到未见主题查询。其默认实验规模到2M、污染预算40/60；2M设置RSR约72–74%，ASR最高31.29%。附录在512-token/128-overlap切块下报告性能持平或略升，因此“多文档投毒”及“切块后仍有效”均不能作为开题A的宽泛首创主张。
-
-差异须落在可观测条件而非机制名称：本文以多条独立注入文档为污染单位，且用1,500条合成训练查询优化载荷；未证明这些文档属于同一个真实长源、经受害者未知chunker生成的同源块，也未验证同一正常query内各块的实际互补召回及逐块共同必要性。ASR为同义词感知关键词规则，附加GPT-4o和400条人工标注验证不能替代事实真值、正常多跳证据保留或query级最终OR删块风险。防御结果仅代表文中测试实现，不能外推为所有净化/重排方法普遍无效。
-
-本地CCF第七版目录将CIKM主会列为B；但本文未列入CIKM 2026主会官方目录，EARL 2026 workshop官方录用目录亦未列出。第三方venue注记不作发表证据。PDF哈希、页数、逐页记录、自有代码/数据状态和暂缓的优先级输入见[元数据条目](RAG安全文献补查元数据_20261102.md#src-20261108-poisoning-neighborhood)。Scholar引用数及全局优先级留待内容与制品池完成后统一核验。
-
-### 12.5 跨文档隐私擦除：强防御近邻但不是投毒检测
-
-[Learning to Erase Private Knowledge from Multi-Documents for Retrieval-Augmented Large Language Models](RAG安全证据地图_20261102.md#src-20261108-eraser4rag)（CIKM 2026主会，CCF-B；DOI `10.1145/3799682.3840753`，页4973–4984；本地阅读arXiv v2全文L3）。Eraser4RAG先从同query检索到的多篇文档抽取实体-关系三元组并构造全局知识图谱，由数据控制方预设private/public知识，再用Flan-T5-large和PPO重写文档。它是“多文档关系泄露 + 隐私擦除/良性知识保留”生态位的强防御基线，但不建模恶意注入、来源真伪、证据矛盾或污染块检测。Table 5 报告单一汇总 `r_attack=0.3745`，没有按数据集拆分或列出逐项分母；Table 4 中 HotpotQA accuracy 从未改写0.2690降至0.2585，该指标按作者定义只在问答实体不涉及私有图连接的查询上计算，仍显示删改可能损害正常多跳效用。该文迫使“首次关注多文档推理和效用保留”收窄；开题差异应明确落在恶意块与来源风险、缺少人工private标签时的检测，以及正常query最终误删校准。
-
-正式出处据Crossref中ACM提交者登记与CIKM主会目录确认；本地CCF第七版第36页将CIKM列为B类。已读PDF首页仍是ACM模板占位符，尚未逐页核对最终出版PDF。作者仓库存在；CIKM对应条目链接至论文DOI，没有直接列代码仓库，故目前未确认公开仓库与出版版本的逐项对应关系。全文结果、版本边界、PDF SHA-256及制品状态见[逐篇阅读笔记](../research_data/RAG安全文献调研/原始证据/notes/20261108_Learning_to_Erase_Private_Knowledge_2504.09910.md)；引用数与优先级按全局计划留待最后核验。
-
-同一CIKM 2026目录还列有[Graph-Driven Context-Preserving Anonymization for LLM Scaling](https://doi.org/10.1145/3799682.3840649)（CCF-B，页5611–5620）。官方摘要给出全局图构建、目标拓扑节点/共指边移除、上下文重对齐三阶段；在CCC-500与TAB语料上分别报告100.0%和99.8%的确定性去敏率（摘要注明parser-completeness条件），并称身份正交多跳QA的Top-1 accuracy距未处理文本在0.1个百分点以内。它是图结构净化与多跳效用保持的方法参考，不是RAG检索或恶意污染防御。当前仅目录/摘要级L1；ACM PDF端点返回Cloudflare challenge，未取得全文，不能据摘要给出正文级撞车结论。
-
-### 12.6 SearchInject：检索准入与误隔离阈值的防御近邻
-
-[SearchInject: Retrieval Exposure Control for Indirect Prompt Injection in Language-Model Search](../research_data/RAG安全文献调研/原始证据/notes/20261108_SearchInject_2611.02643.md)（arXiv:2611.02643v1，2026-11-02；正文及参考文献全读，L3）。arXiv作者备注称“Accepted at IEEE ICCC 2026”，但未写会名全称；当前未找到可核实的IEEE Xplore/Crossref正式会议记录或会议DOI。`ICCC` 对应多个2026年IEEE会议，且用户提供的CCF第七版目录未检出该缩写/全称；不擅自指定会议或赋CCF等级。arXiv DOI `10.48550/arXiv.2611.02643` 与会议论文 DOI 是不同字段，页面仍标待注册。
-
-本文可执行的安全干预位于检索后、生成前：对原始top-100候选按 `[r,a,i,ar,ir]`（归一化相关性、滥用特征、指令似然、两个交互项）进行class-balanced logistic评分；分数超过固定阈值 `0.973853` 即隔离，再按原始次序从原候选列表补足top-10。没有重排幸存候选或额外检索。阈值在154条calibration query构成的placements上按经验clean-candidate误隔离率≤0.5%选择，校准值0.498%；该经验约束不构成新样本保证。
-
-数据为5,183篇SciFact摘要。评估用655个拟合query、154个校准query、300个测试query；载荷为BIPIA特定子集的9/3/13个类别。Title stuffing、doorway、near duplicate、hidden metadata四种页面构造在开发与测试中均出现；payload类别虽留出，构造族未留出且源文档互斥未建立。检索器是BM25、LSA和二者归一化混合，不含稠密检索器。每个检索器的1,200个query-family结果应按300个query聚类理解，而不是1,200个独立样本。
-
-Exposure@10由`.9408/.9158/.8450`降至`.1583/.1508/.1375`（BM25/Hybrid/LSA）；clean NDCG@10分别变化`-0.0018/-0.0013/-0.0013`。但冻结阈值在测试集的clean-candidate误隔离率升至`0.590%/0.620%/0.650%`，三者均超过校准目标。没有同误隔离预算的`[r,a,i]`与`[r,a,i,ar,ir]`消融，交互项收益未识别；小的NDCG点估计也不是等效性检验。104例下游随访移除83个目标上下文，但未防御组无确认成功的hijack，且判定有未决项，所以论文只支持检索暴露控制，不支持降低端到端攻击成功率的结论。原始候选记录和训练产物不可得，当前材料不能重放完整实验。
-
-**对开题的约束与差异：** SearchInject 是生成前检索候选风险隔离与clean-FPR阈值选择的B直接方法近邻，应加入同预算、同正常query集的对照。其对象是携带可执行指令的网页，不是虚假事实投毒、来源鉴真或恶意块跨文档关系；候选级误隔离率也不等于开题防御最终query级OR删块风险。它没有一份真实长源经受害者未知chunker生成同源互补块、同query共召回和逐块共同必要的攻击实验，故不是A的完整直接撞车。开题可据此收窄“泛化的生成前检索过滤”首创表述，并加强独立干净query校准、候选级与最终query级误删、正常多跳QA、refill效应和端到端攻击事件的分层报告。
-
-引用数、正式会议身份及最终优先级留待全局候选与制品检查结束后统一核验；当前均不记为零或推断为已确认。
-
-### 12.7 CIKM 2026：跨块连续性、来源链路与证据准入
-
-本节为2026-11-08对[CIKM 2026官方程序](https://cikm2026.diag.uniroma1.it/program/)的定向RAG、安全、Agent memory、GraphRAG、chunk continuity与poisoning关键词筛查，不宣称逐篇阅读全文或穷尽整个程序页。CIKM按用户提供的CCF第七版目录为B类，不是CCF-A。**SCAR为本节唯一新增正文级核读项；其余候选只据官方程序摘要记L1。** ACM全文入口在当前检索通道不可读取，未将摘要或代码仓库当作论文全文。
-
-| 论文 | 证据及生态位影响 | 不能推出的结论 / 待办 |
-|---|---|---|
-| [Cite Unseen: Measuring Citation-Channel Vulnerabilities in Retrieval-Augmented Generation](../research_data/RAG安全文献调研/原始证据/notes/20261108_CIKM2026_RAG_Security_Candidate_Scan.md)（CIKM Short；DOI `10.1145/3799682.3839886`；L1） | 官方摘要称仅更改一篇注入文档的来源URL，污染率低于1%；四语料、三检索器、四生成器中最高C-ASR为71%。这是直接RAG语料注入/来源引用攻击邻近工作，并提示应分别报告事实答案操纵和引用通道劫持。 | C-ASR攻击的是引用/来源选择，不等于目标错误事实答案；无同源多块必要性证据。优先获取全文，核分母、URL改动过程和原始文档注入条件。 |
-| [SCAR: Semantic Continuity-Aware Retrieval for Efficient Context Expansion in RAG](../research_data/RAG安全文献调研/原始证据/notes/20261108_SCAR_2606.16661.md)（CIKM Short；CCF-B；DOI `10.1145/3799682.3839919`；arXiv v2全文L3） | 在相邻块边界断裂的正常QA中，以查询相关性和块间语义连续性做按需扩展。N=160碎片化查询，Recall 0.928/7.84块；固定±1窗口0.967/10.16块。它直接约束对相邻证据恢复和正常桥接证据保留的宽泛首创陈述，可作B基线。 | 不是安全/投毒方法；使用固定600字符块和60 overlap，不包含未知攻击方、恶意源、非相邻块、来源真实性或块联合必要性。Recall有3.9个百分点代价；10-K上RAGAS小样本不能证明普遍无效用损失。arXiv作者稿未与ACM VoR逐页比对。 |
-| [Do RAG Systems Cite Themselves? (LineageGuard)](../research_data/RAG安全文献调研/原始证据/notes/20261108_CIKM2026_RAG_Security_Candidate_Scan.md)（CIKM Full；DOI `10.1145/3799682.3841081`；L1） | 官方程序摘要的受控100轮HotpotQA/2Wiki实验报告未验证记忆占晚期Top-5槽位27.6%–28.4%、引用链崩塌率10.7%–11.7%；150条准入记忆的联合支持-血缘精度91.3%。正确校验器与血缘元数据下策略保证暴露/崩塌为零，但HotpotQA primary-source recall +5.0点且2Wiki答案F1下降。 | 系统自产内容回流不等恶意false fact poisoning；全文及分母、配置待核。此前校方页面另报22.8%–41.9%，不是官方程序该受控设置的数值，作为版本/设置差异保留，待调和。 |
-| PCD-RAG: A Diagnostic Framework for Auditing Parametric Contamination in RAG Distillation（CIKM Short；DOI `10.1145/3799682.3839997`；L1） | 官方摘要以5,000个预训练零暴露合成事实测RAG蒸馏的参数污染；其answer-only蒸馏设置下retrieval-free answer recovery ≤0.8%。直接约束“外部检索事实是否仍仅驻留在上下文”的安全边界。 | 这是训练/蒸馏污染诊断，不是固定部署语料投毒、恶意块组合或在线检测；不能外推为语料注入风险很低。全文和数据制品待查。 |
-| [FortMem: Secure Stateful Data Management for Long-Term LLM Agent Memory](../research_data/RAG安全文献调研/原始证据/notes/20261108_CIKM2026_RAG_Security_Candidate_Scan.md)（CIKM Full；DOI `10.1145/3799682.3840872`；L1） | Agent持久记忆投毒和出处锚定信任传播，官方摘要报告96.3% poisoned-snapshot检测、零误报。对B的来源信任和记忆级风险处置有直接参考价值。 | 持久Agent记忆不同于外部知识库真实长源经未知chunker形成的检索块；摘要值分母、数据划分与false-alarm单位待核。 |
-| [CaseFlow: Causality-Guided Spurious Evidence Pruning with GFlowNet for Faithful Graph Retrieval](../research_data/RAG安全文献调研/原始证据/notes/20261108_CIKM2026_RAG_Security_Candidate_Scan.md)（CIKM Full；DOI `10.1145/3799682.3841152`；L1） | GraphRAG伪证据剪枝，直接提示B要比较“移除不支持答案的关系”与“保留真实多跳支持”的平衡；官方作者仓库可见，但不是全文。 | 不是恶意块识别、源级取证或正常query误删校准；需读正文确认因果代理和数据标签。 |
-| Retriever as an Attack Surface / AFA-RAG、MemDTG、MECS、QFR-RAG、CARE、GraphLoom、GraFine、GSE publisher-attribute study、H-Mem 与 Compaction Cliff | 分别补充检索器参数操纵、Agent记忆时序准入、互补证据联盟、多层RAG安全评测、噪声上下文拒绝、GraphRAG路由/精化、生成搜索引用操纵及长时记忆证据保留。完整题名、摘要结论和DOI见统一候选筛查笔记。 | 目前为L1候选或低优先级控制，不作正文级比较；Retriever参数攻击不等语料投毒，GSE引用测量不等固定RAG知识库，Agent memory也不等外部chunk库。 |
-| Coverage Under Contradiction、RankGap-RAG、Beyond One-Shot Expansion | 新发现的矛盾证据覆盖资源、利用rank discrepancy抑制误导反馈的查询改写，以及干净多跳互补证据探索方法；可能影响B的矛盾检索评测和正常证据保留基线。题名、DOI、摘要结果及差异边界见统一候选筛查笔记。 | 均仅CIKM官方摘要L1。矛盾基准不等恶意投毒；RankGap不等来源鉴真/块检测；Beyond One-Shot不等安全方法。需获取制品/全文，核实构造、分母、clean-query误删和转移条件。 |
-| CiteAlign-Table: Verifying Citation Faithfulness when LLMs Attribute to Structured Data（CIKM Short；DOI `10.1145/3799682.3840003`；L1） | 表格证据的错误行、无据聚合和schema-claim错配核验；官方摘要报告混合基准F1 0.84，较文本型基线0.61。 | 仅作细粒度claim-evidence对齐的低优先级评价参考，结构化表格任务不能直接代表非结构化恶意检索块。 |
-
-本轮最应收窄的两类表述：①“边界切块导致互补证据缺失”不能单独作为新颖性，SCAR已有相邻块连续性与按需扩展；②“单篇注入文档与来源URL”不能一概视为无威胁，Cite Unseen显示引用通道会成为独立攻击终点。开题A仍须以真实单一长源、未知chunker、同query同源互补块共召回、逐块/联合干预与实际生成端点界定条件交集；B仍须区分事实污染检测、源可信、正常多跳支持、候选误报和最终query级OR删块风险。完整候选和未读范围见[CIKM 2026筛查笔记](../research_data/RAG安全文献调研/原始证据/notes/20261108_CIKM2026_RAG_Security_Candidate_Scan.md)。引用数仍待全局候选及制品核查完成后统一查询。
-
-### 12.8 SAFE-Mem：外部来源权限治理与持久记忆投毒近邻
-
-[SAFE-Mem: Secure Agentic Memory with Fine-Grained Authority and Governance-Aware Retrieval](../research_data/RAG安全文献调研/原始证据/notes/20261108_SAFE-Mem_2610.22959.md)（arXiv:2610.22959v2，2026-10-20，18页全文L3；截至2026-11-08未见同行评审venue，不赋CCF级别）。作者公开Apache-2.0代码仓库。它将句子、原子claim、实体和来源通道存为图；每条claim标注kind/authority/scope，以`min(kind, authority)`限定用途。外部文档默认只能作为“来源曾说过”的description，按查询用途与主体scope先筛后排，并在工具调用时重验；内容保留，不做真实性分类或删除。
-
-| 证据 | 对开题生态位的影响 | 不能外推 / 待核 |
-|---|---|---|
-| MPBench四骨干ASR为1.5%–6.2%，Recall 83.1%–86.3%；LoCoMo相对无防御准确率提升2.8–15.1个百分点。MPBench恶意记忆仍会写入（两种GPT设置38.0%/57.6%），但攻击查询上下文取回率为1.1%/2.8%，低于无防御的30.2%/55.7%。EHRAgent+MINJA中生成错误代码ASR为72.4%，但执行攻击为0%，benign memory loss为2.0%。 | B的来源权限、持久记忆投毒治理、按用途检索准入和保留合法记忆已有强近邻；若系统含Agent memory，应至少以权限/血缘控制作为比较基线。 | 它治理“谁有权使claim约束谁/何种决策”，不是事实真伪检测。假外部事实作为对来源内容的描述仍可进入；被用户说服后明确背书的内容也在其边界外。生成ASR不能和执行成功率混报。 |
-| LLM使用分类、claim提取、来源图、检索前用途准入和工具调用标记；移除scope检查后，EHRAgent攻击执行升至44.4%。 | 限制“首次把来源谱系用于检索期风险控制”“首次同时保留正常记忆与压制攻击”的宽泛新颖性。其对来源/主体授权的结构化方式可作B方法设计参照。 | 不含攻击者未知chunker、单一真实长源的同源互补恶意块、逐块共同必要性、外部RAG真实生成端点或独立clean-query最终query级OR误删校准。2% benign-memory loss不是该误删保证。 |
-
-正文样本口径记录为MPBench 3,241个attack cases、其中2,999进入计分，bootstrap按2,893个distinct queries聚类；合并或复算前应检查发布数据中的未计分样本规则。全文证据、SHA-256、设置、结果及限制见[逐篇阅读笔记](../research_data/RAG安全文献调研/原始证据/notes/20261108_SAFE-Mem_2610.22959.md)。
-
-### 12.9 AAAI 2024、ACL/EMNLP 2024–2026目录增量
-
-本段按正式会议/Findings身份区分CCF，不将Findings继承主会等级。AAAI逐篇摘要筛查记录已覆盖原序1238–2865，共1628个连续目录位置；本次新增的尾段2824–2865为42项（40条净新增，2条复用），其中DynaMind与DocQA升级为L2系统上下文阅读。此处“连续目录位置”不是经全卷去重后的唯一阅读人数；结构化审计的冻结基线计数尚未与此前原序1238–2477记录合并，故不报告全卷唯一已审/未审总数。原序2078–2477的400项和2318–2477中的conformal/UQ、应用场景化评测、自适应文本检测、LLM输出性质测试、多模态输入越狱、L0认证、模型后门扫描及训练集净化等外围条目，仍按原摘要筛查记录处理，不计正文阅读，也不视作RAG直接工作。已识别的方法近邻须按边界比较：QuerySum为L3正常多文档query聚焦摘要；GeMKR、Tree-of-Reasoning、Bayesian Inference with Complex Knowledge Graph Evidence与MedAlign为L2选择性方法/评测阅读；Span Graph Transformer为L1摘要级；AAAI 29965是few-shot support-set/训练期后门，不是外部RAG语料污染。已升级正文记录与各批逐篇判断见[AAAI证据地图](RAG安全证据地图_20261102.md#aaai-2078-2117)、[2118–2157](RAG安全证据地图_20261102.md#aaai-2118-2157)、[2158–2197](RAG安全证据地图_20261102.md#aaai-2158-2197)、[2198–2237](RAG安全证据地图_20261102.md#aaai-2198-2237)、[2238–2277](RAG安全证据地图_20261102.md#aaai-2238-2277)、[2278–2317](RAG安全证据地图_20261102.md#aaai-2278-2317)、[2318–2357](RAG安全证据地图_20261102.md#aaai-2318-2357)、[2358–2397](RAG安全证据地图_20261102.md#aaai-2358-2397)、[2398–2437](RAG安全证据地图_20261102.md#aaai-2398-2437)、[2438–2477](RAG安全证据地图_20261102.md#aaai-2438-2477)及[2824–2865元数据明细](RAG安全文献补查元数据_20261102.md#src-20261108-aaai24-2824-2865)。ACL/EMNLP审计此前统计15卷、20,127条研究记录、20,037条有摘要，形成14篇候选（1篇L3、13篇L2）；ACL Findings与EMNLP主会/Findings仍有未审队列，整体审计进行中。ACL主会GraphRAG防御论文既有条目标为L3；Findings按独立出版身份记录，不继承主会CCF。逐篇身份、PDF哈希与纳排理由见[ACL/EMNLP审计](../research_data/RAG安全文献调研/原始证据/audit/20261108_ACL_EMNLP_Findings.md)。
-
-| 文献 | 新增的生态位约束 | 边界与等级 |
-|---|---|---|
-|[MM-PoisonRAG: Disrupting Multimodal RAG with Local and Global Knowledge Poisoning Attacks](RAG安全证据地图_20261102.md#src-20261108-mm-poisonrag)|ACL 2026主会Long Papers，CCF-A，L2。持久外部多模态知识投毒包含query局部与广泛影响的全局攻击；限制A把“单一注入材料影响面”说成新颖。|多模态载荷；未验证真实长文本、未知chunker、同源互补块共同必要，数值不得外推文本攻击。|
-|[LogicPoison: Logical Attacks on Graph Retrieval-Augmented Generation](RAG安全证据地图_20261102.md#src-9ef336ebf4904e2f)|ACL 2026主会Long Papers，CCF-A，L2。实体变换和关系链攻击限制GraphRAG逻辑污染、跨关系攻击的宽泛新颖性。|图结构/实体控制不等于真实单源文本分块或来源真实性，也没有clean-query最终OR删块校准。|
-|[Corpus Poisoning via Approximate Greedy Gradient Descent](RAG安全证据地图_20261102.md#src-9b395f09c5a170db)|Findings of ACL 2025，L2。持久语料投毒与检索端成功率是既有攻击面；Contriever与DPR结果差异提示必须测检索器敏感性。|Findings不继承ACL主会CCF-A；白盒retriever、单passage，不覆盖多块互补必要性。|
-|[The RAG Paradox](RAG安全证据地图_20261102.md#src-d4a42f7ad164d744)|Findings of EMNLP 2025，L2。黑盒RAG攻击是外部可检索材料风险的近邻。|Findings不继承EMNLP主会CCF-B；其source visibility与材料条件不同于持久知识库中的单一真实长源。|
-|[Same Evidence, Different Decisions: Document Segmentation Bias in Retrieval-Augmented Generation](RAG安全证据地图_20261102.md#src-0e57f4bde3a3201b)|Findings of EMNLP 2026，L2。保持证据文本、改变分段即可影响回答选择，是chunker/分段敏感性近邻。|Findings不继承主会CCF-B；主体为合成材料与少量筛选query，不是污染检测或多块共同必要性实验。|
-|[Towards Robust Retrieval-Augmented Generation via Reliability-Aware Adaptive Evidence Selection (SAFER-RAG)](RAG安全证据地图_20261102.md#src-167385fce1cca66a)|Findings of EMNLP 2026，L2。候选排名谱、safe-first证据选择和必要时回退构成B的直接基线，必须做同预算增量比较。|Findings不继承主会CCF-B；多改写、多检索/选择和回退成本高于一次复核；不等独立clean-query最终OR风险校准。|
-|[BalanceRAG: Joint Risk Calibration for Cascaded Retrieval-Augmented Generation](RAG安全证据地图_20261102.md#src-0e2d5e42ae4c57c5)|Findings of EMNLP 2026，L2。级联RAG的accepted-and-wrong风险认证限制“首次进行RAG query级风险控制”的宽泛表述。|Findings不继承主会CCF-B；事件是被接受答案的错误率，不是clean query中任一块触发的OR误删；依赖正确性标签。|
-|[MAGIC: A Multi-Hop and Graph-Based Benchmark for Inter-Context Conflicts in Retrieval-Augmented Generation](RAG安全证据地图_20261102.md#src-460541f85cef6252)|Findings of EMNLP 2025，L2。提供跨上下文图关系冲突与定位评测近邻。|Findings不继承主会CCF-B；是图谱构造benchmark，不是部署检测器、真实单源chunk攻击或clean-FPR校准。|
-|[QuerySum](../research_data/RAG安全文献调研/原始证据/notes/20261108_AAAI2024_2078_2117.md)|AAAI 2024，CCF-A，L3。27,041 query样本可供正常多文档聚合/clean-query效用设计参考。|query cluster标签不是真实来源独立、蕴含或冲突关系真值；没有攻击、检索共同召回或逐块反事实。|
-|GeMKR、Fact-Driven Logical Reasoning（[证据地图](RAG安全证据地图_20261102.md)）|AAAI 2024，CCF-A，L2。多模态数据库约束检索与事实关系推理是正常检索/结构推理方法基线。|不是安全/投毒工作，不得把训练式知识检索或图推理当作冻结检测器、来源鉴真或低误报保证。|
-|Tree-of-Reasoning Question Decomposition for Complex Question Answering with Large Language Models（[证据地图](RAG安全证据地图_20261102.md#src-630d6268f905c744)）|AAAI 2024，CCF-A，L2选择性全文阅读；查询分解与复杂QA推理是方法近邻。|不是RAG投毒检测或证据过滤，不得将问题分解能力当作真实证据支持或安全保证。|
-|Bayesian Inference with Complex Knowledge Graph Evidence（[阅读卡](RAG安全文献补查元数据_20261102.md#src-20261108-aaai24-bikg)）|AAAI 2024，CCF-A，L2选择性阅读；结构化KG复杂逻辑证据的增量贝叶斯融合。|限制查询条件多证据增量融合的宽泛首创表述；不处理自由文本检索来源、语料投毒、块过滤或clean-query误删校准。|
-|Span Graph Transformer for Document-Level Named Entity Recognition（[证据地图](RAG安全证据地图_20261102.md#src-8332c1286c8d3222)）|AAAI 2024，CCF-A，L1摘要筛查；跨句实体图为结构化文档表示外围方法参照。|目前没有正文级阅读证据，不得与L2近邻并列表述或推断其安全检测能力。|
-|[MedAlign: A Clinician-Generated Dataset for Instruction Following with Electronic Medical Records](RAG安全证据地图_20261102.md#src-20261108-aaai24-medalign)|AAAI 2024，CCF-A，L2选择性正文阅读；BM25指令-EHR匹配、人工相关性核验及长上下文评测是医疗grounding基准参照。|不是RAG安全系统；不含恶意语料、chunk安全过滤、clean-query误删率或跨块来源命题校验。|
-|[DataElixir: Purifying Poisoned Dataset to Mitigate Backdoor Attacks via Diffusion Models](https://ojs.aaai.org/index.php/AAAI/article/view/30186)|AAAI 2024，CCF-A，L1摘要筛查；训练集后门样本扩散净化可作训练数据投毒防御边界参照。|对象是图像模型训练集，不是外部RAG语料或检索时过滤。|
-|[CLIPSyntel: CLIP and LLM Synergy for Multimodal Question Summarization in Healthcare](https://ojs.aaai.org/index.php/AAAI/article/view/30206)|AAAI 2024，CCF-A，L1摘要筛查；医学概念context filtration仅为多模态摘要流程旁证。|过滤的是生成摘要上下文，不是检索chunk，也不是安全检测。|
-|[Bad Actor, Good Advisor: Exploring the Role of Large Language Models in Fake News Detection](RAG安全证据地图_20261102.md#src-79feefa52e7f6562)|AAAI 2024，CCF-A，L1；本批再次核到正式目录，复用既有条目，不新增卡片。|LLM rationale供新闻分类模型选择；没有外部持久RAG检索语料攻防。|
-|[GEAR-Up: Generative AI and External Knowledge-Based Retrieval: Upgrading Scholarly Article Searches for Systematic Reviews](RAG安全证据地图_20261102.md#src-20261108-aaai24-gearup)|AAAI 2024 Demonstration Track，L2全文系统上下文。|知识图谱与LLM扩展检索式并用FAISS筛选文章；全文讨论由馆员把关并可通过KG路径实施敏感内容控制。可作query-stage安全治理/工作流参考，但未研究恶意语料或检索块净化，不计直接撞车。|
-|[SciSpace Copilot: Empowering Researchers through Intelligent Reading Assistance](RAG安全证据地图_20261102.md#src-20261108-aaai24-scispace)|AAAI 2024 Demonstration Track，L2全文系统上下文。|上传论文的文档RAG问答，包含解析、分块向量检索、结构化上下文抽取与可定位引文；是文献阅读RAG系统参照，但未测试恶意文档、投毒检测或安全过滤，不计攻防撞车。|
-|[From Static to Dynamic: Knowledge Metabolism for Large Language Models](RAG安全证据地图_20261102.md#src-20261108-aaai24-dynamind)|AAAI 2024 Demonstration Track，CCF-A会议论文，L2系统上下文。外部记忆检索、上下文UCB可信度估计和基于回答反馈的动态更新，限制“首次按上下文评估/重加权知识可信度”的宽泛新颖性。|SciFact原句与GPT-4反事实句的可信度感知，不是恶意来源/投毒检测；无攻击成功率、来源鉴真或clean-query误删校准。本地为arXiv作者版，题名不同于AAAI正式版。|
-|[ESG Accountability Made Easy: DocQA at Your Service](RAG安全证据地图_20261102.md#src-20261108-aaai24-docqa)|AAAI 2024 Demonstration Track，CCF-A会议论文，L2系统上下文。文档RAG在生成答案端做辱骂/仇恨/脏话检测和幻觉grounding检查，是直接的RAG输出安全/质量系统近邻。|未检测恶意检索文档、间接提示注入、语料投毒或来源真实性；未报告安全过滤FPR/QA效用。本地为arXiv作者公开版。|
-|LLMGuard: Guarding against Unsafe LLM Behavior|AAAI 2024 Demonstration Track，L1外围安全旁证。|集成检测器监控LLM交互内容；摘要没有文档检索或RAG安全测试，不能视为RAG防御撞车。|
-|[When Your AI Becomes a Target: AI Security Incidents and Best Practices](RAG安全证据地图_20261102.md#src-20261108-aaai24-ai-incidents)|IAAI Technical Track on AI Incidents and Best Practices，L1摘要；与AAAI主技术轨道身份区分。|摘要称汇集32起通用AI安全事故并分析目标、成因和缓解；摘要未明确RAG或持久检索语料，全文未读，仅保留一般AI安全背景，不作直接近邻。|
-
-全量筛查的未闭合范围不隐藏：安全会议12/12目录虽已核、共3,767条，但逐篇摘要筛查仍在进行；ACL/EMNLP 2024–2026官方目录审计快照覆盖15卷、20,127条记录和20,037条可用摘要（基于2026-11-02快照，本轮未实时重下），人工筛查仍未闭合；ACL Findings 2024原序122–201已逐项筛查80篇（73条新增、7条复用；直接撞车0；方法近邻分项见审计台账），其中`.86`与GOLFer已升级为L2全文阅读；TDSC 2024 v21 no.5、no.6目录及摘要分别闭合49/49与51/51，共100篇、直接RAG安全命中0篇，no.5为4核心/12次级近邻，no.6为3核心/12次级近邻。TDSC 2025 v22 no.1已闭合55项官方目录：54篇研究文章摘要全部覆盖（53篇本轮新读、FALL复用既有L1），直接撞车0、核心4、次级13、范围外37，另1项为无摘要reviewer list；v22 no.2（issue `253tqTZJtRK`）65/65与no.3（issue `26y4wJJVhGE`）84/84摘要筛查均闭合，直接RAG安全撞车均为0，no.2分类为核心4/次级11/范围外50，no.3为核心2/次级9/范围外73；no.3摘要与CSDL官方article快照84/84哈希一致，no.2第三方摘要交叉补足尚未做到IEEE原始记录逐项闭合。AAAI 2024官方目录口径为2,865篇（摘要联合表2,866条），已逐篇记录的连续区间为原序1238–2865；本次目录尾段2824–2865的42项已筛查（40条净新增、2条复用），并对DynaMind与DocQA作了L2系统上下文阅读。结构化审计冻结基线未合并此前文档中的1238–2477区间，故当前不报全卷唯一已审/未审总数；目录摘要筛查不等于全卷全文精读或全域无遗漏证明。引用数按“先相关性、后引用核验”继续暂缓。
-
-PaperNotes与AI Safety Daily发现渠道复核（[逐项记录](../research_data/RAG安全文献调研/原始证据/notes/20261108_PaperNotes_XHS_RAG.md)）：PaperNotes扫描6,977个论文页URL并回到NeurIPS/ECCV官方目录核对；五篇PaperNotes候选均已登记于本报告/证据地图，其中Deceptive Grounding为L3，其余四篇为选择性L2。两篇NeurIPS GraphRAG候选现均有官方poster摘要级结论并维持L1；OpenReview全文端点受限，不计正文精读，也未据题名代替阅读。小红书主页仅可见11条标题卡，正文和发布时间需登录，标题未给出明确RAG/语料投毒命中；故本轮不能据此证明主页无相关内容，也未登录或尝试验证码。
-
-## ACL Findings 2025增量：RemoteRAG全文边界（2026-11-08）
-
-[RemoteRAG: A Privacy-Preserving LLM Cloud RAG Service](RAG安全证据地图_20261102.md#src-20261108-remoterag)（ACL Findings 2025，全文L3）通过查询嵌入扰动、部分同态加密及条件式不经意传输，保护半诚实云端免于推断用户查询语义和选中的文档索引。它不处理恶意知识库、语料投毒、间接提示注入或证据块真伪，因此属于广义RAG安全交叉，不是本开题投毒/块级过滤方案的直接撞车。其高维球面均匀分布假设与极端聚集下的召回例外须保留为理论边界。Findings不继承ACL主会CCF等级；引用数待后续统一核查。
-
-## TDSC 2025 v22 no.1摘要筛查增量
-
-54篇研究文章的摘要覆盖已闭合（53篇新读加1篇既有FALL L1复用），直接RAG安全撞车0篇；4篇核心方法近邻、13篇次级近邻、37篇范围外，另1条无摘要reviewer list前置项不计研究论文。核心候选为FALL文本异常分数、SUNDEW多源/威胁级特征选择、GoCrowd来源质量聚合、以及移动感知质量评估，均为L1、跨域方法参照，不构成RAG语料投毒直接撞车。逐篇边界见[证据地图](RAG安全证据地图_20261102.md#src-20261108-tdsc25no1)及[目录审计台账](../research_data/RAG安全文献调研/原始证据/audit/catalog_security_journals.md)。
-
-## NeurIPS 2026新增RAG候选：摘要级定位（2026-11-08）
-
-对NeurIPS官方[Downloads目录](https://neurips.cc/Downloads/2026)新增核得四篇`Accept (poster)`摘要：ARGUS、top-k证据预算/分布迁移分析、CARE推理时表示编辑、以及以overthinking为线索的RAG幻觉检测。**最接近防御方法生态位的是CARE**，但摘要只涉及噪声检索下知识冲突缓解；其余三篇分别约束答案级幻觉检测、证据量/效用和冲突检测，均不能据此视为恶意语料投毒或来源鉴真方案。poster记录没有闭合主会/Workshop细分track，论文级CCF暂缓；四篇均为L1，OpenReview PDF端点403，未下载或绕过访问。另发现[Exposing Private Corpus Leakage in Multimodal RAG](https://neurips.cc/virtual/2026/poster/154898)，目前只有官方题名与poster链接，作为L0高优先级隐私候选等待摘要/全文核验。正式作者、OpenReview ID和各自边界见[元数据记录](RAG安全文献补查元数据_20261102.md#src-20261108-neurips26-rag-followup)及[证据地图](RAG安全证据地图_20261102.md#src-20261108-neurips26-rag-followup)。
-
-## ACL Findings 2025原序242–281：目录覆盖与近邻工作（2026-11-08）
-
-按ACL Anthology官方文章页及BibTeX连续筛查原序242–281，共40项；新增38条L1、复用2条既有摘要记录，摘要级分类为直接RAG安全撞车0、方法近邻18、外围近邻12、范围外10。Findings不继承ACL主会CCF-A。完整标题、官方ID与逐篇摘要边界见[证据地图](RAG安全证据地图_20261102.md#src-20261108-acl-findings-batch)。五篇最值得对照的论文已进一步读PDF：Amber、RCR、AiTM、CoS为L3；EXIT为选择性L2，不能把它写成全文精读。
-
-|文献|对现有攻防生态位的影响|边界 / 对开题的处理|
-|---|---|---|
-|[Amber](RAG安全证据地图_20261102.md#src-20261108-acl-findings-amber)|迭代记忆更新、自适应信息收集、多粒度过滤直接覆盖RAG冗余/无关内容抑制；是本批最强方法近邻。|目标是相关性和回答效用，不判来源真伪或恶意性，不测投毒。应撤回“首次提出RAG内容过滤”这类宽主张，将贡献限定为攻击者控制源、恶意/互补跨块识别和安全效用校准。|
-|[EXIT](RAG安全证据地图_20261102.md#src-bd4e53c66d15ad2e-l2-addendum)|检索结果句级抽取压缩、保留上下文依赖，说明生成前相关句筛选与多跳保留已有直接先例。|其约24%的相关句删除是任务相关性指标，不是恶意内容检测或clean-query误删率；应作为上下文压缩/正常效用对照，不能拿来替代安全真值。|
-|[Reinforcing Compositional Retrieval](RAG安全证据地图_20261102.md#src-31c514b3e7becdfc-l3-addendum)|序列决策模型显式处理组合检索项间依赖，约束“首次考虑多证据协同/依赖”的宽泛新颖性。|实验对象是组合式语义解析中的检索示例，不是RAG库中的互补恶意文本块；若研究攻击触发器跨同源块分布，须用实际共同召回与逐块/联合反事实来界定差异。|
-|[AiTM](RAG安全证据地图_20261102.md#src-20261108-acl-findings-aitm)|展示LLM多智能体消息通道可被拦截篡改，属于运行时协作攻击。|攻击面是agent通信，不是持久检索库、索引或retrieved chunks；若系统采用多agent，需把通信边界列为独立威胁面，而非合并为语料投毒。|
-|[Chain-of-Scrutiny](RAG安全证据地图_20261102.md#src-20261108-acl-findings-cos)|用推理步骤与最终输出一致性检测API模型的触发式后门，可作黑盒安全检测设计参照。|触发器由第三方服务放入query/提示；论文未验证训练集投毒防御，也不处理RAG语料真实性或检索块筛除。推理幻觉会造成误报，不能把一致性判断当作来源认证。|
-
-**对本课题的约束**：一般化的“RAG相关内容过滤”“上下文压缩”或“多证据协同检索”均已有方法近邻，不宜作为单独首创点。潜在差异必须落到攻击者可控的持久来源、实际未知分块后同query共召回、互补载荷的块级共同必要性，以及独立clean-query上的最终OR误删校准。该结论仅覆盖本批40篇摘要和5篇选读全文，不证明全队列或全领域无撞车。引用数仍为`not_observed`，按“先相关性、后核引用”处理。
+- **A方向**：撤回“无害片段组合”“多文档协同”“未知chunker”或“RAG内容过滤”本身的宽泛首创表述。可检验的窄交集是：攻击者控制一份真实长源，经未知受害chunker生成不同同源块；同一正常query实际共同召回这些块；逐块与联合删除实验表明多块共同必要；并在真实生成端点观察结果。现有记忆、日志、提示分解、图检索及普通RAG投毒工作分别覆盖部分机制，不能合并为已完成或未完成的全域新颖性证明。
+- **B方向**：将来源权限/血缘、检索准入、证据支持证书、query级OOD拒答和RAG上下文过滤作为分立基线。比较时区分候选级误隔离、clean-query最终OR删块、accepted-and-wrong、来源真实性和正常多跳效用，并统一访问权限、query划分、污染预算与调用成本。
+- **证据口径**：正式主会、Findings、Industry、poster及预印本身份分列；Findings不继承主会CCF等级，poster未确认track时不直接给单篇CCF-A。L1摘要候选不写成正文结论。引用数尚未统一核查，按“先相关性、后核引用”的顺序保留未观测状态。
+- 目录覆盖计数、未读范围、正式元数据和制品状态集中见[元数据汇总](<RAG安全文献补查元数据_20261102.md>)；逐篇原文记录与发现渠道边界见[证据地图](<RAG安全证据地图_20261102.md>)。
