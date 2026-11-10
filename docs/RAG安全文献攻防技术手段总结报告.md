@@ -2092,7 +2092,7 @@ flowchart TB
 <a id="src-fb1682dc8e7f28a5-h112"></a>
 ### 11.1 比较范围与阅读等级
 
-本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇阅读截至2026-11-08。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
+本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-10。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
 
 当前核查规模、study/report关联、全作者、正式track/CCF、可用本地PDF及逐篇页码统一查阅[证据地图](<RAG安全证据地图_20261102.md#src-8775d7fbe029251e>)和[逐篇原文笔记索引](<RAG安全证据地图_20261102.md#src-c2aa1714998f8ac9>)。条目ID、版本及页码用于对应原文证据。
 
@@ -2515,6 +2515,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 | [Same Evidence, Different Decisions: Document Segmentation Bias in RAG](<RAG安全证据地图_20261102.md#src-0e57f4bde3a3201b>) | Findings of EMNLP 2026，L2；固定证据内容而改变分段会改变答案选择。 | 是分段敏感性近邻，不是投毒检测；Findings不继承主会CCF-B。 |
 | DECEIVE-AFC、The Web Doesn’t Sit Still、Cross-User Poisoning、Asynchronous Agentic Poisoning | 分别涉及query操纵、运行时搜索结果注入、共享用户上下文越界和Agent自演化记忆后门；身份及阅读级别见证据地图。 | 这些工作扩展威胁模型，但攻击入口不是外部RAG长源chunk投毒；应与持久语料威胁分开报告。 |
 | [The RAG Paradox](<RAG安全证据地图_20261102.md#src-d4a42f7ad164d744>) | Findings of EMNLP 2025，L2；黑盒RAG攻击近邻。 | source visibility与材料条件不等于持久知识库中真实单源的未知分块攻击。 |
+| [Train-free Data Poisoning Attack against Retrieval-augmented Diffusion Models](<RAG安全证据地图_20261102.md#src-20261110-poisonedrdm>) | NeurIPS 2026官方poster #153591；L1摘要，track未核；poster排期2026-12-08。 | 外部图像知识库投毒、未知图像retriever与目标概念劫持是多模态安全边界参照；不等文本LLM-RAG投毒或同源文本块共同必要性，未赋论文级CCF。 |
 
 <a id="src-fb1682dc8e7f28a5-h120"></a>
 
@@ -2524,6 +2525,8 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 
 | 工作 | 已确认的机制与证据 | 对B的边界 |
 |---|---|---|
+| [Worse than Zero-shot? A Fact-Checking Dataset for Evaluating the Robustness of RAG Against Misleading Retrievals](<RAG安全证据地图_20261102.md#src-20261110-worse-zero-shot>) | NeurIPS 2025 Datasets and Benchmarks Track，会议级CCF-A；L3正文pp.1–9；RAGuard含2,648条claim及16,331篇Reddit文档，misleading标签相对模型行为定义。 | 直接限制“误导性检索对RAG无影响/首次评测”的宽泛说法，但它是政治事实核查鲁棒性基准，不是蓄意投毒或恶意块检测；此RAGuard数据集与arXiv:2510.25025防御论文为不同工作。 |
+| [Conflict-Suppressed RAG: A Simple Decoding-Time Framework for Faithful Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-20261110-csrag>) | NeurIPS 2026官方poster #148415，L1摘要，track未核；poster排期2026-12-08。 | 解码期抑制参数知识、增强检索上下文的直接生成忠实性近邻；不等来源真实性判断、恶意块过滤或query级误删校准，未赋论文级CCF。 |
 | [SearchInject: Retrieval Exposure Control for Indirect Prompt Injection in Language-Model Search](<../research_data/RAG安全文献调研/原始证据/notes/20261108_SearchInject_2611.02643.md>) | arXiv:2611.02643v1，L3；检索候选指令风险打分、阈值隔离并从原列表补足top-10。以154条calibration query选择经验误隔离率0.498%；测试clean候选误隔离率为0.590%–0.650%。 | 生成前候选风险过滤的直接方法近邻；网页指令注入不同于虚假事实投毒。候选级误隔离率不等于最终query级OR删块率，经验校准值也不构成新样本保证。 |
 | [SAFE-Mem](<../research_data/RAG安全文献调研/原始证据/notes/20261108_SAFE-Mem_2610.22959.md>) | arXiv:2610.22959v2，L3；以claim来源、authority及scope治理Agent记忆检索，作者公开Apache-2.0代码。 | 强来源权限与持久记忆治理基线，但不判断来源陈述是否真实，也不检测外部RAG恶意块或提供clean-query最终OR误删保证。 |
 | [Forgetting is Not Always Bad (DREAM)](<RAG安全证据地图_20261102.md#src-20261108-dream>) | NeurIPS 2026官方poster #155114；方法与结果选择性阅读；动态记忆权重、异常诊断及功能性遗忘。 | Agent历史记忆防御，不等于外部固定知识库上的冻结检测器或query级误删校准。 |
