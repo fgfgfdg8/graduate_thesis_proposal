@@ -2542,6 +2542,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 | [Exposing Privacy Risks in Graph Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-20261111-exposing-privacy>) | Findings of ACL 2026，DOI `10.18653/v1/2026.findings-acl.899`；关联母会ACL为CCF-A，但Findings未单列等级且不继承主会等级；21页L3。250 queries/设置下，Qwen-Turbo + GraphRAG报告实体/关系泄漏均值68.6%/72.3%（HealthCare）及73.6%/74.0%（Enron）。 | GraphRAG黑盒结构化信息抽取/机密性近邻，不是投毒检测。作者的Target Information表值727与所审代码在250次查询下的计数上限不一致；其提示、相似度阈值和摘要防御不能替代B的恶意块识别、来源核验与最终query级误删校准。 |
 | [SCAR: Semantic Continuity-Aware Retrieval for Efficient Context Expansion in RAG](<../research_data/RAG安全文献调研/原始证据/notes/20261108_SCAR_2606.16661.md>) | CIKM 2026 Short，CCF-B，L3；按需恢复相邻块连续性，N=160时Recall 0.928/7.84块，固定±1窗口0.967/10.16块。 | 正常桥接证据保留基线，不处理恶意来源、非相邻互补块或未知chunker；收益与额外块数须同时报告。 |
 | [MMAgent-R²: Learning to Rerank and Reject for Agentic mRAG](<RAG安全证据地图_20261102.md#src-20261111-eccv26-mmagent-r2>) | ECCV 2026主会，按给定第七版目录为CCF-B；17页本地正文及4页Springer官方补充材料全文，L3；视觉候选重排、Reject后扩展检索；训练集过滤可达目标实体，测试保留不可达样本。 | 约束“首次在RAG中对候选重排/拒绝并追加检索”的宽泛机制说法；是多模态正常检索效用参照，不检测投毒、恶意文本块或来源真伪，也未提供clean-query最终OR误删校准。 |
+| [Can LLMs Take Retrieved Information with a Grain of Salt?](<RAG安全证据地图_20261102.md#src-20261111-neurips26-grain-of-salt>) | NeurIPS 2026，CCF-A；32页全文L3；对外部上下文certainty作obey误差评估，以先验提醒、置信映射校准、上下文简化改善效用。 | 限制“首次研究模型按外部检索置信度调整回答”的宽泛说法；其假设信号可用且诚实，不检测信号操纵、恶意来源或投毒，也不控制clean-query误删率，不能当作安全检测器。 |
 | LineageGuard、FortMem、PCD-RAG、CaseFlow、Beyond One-Shot Expansion | CIKM 2026官方摘要级候选，分别涉及记忆自引用/血缘、持久Agent记忆投毒、蒸馏污染、GraphRAG伪证据剪枝和多跳证据扩展。 | 全文和分母未核；它们分别属于来源回流、Agent memory、训练/蒸馏、图证据与正常检索效用，不可混写为外部知识库恶意块检测。 |
 | [From Static to Dynamic: Knowledge Metabolism for Large Language Models](<RAG安全证据地图_20261102.md#src-20261108-aaai24-dynamind>) | AAAI 2024 Demonstration Track；上下文可信度估计与外部记忆动态更新。 | 限制“首次按上下文重加权知识可信度”的宽主张，但不检测恶意来源或语料投毒。 |
 | [ESG Accountability Made Easy: DocQA at Your Service](<RAG安全证据地图_20261102.md#src-20261108-aaai24-docqa>) | AAAI 2024 Demonstration Track；文档RAG答案端做不当内容与grounding检查。 | 输出安全/质量近邻，不检测恶意检索文档、间接提示注入或来源真实性。 |
@@ -2552,6 +2553,6 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 ### 11.10 对开题定位的综合结论
 
 - **A方向**：撤回“无害片段组合”“多文档协同”“未知chunker”或“RAG内容过滤”本身的宽泛首创表述。可检验的窄交集是：攻击者控制一份真实长源，经未知受害chunker生成不同同源块；同一正常query实际共同召回这些块；逐块与联合删除实验表明多块共同必要；并在真实生成端点观察结果。现有记忆、日志、提示分解、图检索及普通RAG投毒工作分别覆盖部分机制，不能合并为已完成或未完成的全域新颖性证明。
-- **B方向**：将来源权限/血缘、检索准入、证据支持证书、query级OOD拒答和RAG上下文过滤作为分立基线；把MMAgent-R²的多模态候选Reject/扩召回仅作为检索效用方法参照，不列为安全检测器。比较时区分候选级误隔离、clean-query最终OR删块、accepted-and-wrong、来源真实性和正常多跳效用，并统一访问权限、query划分、污染预算与调用成本。
+- **B方向**：将来源权限/血缘、检索准入、证据支持证书、query级OOD拒答和RAG上下文过滤作为分立基线；把MMAgent-R²的多模态候选Reject/扩召回作为检索效用参照，把 *Can LLMs Take Retrieved Information with a Grain of Salt?* 作为外部置信信号校准/遵从参照，二者都不列为安全检测器。比较时区分候选级误隔离、clean-query最终OR删块、accepted-and-wrong、来源真实性和正常多跳效用，并统一访问权限、query划分、污染预算与调用成本。
 - **证据口径**：正式主会、Findings、Industry、poster及预印本身份分列；Findings不继承主会CCF等级，poster未确认track时不直接给单篇CCF-A。L1摘要候选不写成正文结论。KEPo占据GraphRAG知识演化投毒近邻；GRASP与 *Exposing Privacy Risks* 分别研究结构重建和隐私抽取，均属机密性威胁，不等于投毒或检索后净化，指标与A/B终点分列。引用数尚未统一核查，按“先相关性、后核引用”的顺序保留未观测状态。
 - 目录覆盖计数、未读范围、正式元数据和制品状态集中见[元数据汇总](<RAG安全文献补查元数据_20261102.md>)；逐篇原文记录与发现渠道边界见[证据地图](<RAG安全证据地图_20261102.md>)。
