@@ -1,6 +1,6 @@
 # RAG安全攻防文献技术手段总结报告
 
-整理日期：2026年11月7日。本报告集中讨论攻防技术、评测设计与开题定位；逐篇证据与元数据分别进入另外两份主文档。
+整理日期：2026年11月11日。本报告集中讨论攻防技术、评测设计与开题定位；逐篇证据与元数据分别进入另外两份主文档。
 
 [证据地图与全部论文笔记](RAG安全证据地图_20261102.md)｜[元数据、开源制品及目录缺口](RAG安全文献补查元数据_20261102.md)
 
@@ -1901,7 +1901,7 @@ $$
 | **HijackRAG** | 浙大，arXiv:2410.22832 | S2 检索提示劫持 / O1 | 用受 **HotFlip 启发**的梯度方法优化注入文本，使检索器为触发查询返回攻击者指定的上下文 | 黑盒与白盒均最优；HotpotQA+LLaMA3 上 **ASR 高达 97%**，其余数据集 >90%，F1 接近满分；加防御后 ASR 仅从 0.97 降至 **0.90** |
 | **MemoryGraft** | UGA，arXiv:2512.16962 | S1 Agent 经验记忆投毒 / O1 | 腐蚀 Agent 的**经验检索**链路（长期记忆+Ebbinghaus 遗忘曲线），植入伪造"成功经验" | 投毒检索占比 **47.9%**（全局 PRP 逼近 **50%**），攻击成功率**接近 90%**；记忆系统**不校验来源、无对抗过滤**；提出基于**密码学哈希**的防御 |
 | **MINJA** | MSU 等，arXiv:2503.03704 | S1 仅查询交互的记忆注入 / O1 | **仅通过正常查询交互**逐步注入恶意记忆，无需直接写入；分"注入阶段"与"诱导阶段" | 注入成功率 **ISR 98.2%**，平均攻击成功率 **ASR 76.8%**（多数配置 >90%）；对噪声检索鲁棒（ISR 保持 100%，ASR 仅 97.8%→95.6%） |
-| **GraphRAG 投毒**（TKPA/UKPA） | 复旦等，arXiv:2508.04276 | S1 图 RAG 知识投毒 / O1 | **TKPA**：用图论分析（连通性、中心性）定位**脆弱节点**，定向篡改特定 QA；**UKPA**：改变全局影响力节点，跨查询广泛劣化 | TKPA 成功率 **93.1%**，仅修改语料 **<0.05%**（48 词 / <0.06%）；UKPA 使 QA 准确率 **95%→50%** |
+| **GraphRAG 投毒**（TKPA/UKPA） | 复旦等，arXiv:2508.04276v2 | S1 图 RAG 知识投毒 / O1 | TKPA按图中心性选社区、ego-subgraph和源chunk做定向改写；UKPA改写共指链以碎裂全局图 | Table 1的ASR为LP **93.10%**、FC08 **89.50%**、JAPB **91.20%**，三集平均 **91.27%**（摘要93.1%对应LP）。UKPA在Microsoft GraphRAG使QA accuracy **95%→50%**；仅UKPA的LP/RUW样例低于0.05%修改。数据规模、分母和置信区间未闭合，详见逐篇笔记。 |
 | **CorruptRAG**（综述引） | — | S1 / O1 | 进一步缩小攻击面：**仅需 1 篇毒文本、无需触发器** | 高攻击成功率且保持隐蔽性 |
 
 <a id="src-fb1682dc8e7f28a5-h101"></a>
@@ -2092,7 +2092,7 @@ flowchart TB
 <a id="src-fb1682dc8e7f28a5-h112"></a>
 ### 11.1 比较范围与阅读等级
 
-本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-10。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
+本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-11。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
 
 当前核查规模、study/report关联、全作者、正式track/CCF、可用本地PDF及逐篇页码统一查阅[证据地图](<RAG安全证据地图_20261102.md#src-8775d7fbe029251e>)和[逐篇原文笔记索引](<RAG安全证据地图_20261102.md#src-c2aa1714998f8ac9>)。条目ID、版本及页码用于对应原文证据。
 
@@ -2510,6 +2510,9 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 | [Poisoning the Neighborhood](<RAG安全证据地图_20261102.md#src-20261108-poisoning-neighborhood>) | arXiv:2610.21464v1，L3；HNSW Hub–Satellite多文档协同投毒，在2M规模报告RSR约72–74%、最高ASR 31.29%，并测试固定切块。 | 直接占据大规模图检索与多文档投毒生态位；多条独立注入文档不等于一份真实源的未知chunker产物，ASR规则也不等事实真值。 |
 | [MM-PoisonRAG](<RAG安全证据地图_20261102.md#src-20261108-mm-poisonrag>) | ACL 2026主会Long Papers，CCF-A；多模态RAG局部及全局知识投毒。 | 限制“单一注入材料影响范围”的宽主张；多模态载荷不能直接外推到文本同源chunk必要性。 |
 | [LogicPoison](<RAG安全证据地图_20261102.md#src-9ef336ebf4904e2f>) | ACL 2026主会Long Papers，CCF-A；GraphRAG实体变换与关系链攻击。 | 图结构攻击不等于真实长文本未知分块或来源真实性检测。 |
+| [A Few Words Can Distort Graphs](<RAG安全证据地图_20261102.md#src-20261111-a-few-words>) | arXiv:2508.04276v2（2025预印本；未核到正式venue/DOI，CCF不适用）；9页L3。TKPA就地改写长源多个chunk，利用图结构定向操纵；UKPA改写共指并全局碎裂图。 | A方向强直接部分近邻：压缩“首次在GraphRAG长源文本上少量多块改写/造成图级影响”的宽泛主张。正文未证受害者未知chunker、同query实际共同召回源chunk ID或逐块共同必要性；检索单位是社区摘要，不等于普通RAG原始top-k chunks。 |
+| [KEPo: Knowledge Evolution Poison on Graph-based Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-20261111-kepo>) | WWW '26正式论文，会议级CCF-A，DOI `10.1145/3774904.3792547`；12页L3（实际阅读arXiv v1）。GraphRAG Local上Single/Multi ASR为72.2%/73.1%，CASR为63.1%/63.5%；各格样本数和整数分母未报告。 | 直接占据GraphRAG知识投毒：构造带时间演化的伪事实，并跨目标语料建立关系。仍未验证A的单一真实长源、受害者未知chunker、实际同query共同召回的同源chunk ID及逐块共同必要；不能把其ASR与A/B其他研究横向拼接。 |
+| [Graphs Don’t Stay Secret: Practical Subgraph Reconstruction Attacks on Defended Graph RAG](<RAG安全证据地图_20261102.md#src-20261111-grasp>) | GRASP，arXiv:2602.06495v2（2026-06-17）；作者主页截至2026-11-11标记Under Review，未确认正式venue/track/出版DOI，不赋CCF等级；19页L3。闭盒查询、无知识库写权限，恢复目标实体一跳typed edges；50目标/图谱、每目标最多10次查询，最高目标级宏平均RType F1 82.9。 | 相邻GraphRAG机密性/结构抽取威胁，非语料投毒，也不做检索后过滤；补足一般安全范围，但不直接抢占A/B窄题。不得把边抽取F1与投毒ASR、过滤FPR横向比较；若主张覆盖广义GraphRAG安全，应把该威胁单列。 |
 | [Cite Unseen](<../research_data/RAG安全文献调研/原始证据/notes/20261108_CIKM2026_RAG_Security_Candidate_Scan.md>) | CIKM 2026官方摘要L1；更改注入文档来源URL可劫持引用通道，摘要报告最高C-ASR 71%。 | 属于引用通道攻击，不等于目标错误事实答案；需把引用选择与事实操纵作为不同终点。 |
 | [Corpus Poisoning via Approximate Greedy Gradient Descent](<RAG安全证据地图_20261102.md#src-9b395f09c5a170db>) | Findings of ACL 2025，L2；持久语料单passage投毒，并显示不同检索器结果有差异。 | Findings不继承ACL主会CCF-A；需做检索器敏感性分析，单passage不覆盖互补多块必要性。 |
 | [Same Evidence, Different Decisions: Document Segmentation Bias in RAG](<RAG安全证据地图_20261102.md#src-0e57f4bde3a3201b>) | Findings of EMNLP 2026，L2；固定证据内容而改变分段会改变答案选择。 | 是分段敏感性近邻，不是投毒检测；Findings不继承主会CCF-B。 |
@@ -2536,6 +2539,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 | [Knowing When Not to Answer](<RAG安全证据地图_20261102.md#src-20261108-knowing-when-answer>) | ACL 2026主会Long Papers，CCF-A，L2；固定KB上的轻量query级OOD门控。 | OOD拒答不同于检索块过滤；300例端到端测试中检出48/150 OOD并误拒16/150 ID，不能替代正常多跳保留和最终OR校准。 |
 | [When Poison Meets Structure](<RAG安全文献补查元数据_20261102.md#src-fe1fdb661d031149-h4>) | NeurIPS 2026官方poster #152350，摘要L1；图拓扑排序防御GraphRAG投毒。 | 当前无全文和可审计数值；仅列为待核图检索防御候选，不据摘要宣称效果。 |
 | [Learning to Erase Private Knowledge from Multi-Documents for Retrieval-Augmented Large Language Models (Eraser4RAG)](<RAG安全证据地图_20261102.md#src-20261108-eraser4rag>) | CIKM 2026主会，CCF-B；跨文档隐私擦除及良性知识保留；HotpotQA accuracy由0.2690降至0.2585。 | 预设private标签的擦除方法，不处理恶意注入、来源真伪或污染块检测；应作为效用/多文档治理基线，而非安全检测器。 |
+| [Exposing Privacy Risks in Graph Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-20261111-exposing-privacy>) | Findings of ACL 2026，DOI `10.18653/v1/2026.findings-acl.899`；关联母会ACL为CCF-A，但Findings未单列等级且不继承主会等级；21页L3。250 queries/设置下，Qwen-Turbo + GraphRAG报告实体/关系泄漏均值68.6%/72.3%（HealthCare）及73.6%/74.0%（Enron）。 | GraphRAG黑盒结构化信息抽取/机密性近邻，不是投毒检测。作者的Target Information表值727与所审代码在250次查询下的计数上限不一致；其提示、相似度阈值和摘要防御不能替代B的恶意块识别、来源核验与最终query级误删校准。 |
 | [SCAR: Semantic Continuity-Aware Retrieval for Efficient Context Expansion in RAG](<../research_data/RAG安全文献调研/原始证据/notes/20261108_SCAR_2606.16661.md>) | CIKM 2026 Short，CCF-B，L3；按需恢复相邻块连续性，N=160时Recall 0.928/7.84块，固定±1窗口0.967/10.16块。 | 正常桥接证据保留基线，不处理恶意来源、非相邻互补块或未知chunker；收益与额外块数须同时报告。 |
 | LineageGuard、FortMem、PCD-RAG、CaseFlow、Beyond One-Shot Expansion | CIKM 2026官方摘要级候选，分别涉及记忆自引用/血缘、持久Agent记忆投毒、蒸馏污染、GraphRAG伪证据剪枝和多跳证据扩展。 | 全文和分母未核；它们分别属于来源回流、Agent memory、训练/蒸馏、图证据与正常检索效用，不可混写为外部知识库恶意块检测。 |
 | [From Static to Dynamic: Knowledge Metabolism for Large Language Models](<RAG安全证据地图_20261102.md#src-20261108-aaai24-dynamind>) | AAAI 2024 Demonstration Track；上下文可信度估计与外部记忆动态更新。 | 限制“首次按上下文重加权知识可信度”的宽主张，但不检测恶意来源或语料投毒。 |
@@ -2548,5 +2552,5 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 
 - **A方向**：撤回“无害片段组合”“多文档协同”“未知chunker”或“RAG内容过滤”本身的宽泛首创表述。可检验的窄交集是：攻击者控制一份真实长源，经未知受害chunker生成不同同源块；同一正常query实际共同召回这些块；逐块与联合删除实验表明多块共同必要；并在真实生成端点观察结果。现有记忆、日志、提示分解、图检索及普通RAG投毒工作分别覆盖部分机制，不能合并为已完成或未完成的全域新颖性证明。
 - **B方向**：将来源权限/血缘、检索准入、证据支持证书、query级OOD拒答和RAG上下文过滤作为分立基线。比较时区分候选级误隔离、clean-query最终OR删块、accepted-and-wrong、来源真实性和正常多跳效用，并统一访问权限、query划分、污染预算与调用成本。
-- **证据口径**：正式主会、Findings、Industry、poster及预印本身份分列；Findings不继承主会CCF等级，poster未确认track时不直接给单篇CCF-A。L1摘要候选不写成正文结论。引用数尚未统一核查，按“先相关性、后核引用”的顺序保留未观测状态。
+- **证据口径**：正式主会、Findings、Industry、poster及预印本身份分列；Findings不继承主会CCF等级，poster未确认track时不直接给单篇CCF-A。L1摘要候选不写成正文结论。KEPo占据GraphRAG知识演化投毒近邻；GRASP与 *Exposing Privacy Risks* 分别研究结构重建和隐私抽取，均属机密性威胁，不等于投毒或检索后净化，指标与A/B终点分列。引用数尚未统一核查，按“先相关性、后核引用”的顺序保留未观测状态。
 - 目录覆盖计数、未读范围、正式元数据和制品状态集中见[元数据汇总](<RAG安全文献补查元数据_20261102.md>)；逐篇原文记录与发现渠道边界见[证据地图](<RAG安全证据地图_20261102.md>)。
