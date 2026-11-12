@@ -2092,7 +2092,7 @@ flowchart TB
 <a id="src-fb1682dc8e7f28a5-h112"></a>
 ### 11.1 比较范围与阅读等级
 
-本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-11。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
+本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-12。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
 
 当前核查规模、study/report关联、全作者、正式track/CCF、可用本地PDF及逐篇页码统一查阅[证据地图](<RAG安全证据地图_20261102.md#src-8775d7fbe029251e>)和[逐篇原文笔记索引](<RAG安全证据地图_20261102.md#src-c2aa1714998f8ac9>)。条目ID、版本及页码用于对应原文证据。
 
@@ -2176,6 +2176,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 | 工作 | 关系与身份 | 机制、结果及对开题的具体约束 |
 |---|---|---|
 |[Practical Poisoning Attacks against Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-193a265b7ff610a3>)|ACM SACMAT 2026主研究论文，CCF C；arXiv v2完整13页L3。|CorruptRAG把每个已知目标查询的预算限制为一篇毒文本；AS/AK在三套语料×四种生成器的100个闭式目标问题上ASR为0.84–0.98/0.85–0.97（10次均值、GPT-4o-mini判定）。指令前缀下仍为0.89–0.98，LLM显式指令检测TPR≤0.10，正确知识扩展（每问加入5篇正确文本、top-10）下仍为0.72–0.81。作者明示未评估开放式与非定向攻击；无不确定区间，不能外推真实语料或生产防御。对A不是未知chunker下的多块必要性先例；对B是必须评估的单文档攻击基线，不以攻击ASR替代检测能力。文内另引Traceback（WWW 2025）和Who Taught the Lie?（IEEE S&P 2026），两者已分别登记，不重复建项。|
+|[Who Taught the Lie? Responsibility Attribution for Poisoned Knowledge in Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-8d9b4209ca44d790>)|IEEE S&P 2026主研究论文，CCF-A；DOI `10.1109/sp63933.2026.00053`，pp.4203–4222；arXiv v2第1–20页L3。|RAGOrigin是已知误答后的黑盒责任归因，结合检索相似度、语义相关性和单文本生成影响，再聚类定位毒文本；默认每攻击/数据集收集100个成功攻击实例，因此归因指标条件化于已发生误答，不是普通clean query检测率。多跳攻击明确展示两份独立毒文本各自不足、共同出现才触发误答，直接占据“多文档共同致错”先例；但不等于单一真实长源经受害者未知chunker切分的同源块，也未验证真实索引中的同query共召回/逐块必要性。对B是强事后归因近邻而非预防检测等价物。Appendix B的meta-review提示诚实反馈假设、false-flag误删良性文档和低并行算力下的延迟风险；正式proceedings与arXiv v2差异、代码运行及样本复用关系待核。|
 |[Enhance Sketch Recognition’s Explainability via Semantic Component-Level Parsing](<RAG安全证据地图_20261102.md#src-4ea2ad90e1551c22>)|Enhance Sketch Recognition’s Explainability via Semantic Component-Level Parsing；L3|SketchESC是A的局部单元组合解释概念近邻，B仅可解释表征背景；监督条件、输入权限、ViT预训练、Q仍受SCM监督及SPG/SketchIME负例保留。部件可视化不证明因果忠实性或逐实际块共同必要。三处印刷公式待实现澄清；arXiv v1与正式稿等同性、独立补充未知；p8参考项只发现，无实现/复现。|
 |[SketchXAI: A First Look at Explainability for Human Sketches](<RAG安全证据地图_20261102.md#src-a7c499b5fd568191>)|SketchXAI: A First Look at Explainability for Human Sketches；L3|父464已审草图解释投影；具体配置、访问条件、原值、冲突与必要性边界保持，未新增阅读或复现。|
 |[Prediction With Visual Evidence: Sketch Classification Explanation via Stroke-Level Attributions](<RAG安全证据地图_20261102.md#src-4716661fc086dc30>)|Prediction With Visual Evidence: Sketch Classification Explanation via Stroke-Level Attributions；L3|父468已审草图解释投影；具体配置、访问条件、原值、冲突与必要性边界保持，未新增阅读或复现。|
