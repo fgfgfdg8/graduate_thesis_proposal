@@ -2529,7 +2529,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 
 ### 11.9 防御、来源治理与正常效用近邻
 
-[LDAR](<RAG安全证据地图_20261102.md#src-fdf880a16bd82b0d>)、[FrugalRAG](<RAG安全证据地图_20261102.md#src-1fd93fc464feb121>)与[Layer-Wise OOD](<RAG安全证据地图_20261102.md#src-6088a1e9a703a8cb>)补充证据选择、早停、多层异常分数及参考分布方面的比较基线；这些机制均不能替代恶意块检测和独立clean-query最终OR误删风险评估。
+[LDAR](<RAG安全证据地图_20261102.md#src-fdf880a16bd82b0d>)、[FrugalRAG](<RAG安全证据地图_20261102.md#src-1fd93fc464feb121>)与[Layer-Wise OOD](<RAG安全证据地图_20261102.md#src-6088a1e9a703a8cb>)补充证据选择、早停、多层异常分数及参考分布方面的比较基线；[DUAL-Know](<RAG安全证据地图_20261102.md#src-14ed2eb127a4a4e0>)与[ExplainHM++](<RAG安全证据地图_20261102.md#src-feffdf37f3db2a5c>)进一步约束路径不确定性/答案仲裁及检索样例支持竞争解释的宽泛新颖性主张。这些机制均不能替代恶意块检测和独立clean-query最终OR误删风险评估。
 
 | 工作 | 已确认的机制与证据 | 对B的边界 |
 |---|---|---|
@@ -2563,6 +2563,8 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 | [From Static to Dynamic: Knowledge Metabolism for Large Language Models](<RAG安全证据地图_20261102.md#src-20261108-aaai24-dynamind>) | AAAI 2024 Demonstration Track；上下文可信度估计与外部记忆动态更新。 | 限制“首次按上下文重加权知识可信度”的宽主张，但不检测恶意来源或语料投毒。 |
 | [ESG Accountability Made Easy: DocQA at Your Service](<RAG安全证据地图_20261102.md#src-20261108-aaai24-docqa>) | AAAI 2024 Demonstration Track；文档RAG答案端做不当内容与grounding检查。 | 输出安全/质量近邻，不检测恶意检索文档、间接提示注入或来源真实性。 |
 | [Amber](<RAG安全证据地图_20261102.md#src-20261108-acl-findings-amber>)、[EXIT](<RAG安全证据地图_20261102.md#src-bd4e53c66d15ad2e-l2-addendum>)、[Reinforcing Compositional Retrieval](<RAG安全证据地图_20261102.md#src-31c514b3e7becdfc-l3-addendum>) | ACL Findings 2025方法近邻：迭代记忆更新/多粒度过滤、上下文依赖感知压缩、组合检索依赖建模。 | 目标主要是相关性和QA效用，不认证来源真实性或恶意性；Findings不继承ACL主会CCF-A。 |
+| [DUAL-Know: A Description-Augmented and Uncertainty-Aware GraphRAG Framework for Anesthesiology Question Answering](<RAG安全证据地图_20261102.md#src-14ed2eb127a4a4e0>) | TKDE 2026，38(8):5015–5031，CCF-A；IEEE Xplore HTML正文L3；本地PDF未取得、补充材料未核。以路径不确定性排序并融合模型置信度、检索一致性和语义连贯度，仲裁直接答案与GraphRAG答案；另有随机实体/关系替换及删除实验。 | B的直接方法近邻，需纳入路径质量与答案级仲裁对照；其噪声实验不是攻击者驱动投毒，且没有检索块级安全检测或clean-query最终OR误删校准。 |
+| [ExplainHM++: Explainable Harmful Meme Detection With Retrieval-Augmented Debate Between Large Multimodal Models](<RAG安全证据地图_20261102.md#src-feffdf37f3db2a5c>) | TKDE 2026，38(2):1040–1053，CCF-A；online publication 2025-11-26；IEEE Xplore HTML正文L3，本地PDF未取得、补充材料未核。分别检索有害/无害训练meme样例支持竞争解释和多阶段辩论。 | 跨任务方法近邻，限制“首次用检索样例支持冲突解释”的宽泛主张；不是事实型RAG，也不检测投毒、来源恶意性或正常query最终误删。 |
 
 <a id="src-fb1682dc8e7f28a5-h121"></a>
 
