@@ -2172,7 +2172,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 <a id="src-fb1682dc8e7f28a5-h118"></a>
 ### 11.7 高相关工作及其对开题的具体约束
 
-下表汇总高相关工作。逐篇链接给出报告版本、本地PDF与实际页码；L2为指定范围的局部全文，L3为正文全文。
+下表汇总高相关工作。论文链接指向各自的证据地图记录；记录中列明正式版本、可用本地PDF及实际页码，并明确未读范围。L1为书目或摘要筛查，L2为指定范围的局部全文，L3为正文全文。
 
 | 工作 | 关系与身份 | 机制、结果及对开题的具体约束 |
 |---|---|---|
@@ -2496,6 +2496,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 |[Conformalized Large Language Models under Configuration Shift](<RAG安全证据地图_20261102.md#src-9fd7940a0d34aae3>)|B配置边界；EMNLP2026主会B；L2|p3/5–7校准和部署配置改变会破坏score交换性；独立clean-query并不足够，Top-K/分块/编码器/评分配置需固定或另行处理。|
 |[Provably Secure Decisions Based on Potentially Malicious Information](<RAG安全证据地图_20261102.md#src-c352505b6c4c9846>)|TDSC 2024，21(5):4388–4403，CCF-A；SMU机构库接受稿正文L3。|形式化恶意来源与诚实概率分布，展示独立性/相关性及串谋假设如何改变决策鲁棒性；这支持B显式处理来源依赖，但并非RAG块检测或事实核验方法。唯一真值、共享证据、诚实来源如实报告等条件不可直接移植。本文引用同作者CSF 2020前序（CCF-B），两文全文差异待核，不计作独立实证复现。|
 |[Empowering Large Language Models to Set Up Knowledge Retrieval Indexing via Self-Learning](<RAG安全证据地图_20261102.md#src-51f7b23b4a060638>)|TKDE 2026，38(3):1710–1724，CCF-A；arXiv v1（18页）L3；正式版仅元数据与摘要级核验。|PG-RAG以FCI改写一致性门限（BERTScore≥0.85、ROUGE-L≥0.75）、mind-map/pseudo-graph及key-point路径聚合提供正常多文档检索的结构化证据近邻，限制“首次组织关系证据/跨文档路径”的宽泛说法；这些阈值不验证事实真伪或来源真实性。v1仅评CRUD-RAG的1/2/3-document QA，无恶意源/投毒威胁模型、攻击检测、实际块共同必要性或query级误删校准，不直接抢占A攻击/B安全检测。IEEE正式摘要报告fact-based QA、hallucination correction及两项multi-document QA，F1QE提升依次15.85%、8.12%、3.34%、5.73%（摘要级作者报告；正式版正文与评测设置未核）；不得与v1数字混用。|
+|[Poisoning Attacks and Defenses to Learned Bloom Filters for Malicious URL Detection](<RAG安全证据地图_20261102.md#src-20261114-tdsc25no4-bloom>)|IEEE TDSC 2025, 22(4):3275–3288，CCF-A；DOI [10.1109/TDSC.2025.3528993](https://doi.org/10.1109/TDSC.2025.3528993)；官方目录/摘要L1，全文与本地PDF未取得。|学习型Bloom filter遭数据投毒后可对URL成员查询作出错误识别，作者提出DLBF降低投毒影响。这是学习型检索结构投毒的跨域近邻，但对象是恶意URL检测的近似成员查询结构，不是RAG文本语料、向量索引或LLM输出；限制“首次研究学习式检索结构投毒”的宽泛表述，不构成RAG直接撞题。IEEE将条目标为非开放获取，PDF入口返回HTML页面壳，故不扩写摘要之外的机制或结果；引用数未核。|
 
 全作者、正式venue/track、CCF、DOI/arXiv、版本及阅读级别见[元数据汇总](<RAG安全文献补查元数据_20261102.md>)；逐篇证据、原文页码、PDF与未读边界见[证据地图](<RAG安全证据地图_20261102.md>)。全文PDF集中存放于[科研数据库RAG安全文献](<../../../../科研数据库/20_Research/Papers/RAG安全文献>)。
 
