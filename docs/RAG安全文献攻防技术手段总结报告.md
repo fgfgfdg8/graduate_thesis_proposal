@@ -2092,7 +2092,7 @@ flowchart TB
 <a id="src-fb1682dc8e7f28a5-h112"></a>
 ### 11.1 比较范围与阅读等级
 
-本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-12。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
+本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-13。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
 
 当前核查规模、study/report关联、全作者、正式track/CCF、可用本地PDF及逐篇页码统一查阅[证据地图](<RAG安全证据地图_20261102.md#src-8775d7fbe029251e>)和[逐篇原文笔记索引](<RAG安全证据地图_20261102.md#src-c2aa1714998f8ac9>)。条目ID、版本及页码用于对应原文证据。
 
@@ -2493,6 +2493,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 |[Alert-ME: An Explainability-Driven Defense Against Adversarial Examples in Transformer-Based Text Classification](<RAG安全证据地图_20261102.md#src-164227a21acf588f>)|B分类组合；TDSC2026 A，作者v3 L2；L2|Alert-ME p4–9/15–17有解释分布统计、词频与RF等树模型及检测后处置。依赖目标分类器梯度，最终实测选LightGBM；不是B外部ModernBERT接口，也非跨块事实核验。|
 |[Per-Step Conformal Calibration Does Not Transfer to Agent Trajectories](<RAG安全证据地图_20261102.md#src-a66728c12f001a64>)|B事件边界；EMNLP2026主会B；L2|p3–5逐step校准不能直接控制轨迹任一步误报；对B应以query任一块事件校准，仍不自动覆盖额外关系OR。原文漂移/有限样本松弛条件保留。|
 |[Conformalized Large Language Models under Configuration Shift](<RAG安全证据地图_20261102.md#src-9fd7940a0d34aae3>)|B配置边界；EMNLP2026主会B；L2|p3/5–7校准和部署配置改变会破坏score交换性；独立clean-query并不足够，Top-K/分块/编码器/评分配置需固定或另行处理。|
+|[Provably Secure Decisions Based on Potentially Malicious Information](<RAG安全证据地图_20261102.md#src-c352505b6c4c9846>)|TDSC 2024，21(5):4388–4403，CCF-A；SMU机构库接受稿正文L3。|形式化恶意来源与诚实概率分布，展示独立性/相关性及串谋假设如何改变决策鲁棒性；这支持B显式处理来源依赖，但并非RAG块检测或事实核验方法。唯一真值、共享证据、诚实来源如实报告等条件不可直接移植。本文引用同作者CSF 2020前序（CCF-B），两文全文差异待核，不计作独立实证复现。|
 
 全作者、正式venue/track、CCF、DOI/arXiv、版本及阅读级别见[元数据汇总](<RAG安全文献补查元数据_20261102.md>)；逐篇证据、原文页码、PDF与未读边界见[证据地图](<RAG安全证据地图_20261102.md>)。全文PDF集中存放于[科研数据库RAG安全文献](<../../../../科研数据库/20_Research/Papers/RAG安全文献>)。
 
@@ -2589,6 +2590,6 @@ TOIS 44(1)冻结目录的29项摘要已逐条筛查；ACM当前页403，故这�
 ### 11.10 对开题定位的综合结论
 
 - **A方向**：撤回“无害片段组合”“多文档协同”“未知chunker”或“RAG内容过滤”本身的宽泛首创表述。EMNLP 2023的 *Poisoning Retrieval Corpora* 与COLM 2025录用的dense-retrieval后门已占据持久检索语料投毒及触发式检索后门生态位；Typos、BadRAG、Phantom分别占据查询配对低层扰动、语义触发组投毒和单passage自然触发后门近邻。它们仍未覆盖：攻击者控制一份真实长源，经未知受害chunker生成不同同源块；同一正常query实际共同召回这些块；逐块与联合删除实验表明多块共同必要；并在真实生成端点观察结果。现有记忆、日志、提示分解、多模态单样本攻击、图检索及普通RAG投毒工作分别覆盖部分机制，不能合并为已完成或未完成的全域新颖性证明。
-- **B方向**：将来源权限/血缘、检索准入、证据支持证书、query级OOD拒答和RAG上下文过滤作为分立基线；Evidence Laundering已直接研究相关来源被误计作独立佐证并在回答合成前做来源门控，故不能宣称首次处理来源依赖，但其静态骨架门控在自适应改写下召回率低，也未识别恶意RAG块或控制clean-query最终OR误删。把MMAgent-R²的多模态候选Reject/扩召回作为检索效用参照，把 *Can LLMs Take Retrieved Information with a Grain of Salt?* 作为外部置信信号校准/遵从参照，二者都不列为安全检测器；SAGE则是语料替换式隐私保护近邻，不检测投毒或恶意块。比较时区分候选级误隔离、clean-query最终OR删块、accepted-and-wrong、来源真实性和正常多跳效用，并统一访问权限、query划分、污染预算与调用成本。
+- **B方向**：将来源权限/血缘、检索准入、证据支持证书、query级OOD拒答和RAG上下文过滤作为分立基线；Evidence Laundering已直接研究相关来源被误计作独立佐证并在回答合成前做来源门控，故不能宣称首次处理来源依赖，但其静态骨架门控在自适应改写下召回率低，也未识别恶意RAG块或控制clean-query最终OR误删。TDSC 2024的 *Provably Secure Decisions* 从形式化决策角度进一步表明，来源独立性与串谋假设会改变鲁棒性结论；它没有RAG检索、文本chunk或LLM事实核验，且其唯一真值/共享证据等条件不能直接移植。该文引用的CSF 2020前序仍待全文对照。把MMAgent-R²的多模态候选Reject/扩召回作为检索效用参照，把 *Can LLMs Take Retrieved Information with a Grain of Salt?* 作为外部置信信号校准/遵从参照，二者都不列为安全检测器；SAGE则是语料替换式隐私保护近邻，不检测投毒或恶意块。比较时区分候选级误隔离、clean-query最终OR删块、accepted-and-wrong、来源真实性和正常多跳效用，并统一访问权限、query划分、污染预算与调用成本。
 - **证据口径**：正式主会、Findings、Industry、poster及预印本身份分列；Findings不继承主会CCF等级，poster未确认track时不直接给单篇CCF-A。L1摘要候选不写成正文结论。期刊目录状态以[元数据覆盖表](<RAG安全文献补查元数据_20261102.md#src-9a2882e5bdd17429>)为准：截至2026-11-13，TKDE 36期、1,759条的目录枚举已闭合，但较早1,710条集合仅160篇摘要经人工阅读，且新列出的38(12)只做题名/摘要筛查；TOIS 42、43卷仍缺齐12期官方DOM核验，44(8)未来登记日期尚不能视为最终封卷；TDSC 23(6)已列94项但未并入本地DOI对账，TIFS 2026官方CSV仍停留在11月2日快照。TOIS 44(1)冻结目录的29篇摘要已逐条筛查，但ACM当前页无法刷新；摘要提及RAG的Document Intelligence综述仍未取得全文。KEPo占据GraphRAG知识演化投毒近邻；GRASP、*Exposing Privacy Risks*、*The Good and The Bad*、*Beyond Text*、五篇成员推断研究与CopyBreakRAG属于不同形式的机密性/隐私抽取近邻；2026 RAGLeak是生成器供应链隐私后门，CanaryRAG则是运行时反外泄防护。这些工作均不等于知识库投毒或恶意块检测，攻击对象、权限、指标与A/B终点分列。ThreadRAG与LiteSemRAG为L3正常图检索/语义异常近邻，不应写作恶意检测或安全防御；NoLLMRAG是LiteSemRAG引用的免LLM图RAG方法谱系近邻，但投稿被拒、原文未读且不属于安全防御或CCF-A接收成果。引用数尚未统一核查，按“先相关性、后核引用”的顺序保留未观测状态。
 - 目录覆盖计数、未读范围、正式元数据和制品状态集中见[元数据汇总](<RAG安全文献补查元数据_20261102.md>)；逐篇原文记录与发现渠道边界见[证据地图](<RAG安全证据地图_20261102.md>)。
