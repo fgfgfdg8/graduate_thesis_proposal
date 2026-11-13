@@ -1,6 +1,6 @@
 # RAG安全攻防文献技术手段总结报告
 
-整理日期：2026年11月12日。本报告集中讨论攻防技术、评测设计与开题定位；逐篇证据与元数据分别进入另外两份主文档。
+整理日期：2026年11月13日。本报告集中讨论攻防技术、评测设计与开题定位；逐篇证据与元数据分别进入另外两份主文档。
 
 [证据地图与全部论文笔记](RAG安全证据地图_20261102.md)｜[元数据、开源制品及目录缺口](RAG安全文献补查元数据_20261102.md)
 
@@ -2530,6 +2530,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 | [Phantom: General Backdoor Attacks on Retrieval Augmented Language Generation](<RAG安全证据地图_20261102.md#src-f48985ddc6a303f4>) | arXiv `2405.20485v3`（2025-10-01更新），正文L3；TOIS综述[265]仍使用旧题名“General Trigger Attacks”。恶意passage短于retriever passage长度以确保整段一次检索。 | 单passage自然触发后门不等于未知分块的多块共同必要攻击；构造阶段检索器/生成器访问与黑盒迁移分别报告。PDF页眉列出的TAISAP/DOI尚未核实，故不赋CCF等级。 |
 | [Same Evidence, Different Decisions: Document Segmentation Bias in RAG](<RAG安全证据地图_20261102.md#src-0e57f4bde3a3201b>) | Findings of EMNLP 2026，L2；固定证据内容而改变分段会改变答案选择。 | 是分段敏感性近邻，不是投毒检测；Findings不继承主会CCF-B。 |
 | [Backdoor Attacks on Dense Retrieval via Public and Unintentional Triggers](<RAG安全证据地图_20261102.md#src-20261113-backdoor-dense-retrieval>) | COLM 2025录用论文，arXiv:2402.13532v3全文L3；第七版CCF目录未列COLM。攻击要求训练数据可投毒并在部署时注入语料，以自然语法错误触发dense retriever召回恶意段落。 | 已占据语法错误触发的稠密检索后门生态位；未测未知chunker同源块共同必要性，也没有RAG生成端端到端错误或clean-query最终OR误删校准。 |
+| [Retrievals Can Be Detrimental: Unveiling the Backdoor Vulnerability of Retrieval-Augmented Diffusion Models](<RAG安全证据地图_20261102.md#src-20261113-badrdm-acl26>) | ACL 2026 Main Long Papers，CCF-A；19页正式PDF L3；arXiv:2501.13340v4为同一研究。BadRDM类别条件/T2I ASR为0.9089/0.9643，单次实验。 | 直接占据RDM检索器后门/图像知识库投毒的多模态邻近位，限制RAG后门宽泛首创；不测试文本LLM、长源未知分块、同源多块共同必要或clean-query误删。目标数和投毒率正文/附录口径冲突、页码与版本证据见[逐篇记录](<RAG安全证据地图_20261102.md#src-20261113-badrdm-acl26>)。 |
 | DECEIVE-AFC、The Web Doesn’t Sit Still、Cross-User Poisoning、Asynchronous Agentic Poisoning | 分别涉及query操纵、运行时搜索结果注入、共享用户上下文越界和Agent自演化记忆后门；身份及阅读级别见证据地图。 | 这些工作扩展威胁模型，但攻击入口不是外部RAG长源chunk投毒；应与持久语料威胁分开报告。 |
 | [The RAG Paradox](<RAG安全证据地图_20261102.md#src-d4a42f7ad164d744>) | Findings of EMNLP 2025，L2；黑盒RAG攻击近邻。 | source visibility与材料条件不等于持久知识库中真实单源的未知分块攻击。 |
 | [Train-free Data Poisoning Attack against Retrieval-augmented Diffusion Models](<RAG安全证据地图_20261102.md#src-20261110-poisonedrdm>) | NeurIPS 2026官方poster #153591；L1摘要，track未核；poster排期2026-12-08。 | 外部图像知识库投毒、未知图像retriever与目标概念劫持是多模态安全边界参照；不等文本LLM-RAG投毒或同源文本块共同必要性，未赋论文级CCF。 |
