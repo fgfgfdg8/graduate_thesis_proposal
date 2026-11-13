@@ -2092,7 +2092,7 @@ flowchart TB
 <a id="src-fb1682dc8e7f28a5-h112"></a>
 ### 11.1 比较范围与阅读等级
 
-本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-13。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
+本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-14。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
 
 本章各表直接概括研究机制、关键结果及其对开题A/B的影响；需要逐篇核对作者、正式身份、CCF、版本、PDF页码或未读范围时，分别查阅[证据地图](<RAG安全证据地图_20261102.md#src-8775d7fbe029251e>)、[逐篇论文笔记索引](<RAG安全证据地图_20261102.md#src-c2aa1714998f8ac9>)和[文献补查元数据](RAG安全文献补查元数据_20261102.md)。
 
@@ -2500,6 +2500,12 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 |[Adversarial Item Promotion on Visually-Aware Recommender Systems by Guided Diffusion](<RAG安全证据地图_20261102.md#src-20261114-tois-3666088>)|ACM TOIS 42(6)，2024，CCF-A；DOI [10.1145/3666088](https://doi.org/10.1145/3666088)；arXiv v4作者稿25页L3；[论文库PDF](<../../../../科研数据库/20_Research/Papers/RAG安全文献/Adversarial Item Promotion on Visually-Aware Recommender Systems by Guided Diffusion.pdf>)。|IPDGI以扩散生成高保真目标商品图像，在Amazon Beauty/VBPR中ER@5较无攻击提高56.84%、较AIP提高63.74%。这是面向排名提升的隐蔽投毒方法参照，但操纵视觉商品图像，不涉及知识库摄入、文本切块或RAG防御。|
 |[Invisible Black-Box Backdoor Attack against Deep Cross-Modal Hashing Retrieval](<RAG安全证据地图_20261102.md#src-20261114-tois-3650205>)|ACM TOIS 42(4)，2024，CCF-A；DOI [10.1145/3650205](https://doi.org/10.1145/3650205)；Crossref摘要L1，未找到可读全文或PDF。|摘要涉及跨模态触发器、样本感知注入及缓解哈希量化影响的扰动/mask，是三篇中最接近“检索模型后门”的近邻；其目标仍是跨模态哈希检索训练数据，不是RAG文本证据、chunker或生成上下文，不能据摘要判定机制等价。|
 |[Poisoning Attacks and Defenses to Learned Bloom Filters for Malicious URL Detection](<RAG安全证据地图_20261102.md#src-20261114-tdsc25no4-bloom>)|IEEE TDSC 2025, 22(4):3275–3288，CCF-A；DOI [10.1109/TDSC.2025.3528993](https://doi.org/10.1109/TDSC.2025.3528993)；官方目录/摘要L1，全文与本地PDF未取得。|学习型Bloom filter遭数据投毒后可对URL成员查询作出错误识别，作者提出DLBF降低投毒影响。这是学习型检索结构投毒的跨域近邻，但对象是恶意URL检测的近似成员查询结构，不是RAG文本语料、向量索引或LLM输出；限制“首次研究学习式检索结构投毒”的宽泛表述，不构成RAG直接撞题。IEEE将条目标为非开放获取，PDF入口返回HTML页面壳，故不扩写摘要之外的机制或结果；引用数未核。|
+|[InferDPT: Privacy-Preserving Inference for Closed-Box Large Language Models](<RAG安全证据地图_20261102.md#src-20261114-tdsc25no5-inferdpt>)|IEEE TDSC 2025, 22(5):4625–4640，CCF-A；DOI [10.1109/TDSC.2025.3550389](https://doi.org/10.1109/TDSC.2025.3550389)；官方摘要L1。|对闭源LLM输入prompt作差分隐私扰动并从输出恢复文本，涉及LLM输入上下文隐私，但不研究RAG检索、投毒或恶意来源识别；属于跨域组件近邻，不是RAG直接撞题。|
+|[Federated Learning With Security Authentication and Traceability of Poisoning by Embedded Message Authentication Code](<RAG安全证据地图_20261102.md#src-20261114-tdsc25no5-flmac>)|IEEE TDSC 2025, 22(5):4927–4941，CCF-A；DOI [10.1109/TDSC.2025.3557199](https://doi.org/10.1109/TDSC.2025.3557199)；官方摘要L1。|以嵌入式消息认证码追踪联邦学习投毒者，可供投毒归因思路参考；攻击和防护对象是模型/更新，不是RAG文档或检索块。|
+|[Community-Oriented Duplex Privacy Amplification and Active Poisoning Resistance for Heterogeneous Federated Learning](<RAG安全证据地图_20261102.md#src-20261114-tdsc25no5-duplex>)|IEEE TDSC 2025, 22(5):5015–5032，CCF-A；DOI [10.1109/TDSC.2025.3559108](https://doi.org/10.1109/TDSC.2025.3559108)；官方摘要L1。|以隐私放大与可信度评估抵御异构联邦训练投毒，属于模型训练/聚合防护；不可外推为检索语料过滤。|
+|[Periodic Recovery From Poisoning Attacks in Machine Learning](<RAG安全证据地图_20261102.md#src-20261114-tdsc25no5-periodic-recovery>)|IEEE TDSC 2025, 22(5):5033–5046，CCF-A；DOI [10.1109/TDSC.2025.3560239](https://doi.org/10.1109/TDSC.2025.3560239)；官方摘要L1。|利用训练时保存的信息周期性恢复受投毒训练样本影响的模型，可作恢复/删除生命周期类比；不等于清理RAG文档或索引。|
+|[Trojan Attack on Machine Unlearning: Security Risk of the Right to be Forgotten](<RAG安全证据地图_20261102.md#src-20261114-tdsc25no5-unlearning>)|IEEE TDSC 2025, 22(5):5480–5493，CCF-A；DOI [10.1109/TDSC.2025.3567848](https://doi.org/10.1109/TDSC.2025.3567848)；官方摘要L1。|恶意遗忘请求可诱导遗忘后模型参数偏移，可参考恶意删除/更新威胁；攻击终点是机器遗忘后的模型而非RAG语料状态。|
+|[Graph-Relational Federated Learning: Enhanced Personalization and Robustness](<RAG安全证据地图_20261102.md#src-20261114-tdsc25no5-graph-relational>)|IEEE TDSC 2025, 22(5):5773–5785，CCF-A；DOI [10.1109/TDSC.2025.3574329](https://doi.org/10.1109/TDSC.2025.3574329)；官方摘要L1。|利用客户端关系图提升联邦模型对投毒和后门的鲁棒性；关系图描述联邦客户端而非GraphRAG索引或检索证据。|
 
 全作者、正式venue/track、CCF、DOI/arXiv、版本及阅读级别见[元数据汇总](<RAG安全文献补查元数据_20261102.md>)；逐篇证据、原文页码、PDF与未读边界见[证据地图](<RAG安全证据地图_20261102.md>)。全文PDF集中存放于[科研数据库RAG安全文献](<../../../../科研数据库/20_Research/Papers/RAG安全文献>)。
 
