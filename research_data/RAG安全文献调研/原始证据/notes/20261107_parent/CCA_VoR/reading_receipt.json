@@ -1,0 +1,126 @@
+{
+  "state": "PARENT_OFFICIAL_VOR_BODY_AND_BOUNDED_VERSION_COMPARISON_NOT_CENTRAL",
+  "at_utc": "2026-11-06T18:16:13.989210+00:00",
+  "article_id": "28729",
+  "DOI": "10.1609/aaai.v38i8.28729",
+  "actual_version": "AAAI2024_publisher_VoR_existing_exact_SHA",
+  "actual_pdf": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\papers\\28729_CCA_existing_official_VOR.pdf",
+    "bytes": 314904,
+    "sha256": "efd187ce6634a55ddb16856be21612ce4080b30376e66a04a90600241a91aa6b"
+  },
+  "body_read_pages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "references_browsed_pages": [
+    8
+  ],
+  "visually_checked_pages": [
+    1,
+    4,
+    5,
+    6
+  ],
+  "body_complete_for_this_obtained_version": true,
+  "mechanical_comparison": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_CCA_official_parent_comparison_20261107_sources\\token_differences.json",
+    "bytes": 16792,
+    "sha256": "1529235ef0220e796752ebb6df011626ed7fc290fb3e75cee49cfb7902e1327f"
+  },
+  "semantic_equivalence_certified": false,
+  "implemented_equivalence": null,
+  "formal_reading_not_transferred_from_author_v2": true,
+  "prior_author_note": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_CCA_parent_body_20261107_sources\\PARENT_BODY.md",
+    "bytes": 5291,
+    "sha256": "fd231d8408559a7ebf9a2818e68e678e1f74fb253083dfc70679fa17ea1c4404"
+  },
+  "prior_author_receipt": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_CCA_parent_body_20261107_sources\\reading_receipt.json",
+    "bytes": 4951,
+    "sha256": "34477d1c631f0d248cf5e98156252cb8b1eb296a8415432aaeaa8f861eeb529a"
+  },
+  "note": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_CCA_official_parent_comparison_20261107_sources\\PARENT_OFFICIAL_BODY.md",
+    "bytes": 4164,
+    "sha256": "986b86cdf23e9d564e56f9e4a4780e74ba13bc251e3a87a6896d0f8236ee3205"
+  },
+  "existing_study_id": "work-c4d88f48585b",
+  "existing_formal_report_id": "work-c4d88f48585b--efd187ce6634",
+  "new_independent_studies": 0,
+  "new_PDF_bytes": 0,
+  "implementation_reading_credit": 0,
+  "execution_credit": 0,
+  "replication_credit": 0,
+  "central_registration_credit": 0,
+  "body_texts": [
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page001.txt",
+      "bytes": 7187,
+      "sha256": "44b75b5dbabe028e77ab0339f5d9e6adbd25139b72bf162fc45e3670868ae1c9"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page002.txt",
+      "bytes": 8266,
+      "sha256": "6f68ba4618046218a9ac6f0a8183a0dbb19120adbaf26659b9c900ed3177576c"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page003.txt",
+      "bytes": 7928,
+      "sha256": "406a9d9ec8f1453c09082822f37a3f1da6a6f2fb42a29f925d6ab94581dacf2a"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page004.txt",
+      "bytes": 8443,
+      "sha256": "1c9699b10a16a3e74df08002d4416e4fefd23ff0fb814397be589b106089d49a"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page005.txt",
+      "bytes": 8215,
+      "sha256": "e52abea1637de2ddbfe72fd0aec9af4087dfbb8282f85a0414fe08f14ff1516b"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page006.txt",
+      "bytes": 6955,
+      "sha256": "c898bf6384943a39792101d317799abd91acb7f4abb633bff01858ed10f37e2c"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page007.txt",
+      "bytes": 7498,
+      "sha256": "8b25222124cbc2e971071b7da6e7ddd03a6f368a4f7d3cdbccf74cda1096aedf"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page008.txt",
+      "bytes": 6888,
+      "sha256": "4ff0319a412503cc03557d430164bcf3235a021a0ad22d8b13c79365222a566d"
+    }
+  ],
+  "images": [
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page001.png",
+      "bytes": 415986,
+      "sha256": "ac6adadd34679db59da319e358ba912f1baf83e0b04448b77f5dfaf3ce922123"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page004.png",
+      "bytes": 461871,
+      "sha256": "b8914f114a8ab32f06218f01dfd0026e6e7f7a4f4a343d46cf81b0c4aba59d44"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page005.png",
+      "bytes": 464287,
+      "sha256": "dcd8879d5afb3a985a2cfc8a4949598c1cd88d2e44edcadd42023fdfcc201c5a"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_PIAT_CCA_nFBST_20261107_sources\\mechanical\\28729_CCA_existing_official_VOR\\page006.png",
+      "bytes": 392978,
+      "sha256": "9f382049c972134b95832bde44e9235a0408418e53797b60bb7720e134d915bd"
+    }
+  ]
+}

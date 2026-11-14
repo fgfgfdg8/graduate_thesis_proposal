@@ -1,0 +1,226 @@
+{
+  "state": "PARENT_AUTHOR_BODY_AND_EMBEDDED_APPENDICES_READ_NOT_CENTRAL",
+  "at_utc": "2026-11-06T19:05:47.066587+00:00",
+  "article_id": "28803",
+  "DOI": "10.1609/aaai.v38i9.28803",
+  "formal_title": "Content Filtering with Inattentive Information Consumers",
+  "authors": [
+    "Ian Ball",
+    "James Bono",
+    "Justin Grana",
+    "Nicole Immorlica",
+    "Brendan Lucier",
+    "Aleksandrs Slivkins"
+  ],
+  "venue": "AAAI",
+  "year": 2024,
+  "CCF_rank": "A",
+  "CCF_rank_basis": "user supplied CCF catalog",
+  "formal_volume": "38",
+  "formal_issue": "9",
+  "formal_pages": "9485-9493",
+  "author_version": "arXiv:2205.14060v4",
+  "first_public_any_version_date": "2022-05-27",
+  "author_version_repository_date": "2023-12-20",
+  "author_internal_footnote_date_conflict": "December 2024",
+  "author_pdf": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\pdf\\Content Filtering with Inattentive Information Consumers.pdf",
+    "bytes": 239648,
+    "sha256": "30b2f4b2884005e11e665ba1c815e1545543256081a25c1c181067377b5c60a5"
+  },
+  "body_read_pages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "references_browsed_pages": [
+    8,
+    9
+  ],
+  "embedded_appendix_read_pages": [
+    9,
+    10,
+    11,
+    12,
+    13
+  ],
+  "appendix9_scope": "lower part Appendix A; upper part references",
+  "placeholder_pages_examined_as_text": [
+    14,
+    15,
+    16
+  ],
+  "visually_checked_pages": [
+    1,
+    6,
+    9,
+    10
+  ],
+  "author_body_complete": true,
+  "embedded_appendix_read": true,
+  "separate_appendix_exists": null,
+  "formal_PDF_obtained": false,
+  "formal_body_read": false,
+  "scientific_fulltext_equivalence": null,
+  "publisher_binary_equal": null,
+  "note": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_ContentFiltering_parent_body_20261107_sources\\PARENT_BODY.md",
+    "bytes": 5451,
+    "sha256": "7c33289fe8556ae2c33cbbf1bae4bfdd6ab397ca509959855c3c6df66d92a2d1"
+  },
+  "existing_canonical_bounded_matches": [],
+  "existing_study_id": null,
+  "identity_recheck_required_on_central_adoption": true,
+  "independent_new_studies": null,
+  "implementation_reading_credit": 0,
+  "execution_credit": 0,
+  "replication_credit": 0,
+  "formal_proof_verification_credit": 0,
+  "central_registration_credit": 0,
+  "library_registration_pending": true,
+  "identity_snapshot": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\identity\\28803.json",
+    "bytes": 14856,
+    "sha256": "9601126fa00729104a177f0d027a55949b83eac1eea088deb60573a01919c079"
+  },
+  "source_manifest": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\MANIFEST.json",
+    "bytes": 38790,
+    "sha256": "a47ecdfd8dfe9073fe53a71a16bdbdc0b506c4aa0858f4a08a83d4eaeb3cbb0b"
+  },
+  "source_seal": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\SEAL.json",
+    "bytes": 1055,
+    "sha256": "ca6ec1cb18f986c3c001005d27031ef995b90ef4b4ce82e168e7026cda9c6cdd"
+  },
+  "figure_recovery": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\figure_assets\\RECOVERY.json",
+    "bytes": 1492,
+    "sha256": "044f03259814eb5e40306bccefc26991615716396d8ad361005819abdcb56b3b"
+  },
+  "page_texts": [
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p001.raw.txt",
+      "bytes": 5199,
+      "sha256": "0dcff960befe1ead9107ab93b666669dad7586c5fa815aaa2fe3a145bfac8bab"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p002.raw.txt",
+      "bytes": 6691,
+      "sha256": "be9abe8577175d03dfc0dbdd571d15e9b2a457f8f0d99c92f40753b04e6444c5"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p003.raw.txt",
+      "bytes": 6158,
+      "sha256": "6f6030aed5fc1e87323265249634ee75185d928be12b8406138c8f8dd8ff6cd2"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p004.raw.txt",
+      "bytes": 5505,
+      "sha256": "4fb66c5697185c721a90162e783140c32009cb8d14823624ed87c636e3f3dc0f"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p005.raw.txt",
+      "bytes": 5266,
+      "sha256": "5013758ce57f4a8626e5497d164d519fa89caa032243a2dbc89dde81c333ebd2"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p006.raw.txt",
+      "bytes": 6211,
+      "sha256": "e7321fb8fc06a8830eef611acad7b6e9301d042c6e2322cddec09519e85acb25"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p007.raw.txt",
+      "bytes": 6586,
+      "sha256": "4347630734f4a378b069122789565e1a05e3b0f365e7e76cf8a31793dbf6822b"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p008.raw.txt",
+      "bytes": 5441,
+      "sha256": "92e0b4a84c61a45a0a5c816c94d44599fdb0081e66939ce13b7a4265925571d7"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p009.raw.txt",
+      "bytes": 4997,
+      "sha256": "0b20b66339f2ba3f9284ca4287db69718df8ef25585abac1b787697eee7e88e4"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p010.raw.txt",
+      "bytes": 4440,
+      "sha256": "6c07667c68a06a5c4a3927de5c55ca087bf4f35b5bae1e66d6e91d52c23228dd"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p011.raw.txt",
+      "bytes": 5285,
+      "sha256": "996d08a06f6b982e974f274397daac348a63ea90b0411fb26af38d85b4d13b5c"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p012.raw.txt",
+      "bytes": 4573,
+      "sha256": "34022309d6e501b04ee06e0ce98ae1b77a88fee440f90c366c870d9fc0c1ac7b"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p013.raw.txt",
+      "bytes": 1264,
+      "sha256": "bc5b862b76b9ff220f21c1e028efdd2ac6870f64fab0891d889146d2833bef3b"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p014.raw.txt",
+      "bytes": 103,
+      "sha256": "5ce905243cf934b18f897e2ba6d6997a5c37ad1038dab725d844ebf092dc2816"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p015.raw.txt",
+      "bytes": 103,
+      "sha256": "33583c097504829857be24b4473d9121ef77f12a182d8e563409d0645becbef3"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\text\\p016.raw.txt",
+      "bytes": 103,
+      "sha256": "3072441498e3ba5c0f569f5959821d8acc0018fc33e958b4e5e72276c72663d2"
+    }
+  ],
+  "page_images": [
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\pages\\p001.png",
+      "bytes": 536154,
+      "sha256": "ddc93a00a149eba93bf5c76d698defa7e14b076ae9df3facb2bce4008bd6dbb7"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\pages\\p006.png",
+      "bytes": 599450,
+      "sha256": "b5807361ae4b6a5293752bf7970e78ad342a3d63a7ad525d6c404f08fa0164cd"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\pages\\p009.png",
+      "bytes": 537577,
+      "sha256": "22baff2463c0638cc0667a87b059a4278001faab15255b7423328993ef8a07ab"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\pages\\p010.png",
+      "bytes": 479313,
+      "sha256": "957b1e90fbe71dc4a495f70b1500df6a6c196ba874ee49c746c4caee29b751a0"
+    }
+  ],
+  "figures_visually_checked": [
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\figure_assets\\attacker_draft1.png",
+      "bytes": 114941,
+      "sha256": "c707c9f7c73316671ee3ab3b87590059ba29c572050d5d873d6114cba70fb2c4"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\figure_assets\\attacker_draft2.png",
+      "bytes": 111550,
+      "sha256": "fcdd92671d144ae135c937f68f0947810f8b3225e63c5656a3df2ebd3698ba8b"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_fulltext_DWSRec_ROGPL_ContentFiltering_20261107_sources\\28803\\versions\\arxiv2205.14060v4\\figure_assets\\attacker_draft3.png",
+      "bytes": 120998,
+      "sha256": "0be795c68afc6c7cacac03e7b843b312c4acda3a69dab04e0fe788e07ff4d4b5"
+    }
+  ]
+}
