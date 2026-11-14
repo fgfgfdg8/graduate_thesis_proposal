@@ -81,7 +81,7 @@ abstract_risk   = (?i)\bpoison(?:ing)?\b|\battacks?\b|\badversarial\b|\bsecurity
 | 44(2) / 10.1145/3777378 | Graph Retrieval-Augmented Generation: A Survey | R：GraphRAG综述，摘要为一般架构/知识增强综述，未显示安全专章证据。 |
 | 44(3) / 10.1145/3787468 | FedHoG: Federated Homogeneous Graph Neural Network for Privacy-Preserving Recommendation | X：联邦推荐，不是RAG。 |
 | 44(3) / 10.1145/3786609 | U-NIAH: Unified RAG and LLM Evaluation for Long Context Needle-in-a-Haystack | R：RAG/长上下文评测，不是攻击或防御工作。 |
-| 44(4) / 10.1145/3800948 | Push and Pull: Defending against Retrieval Poisoning Attacks via Embedding Space Reshaping | D：直接针对RAG检索投毒防御。父任务已有正式VOR PDF与L2选页笔记 `notes/ShieldRAG_Safeguarding_Retrieval-Augmented_Generation_from_Untrusted_Kno__work-31cb317e5ccd.md`；本增量去重，不重复下载/阅读/建笔记。 |
+| 44(4) / 10.1145/3800948 | Push and Pull: Defending against Retrieval Poisoning Attacks via Embedding Space Reshaping | D：直接针对RAG检索投毒防御。见[Push and Pull的正式版L3记录](../../../../docs/RAG安全证据地图_20261102.md#src-e15cbe3ad8b46f85)；不得混同于AAAI另一篇同称ShieldRAG的工作。 |
 | 44(4) / 10.1145/3802586 | A Survey of Personalization: From RAG to Agent | R：RAG到Agent的个性化综述，摘要没有检索安全机制。 |
 | 44(4) / 10.1145/3797026 | Balancing Imperceptible and Aggressive Poisoning Attack for Recommender Systems: A Simple Multinomial Diffusion Model | M2：推荐训练数据投毒与隐蔽性，但不是知识文档/检索器投毒。 |
 | 44(4) / 10.1145/3795527 | Direct Retrieval-augmented Optimization: Synergizing Knowledge Selection and Language Models | R：优化RAG知识选择与LM协同，摘要未显示攻击/安全评估。 |
@@ -105,7 +105,7 @@ abstract_risk   = (?i)\bpoison(?:ing)?\b|\battacks?\b|\badversarial\b|\bsecurity
 |论文|筛查结论|PDF与阅读证据|代码制品|
 |---|---|---|---|
 |EMPRA (DOI 10.1145/3801943)|M1强方法近邻；TOIS 44(4)，CCF-A|上述论文库PDF；41页作者稿；SHA-256 `D3639BE76C016DFA9321FCF067B0268CACA2684035031E4CD1397C613169AF10`；实读作者稿物理pp.1–38；VOR未取得，ACM PDF 403|作者论文p14给出的 [aminbigdeli/EMPRA](https://github.com/aminbigdeli/EMPRA)；未运行|
-|Push and Pull / ShieldRAG (DOI 10.1145/3800948)|D直接工作；CCF-A；父任务已有记录|已有正式VOR PDF及选页L2笔记；本轮不重复。既有笔记记录31页PDF SHA-256 `d1b98b9698907c42f7c965f2455ae8d7f387738655b42e9988d900776a219460`|已有记录未核实代码链接|
+|[Push and Pull / ShieldRAG](../../../../docs/RAG安全证据地图_20261102.md#src-e15cbe3ad8b46f85)（DOI 10.1145/3800948）|D直接工作；CCF-A|正式VOR正文L3；31页PDF SHA-256 `d1b98b9698907c42f7c965f2455ae8d7f387738655b42e9988d900776a219460`|已有记录未核实代码链接|
 |Retrieval-Augmented Purifier (DOI 10.1145/3795521)|M2方法邻近；CCF-A；父任务已有记录|已有42页PDF及L2笔记；本轮不重复|本轮不核代码|
 |其余47个候选|依上表标为M2/R/X；未据标题/摘要声称全文阅读|仅做标题/摘要筛查；没有新下载PDF|未逐篇核代码|
 
