@@ -32,7 +32,7 @@ flowchart LR
     end
     subgraph C["防御技术主线"]
         C1["检索前：聚类过滤<br/>TrustRAG"] 
-        C2["检索中：嵌入空间重塑<br/>ShieldRAG / 混合检索"]
+        C2["检索—生成：窗口共识 / 混合检索<br/>ShieldRAG / Semantic Chameleon"]
         C3["检索后：重排表示与集合检测 CEG-RAG<br/>梯度检测 GMTP；轻量统计 RAGDEFENDER"]
         C4["生成时：可证明聚合<br/>RobustRAG / PRA-RAG"]
         C5["溯源归因<br/>RAGOrigin"]
@@ -166,7 +166,7 @@ flowchart LR
   - 关键发现：**"对抗 + 不可答"两场景叠加时模型最脆弱**；NQ/TQA/WebQ/PopQA 四集 Recall@5 仅 0.65–0.76（即本就 24–35% 的问题检索不到答案）。
 - **② 误导上下文注入（MedMisBench）**：把**本来能答对的题**注入误导上下文，度量"**认知韧性（epistemic resilience）**"。它**不改变问题本身**，只往上下文里塞**形式化、可信度高**的假规则（如"权威指南规定…"），诱导模型推翻正确答案。与 A1 的关键区别：**毒载荷不是"另一个答案"，而是"让正确答案显得不可信的理由"**。
 
-> **为何 A16 重要**：它直接冲击本领域现有的评测假设——**多数防御只在"毒文档与良性文档可分"的假设下工作**，而 A16 的载荷**语义上与真信息高度兼容**（MedMisBench 的最优载荷是"形式化规则式虚构"）；同时它揭示了一个被忽视的失效模式：**模型不是被骗，而是不敢坚持**。建议开题将"**拒答/放弃正确判断**"作为与 ACC/ASR 并列的失败类型单独统计（即 §7.7 提出的 **$1-(ACC+ASR)$ 缺口率**）。
+> **为何 A16 重要**：它直接冲击本领域现有的评测假设——**多数防御只在"毒文档与良性文档可分"的假设下工作**，而 A16 的载荷**语义上与真信息高度兼容**（MedMisBench 的最优载荷是"形式化规则式虚构"）；同时它揭示了一个被忽视的失效模式：**模型不是被骗，而是不敢坚持**。建议开题将"**拒答/放弃正确判断**"作为与 ACC/ASR 并列的失败类型单独统计（应逐响应标注，不能一概用 $1-(ACC+ASR)$ 代替；见 §7.7）。
 
 <a id="src-fb1682dc8e7f28a5-h15"></a>
 #### （10）推理链污染（A17）
@@ -210,7 +210,7 @@ A1–A19 都在追求"**让模型说出攻击者想要的内容**"；A20 反其�
   三种目标拒答语分别对应**信息不足**（R1）、**安全**（R2）、**不可靠**（R3）。在 NQ / MS-MARCO × GTR-base / Contriever × 6 个开源 LLM 上，BBO 的阻塞成功率（**仅统计"干净时能答、投毒后不答"的查询**）为 **28%–73%**（NQ+GTR 上 Llama-3.1 达 **69%**、Llama-2-7b **60–72%**）；**指令注入**在多数设置下更强（NQ 上常达 **80–90%**）但**在更大的 MS-MARCO 上反被 BBO 超过**，且**只对易受提示注入的模型有效**；**Oracle 生成**则**显著最弱**（多数格低于 50%，且换用 Claude-3-Opus 后成功率**平均腰斩**，甚至**拒绝生成**用于攻击的文档）。BBO 的**跨 LLM 迁移性很低**（多数 <20%）——作者归因于"单文档攻击中，系统提示、查询与其余 k−1 篇文档都不在攻击者控制之下"，这与越狱攻击的高迁移性形成对照；对**更大/闭源模型**（Llama-3.1-70B/405B、GPT-4o、Gemini-1.5、Claude-3.5）迁移率**有限但非可忽略**（多在 1%–13%），直接针对 GPT-4o-mini / GPT-4o / Gemini-1.5-flash 优化时可达 **30% / 10% / 30%**。
   防御方面：**困惑度过滤极其有效**（ROC-AUC 仅 **0.05**，干净文档平均困惑度 **15.93** vs 阻塞文档 **290.64**）——但作者指出这可通过在优化中加入"自然度"约束来规避；**查询改写**也有效（阻塞率降至 4%–16%），但**会损害系统自身效用**（部分原本能答的查询改写后答不出），且**改写阻塞文档本身**虽能把阻塞率压到 <10%，却要求系统改写每一篇入库文档，**不现实**；**增大 k**（3→10）会削弱攻击但**在 k=10 时仍非可忽略**；**针对提示注入的微调防御**中，**StruQ 反而使 BBO 的成功率上升**（因其更擅长防"无优化"的注入攻击），**SecAlign 对两者都有效**（BBO 略优），但作者提醒 SecAlign 会让模型**连良性指令也一并忽略**，可能损害系统性能。
 
-> **为何 A20 重要**：它把"**可用性**"确立为与"完整性"并列的独立攻击目标，并揭示了一个**反直觉的安全悖论**——**越是被安全对齐得好的模型，越容易被阻塞**。论文用四个主流安全基准（DecodingTrust、SALAD-bench、ALERT、SafetyBench）实测证明：**抗阻塞能力与这些基准的排名不相关甚至负相关**（DecodingTrust 把最易被阻塞的 Llama-2-7B 评为**整体最可信**）。这意味着**"安全评测得分高"完全不能推出"抗阻塞"**，与 §5.2 缺口 11（认知韧性从未被评测）在方法论上同源——**两者都指出"现有安全指标测的不是真正关心的性质"**。对开题的意义在于：**若做防御，必须把"拒答率"作为与 ACC/ASR 并列的第三类失败单独统计**（即 §7.7 提出的 $1-(ACC+ASR)$ 缺口率），否则"防御成功"可能只是"把攻击从'答错'推到了'不答'"。
+> **为何 A20 重要**：它把"**可用性**"确立为与"完整性"并列的独立攻击目标，并揭示了一个**反直觉的安全悖论**——**越是被安全对齐得好的模型，越容易被阻塞**。论文用四个主流安全基准（DecodingTrust、SALAD-bench、ALERT、SafetyBench）实测证明：**抗阻塞能力与这些基准的排名不相关甚至负相关**（DecodingTrust 把最易被阻塞的 Llama-2-7B 评为**整体最可信**）。这意味着**"安全评测得分高"完全不能推出"抗阻塞"**，与 §5.2 缺口 11（认知韧性从未被评测）在方法论上同源——**两者都指出"现有安全指标测的不是真正关心的性质"**。对开题的意义在于：**若做防御，必须把"拒答率"作为与 ACC/ASR 并列的第三类失败单独统计**（应直接统计，不能一概用 $1-(ACC+ASR)$ 代替；见 §7.7），否则"防御成功"可能只是"把攻击从'答错'推到了'不答'"。
 
 <a id="src-fb1682dc8e7f28a5-h19"></a>
 #### （14）灰盒隐蔽投毒（A21）
@@ -242,7 +242,7 @@ A1–A20 把威胁模型推向两个极端：**白盒**（可拿梯度与参数�
 |------|----------|----------|----------|----------|
 | D1 | 检索前 | **聚类过滤 + 自评估** | TrustRAG | 先聚类检测攻击模式，再由 LLM 自评估剔除恶意文档并消解不一致 |
 | D2 | 检索前/中 | **文档增强稀释** | Anti-Knowledge Corruption | 注入良性相关语料**稀释**攻击效果（ASR 从 98%→31%） |
-| D3 | 检索中 | **嵌入空间重塑** | ShieldRAG（Push and Pull） | 多数共识机制**推（Push）离/拉（Pull）近**，重塑检索嵌入空间 |
+| D3 | 检索及生成 | **窗口共识与条件扩检** | ShieldRAG（Push and Pull） | 对重叠文档窗口分别生成答案和解释，按答案关键词频次聚合；关键词集合为空时才用解释补充查询并再检索。Push/Pull是作者的效果解释，未报告防御专用编码器训练或逐次向量距离保证（正式PDF pp9–14） |
 | D4 | 检索中 | **架构级混合检索** | Semantic Chameleon | 特定条件下共同检索率由38%（19/50）降到0；38%不是生成ASR，overall另为6%（3/50）；自适应稀疏+稠密条件仍有20–44%的原口径结果 |
 | D5 | 检索中 | **图重排** | GRADA | 利用对抗文档与**良性文档弱相似**的特性做图结构重排，NQ 上 ASR 降幅达 **80%** |
 | D6 | 检索后 | **重排器表示+集合交互** | CEG-RAG | Set Transformer显式建模同组chunk交互，attention MIL做上下文检测与chunk定位；低ASR须与ACC及块级FPR一起读 |
@@ -289,7 +289,7 @@ A1–A20 把威胁模型推向两个极端：**白盒**（可拿梯度与参数�
 #### 路线三：结构化与架构级防御
 
 - **GRADA**（图重排）：关键观察——**对抗文档与查询高相似，但与检索集中良性文档弱相似**。以此构建图结构重排，在 6 个 LLM 上验证，NQ 上 ASR 降幅达 **80%** 且精度损失极小。
-- **ShieldRAG**（Push and Pull）：**多数共识机制**下的双策略——**Push** 隐式推离毒文档、**Pull** 拉近良性文档，**重塑检索嵌入空间**。
+- **ShieldRAG**（Push and Pull）：先对Top-$k$文档的重叠窗口生成答案及解释，再按有效答案的关键词出现频次过滤、生成最终回答；仅当过滤后的关键词集合为空时，才由解释选择句子或短语扩展查询并补充检索。作者用Push/Pull解释其预期效果，方法流程未报告针对防御重新训练编码器，也未证明每次向量距离必然改善（正式PDF pp9–14）。
 - **Semantic Chameleon**：混合BM25+向量检索在特定实验中降低两文档共同检索，38%=19/50共同检索而非生成ASR；§3.1另将overall定义为共同检索且隐蔽，Table5为3/50。Table7自适应稀疏+稠密结果仍为20–44%，Table8生成实验每模型仅15场景；不能把这些不同结局合成“生成攻击38%→0%”或普适防御保证。
 
 <a id="src-fb1682dc8e7f28a5-h26"></a>
@@ -416,13 +416,13 @@ timeline
              : TrustRAG 聚类+自评估
         2025 : GMTP 梯度掩码检测
              : GRADA 图重排
-             : ShieldRAG 嵌入空间重塑
              : PRA-RAG 可证明聚合
              : Astute RAG 冲突消解
              : CARE-RAG 冲突驱动摘要
              : RAGDEFENDER 轻量检测
              : RAGForensics 投毒追溯
-        2026 : CEG-RAG 交叉编码器激活
+        2026 : ShieldRAG 窗口共识与条件扩检（TOIS）
+             : CEG-RAG 交叉编码器激活
              : RAGOrigin 责任归因
              : RADAR 动态 RAG 图能量最小化（ICML'26）
              : SeCon-RAG 两阶段语义过滤
@@ -587,7 +587,7 @@ timeline
 | 46 | **SeCon-RAG** | NeurIPS | 2025 | D16 两阶段语义过滤 | **混合** — 两阶段过滤框架（SCF + CAF）+ **EIRE 实体-意图-关系抽取器** | EIRE 引导的**语义+聚类联合过滤** + **冲突感知过滤** | NQ 等；**0%→100% 六档投毒**；accuracy、ASR；100% 投毒下 **acc>75% / ASR<10%**。**详见 §9.3** |
 | 47 | **CEG-RAG** | Canadian AI2026，PMLR318:366–376；所给CCF目录未列 | 2026 | D6 重排表示与集合检测 | 共享投影+Set Transformer同组chunk交互，attention MIL bag检测与chunk定位，双阈值过滤补齐 | 非梯度法、非纯单块分类；与B直接比较同编码器/划分下的监督头增量 | HotpotQA ASR16.28%与ACC13.95%成对；MS-MARCO块FPR .1125，不能推为query级低误报。正式PDF pp1–7已读L2，其余未读 |
 | 48 | **PRA-RAG** | ACL Findings | 2026 | D11 可证明鲁棒聚合 | **混合** — 采样聚合框架 + **嵌入空间几何鲁棒子集算法** + 影响上界理论；三者互相必要 | 用**嵌入空间几何结构**采样鲁棒子集，给出毒化影响理论界 | **白盒检索器**、无 LLM 知识；NQ/MS MARCO/HotpotQA；top-K 子集；ACC、ASR；MS MARCO 20% 投毒下 **ACC 71% / ASR 1%** |
-| 49 | **ShieldRAG（Push and Pull）** | TOIS | 2026 | D3 嵌入空间重塑 | **混合** — 嵌入空间重塑（Push/Pull）多数共识机制 + **滑动检索解释生成 / 查询定向优化** | 多数共识下**推离毒文档、拉近良性文档**，重塑检索嵌入空间 | 正式31页PDF主文p1–28 L3、参考文献p28–31浏览；100个query按70/30分评估/验证，验证目标ACC+(1−ASR)，零重叠；ACC/ASR为答案子串命中并有人评核查，逐表分母未报告；正常NQ ACC不是query误删率，扩展伪代码未列固定迭代上限（见§11.7） |
+| 49 | **ShieldRAG（Push and Pull）** | TOIS | 2026 | D3 窗口共识与条件扩检 | **混合** — 重叠窗口生成答案/解释 + 答案关键词频次过滤 + 空关键词集合时的句子或短语查询扩展 | Push/Pull为作者对预期效果的解释；未报告防御专用编码器训练，也未证明每次向量距离必然改善（pp9–14） | 正式31页PDF正文pp1–28 L3、参考文献pp28–31浏览；每数据集100个query按70/30分评估/调参（p16）；ACC/ASR为答案子串命中，逐表有效分母和聚合口径仍待澄清（p19）；正常答案ACC不是query误删率，扩展循环未列固定迭代上限（pp12–14、27；见§11.4–11.7） |
 | 50 | **GMTP** | ACL Findings | 2025 | D7 梯度掩码 token 概率 | **混合** — 检索后过滤模块（结构）+ **梯度定位 / 掩码-MLM 概率检测算法**（算法） | 检索器相似度**梯度**定位高影响 token→掩码→MLM 概率检查 | **BEIR**（NQ 2.6M/HotpotQA 5.2M/MS MARCO 8.8M）；每数据集 **200 测试查询**、触发器 "iPhone"；**LLM-as-a-judge**(ACC/CACC/ASR)；过滤 **>90%** 毒文档 |
 | 51 | **TrustRAG** | arXiv | 2025 | D1 聚类过滤 + 自评估 | **系统机制** — 两阶段（聚类过滤 + 自评估）流水线；内部用**现成 K-means 与 LLM 提示**，无自有学习目标 | 两阶段：聚类过滤检测攻击模式 + LLM 自评估消解不一致（免训练） | 攻击者选 M 问题 + 目标答案；NQ/HotpotQA/MS MARCO；100 查询；ACC、ASR；NQ **83–90% ACC / 1–7% ASR** |
 | 52 | **RADE** | ESWA | 2026 | D9 责任感知解码 | **混合** — 责任感知解码流水线（重排→LOO 打分→子集选择→共识→可靠度分配→重排）+ **双坐标表示算法** | 区分「有害高影响证据」与「多跳推理必需的真值**桥接段落**」 | **黑盒投毒 + 灰盒语义伪装（防御感知）**；NQ-Poisoning / 2WikiMultiHopQA；top-k=10、**5 种子协议**；NQ-Rob.、2Wiki-EM、TPR、**Bridge-TPR**；RADE-full **62.4 / 33.3 / 85.6% / 79.8%** |
@@ -1210,19 +1210,19 @@ S4 类方法虽然"先随机后筛选"，但**筛选条件本身带有方向性*
 
 **（a）ACC 的通用形式：差异只在"分子"与"分母"两处**
 
-本库绝大多数文献的 ACC 都可写成同一个**指示函数平均**，各文差异仅在于**分子（什么算"答对"）**与**分母（在哪些查询上统计）**。以下使用本报告统一记号；旧记录将定义归于ShieldRAG（Push and Pull, Eq.15），该文全文尚未取得，原文方程归属待核：
+以下先给出子串命中式ACC的示例；不同文献也可能采用精确匹配、模型判定或其他口径。TOIS ShieldRAG正式版PDF p19 Eq.15将ACC定义为各查询输出包含金标答案的指示函数均值；此处将其分母记为 $N_{\mathrm{ACC}}$，以便与ASR的查询集合区分：
 
 $$
-ACC=\frac{1}{N}\sum_{i=1}^{N}\mathbb{I}\big(gold_i\subseteq resp_i\big)
+ACC=\frac{1}{N_{\mathrm{ACC}}}\sum_{i=1}^{N_{\mathrm{ACC}}}\mathbb{I}\big(gold_i\subseteq resp_i\big)
 $$
 
-> 原文：*"where N is the total number of queries, I(·) is the indicator function, which returns 1 if the golden answer $gold_i$ is a substring of the model's response $resp_i$, and 0 otherwise."*
+> 原文口径（p19，Eq.15）：$N_{\mathrm{ACC}}$为全部评价查询数；输出含金标答案子串时指示值为1，否则为0。
 
 **（b）分子口径：什么算"答对"**（严格性递增，直接影响 ACC 高低）
 
 | 口径 | 判定规则 | 代表文献 | 对 ACC 的影响 |
 |---|---|---|---|
-| **① 子串/包含** | $gold_i\subseteq resp_i$ | ShieldRAG（Eq.15旧记录，原文归属待核）、CEG-RAG（*"the gold answer is recovered"*）、RAGDefender（*"the proportion of responses that include the ground-truth answer"*） | **最松 → ACC 偏高** |
+| **① 子串/包含** | $gold_i\subseteq resp_i$ | ShieldRAG（TOIS正式PDF p19，Eq.15）、CEG-RAG（*"the gold answer is recovered"*）、RAGDefender（*"the proportion of responses that include the ground-truth answer"*） | **较宽松**；仍受答案格式及其他判定规则影响 |
 | **② 关键词/精确匹配** | KMR / EMR / Exact Match | TrojanRAG（KMR+EMR）、CARE-RAG（EM）、PoisonedRAG（substring，但明确说明是为"容纳语言变体"） | 中 |
 | **③ LLM-as-a-judge** | 判定模型答 YES/NO | **GMTP**（*"ACC measures the proportion of responses that are labeled 'YES' by GPT-4o among all responses"*）、Benchmarking（GPT-4o-mini 判"correct answer"）、SilentRetrieval | 中，且**受判定模型能力影响** |
 | **④ 校验式（标签+证据）** | 标签与引用证据均须正确 | FEVER（*"best accuracy ... 31.87%, while if we ignore the evidence ... 50.91%"*） | **最严 → ACC 明显偏低** |
@@ -1245,19 +1245,19 @@ $$
 >
 > **另有文献干脆不用 ACC 之名**：SafeRAG 使用 **Retrieval Accuracy (RA)**、多种 **F1 变体**与**攻击失败率 AFR = 1 − ASR**（*"we use the attack failure rate (AFR = 1 - ASR) for safety evaluation because AFR, as a positive metric, can be analyzed alongside F1 variants"*），并指出 RGB / RAGBench / PoisonedRAG 走"规则式（EM, F1, Recall, Precision, ASR）"而 LRII / RECALL / ClashEval 走"模型式（Misleading Rate、Uncertainty Ratio、Mistake Reappearance Rate、Prior Bias、Context Bias）"——**连指标命名与族别都未统一**。
 
-**（d）ACC 与 ASR 的互补结构——"ACC 极低"最直接的成因**
+**（d）ACC 与 ASR 的关系：先核对评价集合和命中事件**
 
-当一次响应的结局只有"正确答案"或"攻击者目标答案"两种、不存在第三种出路时，$ACC+ASR\approx1$。此时 **ACC 低并不代表"系统差"，而恰恰是"攻击强"**：
+当ACC与ASR在同一评价查询集上计算，且金标答案命中与攻击目标命中互斥、覆盖全部响应时，$ACC+ASR=1$。若允许同时命中或同时未命中，则不能直接假设二者互补；攻击强度和系统效用也须结合具体条件解释：
 
 | 文献（条件） | ACC | ASR | 解释 |
 |---|---|---|---|
 | Phantom（NQ，点积相似度；**Benchmarking** 附录 Table 8 复现） | **0.03** | 0.97 | 攻击几乎全胜，ACC 只剩 3% 残余 |
 | P3A（NQ，MiniLM + Vicuna-7B） | **4.6%** | 88.6% | 同上 |
-| CEG-RAG（MS-MARCO，GMTP 基线） | 3.20% | 16.80% | 过度过滤把答案一并滤掉 → ACC 极低且 ASR 也不高 |
+| CEG-RAG（MS-MARCO，GMTP 基线） | 3.20% | 16.80% | ACC与ASR均低；具体原因须另查过滤和拒答结果 |
 | CEG-RAG（NQ，本方法） | 41.06% | 6.30% | $41.06+6.30=47.4\%\ll100\%$ |
 | SeCon-RAG（LLaMA-3.1-8B，40% 毒率） | **100.0%** | 0.0% | 防御成功且金标答完全恢复 |
 
-> **关键推论：$ACC+ASR$ 与 1 之间的"缺口"本身就是一个高价值指标**——它度量"**既没答对、也没被操纵**"的第三种结局占比（弃权、拒答、无关输出）。CEG-RAG 在 NQ 上缺口达 $52.6\%$；在 MS-MARCO 上 ASR 仅 11.20% 而 ACC 也仅 50.00%（缺口 38.8%），说明其**主要代价是"过度过滤导致答不出"而非"被攻击"**。这与 §7.8 M2 中"移除攻击源 → 开销低，但可能同时移除答案"是同一现象的两面。**建议开题把"缺口率"作为与 ACC、ASR 并列的第三项报告指标**；但需注意该互补关系**仅在 ACC 与 ASR 分母相同时成立**（如 SilentRetrieval 的 HR@10 84.6% 与 ASR-LLM 57.5% 相差 27.1 个百分点，即因二者分母与外延不同），详见下一小节 (d)。
+> **缺口的解释有条件**：在两项指标使用同一查询集时，令 $A$ 为金标子串命中、$T$ 为攻击目标子串命中，则 $1-ACC-ASR=P(\neg A\cap\neg T)-P(A\cap T)$。只有同时命中的比例为零时，缺口才等于“两者均未命中”的比例；即使如此，也不能仅凭缺口认定原因是过度过滤、拒答或无关输出。若查询集合不同，更不能直接作该分解。TOIS ShieldRAG的Eq.15/16均是子串判定（p19），实际是否重叠须逐响应核验。
 
 **（e）本库 ACC 数值谱（按值降序）——跨度约 33 倍**
 
@@ -1302,23 +1302,23 @@ $$
 > **数据来源**：`tmp/extract_asr_definitions.py` → `tmp/asr_analysis_extract.txt`（全部本地文献 PDF 的 ASR 定义句与数值）。
 > **与上一小节的关系**：ACC 专项分析的 **(a) 通用形式、(b) 分子、(c) 分母、(d) ACC–ASR 互补、(e) 数值谱、(f) 七来源、(g) 术语碰撞** 七项结构，本节**只写 ASR 侧的差异项**；凡是与 ACC 对称的内容（如"哪些查询上统计""LLM-judge vs substring"）**不再重复**，仅标注对应关系。
 
-**（a）通用形式及其与 ACC 的关键不对称：分母不同**
+**（a）子串型ASR与ACC：评价集合需分别核对**
 
-ASR以下使用本报告统一记号；旧记录归于ShieldRAG（Push and Pull, Eq.16），全文尚未取得，原文方程归属待核：
+TOIS ShieldRAG正式版PDF p19 Eq.16将ASR定义为攻击目标答案子串命中率；此处将分母记为 $N_{\mathrm{ASR}}$，不预设其与ACC的评价集合不同：
 
 $$
-ASR=\frac{1}{N}\sum_{j=1}^{N}\mathbb{I}\big(target_j\subseteq resp_j\big)
+ASR=\frac{1}{N_{\mathrm{ASR}}}\sum_{j=1}^{N_{\mathrm{ASR}}}\mathbb{I}\big(target_j\subseteq resp_j\big)
 $$
 
-> 原文：*"where N is the number of **attack queries**, $target_j$ is the attacker's desired answer, $resp_j$ is the model-generated response."*
+> 原文口径（p19，Eq.16）：$N_{\mathrm{ASR}}$为攻击查询数，$target_j$为攻击者期望的目标答案。作者还报告对结果进行了人工核查。
 
-**⚠ 与 ACC 的关键差别**：同一篇论文中，ACC 的 $N$ 是 *"the **total** number of queries"*，而 ASR 的 $N$ 是 *"the number of **attack** queries"* —— **二者的分母在定义层面就不相等**。这是全库最普遍、也最容易被忽略的口径陷阱；**上一小节 (d)** 中"$ACC+ASR\approx100\%$"的成立**依赖二者分母相同**这一前提。
+**⚠ 评价集合与命中事件须分开核对**：ShieldRAG将ACC分母描述为全部查询、ASR分母描述为攻击查询（p19）；若全部评价查询均受攻击，两者可以是同一集合，不能据名称断言分母必不相等。即使集合相同，金标与攻击目标也可能同时出现或均未出现，因而 $ACC+ASR$ 未必为100%。
 
 **（b）分子：什么算"攻击成功"**（7 类，比 ACC 的 4 类更多样）
 
 | 类型 | 判定规则 | 代表文献 |
 |---|---|---|
-| **① 生成侧字符串** | 输出含 $target_j$ | ShieldRAG（Eq.16旧记录，原文归属待核）、Practical Poisoning（*"outputs matching the targeted answers"*）、PoisonedRAG（*"answers are attacker-desired target answers"*）、RobustRAG（*"ratio of model responses that contain the malicious target texts"*）、AuthChain（*"output contains the answer from the poisoned target document"*）、InceptionRAG、CRCP |
+| **① 生成侧字符串** | 输出含 $target_j$ | ShieldRAG（TOIS正式PDF p19，Eq.16）、Practical Poisoning（*"outputs matching the targeted answers"*）、PoisonedRAG（*"answers are attacker-desired target answers"*）、RobustRAG（*"ratio of model responses that contain the malicious target texts"*）、AuthChain（*"output contains the answer from the poisoned target document"*）、InceptionRAG、CRCP |
 | **② LLM-as-a-judge** | LLM 判是否被操纵 | Benchmarking（GPT-4o-mini）、**GMTP**、ProGRank |
 | **③ 关键词占比**（连续型） | 攻击关键词在回答中的**比例** | **SafeRAG**（*"If a higher proportion of attack keywords appears in the response text, the ASR will increase"*）——唯一以**占比而非 0/1**定义的 |
 | **④ 检索侧** | $\ge1$ 毒段落进 top-$k$ | Poisoning Retrieval Corpora（*"percentage of queries for which at least one adversarial passage is retrieved in the top-k"*）、GASLITE（appeared@10） |
@@ -1341,21 +1341,21 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 | 口径 | 分母 | 代表文献 | 备注 |
 |---|---|---|---|
 | ① 全部查询 | 全部测试查询 | Benchmarking（*"to the total number of queries"*） | 与 ACC 分母相同 |
-| ② **仅目标查询** | 被攻击查询 | PoisonedRAG（*"fraction of **target** questions"*）、Practical Poisoning（*"among all **targeted** queries"*）、CEG-RAG、CRCP | **主流口径**；分母远小于① |
-| ③ 攻击查询 | 攻击构造的查询集 | ShieldRAG（Eq.16旧记录，原文归属待核） | 与②常重合但表述不同 |
+| ② **仅目标查询** | 被攻击查询 | PoisonedRAG（*"fraction of **target** questions"*）、Practical Poisoning（*"among all **targeted** queries"*）、CEG-RAG、CRCP | 目标集可小于全部查询，也可与全部评价集相同 |
+| ③ 攻击查询 | 攻击构造或指定的查询集 | ShieldRAG（TOIS正式PDF p19，Eq.16） | 与②常重合；若全部评价查询均受攻击，也可与①相同 |
 | ④ **排除性/净增益** | 干净时未命中、攻击后命中 | **Overcoming the Retrieval Barrier**、**ToxicRAG**（*"the post-poisoning answer adopts the target claim **and** … the clean answer did not already do so"*） | **ASR 独有** |
 | ⑤ 非查询单位 | 试验次数 / 文档数 | SIREN（$N=$ technique trials）、GARAG（生成文档） | 不可与①②换算 |
 | ⑥ 预算型 | 前 $b$ 次迭代内达成 | SIREN（$ASR@b,\ b\in\{1,5,10,20\}$） | 只适用于迭代式攻击 |
 | ⑦ **仅"干净时答对"子集** | 干净条件下**本可答对**的查询 | **MedMisBench** | **全新口径**：**排除"本来就答错"**，只度量"**本可答对却被带偏**"；与①–⑥均不同 |
 
-> **同一文献内分母不一致的实例**：Benchmarking 的 ACC 与 ASR 分母都是"全部查询"，但其**主要实验只取 100 条目标查询**（*"randomly selected 100 queries as targeted queries"*）——**定义层分母是"总查询"，实验层分母是"目标查询"**，两个口径在文内并存。
+> **同一文献内须核对定义与实际评价集**：Benchmarking将ACC与ASR分母描述为全部查询，并报告主要实验选择100条目标查询；若评价集恰由这100条目标查询组成，两种表述可以指向同一集合，不能仅据名称判定分母不一致。各表实际纳入对象仍应逐项核查。
 
 **（d）ASR 相对 ACC 的额外复杂性**
 
-上一小节 (d) 已给出 $ACC+ASR\approx1$ 的互补关系与此库的四个实例（Phantom 0.03/0.97 等）。**此处只补充该互补关系在哪些条件下失效**：
+上一小节 (d) 已说明ACC与ASR的关系取决于评价集合和命中事件，并列出若干结果实例；此处进一步列出不能直接视为互补的情形：
 
 1. **分子由攻击者自选，而 ACC 的 gold 唯一**：Benchmarking 用 GPT-4o-mini *"generate a random answer different from the correct answer as the targeted answer"*。**换一个 target，ASR 就会变**；ACC 无此自由度。
-2. **一次响应可能同时命中两个 target** → 若非严格补集，$ACC+ASR$ 可 **$>100\%$**（与**上一小节 (d)** 中 CEG-RAG "缺口"现象方向相反）。
+2. **一次响应可能同时命中金标与攻击目标** → 在同一评价集合内，若非严格补集，$ACC+ASR$ 可能 **$>100\%$**；只有同时命中与同时未命中两类事件的差额，才决定其与1的偏差。
 3. **检索侧 ASR 与生成侧 ASR 必须分开报**：*AgentPoison* 分报 **ASR-r / ASR-a**；*SilentRetrieval* 分报 **HR@10 与 ASR-LLM**。**"检索命中"远不等于"攻击成功"**——SilentRetrieval 在 21M 语料上 HR@10 为 74.2% 而 ASR-LLM 仅 41.5%（**差 32.7 个百分点**）；语料从 100K 扩到 21M 时，HR@10 降 12.2% 而 ASR-LLM 降 **18.3%**（生成侧衰减更快）。**ToxicRAG 给出方向相反的对照**：其 any-poison Top-1 命中率**低于**多数基线（NQ **0.47** vs PoisonedRAG **0.90**），ASR 却**更高**（0.86–0.91）——即"检索排序靠前"对攻击成功**既不必要、也不充分**。
 4. **同一攻击在不同判定协议下数值悬殊**——这是"ASR 不可跨文献比较"最硬的证据，出自 SilentRetrieval 的**自我校准说明**：
    > *"PoisonedRAG reports **97% ASR** with 5 documents and substring matching; our protocol yields **48.2% ASR-LLM**."*
@@ -1511,7 +1511,7 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 | 46 | **SeCon-RAG** | — | 双过滤机制的必要性 | **SCF/CAF 消融 + EIRE 子组件（Table 6）** | τcluster ∈[0.86,0.90]、τsemantic | **PCA 降维可视化** | — | — | **多 run ±1%** |
 | 47 | **CEG-RAG** | RQ1–3 | 重排表示+Set Transformer集合交互+MIL修复 | 上下文级/块级检测 | K=2–20；**重排器敏感性研究** | 注意力 MIL 块嵌入 | — | — | — |
 | 48 | **PRA-RAG** | 验证有效性 | 指出 RobustRAG 计算开销大、聚合难 | 超参消融 | Top-K、ε、n、开销（K=16 时 65–72s） | **嵌入空间几何** | 蒙特卡洛采样推广 | — | **理论上界 + 10 runs 平均** |
-| 49 | **ShieldRAG** | 验证查询定向优化 | 滑动检索解释生成 + 查询定向优化 | **历史消融记录（Step I/III：21%→47% ACC），全文尚未取得核验，不能作为当前已核结果** | 70/30 划分；r 参数 | — | — | 案例（英吉利海峡电缆） | — |
+| 49 | **ShieldRAG** | 验证窗口、关键词聚合与查询定向优化 | 重叠窗口生成 + 关键词聚合 + 条件查询扩展 | **正式PDF p24 Table 11（NQ/Vicuna-7b）**：Vanilla 21%/0.52，Step I only 35%/0.28，Step III only 28%/0.42，**Step I+II 47%/0.16**，完整方法50%/0.14（ACC/ASR）；Step I only为多个窗口各自回答的均值且无统一最终答案，不能把35%→47%当作同单位的严格单因素增益 | 每数据集70评估/30调参（p16）；窗口大小$r$（p24–26） | — | — | 案例（英吉利海峡电缆，p27） | Step I调用与最终生成、条件扩展调用须分别计（pp9、11–14、27） |
 | 50 | **GMTP** | — | 移除攻击源→低开销且无成功可能 | — | K=1000→10000（变化<1%） | **PCA：干净/毒/查询分布可视化** | **ColBERT（晚期交互）泛化** | — | — |
 | 51 | **TrustRAG** | 多种攻击验证鲁棒性 | 毒率>20% 时 N-gram 保留提升 F1 | **N-gram preservation 消融** | 毒率 20%→100% | **K-means 聚类可视化（毒文档更紧致）** | — | 3 案例（Vanilla / Stage1 / 过滤后） | 运行时分析 |
 | 52 | **RADE** | 双维表示的必要性 | 污染强度与中心漂移机制一致（Prop. 2） | **文档角色分析表（Truth/Bridge/Neutral/P-direct 的 w_i 分布）** | 重污染敏感性；r=1/2/3/5 | 方法对比表（NDCG/Hit@1/TPR/HL-F1） | 跨检索器（含 DPR） | NQ 诊断示例 | **bootstrap 95% CI + Holm 校正 p=.520（诚实报告：DPR 下无显著优势）** |
@@ -1594,7 +1594,7 @@ ASR 分母的完整谱系（与 ACC 的七类对照）：
 | **触发器** | 固定词（如 "iPhone"、"nfl/olympics"）或语义组 | GMTP *'the trigger is "iPhone"'*；Phantom 自然触发词；BadRAG 语义组触发器 |
 | **阈值与权重** | 网格搜索 / 验证集选定后固定 | BRIDGE *"two thresholds (α, β) determined by grid search on the TRD validation set"*；ShieldRAG 70/30 划分后固定超参；GRADA 选 α=0.4（*"0.3 最低→0.8 回升"*） |
 
-> **一致做法**：多数文献采用 **"验证集/网格搜索定参→其余数据集直接应用"** 的协议（BRIDGE、ShieldRAG 最典型），这使**跨数据集的公平比较**得以成立，但也意味着**超参对特定语料的适配性未被报告**。
+> **定参与迁移须分开**：ShieldRAG对每个数据集各自随机划分70条评估查询和30条调参查询，按验证表现选参后用于该数据集最终评估（正式PDF p16）。这不等于已证明同一组超参无需调整即可迁移到其余数据集；跨数据集比较还须核查各方法的划分与定参协议。
 
 <a id="src-fb1682dc8e7f28a5-h90"></a>
 #### （4）统计验证：少数派与正例
@@ -2019,7 +2019,7 @@ flowchart TB
    - **报告问题集的确定方式与筛选条件**：随机采样还需报告随机种子/置信区间；若做"零目标答案"类筛选，须说明其对 ASR 的抬升效应。
    - **同时报告字符串匹配与 LLM-judge 两套 ASR**，并同时报告检索侧命中率与生成侧采纳率，避免口径歧义。
    - **防御类须报告 ACC+ASR 成对结果**，并给出延迟/开销，以体现效用—安全—成本三方权衡。
-   - **报告 ACC 时必须声明三个口径**（源自 §7.7 ACC 专项分析）：①是**攻击条件**还是**干净条件**（ACC vs CACC）；②分母是**全部查询**还是**仅目标查询**（后者天然低）；③分子是**子串包含**还是**须校验证据**（FEVER 同文差 19 个百分点）。并建议额外报告 **$1-(ACC+ASR)$ 缺口率**，以区分"被攻击成功"与"过度过滤导致答不出"两种失败。
+   - **报告 ACC 时必须声明三个口径**（源自 §7.7 ACC 专项分析）：①攻击条件还是干净条件（ACC vs CACC）；②评价的是全部查询还是目标查询，子集占比及其ACC须分别报告，不能仅据分母大小判断ACC高低；③分子是子串包含还是须校验证据。应逐响应单列目标命中、正确、拒答和其他未答对等事件；只有在同一评价集且金标与目标命中互斥时，$1-(ACC+ASR)$ 才是两者均未命中的比例，仍不能单凭该数归因为过度过滤。
    - **报告规模时必须声明三层数字**（源自 §7.6）：①**语料库**的原始规模与实际索引规模（投毒率的分母是哪个）；②**主实验问题集**的条数与是否多种子/置信区间（n=100 本身不足以判定差异是否显著，应结合配对设计和置信区间）；③**机理/消融实验**每格的样本量（多数文献复用主实验集而未声明）。
    - **报告采样方法时必须声明四项**（源自 §7.5）：①**抽样池**（官方 train / test / 全集，是否与载荷优化集隔离）；②**抽样单位**（单条 query / 查询簇 / 文档重采样）；③**是否分层**（按问题类别还是仅按语料来源——本库问题侧分层完全空白）；④**是否固定随机种子**（本库仅 4 篇声明）。若做了条件筛选（如"零目标答案""答案明确"），须**说明偏差方向**——本库 5 类筛选中 4 类系统性抬高 ASR。
    - **报告 ASR 时必须声明四个口径**（源自 §7.7 ASR 专项分析）：①**判定协议**（substring / LLM-judge / ASR-LLM / 关键词占比 / 排序）；②**分母**（全部查询 / 仅目标查询 / 排除性净增益 / 非查询单位）；③**立场**（攻方 raw ASR / 守方 residual ASR）；④**同时给出 baseline 与 defended 的绝对值**（否则"降幅 88.8%"无法复算）。并明确是否分报**检索侧与生成侧**（ASR-r / ASR-a、HR@10 / ASR-LLM）。
@@ -2046,7 +2046,7 @@ flowchart TB
 
 14. **"攻击成本"应作为防御评测的一个显式维度**：**DIGA** 证明，只要把检索器的**顺序不敏感**与**重要性偏置**两个结构性质编码进遗传算法，就能在**不需要梯度、不需要训练**的前提下降低所测配置下的投毒成本（相对 HotFlip 省 **6.5–9.3×** 时间、**6.0–10.5×** 显存），而 ASR 与 Vec2Text 相当或更优。这与 §7.9 记录的"训练/优化类可达多张 H100 + 数小时"形成鲜明对照——**本库防御的评测几乎都默认攻击者付出了高昂优化代价**。因此开题若做防御，建议在实验设计中**显式加入"低成本攻击者"这一档**（例如以 DIGA 类方法作为 baseline），并报告**防御在"单位攻击者成本"下的鲁棒性**——这正是 SLOT 综述 I3 所要求的度量（§9.5 G4）。**应检验防御效果如何随攻击者成本变化。**
 
-15. **"拒答"应作为第三类失败单独统计**：**Machine Against the RAG** 证明，单篇"阻塞文档"即可让 RAG 对特定查询**彻底拒答**（NQ+GTR 上 Llama-3.1 达 **69%**），这类攻击影响可用性，单独检查答案事实性未必能识别；**总体可信度基准也未必反映阻塞风险**（DecodingTrust 把最易被阻塞的 Llama-2-7B 评为整体最可信）。这与 §7.7 提出的 **$1-(ACC+ASR)$ 缺口率**直接呼应——**若只报 ACC 与 ASR，就无法区分"被攻击成功"与"过度过滤导致答不出"**。建议开题在实验设计中**把拒答率单列**，并把它作为防御评测的**第三维**（效用 / 安全 / **可用性**）。此外，该工作还留下两个明确空白：**"通用阻塞文档"（阻塞一整类查询而非某查询的改写）是否存在**，以及**在数据库与目标不完全一致时能否生成阻塞文档**；这两项仍需结合相关近邻和具体系统继续检验。
+15. **"拒答"应作为第三类失败单独统计**：**Machine Against the RAG** 证明，单篇"阻塞文档"即可让 RAG 对特定查询**彻底拒答**（NQ+GTR 上 Llama-3.1 达 **69%**），这类攻击影响可用性，单独检查答案事实性未必能识别；**总体可信度基准也未必反映阻塞风险**（DecodingTrust 把最易被阻塞的 Llama-2-7B 评为整体最可信）。这与 §7.7 关于不能仅凭ACC和ASR区分回答结局的讨论一致——**若只报 ACC 与 ASR，就无法区分"被攻击成功"与"过度过滤导致答不出"**。建议开题在实验设计中**把拒答率单列**，并把它作为防御评测的**第三维**（效用 / 安全 / **可用性**）。此外，该工作还留下两个明确空白：**"通用阻塞文档"（阻塞一整类查询而非某查询的改写）是否存在**，以及**在数据库与目标不完全一致时能否生成阻塞文档**；这两项仍需结合相关近邻和具体系统继续检验。
 
 16. **将威胁模型作为明确的设计变量**：[CPA-RAG](<RAG安全证据地图_20261102.md#src-98ed81da37794846>)对模型指纹识别成功与失败的条件作了对比：在所测配置下，ASR@5分别为Qwen-Max的0.94→0.98、GPT-5.5的0.91→0.96、DeepSeek-v3的0.94→0.97。其主实验采用Qwen-Max影子模型，并不依赖成功识别目标家族；论文引用LLMmap称可通过8次交互识别模型家族，但图7两组的实际探测预算未单独确认。Table 9所报每篇毒文档构造8次API调用，与指纹识别的交互不可混同。Table 10比较默认配置ASR 0.98与分别移除生成、优化、相似度评估、多模型生成、多提示和初始化模块后的结果；这说明各组件在该设置中的贡献，不证明跨实际检索块的共同必要性。
 
@@ -2094,7 +2094,7 @@ flowchart TB
 <a id="src-fb1682dc8e7f28a5-h112"></a>
 ### 11.1 比较范围与阅读等级
 
-本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。目录母集为2026-11-02公开快照，逐篇核查截至2026-11-14。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
+本章比较开题A/B与近邻工作的机制、约束、结果及适用条件。2024–2026目录核查与潜在近邻正文阅读尚未穷尽，具体未读范围见各篇记录。
 
 本章文字与比较表直接概括研究机制、关键结果、对开题A/B的影响及适用边界；下列文档只用于进一步核验逐篇证据，不是理解本章结论的前置材料：
 
@@ -2114,6 +2114,7 @@ flowchart TB
 |---|---|---|
 | M01，LENS，arXiv2609.35155 | v1 *LENS: The Sum Is Worse Than the Parts for Set-Level Poisoning in Retrieval-Augmented Generation* 与v2 *Right Facts, Wrong Rule: Scope-Transfer Poisoning of Retrieval-Augmented Generation* 是同study `lens-2609.35155` 的两份report。v1 p2 Eq.2–3已有共同必要性约束，p5 Table2的Full ASR .852为返回包条件、E2E-Strict@5 .363为全部尝试；v2 Table2全部4,000次尝试TER47.1%允许部分命中，非严格组合成功率。Tables3/6配对池TER16.4%与Table7全部尝试防御TER11.9%不能互换。 | 两版均L3正文已读；正式venue/CCF未核。v1经验子集检查不是概率证书；v2 p3条件命题不等于实际提示审计无条件安全。 |
 | M01，LENS的防御解释 | 76.2%是显式探针下判定规则不适用，不能称原回答自我纠正。只核单条事实不足以保证规则适用，但不推出绕过一切防御；v2自身已有适用性审计，不能再称无人研究。v2 p4 §3.3保留isolation模式，p7 §4.4已有重分块检查。 | 两版本样本是否逐实例相同未核，不视为独立复现；不据新版摘要抹去v1组合先例。 |
+| TOIS ShieldRAG，*Push and Pull* | 正式PDF p19 Eq.15/16分别为金标子串ACC与目标子串ASR；两者评价集合可相同，亦不能仅凭同分母断言互补。p24 Table 11的21%→47%对应Vanilla与**Step I+II**，Step I only为多回答均值且无统一答案。 | 正式版31页，正文pp1–28 L3；[本地PDF](<../../../../科研数据库/20_Research/Papers/RAG安全文献/Push and Pull_ Defending against Retrieval Poisoning Attacks via Embedding Space Reshaping.pdf>)。证据地图旧L1仅记当时摘要核验，不覆盖正式PDF阅读结论。 |
 | AI-09，*Semantic Chameleon: Corpus-Dependent Poisoning Attacks and Defenses in RAG Systems* | §3.1、Table5中38%=19/50共同检索，overall=共同检索且隐蔽，仅6%=3/50；Table8生成实验每模型15场景。混合检索零结果不代表普适消除，Table7自适应条件仍有20–44%的原口径结果。§6.3 sleeper-only零输出仅支持trigger必要，不能证明双向共同必要性。 | L3，作者v1完整正文物理p1–8（实际PDF共9页，p8至References前）；参考文献未逐条审计，无独立附录。AISec2026页眉待官方身份核验，不授CCS主会A。 |
 | AI-01，*When Poison Fails After Retrieval: Revisiting Corpus Poisoning under Chunking and Reranking Pipelines*（CRCP） | §V.A尺寸为128/256/512 **characters**。TableII NQ/GPT-4o ASR92.19%；TableIV去reranker/coherence/boundary为55.8/43.4/61.3%，p9却称后两者只降19/11点且reranker降幅最大。保留正文/表冲突，不自行选一个解释，也不再授予确定的损失项贡献排序。 | L3，arXiv v1主文物理p1–10；参考文献未逐条追溯，正式venue未知。局部自包含不同于严格互补块。 |
 | D03，*TRIS: A Tri-Layer Retrieval Integrity Sieve Against Knowledge Poisoning* | 正式 **Findings of EMNLP 2026**，45250–45264，DOI `10.18653/2026.findings-emnlp.2122`。EMNLP整体列于CCF第七版B类，Findings为独立track且未单独评级。正式§6.2撤回公平TrustRAG配置下的自适应ASR优势；Appendix B.3中独立几何替换无显著差异（NQ p=.88、HotpotQA p=.20）。Table 5 live retrieval改善ASR/CleanAcc，但Appendix B.5在k=5时显著失稳；Appendix C显示两跳仿真型毒文档可绕过前两层，且Layer 3信号弱。 | L3，正式PDF pp1–15完整阅读；HotpotQA多跳证据仍会损失，Layer 3约2.9秒/查询、live-retrieval附加成本约16–19秒；无形式化鲁棒保证，测试集为子集，较弱自适应攻击覆盖与单次小样本基线限制外推。 |
@@ -2148,11 +2149,14 @@ A可继续检验的窄交集是：**只改一份真实长源文档，经未知�
 | **M07，*HARP: Hallucination Detection via Reasoning Subspace Projection***，arXiv2509.11536与正式版同study | **补收表示检测近邻**；ICLR2026 Conference官方身份已核，用户第七版A。arXiv v2正文pp1–10及指定附录为L3；正式版仅p1、7–10，L2。§3–4以unembedding参数矩阵SVD尾部方向投影token末层隐藏态，监督检测并以token最大分数聚合。 | 低能量/尾部方向用于检测已有先例。其矩阵、统计对象与B的query–chunk协方差尾谱不同，需生成器权重/隐藏态；token最大聚合不是clean query最大统计校准。访问权限不同须公平比较，不能由差异自动推出B整体创新。 |
 | **D07，`dscan`，*When Context Bites: Detecting RAG Poisoning via Document-Level Attention Collapse***，arXiv2608.06947v1与正式版同study | **SIGIR '26正式proceedings article**，ACM向Crossref登记的元数据为pp.4080–4086、DOI [10.1145/3805712.3809904](https://doi.org/10.1145/3805712.3809904)；六位作者与arXiv一致。DBLP[目录](https://dblp.org/db/conf/sigir/sigir2026.html)置于“Short Papers”栏目，但这不等于独立评审track；SIGIR按用户第七版目录为CCF-A（会议级）。L3仅覆盖arXiv v1正文，正式版未另行阅读。 | 直接机制近邻：生成时读取token/document注意力熵、方差、密度并训练线性分类器，故不能把轻量注意力统计+线性probe本身称为新机制。其信号来自生成器内部注意力，依赖相应访问权限；B应以检测阶段、统计对象、来源/命题关系和clean-query校准作精确区分，并在同等query误报与正常多跳保留条件下测增量。D-SCAN的AUC/F1结果不等于低query-FPR保证或良性多跳证据保留证明。 |
 | **D01 CEG-RAG / D03 TRIS / AI-10 COMA** | 原有CEG-RAG已有重排器集合交互，TRIS已有初筛后按需LLM；新增COMA已有跨来源信任与反事实核验。具体纠错和页码见§11.2–11.3。 | “RF替换MIL”“廉价检查+一次审查”“跨来源反事实核验”均不能单独视为空白。应比较同encoder/划分、同query误报与调用预算下的安全及多跳效用。 |
+| **TOIS ShieldRAG，*Push and Pull*** | TOIS 44(4), Article 86，2026，CCF-A；DOI `10.1145/3800948`；[正式31页PDF](<../../../../科研数据库/20_Research/Papers/RAG安全文献/Push and Pull_ Defending against Retrieval Poisoning Attacks via Embedding Space Reshaping.pdf>)，正文pp1–28 L3。pp9–14已有重叠窗口、答案关键词过滤、预训练表示及条件查询补充。 | 这些宽泛机制不能单独称作B首创；该文未报告防御专用编码器训练，不能声称“对方训练而B冻结”。它输出最终答案；B拟用四项统计和联合表示训练RF、结合来源/实体/命题关系选择候选块交LLM复核并决定是否删除，增量和效用均待同预算实证。 |
 | **N22，`latticemind_emnlp2026`，*LatticeMind: A Conflict-Aware Memory Primitive for Multi-Agent Systems*** | 新增结构近邻；EMNLP2026主会B；L2 PDF p1、3–4 §3.1–3.2。实体/slot/scope/时间/来源记录，symbolic checker与LLM reconciler已有正式先例。 | 持久多代理记忆写入不同于单query检索上下文；只验证credibility分支，coordination安全不能按设计当实证。来源权重与标签也不等于来源真实性。 |
 
 **CoordGuard的主要结果与比较边界（D29，§4.2–4.4）**：NQ always-filter的clean ACC由0.328降至0.192，损失13.6个百分点；Q0.8 gate为clean0.315/ASRexp0.331，另一个α0.1再生配置为clean0.308/ASRexp0.325，不能混作同一cell。α0.05/0.1对应clean intervention0.054/0.096，经验偏差不直接等于理论保证失败；保证仍依赖校准/测试交换性，未读附录论证不外推任意分布漂移。最强结果多为pool-injected候选池协议，另有corpus-indexed对照，两者分开。其短答案接口下RobustRAG/ReliabilityRAG退化实现、仅聚类分支SeCon对照，均不能代表完整原算法。几何随机向量下界0.067ms、真实几何约1.3ms、完整审计约33ms分列；合法热点共同证据也可能形成密集分量而被误删。完整正文已补读为L3；附录未全读，代码和正式录用仍待核。
 
-B目前可保留为**待验证增量**的是：在明确访问权限和污染预算下，联合表示与多统计是否带来稳定增益，物理来源/偏移、实体桥接及带时间/作用域条件的关系是否减少合法多跳误删，以及选择性核验是否在相同query级告警和调用预算下改善结果。分位/共形控制针对正常query干预率，不保证污染检出、回答正确或任意漂移安全；外部参照、来源名和LLM参数知识也不自动是真值。**不能再把“已有单文档校准，尚无query校准”作为B的创新结论。**
+**TOIS ShieldRAG的方法与成本边界**：对Top-$k$文档构造 $k-r+1$ 个重叠窗口，各自生成答案与解释；按有效答案的关键词频次过滤，只有关键词集合为空时才从解释中选句子或短语扩展查询并补充检索（pp9–14）。Push/Pull是作者对预期效果的解释，不能据此断言逐次向量距离必然改善。不触发扩展时，窗口生成需 $k-r+1$ 次LLM调用，另有一次最终答案生成，即共 $k-r+2$ 次（pp9–11）；p27报告扩展在少于15%的测试案例触发、额外1–2次调用，但pp12–14的扩展伪代码未列固定迭代上限，不能把经验值当端到端最坏界。
+
+B目前可保留为**待验证增量**的是：在明确访问权限和污染预算下，联合表示与四项统计、监督随机森林是否带来稳定增益，物理来源/偏移、实体桥接及带时间/作用域条件的关系是否减少合法多跳误删，以及选择性核验是否在相同query级告警和调用预算下改善结果。B在独立干净查询最大分数上做分位/共形校准，满足相应划分及交换性条件时针对**统计分支的query级告警**；它不自动控制跨块关系OR触发率或最终LLM误删率，也不保证污染检出、回答正确或任意漂移安全。外部参照、来源名和LLM参数知识也不自动是真值。**不能再把“已有单文档校准，尚无query校准”作为B的创新结论。**
 
 <a id="src-fb1682dc8e7f28a5-h116"></a>
 ### 11.5 原文结果与指标边界
@@ -2167,12 +2171,18 @@ B目前可保留为**待验证增量**的是：在明确访问权限和污染预
 | M05，`S-RAGSCOPE-2609.39075`，*RAGScope: A Leakage-Controlled, Cost-Aware Evidence-Gating Protocol for RAG Hallucination Triage* | L3，PDF pp1–8；方法/设置/结果/局限正文pp1–7。arXiv2609.39075v1，作者声明ICTAI2026录用；用户第七版ICTAI为C，正式出版/track/DOI仍待核。 | E版主结果与C版跨源测试分开，pooled AUROC .798不等于各任务领先；macro .706低于ROUGE .715，C版留源外macro .466限制校准迁移。HHEM只取前512token、DeBERTa前3句的对照不支持全面优于神经核验；6.22ms限给定环境。 |
 | M06，`S-GLOBALGATE-2606.19692`，*When Global Gating Is Enough: Admission-Time Hubness Control in Anisotropic Vector Retrieval Systems* | **正文L3**，PDF pp1–10，正文§1–14与主表全部；arXiv2606.19692v1，正式venue/CCF未知。 | pp7–8 Tables6–8中约1%误报仅限curated/random，天然hub为862/1000误报；不能统称所有良性仅1%。摄入侧几何检出不同于最终回答安全；百万规模合成计时不等于真实百万库效用验证。 |
 
+**TOIS ShieldRAG实验设置与结果**：威胁模型为攻击者向知识库注入文档、影响Top-$k$检索，防御者不知道哪些文档被污染及攻击目标（p7）；默认Top-5、每query恶意文档不超过一半。四个QA数据集、七个模型；作者称每数据集抽100问，70问评估、30问调参且不重叠（pp15–16）。p19 Eq.15/16以金标或目标答案子串命中计算ACC/ASR；作者在ASR说明后报告对结果进行了人工核查。p20 Table 5中NQ/Vicuna-7b：Vanilla 21.0%/0.52、RobustRAG 39.0%/0.25、ShieldRAG句子版50.0%/0.14；但HotpotQA/Llama3.1-8b中RobustRAG为27.0%/0.06、句子版34.0%/0.10。p21 Table 6的MS-MARCO/GPT4o-mini中RobustRAG为78.0%/0.04，句子版77.0%/0.09，短语版80.0%/0.06；不能称逐格同时优于全部基线。
+
+**正常效用、污染压力与分母**：p22 Table 8的干净NQ答案ACC在Vicuna-7b为58%→57%、Llama3-8b为61%→60%，不等于正常query误删率或多跳证据保留保证。p26 Table 12在Top-5中恶意文档数为3和4时，ShieldRAG分别为32%/0.35和24%/0.52（ACC/ASR），属于超出主设定的压力测试。p16称每数据集70条最终评估查询，但p20 Table 5的NQ/Vicuna Vanilla ACC为21.0%；若该格确为同一组70条查询上单次、等权的二值均值，则14/70=20.0%、15/70≈21.4%，无法得到21.0%。因此逐表有效分母或汇总方式须作者进一步澄清，不能反推人数或假定原因。
+
 <a id="src-fb1682dc8e7f28a5-h117"></a>
 ### 11.6 结论的适用范围
 
 A/B比较以明确版本、分母、正式track和实际阅读范围为依据；未读范围、出版身份及样本重叠未知项见[证据地图](<RAG安全证据地图_20261102.md>)。
 
 源内矛盾不由综述替作者修补：CRCP消融、CLD-KB的OR误报配置、RAGScope个别表差值与正文口径等保留待澄清。作者观点与本文比较意见分开，COMA子集证书推论和RAGuard-Cheng概率乘积的条件问题不能改写成作者自认局限。ContextCite的贡献归因不等于事实支持；ConflictBank中的冲突不必然恶意；RAGTruth忠实性也不能排除忠实复述污染源。跨来源、参数知识或“无幻觉”标签都须另核真实性与适用范围。
+
+**TOIS ShieldRAG理论界限（p14，Eq.13–14）**：作者称当 $p>0.5$ 时窗口良性多数概率 $q(p,r)$ 随窗口大小 $r$ 单调增加；按其Eq.13代入即有 $q(0.8,1)=0.8$、$q(0.8,2)=0.64$，构成反例。窗口重叠会共享文档，窗口事件的依赖以及从窗口多数到关键词、最终答案的映射也须单独论证；不能把该分析直接当作最终答案正确或正常query误删概率的证书。
 
 后续以同一study预算、原始query划分、相同访问/调用成本、正常多跳保留和分布迁移进行公平比较，再判断选题增量。
 
@@ -2313,7 +2323,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 |[Synchronous Faithfulness Monitoring for Trustworthy Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-a8050ca8edc2c138>)|EMNLP2024 B；正式同17页PDF主文L3；L3|多统计与轻量聚合已有近邻；输出句与检索块、代理模型成本、空输出分母、BT/Full权衡、模型有效规模及Table6异常分别保留。|
 |[Making Retrieval-Augmented Language Models Robust to Irrelevant Context](<RAG安全证据地图_20261102.md#src-1f36c6686aec244e>)|ICLR2024 A；作者v2同22页PDF主文L3；L3|正常多跳、现成NLI回退与噪声混合训练已有。双轨迹预算、失败赋分、NQ逐格反例、OOD Fermi下降及低蕴含正常收益分别保留；作者版与官方终版不互授。|
 |[Toward Robust RALMs: Revealing the Impact of Imperfect Retrieval on Retrieval-Augmented Language Models](<RAG安全证据地图_20261102.md#src-c574315361b8a3f0>)|TACL2024 B；正式同17页PDF由L1补为L3；L3|冻结生成器下不可回答/冲突识别与干扰交叉已有直接评估；拒答效用、ARA条件RAD、冲突检测与普通QA答案转移分列。83/100人工冲突抽查与表文比较范围均保留；不换算B最终query删块风险。|
-|[Push and Pull: Defending against Retrieval Poisoning Attacks via Embedding Space Reshaping](<RAG安全证据地图_20261102.md#src-e15cbe3ad8b46f85>)|TOIS2026 A；同正式31页PDF主文L3补读；L3|重叠窗口共识、预训练表示和查询补充已有；Algorithm1另含最终生成，Algorithms2/3扩展循环未列固定上限。正常NQ答案ACC与最终query删块风险分开，组件消融有单位差异及图表配置待核。|
+|[Push and Pull: Defending against Retrieval Poisoning Attacks via Embedding Space Reshaping](<RAG安全证据地图_20261102.md#src-e15cbe3ad8b46f85>)|TOIS2026 A，DOI `10.1145/3800948`；[正式31页PDF](<../../../../科研数据库/20_Research/Papers/RAG安全文献/Push and Pull_ Defending against Retrieval Poisoning Attacks via Embedding Space Reshaping.pdf>)正文pp1–28 L3。|pp9–14的窗口、关键词及条件扩检已有；未报告防御专用编码器训练。p19 Eq.15/16查询集合可重合；p24 Table 11中21%→47%是Vanilla→Step I+II，Step I only为多回答均值。正常ACC、分母疑点、重叠窗口理论与最终误删风险分开，详见§11.4–11.6。|
 |[EcoSafeRAG: Efficient Security through Context Analysis in Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-e4907bf618201377>)|Findings of EMNLP2025；同正式PDF主文L3补读，不授主会CCF；L3|已有无额外训练权重的句级/上下文多样性过滤和预算生成。绝对阈值selected文字与删除伪代码、主结果与关闭阈值消融配置、句级统计与最终query风险须分开；正常效用有基线负例。|
 |[FaithfulRAG: Fact-Level Conflict Modeling for Context-Faithful Retrieval-Augmented Generation](<RAG安全证据地图_20261102.md#src-9dba4e24f50aded4>)|ACL2025 Main Long A；同SHA完整主文L3升级；L3|补原缺p2及p10主文续文，事实外显/对齐/充分性回补已占B宽机制。逐任务消融、额外底座和embedding均有负例；旧ACC/分母/表格关系未决继续保留，零新研究/PDF/独立复现。|
 |[Retrieval-Augmented Multilingual Knowledge Editing](<RAG安全证据地图_20261102.md#src-a5923f45d1315841>)|ACL2024 Main Long A；主文及指定附录L3；L3|新增多语言/反事实编辑对照：相关性门控和LLM冻结已有，但XLM-R需训练；Reliability非事实安全、Locality非删块风险。Portability负例、小库/成本单位和A.8文字对表差异限制外推。|
@@ -2665,7 +2675,7 @@ TOIS 44(1)冻结目录的29项摘要已逐条筛查；ACM当前页403，故这�
 ### 11.10 对开题定位的综合结论
 
 - **A方向**：撤回“无害片段组合”“多文档协同”“未知chunker”或“RAG内容过滤”本身的宽泛首创表述。EMNLP 2023的 *Poisoning Retrieval Corpora* 与COLM 2025录用的dense-retrieval后门已占据持久检索语料投毒及触发式检索后门生态位；Typos、BadRAG、Phantom分别占据查询配对低层扰动、语义触发组投毒和单passage自然触发后门近邻。它们仍未覆盖：攻击者控制一份真实长源，经未知受害chunker生成不同同源块；同一正常query实际共同召回这些块；逐块与联合删除实验表明多块共同必要；并在真实生成端点观察结果。现有记忆、日志、提示分解、多模态单样本攻击、图检索及普通RAG投毒工作分别覆盖部分机制，不能合并为已完成或未完成的全域新颖性证明。
-- **B方向**：将来源权限/血缘、检索准入、证据支持证书、query级OOD拒答和RAG上下文过滤作为分立基线；Evidence Laundering已直接研究相关来源被误计作独立佐证并在回答合成前做来源门控，故不能宣称首次处理来源依赖，但其静态骨架门控在自适应改写下召回率低，也未识别恶意RAG块或控制clean-query最终OR误删。TDSC 2024的 *Provably Secure Decisions* 从形式化决策角度进一步表明，来源独立性与串谋假设会改变鲁棒性结论；它没有RAG检索、文本chunk或LLM事实核验，且其唯一真值/共享证据等条件不能直接移植。该文引用的CSF 2020前序仍待全文对照。把MMAgent-R²的多模态候选Reject/扩召回作为检索效用参照，把 *Can LLMs Take Retrieved Information with a Grain of Salt?* 作为外部置信信号校准/遵从参照，二者都不列为安全检测器；SAGE则是语料替换式隐私保护近邻，不检测投毒或恶意块。比较时区分候选级误隔离、clean-query最终OR删块、accepted-and-wrong、来源真实性和正常多跳效用，并统一访问权限、query划分、污染预算与调用成本。
+- **B方向**：将来源权限/血缘、检索准入、证据支持证书、query级OOD拒答和RAG上下文过滤作为分立基线；TOIS ShieldRAG已使用窗口共识、答案关键词与预训练表示进行条件扩检，B的差异应落实于四统计、监督RF及来源/实体/命题关系和最终候选块处理，并在同预算下验证，不能依赖“对方训练编码器、B冻结”的未证实区分（正式PDF pp9–14）；Evidence Laundering已直接研究相关来源被误计作独立佐证并在回答合成前做来源门控，故不能宣称首次处理来源依赖，但其静态骨架门控在自适应改写下召回率低，也未识别恶意RAG块或控制clean-query最终OR误删。TDSC 2024的 *Provably Secure Decisions* 从形式化决策角度进一步表明，来源独立性与串谋假设会改变鲁棒性结论；它没有RAG检索、文本chunk或LLM事实核验，且其唯一真值/共享证据等条件不能直接移植。该文引用的CSF 2020前序仍待全文对照。把MMAgent-R²的多模态候选Reject/扩召回作为检索效用参照，把 *Can LLMs Take Retrieved Information with a Grain of Salt?* 作为外部置信信号校准/遵从参照，二者都不列为安全检测器；SAGE则是语料替换式隐私保护近邻，不检测投毒或恶意块。比较时区分候选级误隔离、clean-query最终OR删块、accepted-and-wrong、来源真实性和正常多跳效用，并统一访问权限、query划分、污染预算与调用成本。
 - **证据口径**：正式主会、Findings、Industry、poster及预印本身份分列；Findings不继承主会CCF等级，poster未确认track时不直接给单篇CCF-A；L1摘要候选不写成全文结论。引用数尚未统一核查，按“先相关性、后核引用”的顺序保留未观测状态。
 - **期刊覆盖与未闭合项**：截至2026-11-14，TKDE 2024–2026已枚举36期、1,759条目录；2024和2025的官方摘要分别筛查666篇和512篇，2026第1–11期筛查530篇，第12期49条另核。TIFS 2024–2026官方年度快照分别筛查732、928、650篇非空摘要；跨源年度集合与逐期目录是不同覆盖口径，issue级目录仍未完全闭合。JMLR v25/v26的731篇及v27的239项官方目录已筛查；TDSC 23(6)的94篇题名／摘要已筛查。TOIS部分历史观察缺原始DOM或DOI清单，不能计为可重放的年度闭合；TPAMI 48(12)截至2026-11-15未获官方目录。各刊查询来源、快照日期、候选和缺口见[元数据覆盖表](<RAG安全文献补查元数据_20261102.md#src-20261114-journal-audit-status>)。
 - **近邻边界**：KEPo占据GraphRAG知识演化投毒近邻；GRASP、*Exposing Privacy Risks*、*The Good and The Bad*、*Beyond Text*、五篇成员推断研究与CopyBreakRAG属于不同形式的机密性/隐私抽取近邻；2026 RAGLeak是生成器供应链隐私后门，CanaryRAG是运行时反外泄防护，均不等于知识库投毒或恶意块检测。ThreadRAG与LiteSemRAG是正常图检索/语义异常近邻，不是恶意检测；NoLLMRAG仅为LiteSemRAG引用的方法谱系线索，原文未读、投稿被拒，不能算作CCF-A接收成果。攻击对象、权限、指标与A/B终点须分别比较。
