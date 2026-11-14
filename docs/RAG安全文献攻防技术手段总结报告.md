@@ -2540,6 +2540,10 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 
 | 工作 | 已确认的机制与证据 | 对A的边界 |
 |---|---|---|
+| [CoverPoison](<RAG安全证据地图_20261102.md#src-2083f47313dbc764>) | Findings EMNLP 2026，正式16页L3；以100条投毒文本覆盖每数据集500个已知目标查询，主终点检查回答是否包含目标字符串；HotpotQA留出400个查询时为206/400。 | 对代理模型优化和跨查询覆盖是直接近邻，但其独立文本覆盖不同查询，不验证单一真实长源未知分块后的同源双块共同召回和逐块必要性；留出查询不等查询无关。 |
+| [Vis-Poison](<RAG安全证据地图_20261102.md#src-0604ce1e28ea9cd8>) | Findings EMNLP 2026，正式15页L3；针对已知问题编辑并注入一张图像，在两种主要Top-1多模态检索管线中，30k背景库报告端到端ASR 40.16%–65.40%。 | 成功率的分母为构造并通过验证的样本；图像与文本多块条件不同。其图像检测及caption检查也不直接验证开题B的文本跨块防御。 |
+| [CodePoisonRAG](<RAG安全证据地图_20261102.md#src-20261115-codepoisonrag>) | arXiv:2609.02774v1，审稿中；16页作者稿正文及附录L3。每任务一个函数级污染样本，85个任务对应的85条同时加入12,053条良性代码；Code Llama无防御ASR为79/85，CodeGuarder下60/85。 | 检索与生成联合成功的代码生成近邻；基于LLM裁判，裁判改变时结果明显变化，且没有未知受害分块器、同源角色块共同召回或逐块必要性。 |
+| [RAG-Pull](<RAG安全证据地图_20261102.md#src-20261115-rag-pull>) | arXiv:2510.11195v2，NeurIPS 2026 AIWILD工作坊接收，非主会；41页L3。以不可见Unicode扰动操纵代码检索；黑盒仍需要查询或语料控制及相似度反馈。 | 单危险目标召回不同于同源双块共同必要；部分生成率条件于目标已被检索，表4面板分母及与表3对应存在未解释冲突，不可当作统一端到端成功率。 |
 | [Do Reasoning LLMs Refuse What They Infer in Long Contexts?](<RAG安全证据地图_20261102.md#src-20261110-do-reasoning-refuse>) | arXiv:2602.08874v2；NeurIPS 2026官方poster #149897，具体track未核。以中性query和语义不完整片段构成长上下文组合推理攻击，评测15个前沿模型、最长64k tokens。 | 直接限制“恶意意图拆分后由模型组合”这一宽泛首创，但没有持久RAG语料、真实检索器、受害者未知chunker或实际检索块的逐块必要性实验。 |
 | [DrAttack: Prompt Decomposition and Reconstruction Makes Powerful LLMs Jailbreakers](<RAG安全证据地图_20261102.md#src-20261110-drattack>) | Findings of EMNLP 2024，正式PDF pp.13891–13913；分解、良性示例重构和同义词搜索。正式PDF报告GPT-4成功率80%、较此前方法高65个百分点。 | 提示级越狱，不操纵持久语料或retrieved chunks；正式PDF与arXiv/项目页的指标不同，比较时以明确版本为单位。Findings不自动继承EMNLP主会CCF等级。 |
 | [Universal Vulnerabilities in Large Language Models: Backdoor Attacks for In-context Learning](<RAG安全证据地图_20261102.md#src-20261114-emnlp24-iclattack>) | EMNLP 2024主会，CCF-B；正式PDF pp.11507–11522，16页L3。ICLAttack无需微调，通过投毒演示样例或演示提示植入上下文触发后门；作者报告OPT模型三数据集平均ASR为95.0%。 | 是示例/提示上下文投毒先例，不含持久RAG知识库、检索器、chunker或Top-K。附录C的摘要生成实验明确修改演示样例标签，clean-label不能推广到全部任务；详见[证据地图](<RAG安全证据地图_20261102.md#src-20261114-emnlp24-iclattack>)。 |
