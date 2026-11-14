@@ -4,7 +4,7 @@
 
 - **作者**：Yu Feng、Nathaniel Weir、Kaj Bostrom、Sam Bayless、Darion Cassel、Sapana Chaudhary、Benjamin Kiesl-Reiter、Huzefa Rangwala。
 - **正式身份**：[ICLR 2026 Conference论文](https://proceedings.iclr.cc/paper_files/paper/2026/hash/d7b3cef7c31b94a4a533db83d01a8882-Abstract-Conference.html)，[OpenReview接受决定为Poster](https://openreview.net/forum?id=zHuV3Vatov)，按第七版推荐目录为CCF-A；会议官方书目列出版日期2026-04-20及页码133170–133208。作者预印本为[arXiv:2511.04662](https://arxiv.org/abs/2511.04662)，`10.48550/arXiv.2511.04662`是预印本DOI；未确认独立会议版DOI。
-- **实际阅读**：[本地论文PDF](<../../../../../../../科研数据库/20_Research/Papers/RAG安全文献/VeriCoT_ Neuro-symbolic Chain-of-Thought Validation via Logical Consistency Checks.pdf>)共39个物理页，SHA-256 `13d257c1069267fbcd9f4e20c8e64e030702968c46fdd8929df9af25dde33d71`，首页标明ICLR 2026；正文p1–10已读，p11–14参考文献按相关主题扫描，p15–39附录逐页阅读。正文阅读等级L3；未复现代码、求解器或端到端实验。
+- **实际阅读**：[本地论文PDF](<../../../../../../../科研数据库/20_Research/Papers/RAG安全文献/VeriCoT_ Neuro-symbolic Chain-of-Thought Validation via Logical Consistency Checks.pdf>)共39个物理页，SHA-256 `13d257c1069267fbcd9f4e20c8e64e030702968c46fdd8929df9af25dde33d71`，与会议官网下载的正式PDF字节级SHA-256一致；正文p1–10已读，p11–14参考文献按相关主题扫描，p15–39附录逐页阅读。正文阅读等级L3；未复现代码、求解器或端到端实验。
 - **制品与引用**：未核到可明确归属于该论文的公开代码或专用数据、权重；未找到不等于不存在。论文使用公开研究基准，但不能把第三方基准说成作者发布的专用制品。Google Scholar引用数及完整优先级待统一核验。
 
 ## 方法与证据来源
