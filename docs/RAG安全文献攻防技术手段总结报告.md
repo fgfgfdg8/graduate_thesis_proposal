@@ -2528,6 +2528,8 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 |---|---|---|
 | [Do Reasoning LLMs Refuse What They Infer in Long Contexts?](<RAG安全证据地图_20261102.md#src-20261110-do-reasoning-refuse>) | arXiv:2602.08874v2；NeurIPS 2026官方poster #149897，具体track未核。以中性query和语义不完整片段构成长上下文组合推理攻击，评测15个前沿模型、最长64k tokens。 | 直接限制“恶意意图拆分后由模型组合”这一宽泛首创，但没有持久RAG语料、真实检索器、受害者未知chunker或实际检索块的逐块必要性实验。 |
 | [DrAttack: Prompt Decomposition and Reconstruction Makes Powerful LLMs Jailbreakers](<RAG安全证据地图_20261102.md#src-20261110-drattack>) | Findings of EMNLP 2024，正式PDF pp.13891–13913；分解、良性示例重构和同义词搜索。正式PDF报告GPT-4成功率80%、较此前方法高65个百分点。 | 提示级越狱，不操纵持久语料或retrieved chunks；正式PDF与arXiv/项目页的指标不同，比较时以明确版本为单位。Findings不自动继承EMNLP主会CCF等级。 |
+| [Universal Vulnerabilities in Large Language Models: Backdoor Attacks for In-context Learning](<RAG安全证据地图_20261102.md#src-20261114-emnlp24-iclattack>) | EMNLP 2024主会，CCF-B；正式PDF pp.11507–11522，16页L3。ICLAttack无需微调，通过投毒演示样例或演示提示植入上下文触发后门；作者报告OPT模型三数据集平均ASR为95.0%。 | 是示例/提示上下文投毒先例，不含持久RAG知识库、检索器、chunker或Top-K。附录C的摘要生成实验明确修改演示样例标签，clean-label不能推广到全部任务；详见[证据地图](<RAG安全证据地图_20261102.md#src-20261114-emnlp24-iclattack>)。 |
+| [Compromising LLM Driven Embodied Agents With Contextual Backdoor Attacks](<RAG安全证据地图_20261102.md#src-20261114-tifs-contextual-backdoor>) | IEEE TIFS 20 (2025), pp.3979–3994，CCF-A；已完整阅读24页arXiv v1，L3，正式IEEE排版版未逐页核对。攻击者污染上下文示例，以迭代式ICL优化和文本/视觉双触发令具身代理生成带缺陷的程序，并评估机器人和自动驾驶任务。 | 直接说明上下文示例可承载后门，但论文未评估持久RAG语料、检索、未知chunker或Top-K共同召回；不能等同于A的同源块攻击。版本与代码边界见[证据地图](<RAG安全证据地图_20261102.md#src-20261114-tifs-contextual-backdoor>)。 |
 | [MemPoison: Uncovering Persistent Memory Threats and Structural Blind Spots in LLM Agents](<RAG安全证据地图_20261102.md#src-20261108-mempoison>) | NeurIPS 2026官方poster #139557；正文选择性阅读。覆盖单记录、跨记录组合及触发式持久记忆污染。 | 约束跨多条无害表象记录组合生效的宽泛新颖性；Agent长期记忆与外部知识库单一长源的未知分块不是同一攻击面。 |
 | [FragFuse](<RAG安全证据地图_20261102.md#src-20261108-fragfuse>) | USENIX Security 2026，CCF-A；跨交互查询片段存入长期记忆、再检索融合，报告平均BSR 86.3%、有害任务成功率41.1%。 | 访问控制与Agent记忆通道攻击，不是外部RAG事实投毒或同源chunk检测。 |
 | [Context Contamination in LLM Analysis of Network Security Logs](<RAG安全证据地图_20261102.md#src-20261108-loginject>) | USENIX Security 2026，CCF-A；Context Stitching把分别通过逐条过滤的日志片段放入同一分析批次。 | 多条可控日志的批次共现限制“多检索单元协同拼接”的宽主张；不等于一份真实长源经未知chunker形成的同源块。 |
@@ -2561,6 +2563,8 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 <a id="src-fb1682dc8e7f28a5-h120"></a>
 
 ### 11.9 防御、来源治理与正常效用近邻
+
+**存储完整性与内容真实性是不同安全属性**：[TLARDA: Threshold Label-Aggregating Remote Data Auditing in Decentralized Environment](<RAG安全证据地图_20261102.md#src-20261114-tifs25-tlarda>)（IEEE TIFS 20, 2025, pp.3146–3160；CCF-A）以门限密钥分享和可验证远程挑战审计已加标签的外包文件，检查存储数据是否与受认证版本一致。它不能判定标签签发前上传的内容是否恶意或虚假，也不核验检索Top-K完整性、语义真伪或正常query误删；因此是存储层完整性参照，不是B的检索时语义检测器。协议、实验和假设见[逐篇证据记录](<RAG安全证据地图_20261102.md#src-20261114-tifs25-tlarda>)。
 
 [LDAR](<RAG安全证据地图_20261102.md#src-fdf880a16bd82b0d>)、[FrugalRAG](<RAG安全证据地图_20261102.md#src-1fd93fc464feb121>)与[Layer-Wise OOD](<RAG安全证据地图_20261102.md#src-6088a1e9a703a8cb>)补充证据选择、早停、多层异常分数及参考分布方面的比较基线；[DUAL-Know](<RAG安全证据地图_20261102.md#src-14ed2eb127a4a4e0>)与[ExplainHM++](<RAG安全证据地图_20261102.md#src-feffdf37f3db2a5c>)进一步约束路径不确定性/答案仲裁及检索样例支持竞争解释的宽泛新颖性主张。这些机制均不能替代恶意块检测和独立clean-query最终OR误删风险评估。
 
