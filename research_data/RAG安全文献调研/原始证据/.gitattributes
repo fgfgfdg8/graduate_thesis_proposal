@@ -1,0 +1,10 @@
+# Exact-byte exceptions for the three CRLF evidence files below.
+# Source identities are recorded in audit/链接来源迁移记录_20261114.jsonl.
+# Retain original CRLF bytes; apply no blanket rule to other evidence.
+
+# r05eae5723e4edbb0 source SHA-256: eb6e955f6ac6d7f997f304bdf80cf748917eae7a944d7b61c67ee764c1c20a1e
+链接来源快照/eb6e955f6ac6d7f997f304bdf80cf748917eae7a944d7b61c67ee764c1c20a1e.md -text
+# r30bf2437b76f567f source SHA-256: 3e7b0639ddd75135b71f40debc85ff4bea1c47fdc1a82fdec7cb2a493cf44c06
+链接来源快照/3e7b0639ddd75135b71f40debc85ff4bea1c47fdc1a82fdec7cb2a493cf44c06.md -text
+# r5f7e74258327bdd5 source SHA-256: c4381bf19499269f0340ee61df8f6f149868ad7592370aadf96aaf79aec5b695
+catalogs/local_catalog209_parent_sources/candidate_queue.md -text
