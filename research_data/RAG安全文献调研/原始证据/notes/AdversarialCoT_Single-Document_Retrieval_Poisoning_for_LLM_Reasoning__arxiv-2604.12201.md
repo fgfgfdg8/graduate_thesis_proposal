@@ -9,7 +9,8 @@ checked_date: 2026-11-15
 ## 身份、版本和阅读范围
 
 - **作者**：Hongru Song、Yu-An Liu、Ruqing Zhang、Jiafeng Guo、Maarten de Rijke、Yixing Fan、Xueqi Cheng。
-- **正式发表**：[SIGIR 2026 Short Papers](https://sigir2026.org/en-AU/pages/program/accepted-papers)，会议级别为CCF-A，依据用户提供的第七版目录[第35页文字层](<../catalogs/local_bib_round63_sources/CCF/p35.txt>)；ACM会议论文集pp.4145–4150，DOI [10.1145/3805712.3809838](https://doi.org/10.1145/3805712.3809838)。Crossref登记线上出版日期为2026-07-19。
+- **正式发表**：[SIGIR 2026 Short Papers](https://sigir2026.org/en-AU/pages/program/accepted-papers)，[官方日程](https://sigir2026.org/program.html)将本文标为P067 Short；ACM会议论文集pp.4145–4150，DOI [10.1145/3805712.3809838](https://doi.org/10.1145/3805712.3809838)。Crossref登记线上出版日期为2026-07-19。
+- **会议级别与论文范围**：SIGIR会议在用户提供的第七版CCF目录[第35页文字层](<../catalogs/local_bib_round63_sources/CCF/p35.txt>)列为A类。依[CCF第七版目录说明](https://www.ccf.org.cn/Academic_Evaluation/By_category/)，目录所称会议论文指Full/Regular paper，Short paper不计入目录考虑范围；因此本文虽发表于CCF-A会议，其Short论文不在该目录所称会议论文的考虑范围，不能仅凭会议级别认定为目录范围内的A类论文。此处只说明CCF目录口径，不代替各单位的具体评价规定。
 - **实际阅读**：[arXiv v1作者稿](<../../../../../../../科研数据库/20_Research/Papers/RAG安全文献/AdversarialCoT_ Single-Document Retrieval Poisoning for LLM Reasoning.pdf>)，2026-04-14，物理p1–5正文及p6参考文献全部阅读；L3仅对应该版本，不声称与ACM出版社排版版逐字一致。PDF共6页，SHA-256 `5d2ed7810f94d1677de9ca632a1021e64fef6cd35f452457ca12377c48b6338c`。
 - **BibTeX**：沿用现有 `song2026adversarialcot`；[作者案例仓库](https://github.com/ruyisy/AdversarialCoT_case)当前主分支为说明和案例图，未见完整实验代码或release，未复现。Google Scholar引用数待统一核验。
 
