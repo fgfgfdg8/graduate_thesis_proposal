@@ -2622,6 +2622,10 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 
 **知识图谱异常检测的跨域边界**：[SeIoT: Detecting Anomalous Semantics in Smart Homes via Knowledge Graph](<RAG安全证据地图_20261102.md#src-20261114-tifs24-497-seiot-fulltext>)（IEEE TIFS 19, 2024, pp.7005–7018；CCF-A；DOI [10.1109/TIFS.2024.3428856](https://doi.org/10.1109/TIFS.2024.3428856)；[论文库PDF](<../../../../科研数据库/20_Research/Papers/RAG安全文献/SeIoT_ Detecting Anomalous Semantics in Smart Homes via Knowledge Graph.pdf>)）从加密TCP/IP/BLE流量抽取设备动作指纹，构造含设备、环境属性和云端节点的知识图谱，并分别检测空闲流量的周期异常与设备—环境交互异常。其两个月实验覆盖一套Mijia智能家居中的19台设备；威胁是设备恶意流量及自动化命令拦截/注入，不是RAG检索证据。它可作关系上下文异常建模的跨域参考，但不检测虚假文档、检索投毒、事实冲突或LLM生成风险；完整方法、实验和限制见[逐篇证据记录](<RAG安全证据地图_20261102.md#src-20261114-tifs24-497-seiot-fulltext>)。
 
+**参考资料自检与安全检测的边界。** [WebGLM](<RAG安全证据地图_20261102.md#src-5c25525631c10bcc>)（TOIS 2025，CCF-A；正式版正文和附录L3）先检索网页段落，再为各参考生成与查询有关的note，证据不足时可提示无法回答。其参考资料采用实验使用200个查询、每查询5个候选，主要人工评价使用272个问题；训练样本质量过滤属于离线步骤。该设计与B的证据审查存在方法近邻，但没有验证恶意检索块检测、联合投毒或查询级误删控制。
+
+**图模型解释性的远邻。** [GraphOracle](<RAG安全证据地图_20261102.md#src-eb904e08e2f6d721>)（TKDE 2026，CCF-A；仅arXiv v1作者稿正文L3）构造图—子图依赖特征，并通过特征遮蔽评价类别解释的忠实性。它可提醒我们分别评估移除与保留的影响，但模型特征遮蔽及其平均忠实性不能证明A中两个同源检索块的共同必要性，也不能证明B在正常多跳问题上的保留率或误删率；期刊终版尚未阅读。
+
 [LDAR](<RAG安全证据地图_20261102.md#src-fdf880a16bd82b0d>)、[FrugalRAG](<RAG安全证据地图_20261102.md#src-1fd93fc464feb121>)与[Layer-Wise OOD](<RAG安全证据地图_20261102.md#src-6088a1e9a703a8cb>)补充证据选择、早停、多层异常分数及参考分布方面的比较基线；[DUAL-Know](<RAG安全证据地图_20261102.md#src-14ed2eb127a4a4e0>)与[ExplainHM++](<RAG安全证据地图_20261102.md#src-feffdf37f3db2a5c>)进一步约束路径不确定性/答案仲裁及检索样例支持竞争解释的宽泛新颖性主张。这些机制均不能替代恶意块检测和独立clean-query最终OR误删风险评估。
 
 TOIS 44(1)冻结目录的29项摘要已逐条筛查；ACM当前页403，故这里只报告历史目录/DOM快照，不称为现行官网复核。[Large Language Models for Information Retrieval: A Survey](https://doi.org/10.1145/3748304)部分覆盖RAG鲁棒性与攻击，是引文发现入口而非新方法；[Robust Neural Information Retrieval](<RAG安全证据地图_20261102.md#src-9d719394eb4350ca>)的45页arXiv v2已全文读，TOIS正式48页未读。[PDQPP](<RAG安全证据地图_20261102.md#src-1c20cd5b1f722fd5>)做query级检索表现预测，不估计证据为假的概率或误删风险；LLM4DSR、DIME、Knowledge Graph Pruning与CorpusBrain++分别提供交互去噪、嵌入维度剪枝、推荐图谱效用保持剪枝及动态语料更新参考，均非RAG安全检测。摘要提及RAG的Document Intelligence综述全文未取得，安全覆盖仍不确定，不能写成已排除。
