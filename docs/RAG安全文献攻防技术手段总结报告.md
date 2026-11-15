@@ -866,7 +866,7 @@ timeline
 | **白盒检索器** | BadRAG、PoisonedRAG(W)、PRA-RAG、Who Taught、Semantic Chameleon、TrojanRAG、Joint-GCG(检索器+生成器双白盒) | PRA-RAG：*"assumed to have white-box knowledge of the retriever because many retrievers (e.g., Contriever, ANCE) are publicly available"*；BadRAG：*"white-box access to the RAG retriever … practical as white-box retrievers like LLaMA Embedding, JinaBERT, Contriever are freely available on HuggingFace"*；**Joint-GCG**（本地文献中攻击者能力最强）：*"We assume the attacker has full white-box access to both the retriever and the generator models"* |
 | **黑盒检索器** | PoisonedRAG(B)、GASLITE、GARAG、SIREN、IPI、HijackRAG(B)、MINJA、SilentRetrieval、CatPoison、CorruptRAG、AuthChain、Phantom、Poison-RAG、ReGENT、ToxicRAG、**MIRAGE**（连**用户查询分布**也不可知）、**FlippedRAG**（连**语料**也不可知，只保留"可查询系统"这一能力）、**RAG Paradox**（**连检索器类型也不知**，且**语料边界由系统披露的来源反推**）、**DIGA**（**不需梯度、不需训练、不需知道检索器类型**，且**跨检索器迁移在稀疏 BM25 上反而最好**）、**Machine Against the RAG**（**查询级黑盒**：不知嵌入与 LLM、**不知 k**、看不到 logits） | IPI：*"Our black-box assumption rules out attacks that require white-box access to parameters"*；CatPoison：*"black-box LLMs (e.g., GPT-4, Llama-2) do not provide gradients, and even with white-box access, the computational cost is prohibitive"* |
 | **灰盒** | On the Vulnerability、RADE | On the Vulnerability：*"the attacker lacks access to the exact queries but has access to their semantically equivalent counterparts"*；RADE：*"defense-aware grey-box semantic camouflage"* |
-| **无检索器访问** | RAGSieve（威胁模型侧）、Practical Poisoning | RAGSieve：*"The operator controls … but does not know the targeted queries, payloads, attack construction, or poisoned documents"* |
+| **不依赖检索器参数的攻击构造** | [Practical Poisoning（CorruptRAG）](<RAG安全证据地图_20261102.md#src-193a265b7ff610a3>) | 攻击者知道目标查询，并能向知识库注入单条恶意文本；论文所述黑盒不要求获得检索器或生成器参数，不能据此认定其没有任何目标系统访问。RAGSieve是守方检测器，运行时需要查询和检索结果，不属于本行的攻击者能力。 |
 
 > **补充说明**：**Human-Imperceptible Retrieval Poisoning** 面向 LLM 应用框架，**未给出形式化威胁模型**（仅有攻击目标描述），是本地已读文献中**评测规范性较弱**的一篇；其价值在于把投毒从"数据集层"下沉到**应用框架层的解析/引用环节**。
 
@@ -944,7 +944,7 @@ timeline
 |------|------|----------|
 | **具体已知查询（T1）** | PoisonedRAG、BadRAG、HijackRAG、TrustRAG、Who Taught、Practical Poisoning、SilentRetrieval、InceptionRAG、CEG-RAG、**RAG Paradox**、**ToxicRAG** | InceptionRAG：*"an attacker selects an arbitrary set of N target queries … For each target query qi, the attacker specifies an attacker-desired target answer a*i"* |
 | **主题/概念级（T2 方向）** | **Topic-FlipRAG**、**BadRAG**（语义组触发器）、**GASLITE**（概念级查询）、**SIREN**、**Micro-Collaborative**、**On the Vulnerability**、**CatPoison**（语义类别） | Topic-FlipRAG：*"Given a set of topic-queries Q … the adversary's objective is to steer the RAG system's overall stance across the entire set of queries toward stance St"*；GASLITE：*"focusing on pertinent adversaries targeting queries on a specific concept (e.g., a public figure)"*；BadRAG：以语义组（如"共和党、州长、红州"）为触发器，*"任何含触发词的查询"*均可命中；Micro-Collaborative：把一个目标论断分散到多篇文档，面向一类查询；**CatPoison**（最彻底的 T2 形态）：*"all queries belonging to a target category are forced into generating attacker-desired outputs, while maintaining accurate responses for unrelated queries"* |
-| **完全未知查询** | **MIRAGE**（攻击者**既无实例级也无主题级查询先验**）、RAGSieve（威胁模型中的 operator 视角） | MIRAGE：*"the attacker has no prior knowledge of user queries at either the instance level (exact query strings) or the topic level (predefined query categories)"*；RAGSieve：*"does not know the targeted queries"* |
+| **完全未知查询** | **MIRAGE**（攻击者**既无实例级也无主题级查询先验**） | MIRAGE：*"the attacker has no prior knowledge of user queries at either the instance level (exact query strings) or the topic level (predefined query categories)"*。RAGSieve说的是守方事先不知道哪些查询受攻击；守方在线处理时仍能看到实际查询，不能与攻击者完全未知查询并列。 |
 
 <a id="src-fb1682dc8e7f28a5-h63"></a>
 #### （3）攻击者在优化载荷时能获得的反馈信息
@@ -1957,7 +1957,12 @@ $$
 | **ContextCite** | arXiv:2409.00729 | 上下文片段 | 在任意现有 LLM 上做**消融采样**，拟合**线性代理模型**，权重即归因分数；可用于验证、剪枝与**投毒检测** | 首个将"上下文归因"形式化的工作；可扩展到任意模型 |
 | **[TracLLM](<RAG安全证据地图_20261102.md#src-5404c0ea0c1ce218>)** | USENIX Security 2025，CCF-A；arXiv:2506.04202 | 已生成答案的上下文片段 | 结合分组贡献、去噪、集成及递归搜索归因 | PoisonedRAG默认每题注入5条、检索50条并归因top-5：NQ逐输出平均precision/recall均为0.89。另一个MuSiQue实验手工构造10个近似错误答案，precision/recall为1.0/0.69；两组数据不能混为同一实验。 |
 | **AttnTrace** | arXiv:2508.03793 | 上下文片段 | **"先归因后检测"（attribution-before-detection）** 范式，用**注意力信号**降低追溯成本 | 精确率/召回率 **0.95/0.95**，显著优于基线（Gradient 类仅约 0.05–0.33）；K=5 时 precision/recall 再提升约 10%/7% |
-| **RAGSieve** | arXiv:2608.13010 | 文档 | **RSQ**（查询期：拿低排名证据作参照，对生成候选打分）+ **RSG**（语料期：局部图 + 邻域地板做对比） | **95.2% AUROC**，5% 干净移除预算下检出 **82.2%** 毒文档（GMTP 为 81.1%/52.5%）；RSG 达 93.3%/79.8%（CleanBase 为 79.4%/37.6%）；**联合部署使 ASR 67.4%→16.1%**，未投毒检索 F1 保持 41.0%（无过滤 42.1%）；RSQ 移除 73.9% 毒 + 2.2% 干净（GMTP 69.5%/22.3%） |
+
+#### 检索文档级投毒筛查
+
+| 文献 | 版本 | 判定粒度 | 核心机制 | 原文关键数据与边界 |
+|---|---|---|---|---|
+| **[RAGSieve](<RAG安全证据地图_20261102.md#src-20261115-ragsieve>)** | arXiv:2608.13010v2，正式venue未核 | 文档 | RSQ以同一查询的排名6–20为参照筛查Top-5；RSG在语料局部近邻图上比较密度。两者属于投毒检测/过滤，不是对已生成答案的归因。 | 文档级5%干净移除预算下，RSQ AUROC/检出率为95.2%/82.2%，RSG为93.3%/79.8%；该预算不是query级误删保证。串联过滤后ASR 67.4%→16.1%，未投毒回答F1 42.1%→41.0%；过滤后补满Top-5但不重打分。固定阈值自适应测试中串联ASR为25.6%，干净文档移除率为6.6%。 |
 
 <a id="src-fb1682dc8e7f28a5-h107"></a>
 ### 9.4 本地文献与综述补充文献的互补关系
@@ -1968,12 +1973,12 @@ flowchart TB
         O1["攻击：PoisonedRAG / BadRAG / GASLITE<br/>InceptionRAG / TrojanRAG / Joint-GCG / CatPoison"]
         O2["防御：RobustRAG / PRA-RAG / GMTP<br/>CEG-RAG / GRADA / TrustRAG / SeCon-RAG / Astute RAG"]
     end
-    subgraph NEW["综述补充（本地未收录）：完整流水线与体系"]
+    subgraph NEW["综述启发：完整流水线与体系"]
         N1["S1 上游：AgentPoison / MINJA<br/>MemoryGraft / GraphRAG(TKPA/UKPA)"]
-        N2["L1 薄弱层：RAGShield / RAGForensics<br/>CleanBase"]
+        N2["L1 薄弱层：RAGShield / RAGForensics<br/>CleanBase / RAGSieve"]
         N3["L2 检索加固：ProGRank / SDAG"]
         N4["L3 生成加固：RAGuard / Cordon-MAS<br/>AV Filter / RevPRAG"]
-        N5["Traceback：ContextCite / TracLLM<br/>AttnTrace / RAGSieve"]
+        N5["Traceback：ContextCite / TracLLM<br/>AttnTrace"]
         N6["L4 机密性：DP类 / 加密后端<br/>联邦架构"]
     end
     O1 --> N1
@@ -1982,7 +1987,7 @@ flowchart TB
     NEW --> C["完整 SLOT 攻防地图<br/>+ 两处结构性错配"]
 ```
 
-> **互补性说明**：本地 87 篇聚焦**攻防核心机理的深度**（投毒优化算法、可证明鲁棒性、单文档/类目级攻击、冲突感知融合等）；而综述补充文献补齐了**体系完整性**——尤其是 **L1 上游防线（溯源/校验/补救）**、**追溯归因（traceback）**、**机密性（L4）** 与 **S1 上游（Agent 记忆/图 RAG）** 这四类在本地文献中**几乎完全缺失**的方向。两处共同构成完整攻防地图。
+> **互补性说明**：既有攻防文献聚焦**攻防核心机理的深度**（投毒优化算法、可证明鲁棒性、单文档/类目级攻击、冲突感知融合等）；而综述补充文献补齐了**体系完整性**——尤其是 **L1 上游防线（溯源/校验/补救）**、**追溯归因（traceback）**、**机密性（L4）** 与 **S1 上游（Agent 记忆/图 RAG）** 这四类在本地文献中**几乎完全缺失**的方向。两处共同构成完整攻防地图。
 
 <a id="src-fb1682dc8e7f28a5-h108"></a>
 ### 9.5 由综述补充引入的关键研究缺口
@@ -2081,7 +2086,7 @@ flowchart TB
 | 2409.00729 | ContextCite | 溯源原文核实 |
 | 2506.04202 | TracLLM | 溯源原文核实 |
 | 2508.03793 | AttnTrace | 溯源原文核实 |
-| 2608.13010 | RAGSieve | 溯源原文核实 |
+| 2608.13010 | RAGSieve | 文档级投毒检测原文核实 |
 | —（CCS '25, DOI 10.1145/3719027.3765023） | FlippedRAG：Black-Box Opinion Manipulation | 攻击原文核实（本地 PDF） |
 | 2504.21668 | Traceback of Poisoning Attacks (RAGForensics) | 溯源原文核实（本地 PDF 见 §6.2） |
 | 2512.08289 | MIRAGE：Black-box and Query-agnostic Poisoning | 攻击原文核实 |
@@ -2148,6 +2153,7 @@ A可继续检验的窄交集是：**只改一份真实长源文档，经未知�
 |---|---|---|
 | **MLJA19，*Transfer Conformal Predictive Inference for Regression*** | **JMLR 27(90), 2026，CCF-A；正式版68页全文L3。** 以目标域bootstrap估计偏差修正量，并用conditional KL筛选可迁移源；在假设下给出非渐近边际覆盖上下界。[逐篇证据与页码](<RAG安全证据地图_20261102.md#src-8d0d1fa3f8d8b9e5>) | B的方法层面参照，不是直接RAG撞题：本文校准带响应标签的回归残差/预测区间，不校准clean query的检索风险分数，不保证检出投毒或控制最终删块误报。 |
 | **D29，`coordguard`，*Consistency Is the Attack Surface: Detecting Coordinated Retrieval Poisoning with Embedding Geometry***，arXiv2610.24834v1 | **新增近邻；2026预印本，不是WWW2027录用，不赋WWW的CCF A。** 已补L3：作者v1物理p1–9完整正文，p8压力测试已核；附录p12–13未完整阅读，不外推附录证明。§3.2–3.3以冻结审计编码器构query锚定跨块分量几何，§4.4已有 **n=500 held-out clean query、split-conformal p值、α门控及clean-query intervention率**。 | B的Top-K逐块RF最大分数与其分量query总分有形式差异，但两者统计单位都是query，共形原理相同。B的四统计、联合语义表示、物理来源/偏移/实体/条件命题及选择性LLM可作为待验证差异；增加监督RF不自动有优势。本篇未用poison标签/RF/物理provenance，不能据此推定B更有效。 |
+| **RAGSieve，*Detecting Knowledge-Poisoned Documents in RAG Without a Trusted Reference*** | **2026预印本；正式venue未核。** v2全文与附录已读，论文构造查询期Top-5与同查询6–20名的对照，以及语料期局部近邻图；两阶段可串联。[原文证据与版本冲突](<RAG安全证据地图_20261102.md#src-20261115-ragsieve>) | 对B“检索尾部参照、跨文档局部关系与多统计联合筛查”的宽泛新颖性构成直接限制。其5%预算是文档级，不保证clean-query最终误删率；论文未检验B的物理来源/偏移与正常多跳桥接保留。受尾部污染及近重复影响，两阶段也并非对自适应攻击有通用保证。 |
 | **D10，*On the Vulnerability of Applying Retrieval-Augmented Generation within Knowledge-Intensive Application Domains*** | **原报告已有，补防御细节**；ICML2025主会A，PMLR267:68292–68315。L2 PDF pp4–8，§5完整：clean anchor均值、Ledoit-Wolf形式收缩协方差、全谱马氏分数与95分位过滤；query相关正交几何已有。 | 单文档anchor分位阈值≠query级Top-K至少一次告警控制；此差异必须写清，但D29已占据后一统计单位。B的尾谱属于已有马氏思路上的变体，不能把收缩估计、clean分位或query级校准各自声称为新机制。 |
 | **D24，`raguard-cheng`，*Secure Retrieval-Augmented Generation against Poisoning Attacks***，arXiv2510.25025v2 | **特定同名研究**，与RAGuard-ZKIP等区分。v2正文p1–8为L3，p9附录A另读。首尾半块LM loss差、最大loss、query相似度与随机KB文档经验分位过滤。 | 与B首尾一致性+相似度+clean阈值组合很近。随机KB文档校准≠真实Top-K query校准；双尾误报和联合漏检概率乘积不能当无条件保证。作者声明IEEE BigData2025，会议按用户第七版为跨学科C；**本文正式出版身份/DOI仍待核**。 |
 | **M07，*HARP: Hallucination Detection via Reasoning Subspace Projection***，arXiv2509.11536与正式版同study | **补收表示检测近邻**；ICLR2026 Conference官方身份已核，用户第七版A。arXiv v2正文pp1–10及指定附录为L3；正式版仅p1、7–10，L2。§3–4以unembedding参数矩阵SVD尾部方向投影token末层隐藏态，监督检测并以token最大分数聚合。 | 低能量/尾部方向用于检测已有先例。其矩阵、统计对象与B的query–chunk协方差尾谱不同，需生成器权重/隐藏态；token最大聚合不是clean query最大统计校准。访问权限不同须公平比较，不能由差异自动推出B整体创新。 |
