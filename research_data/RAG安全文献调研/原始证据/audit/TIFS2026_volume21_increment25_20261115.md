@@ -1,5 +1,7 @@
 # TIFS 2026 第 21 卷：25 条目录增量证据
 
+> 后续补证：此前 IEEE Xplore 机构会话导出的 2026-11-15 CSV 已复制留存，675 条与既有 650+25 身份记录的逐条对账见文末。下文此前关于完整导出尚未留存的表述反映当时的状态；官网 DOM 和浏览器下载过程仍未独立留存。
+
 核查日期：2026-11-15（Asia/Shanghai）。本文件保存上一轮已完成的 IEEE 目录浏览、题名筛查及摘要核查的交接证据，并于本次持久化时重新对照本地旧快照和 Crossref。逐条机器可读数据见 [TIFS2026_volume21_increment25_20261115.jsonl](TIFS2026_volume21_increment25_20261115.jsonl)。此列表按旧池身份分组，**不是可独立证明的官网排序号**。
 
 ## 范围和口径
@@ -118,3 +120,136 @@ print('PASS: 25 unique; old 650; prior pool 17/8; abstract 4/21; hashes and sour
 原增量任务的写入边界（历史）：当时仅创建本说明及同目录的 25 条 JSONL。任务开始后、任何交付文件写入前观察到三份主文档的哈希发生并行变化；本任务未对它们或 citation.bib 写入，也未回滚已有改动。
 
 2026-11-15 后续全文更新写入边界：仅新增上述两篇独立笔记并就地更新本说明；未改动原 25 条 JSONL、三份主文档或 citation.bib，未操作 Git。机构授权 PDF 保留在指定本地论文库。
+
+
+## 2026-11-15 后续补证：675 条导出与既有快照逐条对账
+
+### 来源与完整性
+
+- 原始导出：`D:\Downloads\export2026.11.15-01.04.15.csv`；按不覆盖方式复制至 [`../catalogs/catalog_tifs_browser_sources/raw_csv/export2026.11.15-01.04.15.csv`](../catalogs/catalog_tifs_browser_sources/raw_csv/export2026.11.15-01.04.15.csv)。原文件复制前、复制后和目标副本的原始字节 SHA-256 均为 `a2b5a06f11bae750a8ef2c7cc074898eabcbd34196ba7a4be0d045cd42905154`。该 CSV 含摘要，依现有 Git 忽略规则本机留存，未强制加入 Git。
+- 650 条身份快照：[`TIFS2026_20261102_650_题名DOI快照.jsonl`](TIFS2026_20261102_650_题名DOI快照.jsonl)，原始字节 SHA-256 `343cea64c17b89d9567195adfd8ae893b1f737840a9aa077c8182083a5295c3c`；对应的 [2026-11-02 原始导出](../catalogs/catalog_tifs_browser_sources/raw_csv/export2026.11.02-08.20.47.csv) SHA-256 `d194a48dfeef4369b146f9c01ca41c361ccad8f351c6e96fb6143939f24beacc`。
+- 25 条增量身份记录：[`TIFS2026_volume21_increment25_20261115.jsonl`](TIFS2026_volume21_increment25_20261115.jsonl)，原始字节 SHA-256 `34953b6066937c860d857f9b936161c85db9573b54c4c1f79dfef0d7b7e6b149`。这两份 JSONL 均为 Git 中已有的无摘要身份证据；两者合并即覆盖本次 675 条，不再另造重复精简清单。
+
+### 对账结果与差异
+
+- 2026-11-15 CSV 用 CSV 解析器读取到 **675 条数据记录**：675 个非空且唯一的 IEEE article ID、675 个非空且大小写规范化后唯一的 DOI、675 个非空且经 NFKC/空白/大小写规范化后唯一的题名；所有记录的出版物为 IEEE Transactions on Information Forensics and Security、年份为 2026、卷号为 21，`Issue` 均为空。675 个 PDF Link 均为 `https://ieeexplore.ieee.org/stamp/stamp.jsp`，且各含一个数字 `arnumber`。
+- 650 条 JSONL 对其原始 CSV：ID 交集 650、双方独有 0；题名逐字一致 650/650、DOI 经去除首尾空白及大小写折叠后一致 650/650。650 条快照 DOI 全为小写、原始 CSV DOI 使用大写 `TIFS`，因此 DOI 原始字符串相等为 0/650；这是大小写表示差异，不是 DOI 身份差异。
+- 新 CSV 对 650 条快照：ID 交集 650，快照独有 0、新 CSV 独有 25；650 条题名逐字一致、DOI 规范化后一致。新旧两份 CSV 共有的 650 条 ID、原始 DOI、题名逐字一致，且新 CSV 的前 650 条 ID 与旧 CSV 的顺序完全一致。
+- 新 CSV 对 25 条记录：ID 交集 25，增量记录独有 0、新 CSV 独有 650；25 条题名和 DOI 原始字符串均逐字一致。650 与 25 的 ID 交集、规范化 DOI 交集均为 0；两份快照合并后与新 CSV 的 ID 集合、逐 ID DOI 和逐 ID 题名分别为 **675/675 一致，无缺失或额外记录、无 DOI 或题名差异**。两份既有记录的 675 条官方文章链接均与各自 article ID 一致；链接是由 ID 形成的 IEEE `/document/<ID>/` 地址，不代表本次访问了每个页面或验证 PDF 可用性。
+- 排列差异：新 CSV 后 25 条与增量 JSONL 的 **ID 集合相同，顺序并不完全相同**。相对位置 17 和 18（CSV 逻辑数据记录 #667 和 #668）依次为 `11775888`、`11753627`；25 条 JSONL 的相同位置依次为 `11753627`、`11775888`。其余 23 个对应位置相同。上文已说明增量 JSONL 按旧池身份分组，不应把它的行号视为官网排序。
+- 各 ID 按字符串升序、以 LF 连接且末尾不加 LF 后取 SHA-256：旧 650 为 `79de2a17bf2a9ced63bdb3415e4f63b4b5b4d7ee8e23f2e13aa62cac6799bed2`；增量 25 为 `fef0ce97cd72c31c2bcbe62781d71d680525ab3ffec78d5ace26188db491e503`；新 CSV 675 为 `a6d1a631516f27bc07edcadfafbcae060bb08aa8d5f182118122eff14dba82a9`。这是 ID 集合哈希，不是文件字节哈希，也不包含排序顺序。
+
+### 匹配方法与复现
+
+使用 UTF-8 BOM 容忍模式和标准 CSV 解析器按逻辑记录读取；从 IEEE `PDF Link` 的唯一 `arnumber` 参数提取数字 ID，与两个 JSONL 中 `ieee_article_id` 做一对一精确联结，先检查空值及重复，再做集合差。按同一 ID 独立对照 DOI（`strip().casefold()`）和题名原始 Unicode 字符串；另外计算题名 NFKC、连续空白合并和大小写折叠后的唯一数。未用模糊题名代替 ID 或 DOI，未丢弃标点，也未把 ID 集合相等当作 DOI/题名相等的证明。
+
+在项目根目录执行以下 PowerShell；脚本只读取上述文件、打印逐项统计、相对旧快照的新增 ID 及全部规范化 DOI/逐字题名差异，失败时停止。`data_record` 是不含表头的 CSV 逻辑数据记录序号，不是可能受引号和换行影响的物理文件行号。
+
+```powershell
+$OutputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
+$env:PYTHONIOENCODING = 'utf-8'
+@'
+import csv, hashlib, json, re, unicodedata
+from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
+
+base = Path('research_data/RAG安全文献调研/原始证据')
+new_path = base / 'catalogs/catalog_tifs_browser_sources/raw_csv/export2026.11.15-01.04.15.csv'
+old_path = base / 'catalogs/catalog_tifs_browser_sources/raw_csv/export2026.11.02-08.20.47.csv'
+snap_path = base / 'audit/TIFS2026_20261102_650_题名DOI快照.jsonl'
+inc_path = base / 'audit/TIFS2026_volume21_increment25_20261115.jsonl'
+files = [(new_path, 'a2b5a06f11bae750a8ef2c7cc074898eabcbd34196ba7a4be0d045cd42905154'),
+         (old_path, 'd194a48dfeef4369b146f9c01ca41c361ccad8f351c6e96fb6143939f24beacc'),
+         (snap_path, '343cea64c17b89d9567195adfd8ae893b1f737840a9aa077c8182083a5295c3c'),
+         (inc_path, '34953b6066937c860d857f9b936161c85db9573b54c4c1f79dfef0d7b7e6b149')]
+for path, expected in files:
+    actual = hashlib.sha256(path.read_bytes()).hexdigest()
+    print('SHA256', path, actual)
+    assert actual == expected, path
+
+def read_csv(path):
+    with path.open(encoding='utf-8-sig', newline='') as f:
+        return list(csv.DictReader(f))
+def read_jsonl(path):
+    with path.open(encoding='utf-8-sig') as f:
+        return [json.loads(line) for line in f if line.strip()]
+def extract_id(row):
+    u = urlsplit(row['PDF Link'])
+    ids = parse_qs(u.query).get('arnumber', [])
+    assert u.scheme == 'https' and u.hostname == 'ieeexplore.ieee.org'
+    assert u.path == '/stamp/stamp.jsp' and len(ids) == 1 and re.fullmatch(r'\d+', ids[0])
+    return ids[0]
+def from_csv(row):
+    return {'id': extract_id(row), 'doi': row['DOI'], 'title': row['Document Title']}
+def from_snapshot(row):
+    article_id = str(row['ieee_article_id'])
+    link = row.get('official_article_url', row.get('article_url_derived_from_pdf_link'))
+    assert link == f'https://ieeexplore.ieee.org/document/{article_id}/'
+    return {'id': article_id, 'doi': row['doi'], 'title': row['title']}
+def doi(s):
+    return s.strip().casefold()
+def title_key(s):
+    return re.sub(r'\s+', ' ', unicodedata.normalize('NFKC', s)).strip().casefold()
+def id_hash(rows):
+    return hashlib.sha256('\n'.join(sorted(x['id'] for x in rows)).encode('utf-8')).hexdigest()
+def check_rows(label, rows, expected):
+    assert len(rows) == expected
+    assert all(x['id'] and doi(x['doi']) and x['title'].strip() for x in rows)
+    assert len({x['id'] for x in rows}) == expected
+    assert len({doi(x['doi']) for x in rows}) == expected
+    print('ROWS', label, expected, 'id_hash', id_hash(rows))
+def compare(label, left, right):
+    a = {x['id']: x for x in left}
+    b = {x['id']: x for x in right}
+    shared = a.keys() & b.keys()
+    doi_diff = [{'id': k, 'left': a[k]['doi'], 'right': b[k]['doi']}
+                for k in sorted(shared) if doi(a[k]['doi']) != doi(b[k]['doi'])]
+    title_diff = [{'id': k, 'left': a[k]['title'], 'right': b[k]['title']}
+                  for k in sorted(shared) if a[k]['title'] != b[k]['title']]
+    print('COMPARE', label, json.dumps({
+        'shared': len(shared), 'left_only': len(a.keys() - b.keys()),
+        'right_only': len(b.keys() - a.keys()),
+        'doi_raw_equal': sum(a[k]['doi'] == b[k]['doi'] for k in shared),
+        'doi_normalized_equal': len(shared) - len(doi_diff),
+        'title_raw_equal': len(shared) - len(title_diff),
+        'doi_differences': doi_diff, 'title_differences': title_diff}, ensure_ascii=False))
+    assert not doi_diff and not title_diff
+    return a.keys() - b.keys(), b.keys() - a.keys()
+
+new_raw, old_raw = read_csv(new_path), read_csv(old_path)
+new = [from_csv(x) for x in new_raw]
+old = [from_csv(x) for x in old_raw]
+snap = [from_snapshot(x) for x in read_jsonl(snap_path)]
+inc = [from_snapshot(x) for x in read_jsonl(inc_path)]
+for label, rows, size in [('new_csv', new, 675), ('old_csv', old, 650),
+                           ('snapshot650', snap, 650), ('increment25', inc, 25)]:
+    check_rows(label, rows, size)
+assert id_hash(new) == 'a6d1a631516f27bc07edcadfafbcae060bb08aa8d5f182118122eff14dba82a9'
+assert id_hash(snap) == '79de2a17bf2a9ced63bdb3415e4f63b4b5b4d7ee8e23f2e13aa62cac6799bed2'
+assert id_hash(inc) == 'fef0ce97cd72c31c2bcbe62781d71d680525ab3ffec78d5ace26188db491e503'
+assert not ({x['id'] for x in snap} & {x['id'] for x in inc})
+assert not ({doi(x['doi']) for x in snap} & {doi(x['doi']) for x in inc})
+assert len({title_key(x['title']) for x in new}) == 675
+assert all(x['Publication Title'] == 'IEEE Transactions on Information Forensics and Security'
+           and x['Publication Year'] == '2026' and x['Volume'] == '21' and x['Issue'] == ''
+           for x in new_raw)
+assert compare('old_csv_vs_snapshot650', old, snap) == (set(), set())
+added, missing = compare('new_csv_vs_old_csv', new, old)
+print('ADDED_IDS_VS_OLD_CSV', json.dumps(sorted(added)))
+assert not missing and added == {x['id'] for x in inc}
+assert compare('new_csv_vs_snapshot650', new, snap)[1] == set()
+assert compare('new_csv_vs_increment25', new, inc)[1] == set()
+assert compare('new_csv_vs_snapshot_union', new, snap + inc) == (set(), set())
+assert new[:650] == old  # ID, original DOI, title, and order
+order_diff = [{'increment_position': j, 'data_record': 650 + j,
+               'csv_id': a['id'], 'increment_id': b['id']}
+              for j, (a, b) in enumerate(zip(new[650:], inc), 1) if a['id'] != b['id']]
+print('INCREMENT_ORDER_DIFFERENCES', json.dumps(order_diff, ensure_ascii=False))
+assert order_diff == [
+    {'increment_position': 17, 'data_record': 667, 'csv_id': '11775888', 'increment_id': '11753627'},
+    {'increment_position': 18, 'data_record': 668, 'csv_id': '11753627', 'increment_id': '11775888'}]
+print('PASS: 675 identity records reconciled; no abstract or topic screening performed')
+'@ | python -X utf8 -
+```
+
+本次对账以此前机构会话导出的CSV及本地历史证据为依据，未独立见证导出会话，也没有重新取得官网 DOM、网页截图或浏览器下载记录。本轮公开网页抓取该卷目录时返回 HTTP 418，未使用用户的机构认证会话，不能据此推断其机构访问状态；原始 CSV 的留存补齐了可重放的导出身份记录，但不替代官网 DOM 证据。未重新筛查这 650+25 条的题名或摘要。此结果只描述该次 675 条导出，不代表 2026 年全年、后续分卷或 issue 级目录闭合。
