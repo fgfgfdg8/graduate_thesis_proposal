@@ -14,7 +14,9 @@
 
 题名宽筛词：`RAG`、`GraphRAG`、`retriev*`、`knowledge base`、`corpus`、`multi-hop`、`graph`、`reasoning`、`evidence`、`truth`、`provenance`、`context`、`poison*`、`backdoor`、`attack`、`detect*`、`trust`、`LLM`、`VLM`。大小写不敏感；直接命中统计使用 `RAG/GraphRAG/retriev*/knowledge base/corpus/multi-hop`，含词界、空格或连字符，25 条为 **0**。这只是题名层级筛选，不能据此排除摘要或全文中的相关内容。各行命中词见 JSONL。
 
-上一轮实际查看 IEEE 官方完整摘要的仅 4 条，记本次 L1：`11740714`、`11740729`、`11740753`、`11776018`；其余 21 条仅核题名。没有把下载的元数据、摘要或标题核查记作 PDF 全文阅读。对前两篇，官网有 PDF 入口，但上轮浏览器 PDF 区域黑屏，直接 HTTP 请求返回 418，**未确认取得正式 PDF**；其余 23 篇未在该增量中检查 PDF。本文和 JSONL 保存的是上轮浏览观察的转录，未保留 IEEE 页面 DOM、摘要原文、截图或 PDF；Crossref 本次响应原件也未持久化。来源可变时只能按下面方法重新获取，不得将这里当成原始快照。
+上一轮实际查看 IEEE 官方完整摘要的仅 4 条，记本次 L1：`11740714`、`11740729`、`11740753`、`11776018`；其余 21 条仅核题名。没有把下载的元数据、摘要或标题核查记作 PDF 全文阅读。对前两篇，官网有 PDF 入口，但上轮浏览器 PDF 区域黑屏，直接 HTTP 请求返回 418，**未确认取得正式 PDF**；其余 23 篇未在该增量中检查 PDF。上述增量核查和 JSONL 保存的是上轮浏览观察的转录，该轮未保留 IEEE 页面 DOM、摘要原文、截图或 PDF；Crossref 当时的响应原件也未持久化。来源可变时只能按下面方法重新获取，不得将这里当成原始快照。
+
+**2026-11-15 后续全文更新（现时状态）**：两篇后来通过机构授权取得 IEEE 正式 PDF 并阅读可提取文字，均为跨域背景，不是 RAG 安全直接先例。11740714 读物理页 1–13（印刷页 9666–9678），见 [Honeypot 逐篇笔记](../notes/20261115_TIFS_Honeypot_3744635_精读.md)；11740729 读物理页 1–14（印刷页 9636–9649），见 [Trusformer 逐篇笔记](../notes/20261115_TIFS_Trusformer_3744652_精读.md)。关键图表已目视核对，未逐格审计全部图表或复现实验。旧 JSONL 的 L1 字段仍记录原目录核查时点，不随此次全文阅读回写；本次对其余 23 条未新增全文阅读记录。上述黑屏、418 和当时未确认取得 PDF 保留为历史观察。
 
 - `11740714` Honeypot：预训练语言模型分类任务的训练数据后门防御；可作为异常信号及样本降权的跨域方法邻近，不能称 RAG 恶意块检测。
 - `11740729` Trusformer：用户信任图上的信任传播和路径推理；可作信任路径的跨域方法邻近，不能称多跳 RAG 投毒先例。
@@ -24,9 +26,9 @@
 
 ## 25 条逐条索引
 
-“旧池”仅指上述指定旧总池；“未发现”不表示其他旧记录均不存在。L1 只表示本次核查中查看了官方完整摘要。
+“旧池”仅指上述指定旧总池；“未发现”不表示其他旧记录均不存在。L1 表示原增量核查时查看了官方完整摘要；下表两条已追加后续全文状态，其余保持原核查层级。
 
-| IEEE ID / 官方页 | 题名 | DOI | 旧池 | 本次层级 |
+| IEEE ID / 官方页 | 题名 | DOI | 旧池 | 原核查层级与已补的全文状态 |
 |---|---|---|---|---|
 | [11753684](https://ieeexplore.ieee.org/document/11753684/) | Micro Motion Aware for Deception Detection | [10.1109/TIFS.2026.3746871](https://doi.org/10.1109/TIFS.2026.3746871) | 已存在，旧未分卷 | 题名 |
 | [11740734](https://ieeexplore.ieee.org/document/11740734/) | STEAD: Subversion-Resistant Portable Encrypted Data Deduplication With File Sharing | [10.1109/TIFS.2026.3744626](https://doi.org/10.1109/TIFS.2026.3744626) | 已存在，旧未分卷 | 题名 |
@@ -39,9 +41,9 @@
 | [11740753](https://ieeexplore.ieee.org/document/11740753/) | Robust Privacy-Aware Truth Discovery Against Malicious Aggregators in Mobile Crowdsourcing | [10.1109/TIFS.2026.3744650](https://doi.org/10.1109/TIFS.2026.3744650) | 已存在，旧未分卷 | L1 官方摘要 |
 | [11740749](https://ieeexplore.ieee.org/document/11740749/) | Publicly Verifiable Homomorphic Secret Sharing With Context and Result Hiding | [10.1109/TIFS.2026.3744639](https://doi.org/10.1109/TIFS.2026.3744639) | 已存在，旧未分卷 | 题名 |
 | [11740697](https://ieeexplore.ieee.org/document/11740697/) | DualGuard: An Adaptive Detection Framework for Concurrent Malicious and Normality Drifts in Network Traffic | [10.1109/TIFS.2026.3744632](https://doi.org/10.1109/TIFS.2026.3744632) | 已存在，旧未分卷 | 题名 |
-| [11740729](https://ieeexplore.ieee.org/document/11740729/) | Trusformer: Assessing Trust via Reasoning Like a Transformer | [10.1109/TIFS.2026.3744652](https://doi.org/10.1109/TIFS.2026.3744652) | 已存在，旧未分卷 | L1 官方摘要 |
+| [11740729](https://ieeexplore.ieee.org/document/11740729/) | Trusformer: Assessing Trust via Reasoning Like a Transformer | [10.1109/TIFS.2026.3744652](https://doi.org/10.1109/TIFS.2026.3744652) | 已存在，旧未分卷 | L1 官方摘要 → 正式全文逐页阅读（PDF 1–14；[笔记](../notes/20261115_TIFS_Trusformer_3744652_精读.md)） |
 | [11740728](https://ieeexplore.ieee.org/document/11740728/) | LuTBA: Lightweight and Updatable Touch-Based Authentication Scheme for Mobile Devices | [10.1109/TIFS.2026.3744613](https://doi.org/10.1109/TIFS.2026.3744613) | 已存在，旧未分卷 | 题名 |
-| [11740714](https://ieeexplore.ieee.org/document/11740714/) | Multi-Layer Honeypot Framework for Defending Pre-Trained Language Models Against Backdoor Attacks in Classification Tasks | [10.1109/TIFS.2026.3744635](https://doi.org/10.1109/TIFS.2026.3744635) | 已存在，旧未分卷 | L1 官方摘要 |
+| [11740714](https://ieeexplore.ieee.org/document/11740714/) | Multi-Layer Honeypot Framework for Defending Pre-Trained Language Models Against Backdoor Attacks in Classification Tasks | [10.1109/TIFS.2026.3744635](https://doi.org/10.1109/TIFS.2026.3744635) | 已存在，旧未分卷 | L1 官方摘要 → 正式全文逐页阅读（PDF 1–13；[笔记](../notes/20261115_TIFS_Honeypot_3744635_精读.md)） |
 | [11740716](https://ieeexplore.ieee.org/document/11740716/) | The Role of Information Incompleteness in Defending Against Stealth Attacks | [10.1109/TIFS.2026.3744641](https://doi.org/10.1109/TIFS.2026.3744641) | 已存在，旧未分卷 | 题名 |
 | [11753674](https://ieeexplore.ieee.org/document/11753674/) | A Two-Stage Robust Reversible Image Watermarking Scheme Using 2D Lattice QIM With Quantization Strips | [10.1109/TIFS.2026.3746868](https://doi.org/10.1109/TIFS.2026.3746868) | 已存在，旧未分卷 | 题名 |
 | [11753627](https://ieeexplore.ieee.org/document/11753627/) | Printed Electronics-Based Optical Unclonable Label for Artificial Intelligence Authentication | [10.1109/TIFS.2026.3746874](https://doi.org/10.1109/TIFS.2026.3746874) | 已存在，旧未分卷 | 题名 |
@@ -111,6 +113,8 @@ print('PASS: 25 unique; old 650; prior pool 17/8; abstract 4/21; hashes and sour
 ```
 
 3. 再运行上述 Crossref 查询；核对 `total-results`、实际返回条数、每条 `volume` 和 `issue`，用 DOI 去重，25 条用 `link` 中的 `arnumber` 和题名交叉核对。响应可能更新，计数不应被当成永久不变量。过去曾出现 429，稍后重试成功；官方 PDF 直连和查看器失败见上文，不能推断不存在 PDF。
-4. 尚缺：官网 675 条原始响应/截图的持久副本；25 条中其余 21 条的摘要；相关候选的可访问正式全文及实质精读；2026-11-15 之后新分配卷记录；旧池以外其他研究记录的全面排重。此增量未处理其他期刊或年度。
+4. 其余21条已补读官方完整摘要，详见[逐篇筛查](<TIFS2026_volume21_20261115_未读摘要补筛.md>)；连同原先4条，25/25摘要均已筛。尚缺官网675条原始响应/截图的持久副本、除上述两篇以外相关候选的全文精读、2026-11-15之后新分配卷记录以及旧池以外的全面排重；此记录不覆盖其他期刊或年度。
 
-写入边界：本任务仅创建本说明及同目录的 25 条 JSONL。任务开始后、任何交付文件写入前观察到三份主文档的哈希发生并行变化；本任务未对它们或 citation.bib 写入，也未回滚已有改动。
+原增量任务的写入边界（历史）：当时仅创建本说明及同目录的 25 条 JSONL。任务开始后、任何交付文件写入前观察到三份主文档的哈希发生并行变化；本任务未对它们或 citation.bib 写入，也未回滚已有改动。
+
+2026-11-15 后续全文更新写入边界：仅新增上述两篇独立笔记并就地更新本说明；未改动原 25 条 JSONL、三份主文档或 citation.bib，未操作 Git。机构授权 PDF 保留在指定本地论文库。

@@ -1,10 +1,14 @@
 ---
 tags: [llm-generated, conf-paper-recommend, rag-security-evidence]
 study_id: arxiv-2603.23293
+canonical_arxiv_id: 2609.00470
+legacy_study_id_note: "旧台账内部键，不是该论文的arXiv编号"
 reading_level: L3
 checked_date: 2026-11-12
 ---
 # TRIS: A Tri-Layer Retrieval Integrity Sieve Against Knowledge Poisoning
+
+**身份订正（2026-11-15）：** TRIS 的正确预印本是 [arXiv:2609.00470](https://arxiv.org/abs/2609.00470)，与[ACL正式论文](https://aclanthology.org/2026.findings-emnlp.2122/)的题名和作者相符。2603.23293 是另一篇数学论文；下文保留的旧台账内部键和文件名只用于历史追溯，并非TRIS的有效arXiv身份。台账与关联键仍待受控迁移；本次订正不改变各版本的阅读记录。
 
 **阅读状态：L3。** 已逐页读取正式Findings PDF物理页1–15，覆盖正文、局限、参考文献及附录A–C文字；不表示逐图视觉审读、代码运行、独立复现或预印本逐版复核。
 
@@ -47,7 +51,7 @@ checked_date: 2026-11-12
 ### emnlp2026-findings2122
 
 - **书目来源**：[原始页面](https://aclanthology.org/2026.findings-emnlp.2122/)
-- **DOI / arXiv**：10.18653/v1/2026.findings-emnlp.2122 / 2603.23293
+- **DOI / arXiv**：10.18653/v1/2026.findings-emnlp.2122 / 2609.00470
 - **本地PDF**：[打开PDF](../pdf/D03__tris__emnlp2026-findings2122__e78fa9ed54__e78fa9ed54f9.pdf)
 - **原始PDF链接**：[公开PDF](https://aclanthology.org/2026.findings-emnlp.2122.pdf)
 - **实际阅读**：L3；正式PDF物理页1–15完整读取，覆盖§1–8、Limitations、参考文献及附录A–C；包括Table 5–10和Appendix C案例。SHA-256 `e78fa9ed54f9a52f3920c7824a6c6ac263459841468e1c4aab5a36ef518d6106`；未逐图视觉审读、运行代码或独立复现。
@@ -59,7 +63,7 @@ checked_date: 2026-11-12
 - 标题：TRIS: A Tri-Layer Retrieval Integrity Sieve Against Knowledge Poisoning。
 - 全部作者：Muhaimin Bin Munir; Akib Jawad Ononto; Nazia Shehnaz Joynab; Bhavani Thuraisingham; Latifur Khan。
 - 正式发表已核：Findings of EMNLP 2026，45250–45264，会议2026-10-24至29。不是仅arXiv，也不是EMNLP主会。CCF：EMNLP整体为B；第七版目录未单列Findings track等级，按项目口径不赋主会等级给本文。
-- DOI：https://doi.org/10.18653/v1/2026.findings-emnlp.2122 。官方页/PDF：https://aclanthology.org/2026.findings-emnlp.2122/ 、https://aclanthology.org/2026.findings-emnlp.2122.pdf 。预印本：arXiv:2603.23293。
+- DOI：https://doi.org/10.18653/v1/2026.findings-emnlp.2122 。官方页/PDF：https://aclanthology.org/2026.findings-emnlp.2122/ 、https://aclanthology.org/2026.findings-emnlp.2122.pdf 。预印本：arXiv:2609.00470。
 - 代码：正式PDF第2页脚注确认 https://github.com/akibjawad14/tris 。
 - 现有报告：正式Findings身份已核，DOI与官方PDF见上。
 - 已读：正式PDF物理页1–15完整读取，正文、局限、参考文献及附录A–C；L3。未逐图视觉审读、运行代码或独立复现。
@@ -74,7 +78,7 @@ checked_date: 2026-11-12
 ### LIB058-preexisting-PDF-title-20261102
 
 - **书目来源**：未核
-- **DOI / arXiv**：未核实 / 未提取 / 2603.23293
+- **DOI / arXiv**：未核实 / 未提取 / 2609.00470（2026-11-15订正）
 - **本地PDF**：[打开PDF](../pdf/0cfb36b28844d919ea79b967e1bbacda9d6a38d5e5a51768__0cfb36b28844.pdf)
 - **原始PDF链接**：未核
 - **实际阅读**：L1；仅既存PDF前两页中完整题名、版式及poster/附录提示核对；不声称完整摘要阅读，方法/设置/结果/局限未在本次题名核对中阅读。
@@ -86,7 +90,7 @@ checked_date: 2026-11-12
 L1：仅既存PDF前两页中完整题名、版式及poster/附录提示核对；不声称完整摘要阅读，方法/设置/结果/局限未在本次题名核对中阅读。
 
 本地归档PDF：[PDF_version_unverified](../pdf/0cfb36b28844d919ea79b967e1bbacda9d6a38d5e5a51768__0cfb36b28844.pdf)
-原库文件名：`TRIS- A Tri-Layer Retrieval Integrity Sieve Against Knowledge Poisoning.pdf`；同研究关联：`arxiv-2603.23293`。正式书目、PDF版本与方法判断以独立原文报告为准。
+原库文件名：`TRIS- A Tri-Layer Retrieval Integrity Sieve Against Knowledge Poisoning.pdf`；旧台账内部关联键：`arxiv-2603.23293`（仅用于追溯，不是TRIS的arXiv身份）。正式书目、PDF版本与方法判断以独立原文报告为准。
 
 ## 待核事项与追溯
 
