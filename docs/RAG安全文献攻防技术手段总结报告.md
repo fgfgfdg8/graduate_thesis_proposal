@@ -2133,6 +2133,7 @@ flowchart TB
 | S02，*Confundo: Learning to Generate Robust Poison for Practical RAG Systems* | 正式USENIX Security2026主会A，301–320。正文L3：正式PDF物理p2–15为§1–8完整正文，p16致谢/伦理/Open Science另读；参考文献未逐条核、附录未完整读。§3、§5.2及§6.2.1已覆盖未知组件、不可查询受害者、实际分块/库配置变化。 | “未知chunker”不能单独宣称首创；原文追求至少一个碎片独立有效，与A的双块各自不足、共同必要不同；已有有限配置迁移也不等任意切分认证。 |
 | RELEVANT / RL-MARA | SIGIR 2023、2024主会A类全文分别研究同一候选文档面向话题查询组的排名提升，以及单个查询—文档对内的多粒度编辑；均需目标排名反馈训练代理，且由BM25预取候选。详见[RELEVANT证据](<RAG安全证据地图_20261102.md#src-sigir2023-relevant>)和[RL-MARA证据](<RAG安全证据地图_20261102.md#src-sigir2024-rlmara>)。 | 未验证真实RAG分块、同源双块共同召回和错误答案；排名ASR不能当答案ASR。开题需明确目标检索条目及排序是否对攻击者可见，才能公平适配基线。 |
 | EMPRA | TOIS 2026 A类，作者稿正文L3；利用目标排序列表中的高排文档与通用排序器，在单篇目标文档中插入生成句以提升排名。详见[逐篇证据](<RAG安全证据地图_20261102.md#src-tois2026-empra>)。 | 未评估RAG受害者分块、同源双块共同召回及答案生成；Top-10提升不等于答案攻击成功率。 |
+| DemoRank | TOIS 2026 A类，正式版正文L3；根据已选历史示例的前缀选择后续示例，以改善候选文档相关性排序。论文表4的FEVER NDCG@10为48.43，低于初始BM25顺序的65.13；详见[逐篇证据](<RAG安全证据地图_20261102.md#src-tois2026-demorank>)。 | 条件化组合选择是A的方法近邻，但论文选择的是带相关性标签的历史示例，并未研究单源协同投毒、真实分块、同query共召回或逐块共同必要；相关性不等于来源可信度。 |
 | MIIB | [Multimodal Information Interactions Bottleneck](<RAG安全证据地图_20261102.md#src-tpami2026-miib>)，TPAMI 2026在线优先A类；arXiv v1正文L3。以多分支表示学习多模态冗余、独有和联合信息。 | 联合表示是跨域方法参考；没有攻击者可控长源、未知分块、共同召回及逐块必要性实验，且未严格证明协同信息被完整恢复。 |
 | AI-01 CRCP / AI-09 Semantic Chameleon | 原报告已有；前者覆盖未知精确分块与局部自包含，后者明确两文档共同Top-K。AI-02 InceptionRAG、AI-03 Divide and Doubt、AI-04 Micro-Collaborative的逐条件差异另见[证据地图](<RAG安全证据地图_20261102.md>)。 | 局部自包含、冗余佐证、独立文档共检索与同源互补必要块应分开，不据未读范围断言不存在。 |
 
