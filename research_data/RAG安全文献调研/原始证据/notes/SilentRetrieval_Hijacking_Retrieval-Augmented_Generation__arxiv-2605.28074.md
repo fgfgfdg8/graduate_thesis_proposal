@@ -12,7 +12,7 @@ checked_date: 2026-11-16
 
 - **作者和机构**：Jiachen Qian，City University of Hong Kong（作者稿首页）。
 - **正式身份**：ACM 的 [Crossref 出版书目](https://api.crossref.org/works/10.1145/3770855.3818186)登记于 *Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2*，2026，4012–4023，DOI [10.1145/3770855.3818186](https://doi.org/10.1145/3770855.3818186)。[KDD 2026 官方论文列表](https://kdd2026.kdd.org/papers/)将本论文标为 `rtp`，同页将该代码映射为 Research；用户提供的 CCF 第七版目录第 35 页将 SIGKDD 列为 A 类会议。因此本文为 **CCF-A 类会议 KDD 2026 的 Research track 正式论文**；未从受限的 ACM 页面核实单篇是否另标 Full/Regular Paper。
-- **实际读取**：[arXiv:2605.28074v1](https://arxiv.org/abs/2605.28074v1) 作者稿，[论文库 PDF](<D:/学在东南/科研数据库/20_Research/Papers/RAG安全文献/SilentRetrieval_ Hijacking Retrieval-Augmented Generation via Semantically-Preserving Adversarial Data Poisoning.pdf>) 共 12 个物理页，SHA-256 `fad70701c458174f2fb69555fa4ff3e1852e315f6c930d759a95b3a13e94dd5c`，与 2026-11-16 取得的 [arXiv v1 PDF](https://arxiv.org/pdf/2605.28074v1) 字节一致。该 PDF 首页虽印有会议和 DOI 信息，本次没有取得 ACM 最终版逐字核对，故内容和缺失判断限定于该版本。论文库位于仓库外，需访问约定路径。
+- **实际读取**：[arXiv:2605.28074v1](https://arxiv.org/abs/2605.28074v1) 作者稿，[论文库 PDF](<../../../../../../../科研数据库/20_Research/Papers/RAG安全文献/SilentRetrieval_ Hijacking Retrieval-Augmented Generation via Semantically-Preserving Adversarial Data Poisoning.pdf>) 共 12 个物理页，SHA-256 `fad70701c458174f2fb69555fa4ff3e1852e315f6c930d759a95b3a13e94dd5c`，与 2026-11-16 取得的 [arXiv v1 PDF](https://arxiv.org/pdf/2605.28074v1) 字节一致。该 PDF 首页虽印有会议和 DOI 信息，本次没有取得 ACM 最终版逐字核对，故内容和缺失判断限定于该版本。论文库位于仓库外，需访问约定路径。
 - **阅读范围**：2026-11-16 累计阅读 PDF 物理页 1–9 的全部正文、页 10–12 的附录 A–K，以及参考文献中相关条目；未逐条核实所有参考文献，未运行实验。正文等级为 L3；附录范围仅指上述作者稿。引用数尚未核实，保持未知。
 - **代码**：已查看作者稿可见链接并用论文精确题名进行 GitHub 仓库检索，未找到可确认的作者仓库；没有运行复现。搜索未命中不证明代码不存在。
 

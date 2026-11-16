@@ -34,7 +34,7 @@
 
 ## 正式候选与原文核验
 
-阅读级别：**L1**=仅书目/官方页面级；**L2**=已注明页码的选择性原文阅读；**L3**=正文全文逐页阅读。截至本轮复核，Deceptive Grounding为L3，其余候选保持各条记录所示等级。PDF路径均位于`D:\学在东南\科研数据库\20_Research\Papers\RAG安全文献`；Windows文件名中的冒号以`_`替换。
+阅读级别：**L1**=仅书目/官方页面级；**L2**=已注明页码的选择性原文阅读；**L3**=正文全文逐页阅读。截至本轮复核，Deceptive Grounding为L3，其余候选保持各条记录所示等级。PDF路径均位于`../../../../../../../科研数据库/20_Research/Papers/RAG安全文献`；Windows文件名中的冒号以`_`替换。
 
 ### 1. Deceptive Grounding: Entity Attribution Failure in Clinical Retrieval-Augmented Generation
 
