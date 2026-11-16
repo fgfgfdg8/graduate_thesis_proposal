@@ -1,0 +1,109 @@
+{
+  "at_utc": "2026-11-06T19:46:04.352560+00:00",
+  "scope": "Only the printed finite-matrix normalization definitions; not a code or empirical replication.",
+  "X": [
+    [
+      1.0,
+      -1.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      -1.0
+    ]
+  ],
+  "n": 3,
+  "C0": [
+    [
+      0.6666666666666666,
+      -0.3333333333333333
+    ],
+    [
+      -0.3333333333333333,
+      0.6666666666666666
+    ]
+  ],
+  "eigenvalues": [
+    0.3333333333333333,
+    1.0
+  ],
+  "general_identity": "Z Z^T = n D diag(lambda/(lambda+epsilon)) D^T",
+  "full_rank_epsilon_zero_identity": "Z Z^T = n I; Z^T Z = n Z^+ Z",
+  "examples": [
+    {
+      "epsilon": 0.0,
+      "Z_Zt": [
+        [
+          2.9999999999999987,
+          1.0937541132843669e-16
+        ],
+        [
+          1.0937541132843669e-16,
+          2.9999999999999987
+        ]
+      ],
+      "predicted_Z_Zt": [
+        [
+          2.9999999999999996,
+          4.390887295024351e-17
+        ],
+        [
+          4.390887295024351e-17,
+          2.9999999999999996
+        ]
+      ],
+      "covariance_Z": [
+        [
+          0.9999999999999996,
+          3.645847044281223e-17
+        ],
+        [
+          3.645847044281223e-17,
+          0.9999999999999996
+        ]
+      ],
+      "printed_Z_Zt_equals_I": false,
+      "printed_K_equals_pinvZ_Z": false,
+      "K_minus_pinvZ_Z_max_abs": 1.3333333333333328
+    },
+    {
+      "epsilon": 0.1,
+      "Z_Zt": [
+        [
+          2.517482517482516,
+          -0.20979020979020926
+        ],
+        [
+          -0.20979020979020926,
+          2.5174825174825157
+        ]
+      ],
+      "predicted_Z_Zt": [
+        [
+          2.517482517482517,
+          -0.20979020979020993
+        ],
+        [
+          -0.20979020979020993,
+          2.517482517482517
+        ]
+      ],
+      "covariance_Z": [
+        [
+          0.8391608391608387,
+          -0.06993006993006975
+        ],
+        [
+          -0.06993006993006975,
+          0.8391608391608386
+        ]
+      ],
+      "printed_Z_Zt_equals_I": false,
+      "printed_K_equals_pinvZ_Z": false,
+      "K_minus_pinvZ_Z_max_abs": 1.1515151515151496
+    }
+  ],
+  "author_implementation_executed": false,
+  "empirical_results_invalidated": false
+}

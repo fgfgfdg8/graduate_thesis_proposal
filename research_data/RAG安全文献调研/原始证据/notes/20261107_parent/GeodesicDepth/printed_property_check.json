@@ -1,0 +1,137 @@
+{
+  "scope": "Finite diagnostic for printed definition with cosine edge weights; no author implementation or empirical reproduction",
+  "graph": "symmetric kNN by union; 20 nonzero 2D points; k=3=.15n; connected; Floyd-Warshall shortest paths",
+  "X": [
+    [
+      0.4571737631773255,
+      -0.8982365662433587
+    ],
+    [
+      0.5522247888986608,
+      -0.821473578721983
+    ],
+    [
+      0.6364422840459701,
+      -0.7361232782606281
+    ],
+    [
+      0.7108868599524596,
+      -0.6449986164289307
+    ],
+    [
+      0.7770529354412387,
+      -0.5498205348247652
+    ],
+    [
+      0.8362538540572271,
+      -0.45114899592175184
+    ],
+    [
+      0.8890682594030112,
+      -0.3486105115370955
+    ],
+    [
+      0.9349792697871594,
+      -0.2413620646905491
+    ],
+    [
+      0.972293917857562,
+      -0.12867686377679688
+    ],
+    [
+      0.9983660013578879,
+      -0.010509503969292984
+    ],
+    [
+      1.0100756828030983,
+      0.11209677662384492
+    ],
+    [
+      1.0044599041178714,
+      0.23686117759865966
+    ],
+    [
+      0.9793525600866331,
+      0.3604150564169815
+    ],
+    [
+      0.933890473804709,
+      0.47872108525329404
+    ],
+    [
+      0.868771213932837,
+      0.5876697892566243
+    ],
+    [
+      0.7862048114897403,
+      0.6837197118819126
+    ],
+    [
+      0.6895706256318564,
+      0.7644365411417697
+    ],
+    [
+      0.5828571066433105,
+      0.8288089561010623
+    ],
+    [
+      0.47001077026268345,
+      0.8772695932373877
+    ],
+    [
+      0.3543402187695564,
+      0.911416768492709
+    ]
+  ],
+  "query": [
+    1.3,
+    0.6
+  ],
+  "k": 3,
+  "radial": [
+    {
+      "scale": 1.0,
+      "depth": 0.9662332739842415
+    },
+    {
+      "scale": 10.0,
+      "depth": 0.9662332739842417
+    },
+    {
+      "scale": 1000.0,
+      "depth": 0.9662332739842415
+    },
+    {
+      "scale": 1000000.0,
+      "depth": 0.9662332739842417
+    }
+  ],
+  "translation": {
+    "shift": [
+      2.0,
+      -0.7
+    ],
+    "before": 0.9662332739842415,
+    "after": 0.99661790172814
+  },
+  "orthogonal": {
+    "matrix": [
+      [
+        0.0,
+        -1.0
+      ],
+      [
+        1.0,
+        0.0
+      ]
+    ],
+    "before": 0.9662332739842415,
+    "after": 0.9662332739842417
+  },
+  "reasoning": "For fixed nonzero training vectors, positive radial scaling preserves every query cosine distance and neighbor; the printed depth is constant along a ray. Common translation generally changes cosine distances.",
+  "caveat": "If implementation uses Euclidean distances or imposes a different normalized domain, applicability must be rechecked against that definition. This check does not assess reported AUROC.",
+  "implementation_read": false,
+  "author_code_executed": false,
+  "empirical_replication": false,
+  "script_sha256": "728717afa86ed4cc6149f1f7837212157f4674156984e2d2c50989aec50e86af"
+}
