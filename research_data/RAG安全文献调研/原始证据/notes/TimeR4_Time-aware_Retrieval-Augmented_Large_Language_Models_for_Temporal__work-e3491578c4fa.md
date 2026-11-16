@@ -6,7 +6,7 @@ checked_date: 2026-11-13
 ---
 # TimeR4: Time-aware Retrieval-Augmented Large Language Models for Temporal Knowledge Graph Question Answering
 
-**阅读状态：L3。** 已精读 ACL Anthology 收录的 EMNLP 2024 正式 PDF：正文 p1–9、附录 A 的两类 prompt（p11）；参考文献 p10–11 浏览。本文为 TKDE 2026 *Plan of Knowledge* 明确声明的会议前序版。
+**阅读状态：L3。** 已精读 ACL Anthology 收录的 EMNLP 2024 正式 PDF：正文 p1–9、附录 A 的两类 prompt（p11）；参考文献 p10–11 浏览。与 TKDE 2026 *Plan of Knowledge* 的会议前序/期刊扩展关系尚待核，见下文。
 
 - **作者**：Xinying Qian；Ying Zhang；Yu Zhao；Baohang Zhou；Xuhui Sui；Li Zhang；Kehui Song。
 - **会议 / track / 页码**：EMNLP 2024 Main，6942–6952；CCF-B（依用户提供的第七版目录）。
@@ -27,9 +27,9 @@ PDF p6 的 MULTITQ Table 1 总计行将 dev 数写为 587,979，但六类 dev �
 
 它是正常任务中时间条件检索、问题改写、对比训练与重排的近邻，可约束“首次在 RAG 中处理时间/条件约束”的宽泛主张；但它不判断文档恶意性/真伪，不检查来源关系，不输出块级风险或最终 query 级误删保证。对 A 的单真实源、未知 chunker、同源互补块共召回及逐块共同必要性不构成直接碰撞证据；对 B 是功能与效用基线，不是安全检测器。
 
-## 与 Plan of Knowledge 的版本关系
+## 与 Plan of Knowledge 的关系及待核事项
 
-TKDE 2026 *Plan of Knowledge* 正文将 TimeR4 [18] 明确标为会议版并逐项说明扩展：新加面向多跳的结构化 `Retrieve/Rank/Reason` 计划；增强时间检索器（LLM 语义表示、任务提示、InfoNCE）；扩大相关工作；扩充至四个数据集并加入更多分析。两者属于一个研究版本链，不独立计为安全证据。对比时应把通用时间感知检索/改写/rerank 归入前序已有，把计划分解、多跳能力及新增检索/实验设计视为后续版本增量。
+[Plan of Knowledge arXiv v1 作者稿](https://arxiv.org/pdf/2511.04072v1)在 PDF 第 6–7 页将 TimeR4 列为比较基线，第 11 页参考文献 [18] 引用 [TimeR4 的 ACL 正式版](https://aclanthology.org/2024.emnlp-main.394/)；两篇有五位共同署名作者，研究主题重合。比较基线和引用本身不足以确认或排除会议前序/期刊扩展关系；IEEE Xplore 本次请求返回 HTTP 202 空响应，最终出版版是否明确说明该关系及具体扩展范围仍待核。对比时按各自原文逐项比较，不把 PoK 方法视为已证实的版本增量；计权时考虑潜在关联，暂不将两篇当作相互独立的安全证据。
 
 ## 阅读边界
 
