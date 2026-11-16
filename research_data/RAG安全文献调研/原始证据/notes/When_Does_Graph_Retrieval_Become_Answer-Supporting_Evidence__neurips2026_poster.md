@@ -2,7 +2,7 @@
 
 ## 身份与阅读范围
 
-Chenghua Duan、Zhuo Wang、Boheng Liu、Ziyu Li、Qing Li、Xiuxing Li、Zhong Zhang、Xia Wu；[NeurIPS 2026 Poster #139414](https://neurips.cc/virtual/2026/poster/139414)。官方海报左上角标注 **Evaluations & Datasets**；NeurIPS会议在所给第七版CCF目录中为A类，但不据此推断该轨道每篇论文的CCF-A认定，论文级评级仍待核实。
+Chenghua Duan、Zhuo Wang、Boheng Liu、Ziyu Li、Qing Li、Xiuxing Li、Zhong Zhang、Xia Wu；[NeurIPS 2026 Poster #139414](https://neurips.cc/virtual/2026/poster/139414)。官方海报左上角标注 **Evaluations & Datasets**，[NeurIPS官方分轨目录](https://neurips.cc/virtual/2026/loc/sydney/events/evaluations-datasets-2026)亦列出该论文；NeurIPS会议在所给第七版CCF目录中为A类，但不据此推断该轨道每篇论文的CCF-A认定，论文级评级仍待核实。
 
 已阅读官方摘要及[官方海报](https://neurips.cc/media/PosterPDFs/NeurIPS%202026/139414.png)，并静态核对海报展示结果与作者仓库固定提交的说明和CSV。海报PNG SHA-256：`bf79ba1646057b67d516b92643c3711efc51ebf1a224e0c18a731d0cb1903c3e`。OpenReview PDF端点当次返回403，未取得论文PDF；因此阅读状态仍为**L1摘要＋海报＋公开结果文件核验**，不能算论文正文精读或推断正文未展示的实验细节。
 
