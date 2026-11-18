@@ -255,7 +255,7 @@ A1–A20 把威胁模型推向两个极端：**白盒**（可拿梯度与参数�
 | D8 | 检索后 | **轻量 ML 检测** | RAGDEFENDER | 无需额外训练/推理，Gemini 上 ASR **0.89→0.02** |
 | D9 | 检索后 | **检索阶段可视化标定** | RADE | 责任感知解码，区分「有害高影响证据」与「真值支撑的桥接段落」 |
 | D10 | 生成时 | **隔离分组后可认证聚合** | RobustRAG | v2允许不相交组内联合生成；认证给定query/污染预算/质量函数/参考答案下的最坏质量下界，可为0 |
-| D11 | 生成时 | **可证明鲁棒聚合** | PRA-RAG | 嵌入空间几何结构采样鲁棒子集，ASR 低至 **1%**，精度保持 71% |
+| D11 | 生成时 | **可证明鲁棒聚合** | PRA-RAG | 组合嵌入几何聚合；在组合严格多数且附录A.5几何可分条件下给出PAD上界；公开同名候选实现已静态核查，官方归属待核、未复现 |
 | D12 | 事后 | **责任归因与投毒追溯** | RAGOrigin（Who Taught the Lie）、**RAGForensics** | RAGOrigin：黑盒归因，按检索排名+语义相关性+响应影响力打分，无监督聚类隔离毒文本；RAGForensics：**迭代检索—LLM 判定—剔除**，逐个定位知识库中的毒文本直至 top-K 全为良性 |
 | D13 | 输入侧 | **IPI 检测与移除** | Can IPI Be Detected and Removed | 分割移除法 + 抽取移除法（训练抽取模型） |
 | D14 | 生成前 | **冲突感知与知识融合** | BRIDGE、Astute RAG、CARE-RAG | 识别参数知识与检索证据的冲突，自适应加权/摘要后再生成 |
@@ -276,7 +276,7 @@ A1–A20 把威胁模型推向两个极端：**白盒**（可拿梯度与参数�
 这是**理论性最强**、最受顶会青睐的方向：
 
 - **RobustRAG（v2，2026-04-01）**：isolate-then-aggregate将检索段落划为互不相交的文档组，**组内联合生成**，再作安全关键词/解码聚合。认证量针对指定query、污染预算、质量函数和参考答案；可为0，离线认证依赖参考答案不等于线上预先知道真值。允许自适应攻击者，不应写成缺少任何自适应理论。已核读方法与定理陈述，未独立验证实验和证明。
-- **PRA-RAG**：采样检索文本的**多种组合**，利用**嵌入空间几何结构**识别鲁棒子集，推导稳定聚合表示；给出**毒化内容最大影响的理论界**，ASR 降至 **1%** 而精度保持 **71%**。
+- **PRA-RAG**：采样检索文本的**多种组合**，利用**嵌入空间几何结构**识别鲁棒子集并推导PAD上界；严格多数由组合计数提供，但附录A.5还要求干净/含毒组合存在正几何间隔，Monte Carlo只给出单向采样界。正式表2的MS-MARCO/Mistral设置为攻击ACC63%/ASR1%，clean ACC57%；摘要71%/1%未对齐到同一主表配置。表9 K20、20%投毒、n3–5超出严格多数前提，不能用经验PAD替代条件认证。
 
 > **共性边界**：须逐项说明污染预算、分组与质量函数。污染增加可能使下界退化，但超预算经验攻击不构成定理反例；协同或分布式这一标签本身也不推出所有认证失效。
 
@@ -422,12 +422,12 @@ timeline
              : TrustRAG 聚类+自评估
         2025 : GMTP 梯度掩码检测
              : GRADA 图重排
-             : PRA-RAG 可证明聚合
              : Astute RAG 冲突消解
              : CARE-RAG 冲突驱动摘要
              : RAGDEFENDER 轻量检测
              : RAGForensics 投毒追溯
-        2026 : ShieldRAG 窗口共识与条件扩检（TOIS）
+        2026 : PRA-RAG 条件认证聚合（ACL Findings）
+             : ShieldRAG 窗口共识与条件扩检（TOIS）
              : CEG-RAG 交叉编码器激活
              : RAGOrigin 责任归因
              : RADAR 动态 RAG 图能量最小化（ICML'26）
@@ -594,7 +594,7 @@ timeline
 | 45 | **AV Filter（Through the Stealth Lens）** | ICML | 2026 | D19 注意力方差过滤（需白盒） | **混合** — 提出 **NPAS（Normalized Passage Attention Score）** 把跨层跨头的注意力按段落聚合为"该段落对响应的贡献占比"，再以 **NPAS 方差** 作为异常统计量；**AV Filter** 按 NPAS 降序迭代剔除最高分段落，直到方差 ≤ 阈值 δ 或已剔除 ϵ 比例；并以 **SADG（Stealth Attack Distinguishability Game）** 给出"隐蔽性"的形式化定义 | 指出既有投毒攻击**根本不以隐蔽为目标**——低污染率下若要压过良性多数，毒段落**必须**对响应施加不成比例的影响，这种"影响集中"本身就在注意力分布上留下可检测痕迹；据此把**隐蔽性**从一个模糊形容词变成**可量化的博弈优势 $\mathrm{Adv}_{\mathcal A_\epsilon,\mathcal D}^{\mathrm{SADG}}$**，并证明**"低污染 + 高成功率 + 高隐蔽"三者不可兼得** | **防御方需白盒访问 LLM 内部**（注意力权重；Assumption 3.3）；对闭源模型（GPT-4o）改用**辅助开源模型 Mistral-7B** 计算注意力（黑盒设定）；**RQA / RQA-MC / NQ / HotpotQA** 四数据集（RQA 系用 Google Search，HotpotQA/NQ 用 Wikipedia），**每数据集 100 查询**、k=10、ϵ=0.1；**5 LLM**（Llama2-7B-Chat / Mistral-7B-Instruct / Llama-3.1-8B / Deepseek-R1-Distill-Qwen-7B / GPT-4o）；**5 攻击**（Poison、Misinformation Attack、Paradox、CorruptRAG、PIA）；α ∈ {5,10,∞}、δ=26.2；**5 随机种子**平均；指标 ACC / RACC / ASR / **CIR（污染识别率）**；SADG 胜率平均 **CIR 0.78**；干净 ACC 仅降 **4–6%**（RQA-MC：Vanilla 61.4 → AV Filter 59.3，Keyword 56.0、Decoding 50.3）；**RACC 最高超出基线 20%、ACC 最高超出 23%**；ASR 由 Vanilla 最高 **88.2%** 降至 RQA-MC 平均 **6.6%**（Keyword 6.1%、Decoding 7.6%）；**自适应攻击**（GCG/AutoDAN 改造，最小化 $L_1+\lambda L_2$）可把 ASR 推到 **20–35%**，但仍低于 Vanilla 与 Certified RAG 上界，且需**逐查询优化**（**≈104 秒/查询**、**约 10³× 基线运行时间**）与完整模型访问 |
 | 46 | **SeCon-RAG** | NeurIPS | 2025 | D16 两阶段语义过滤 | **混合** — 两阶段过滤框架（SCF + CAF）+ **EIRE 实体-意图-关系抽取器** | EIRE 引导的**语义+聚类联合过滤** + **冲突感知过滤** | NQ 等；**0%→100% 六档投毒**；accuracy、ASR；100% 投毒下 **acc>75% / ASR<10%**。**详见 §9.3** |
 | 47 | **CEG-RAG** | Canadian AI2026，PMLR318:366–376；所给CCF目录未列 | 2026 | D6 重排表示与集合检测 | 共享投影+Set Transformer同组chunk交互，attention MIL bag检测与chunk定位，双阈值过滤补齐 | 非梯度法、非纯单块分类；与B直接比较同编码器/划分下的监督头增量 | HotpotQA ASR16.28%与ACC13.95%成对；MS-MARCO块FPR .1125，不能推为query级低误报。正式PDF pp1–9正文已读L3；参考文献浏览，未逐条核验；[逐篇笔记](<../research_data/RAG安全文献调研/原始证据/notes/Defending_RAG_Against_Knowledge_Poisoning_Using_Cross-Encoder_Activation__work-edb4fe8e4c9b.md>) |
-| 48 | **PRA-RAG** | ACL Findings | 2026 | D11 可证明鲁棒聚合 | **混合** — 采样聚合框架 + **嵌入空间几何鲁棒子集算法** + 影响上界理论；三者互相必要 | 用**嵌入空间几何结构**采样鲁棒子集，给出毒化影响理论界 | **白盒检索器**、无 LLM 知识；NQ/MS MARCO/HotpotQA；top-K 子集；ACC、ASR；MS MARCO 20% 投毒下 **ACC 71% / ASR 1%** |
+| 48 | **PRA-RAG** | ACL Findings | 2026 | D11 可证明鲁棒聚合 | **混合** — 采样聚合框架 + **嵌入空间几何鲁棒子集算法** + PAD影响上界；严格多数与几何可分条件共同构成保证边界 | 用**嵌入空间几何结构**采样鲁棒子集；附录A.5要求正间隔Δ，Monte Carlo仅给出`R*≤R`的单向界 | **白盒检索器**、无LLM知识；NQ/MS-MARCO/HotpotQA；Top-K子集；ACC/ASR；表2 MS-MARCO/Mistral攻击ACC63%/ASR1%，clean57%；表9超严格多数前提。公开同名候选仓库[固定commit](https://github.com/simpleaday/PRA-RAG/tree/7889536fe904d0eecbbb3a3114b7758b161900d6)已静态核对，未复现 |
 | 49 | **ShieldRAG（Push and Pull）** | TOIS | 2026 | D3 窗口共识与条件扩检 | **混合** — 重叠窗口生成答案/解释 + 答案关键词频次过滤 + 空关键词集合时的句子或短语查询扩展 | Push/Pull为作者对预期效果的解释；未报告防御专用编码器训练，也未证明每次向量距离必然改善（pp9–14） | 正式31页PDF正文pp1–28 L3、参考文献pp28–31浏览；每数据集100个query按70/30分评估/调参（p16）；ACC/ASR为答案子串命中，逐表有效分母和聚合口径仍待澄清（p19）；正常答案ACC不是query误删率，扩展循环未列固定迭代上限（pp12–14、27；见§11.4–11.7） |
 | 50 | **GMTP** | ACL Findings | 2025 | D7 梯度掩码 token 概率 | **混合** — 检索后过滤模块（结构）+ **梯度定位 / 掩码-MLM 概率检测算法**（算法） | 检索器相似度**梯度**定位高影响 token→掩码→MLM 概率检查 | **BEIR**（NQ 2.6M/HotpotQA 5.2M/MS MARCO 8.8M）；每数据集 **200 测试查询**、触发器 "iPhone"；**LLM-as-a-judge**(ACC/CACC/ASR)；过滤 **>90%** 毒文档 |
 | 51 | **TrustRAG** | arXiv | 2025 | D1 聚类过滤 + 自评估 | **系统机制** — 两阶段（聚类过滤 + 自评估）流水线；内部用**现成 K-means 与 LLM 提示**，无自有学习目标 | 两阶段：聚类过滤检测攻击模式 + LLM 自评估消解不一致（免训练） | 攻击者选 M 问题 + 目标答案；NQ/HotpotQA/MS MARCO；100 查询；ACC、ASR；NQ **83–90% ACC / 1–7% ASR** |
@@ -1279,8 +1279,8 @@ $$
 | 84.0% | SeCon-RAG（Qwen-7B，clean） | ② 干净 | — |
 | 83.6% | SeCon-RAG（HotpotQA，GPT-4o，100% 毒率） | ③ 攻击条件 | — |
 | 82.0% | TrustRAG（NQ，攻击，stage1+2） | ① 全部查询 | — |
-| 71.0% | PRA-RAG（MS-MARCO，20% 毒率） | ① | — |
-| 62.0% | PRA-RAG（MS-MARCO，Mistral-7B） | ① | 生成器较弱 |
+| 68.0% | PRA-RAG（表2，Vicuna/MS-MARCO，20%毒率，PoisonedRAG） | ① | 配对ASR1%；clean ACC63% |
+| 63.0% | PRA-RAG（表2，Mistral/MS-MARCO，20%毒率，PoisonedRAG） | ① | 配对ASR1%；正文写62%，表1/2为63% |
 | 50.0% | CEG-RAG（MS-MARCO） | ④ 毒被检索子集 | 过度过滤 |
 | 46.4% | TrustRAG（HotpotQA） | ④ | 多跳难 |
 | 41.1% | CEG-RAG（NQ） | ④ | — |
@@ -1814,7 +1814,7 @@ $$
 | 9 | AV Filter (Stealth Lens) | ICML | 2026 | 6 | 7.7 | 1.77 | 0.176 | 0.671 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.481** | B | OpenReview 补充材料；注意力方差过滤（需白盒） |
 | 10 | SeCon-RAG | NeurIPS | 2025 | 10 | 9.7 | 1.79 | 0.179 | 0.602 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.477** | B | 自有仓库 `lanmei666/Secon-Rag`；两阶段语义过滤 |
 | 11 | CEG-RAG | Canadian Conf AI | 2026 | 1 | 3.7 | 1.98 | 0.206 | 0.826 | 0.40 | **1.00** | 0.45/0.40/0.15 | **0.349** | C | 自有仓库 `CyberScienceLab/CEG-RAG`；交叉编码器激活信号 |
-| 12 | PRA-RAG | ACL Findings | 2026 | 0 | 8.7 | 1.23 | 0.089 | 0.636 | 0.80 | **1.00** | 0.45/0.40/0.15 | **0.336** | C | 自有仓库 `simpleaday/PRA-RAG`；可证明鲁棒聚合 |
+| 12 | PRA-RAG | ACL Findings | 2026 | 0 | 8.7 | 1.23 | 0.089 | 0.636 | 0.80 | **1.00** | 0.45/0.40/0.15 | **0.336** | C | 公开同名候选仓库已核，官方归属与完整性未闭合；历史O分值未重算，不能当当前制品评分；见§11.4 |
 | 13 | ShieldRAG (Push and Pull) | TOIS | 2026 | 4 | 8.7 | 1.51 | 0.136 | 0.636 | 0.80 | **0.50** | 0.45/0.40/0.15 | **0.318** | C | 未见自有制品；嵌入空间重塑 |
 | 14 | GMTP | ACL Findings | 2025 | 7 | 14.8 | 1.21 | 0.084 | 0.462 | 0.80 | **1.00** | 0.45/0.40/0.15 | **0.314** | C | 自有仓库 `mountinyy/GMTP`；梯度掩码 token 概率 |
 | 15 | TrustRAG | arXiv | 2025 | 99 | 20.9 | 4.36 | 0.444 | 0.337 | 0.20 | **1.05** | 0.45/0.40/0.15 | **0.306** | C | 自有仓库 `HuichiZhou/TrustRAG`；聚类+自评估 |
@@ -2168,6 +2168,7 @@ A可继续检验的窄交集是：**只改一份真实长源文档，经未知�
 
 | 条目ID / study / 准确题名 | 原文依据与已覆盖机制 | 与B的边界及未决 |
 |---|---|---|
+| **PRA-RAG，*Provably Robust Aggregation in Retrieval-Augmented Generation against Retrieval Corruption*** | **Findings of ACL 2026，正式16页PDF L3；Findings不继承ACL主会CCF-A。** 通过Top-K组合嵌入的最小多数球选择鲁棒子集，并以聚合表示偏移（PAD）给出条件上界；附录A.5明确需要干净/含毒组合的正几何间隔，公开同名候选仓库已静态核查，官方归属尚未确认。[逐篇证据与页码](<RAG安全证据地图_20261102.md#src-18ff50f3b5d89921>) | B不能再把“检索后几何聚合”或“理论鲁棒性”泛称为空白；PRA-RAG不识别来源/实体/条件命题冲突，也不提供B的query级最终删块误报或正常多跳桥接保留保证。表9 K20、20%投毒、n3–5不满足严格多数，经验低ASR不能充当条件认证。候选实现以拼接文本编码组合、PAD越界索引截断且缺少必要源码；未运行或复现。 |
 | **MLJA19，*Transfer Conformal Predictive Inference for Regression*** | **JMLR 27(90), 2026，CCF-A；正式版68页全文L3。** 以目标域bootstrap估计偏差修正量，并用conditional KL筛选可迁移源；在假设下给出非渐近边际覆盖上下界。[逐篇证据与页码](<RAG安全证据地图_20261102.md#src-8d0d1fa3f8d8b9e5>) | B的方法层面参照，不是直接RAG撞题：本文校准带响应标签的回归残差/预测区间，不校准clean query的检索风险分数，不保证检出投毒或控制最终删块误报。 |
 | **D29，`coordguard`，*Consistency Is the Attack Surface: Detecting Coordinated Retrieval Poisoning with Embedding Geometry***，arXiv2610.24834v1 | **2026预印本，未核实WWW2027录用，不赋WWW的CCF A。** L3：作者v1物理p1–9完整正文，p8压力测试已核；附录p12–13未完整阅读，不外推附录证明。§3.2–3.3以冻结审计编码器构query锚定跨块分量几何，§4.4已有 **n=500 held-out clean query、split-conformal p值、α门控及clean-query intervention率**。 | B的Top-K逐块RF最大分数与其分量query总分有形式差异，但两者统计单位都是query，共形原理相同。B的四统计、联合语义表示、物理来源/偏移/实体/条件命题及选择性LLM可作为待验证差异；增加监督RF不自动有优势。本篇未用poison标签/RF/物理provenance，不能据此推定B更有效。 |
 | **RAGSieve，*Detecting Knowledge-Poisoned Documents in RAG Without a Trusted Reference*** | **2026预印本；正式venue未核。** v2全文与附录已读，论文构造查询期Top-5与同查询6–20名的对照，以及语料期局部近邻图；两阶段可串联。[原文证据与版本冲突](<RAG安全证据地图_20261102.md#src-20261115-ragsieve>) | 对B“检索尾部参照、跨文档局部关系与多统计联合筛查”的宽泛新颖性构成直接限制。其5%预算是文档级，不保证clean-query最终误删率；论文未检验B的物理来源/偏移与正常多跳桥接保留。受尾部污染及近重复影响，两阶段也并非对自适应攻击有通用保证。 |
