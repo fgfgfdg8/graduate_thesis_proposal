@@ -1,0 +1,4080 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "bounded_deferred22_external_link_identity_evidence",
+  "audit_date": "2026-11-18",
+  "retry_batch": "20261118_deferred22_identity_v1",
+  "scope": {
+    "input_ledger": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_未决外链增量核验_20261118.jsonl",
+    "original_pending": 22,
+    "distinct_works": 7,
+    "main_document_write": false,
+    "no_repository_code_execution": true,
+    "no_model_run": true
+  },
+  "provenance": {
+    "basis": "Actual requests results captured in this increment, targeted local document context, and actual browser tool observation.",
+    "precise_http_times": "Copied per request from Python UTC timestamps.",
+    "response_bytes": "Only observed response length, SHA-256 and selected metadata/text retained. Full HTTP bodies are not persisted; no reconstructed byte claims.",
+    "browser_bytes": "Browser response bytes and HTTP status not exposed; left null. No inference from browser tool success.",
+    "source_url_policy": "Publisher article numbers came from exact existing document links; DOI values came from actual official metadata. No guessed replacement article paths.",
+    "source_context_file": "docs/RAG安全文献补查元数据_20261102.md",
+    "source_context_lines": [
+      260,
+      14269,
+      14282,
+      14295,
+      14308,
+      15599,
+      15612,
+      15625,
+      15638
+    ],
+    "source_context_note": "These lines establish the intended paper/link role, not current Scholar identities or current citation counts.",
+    "browser_followup_no_credit": true
+  },
+  "findings": {
+    "executed": 22,
+    "still_unexecuted": 0,
+    "original_urls_http_200_challenge": 22,
+    "original_scholar_identity_confirmed": 0,
+    "official_work_identities_confirmed": 7,
+    "dead_link_confirmed": 0,
+    "wrong_paper_url_confirmed": 0,
+    "mandatory_replacements": 0
+  },
+  "groups": [
+    {
+      "id": "sieve",
+      "expected_title_from_document": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+      "original_urls": [
+        "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%22Sieve+and+Sage%3A+Efficient+Distraction+Filtering+for+Reliable+RALM+Abstention%22",
+        "https://scholar.google.com/scholar?cluster=4606056750816841043&hl=en&as_sdt=0%2C5",
+        "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%222609.35794%22"
+      ],
+      "official_identity_confirmed": true,
+      "verification_basis": "Actual ACL Anthology page citation_title/citation_author/citation_doi plus arXiv version-specific title/authors/id",
+      "observed_title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+      "authors": [
+        "Jongbin Won",
+        "SungGeun AN",
+        "Jay-Yoon Lee"
+      ],
+      "doi": "10.18653/2026.findings-emnlp.2356",
+      "formal_publisher_url": "https://aclanthology.org/2026.findings-emnlp.2356/",
+      "doi_url": "https://doi.org/10.18653/2026.findings-emnlp.2356",
+      "official_http_source_ids": [
+        "official-http-1",
+        "official-http-4"
+      ],
+      "registry_source_id": null,
+      "browser_evidence_available": false,
+      "original_scholar_card_or_cluster_identity_confirmed": false,
+      "original_scholar_limitation": "The observed response is a Google verification/robot challenge; intended association is from local document context, not revalidated Scholar content.",
+      "publisher_current_access": "readable identity-confirmed HTTP 200 after resolver redirect",
+      "citation_count": null,
+      "citation_count_note": "Not read/refreshed in this increment; null is not zero.",
+      "preserved_historical_links": true
+    },
+    {
+      "id": "query_answer",
+      "expected_title_from_document": "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases",
+      "original_urls": [
+        "https://scholar.google.com/scholar?hl=en&q=%22What%20Does%20a%20Query%20Answer%20Tell%20You%3F%20Informativeness%20of%20Query%20Answers%20for%20Knowledge%20Bases%22",
+        "https://scholar.google.com/scholar?cites=15238416963640348203&as_sdt=2005&sciodt=0,5&hl=en",
+        "https://scholar.google.com/scholar?cluster=15238416963640348203&hl=en&as_sdt=0,5"
+      ],
+      "official_identity_confirmed": true,
+      "verification_basis": "Exact normalized title, author list, DOI and resource.primary.URL in actual Crossref JSON response",
+      "observed_title": "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases",
+      "authors": [
+        "Luca Andolfi",
+        "Gianluca Cima",
+        "Marco Console",
+        "Maurizio Lenzerini"
+      ],
+      "doi": "10.1609/aaai.v38i9.28912",
+      "formal_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+      "doi_url": "https://doi.org/10.1609/aaai.v38i9.28912",
+      "official_http_source_ids": [
+        "official-http-2"
+      ],
+      "registry_source_id": "registry-http-1",
+      "browser_evidence_available": false,
+      "original_scholar_card_or_cluster_identity_confirmed": false,
+      "original_scholar_limitation": "The observed response is a Google verification/robot challenge; intended association is from local document context, not revalidated Scholar content.",
+      "publisher_current_access": "requests received HTTP 200 Anubis challenge; paper/resource association confirmed by Crossref, not by protected response body",
+      "citation_count": null,
+      "citation_count_note": "Not read/refreshed in this increment; null is not zero.",
+      "preserved_historical_links": true
+    },
+    {
+      "id": "forgetting",
+      "expected_title_from_document": "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming",
+      "original_urls": [
+        "https://scholar.google.com/scholar?hl=en&q=%22A%20Unified%20View%20on%20Forgetting%20and%20Strong%20Equivalence%20Notions%20in%20Answer%20Set%20Programming%22",
+        "https://scholar.google.com/scholar?cites=15009086195049639208&as_sdt=2005&sciodt=0,5&hl=en",
+        "https://scholar.google.com/scholar?cluster=15009086195049639208&hl=en&as_sdt=0,5"
+      ],
+      "official_identity_confirmed": true,
+      "verification_basis": "Exact normalized title, author list, DOI and resource.primary.URL in actual Crossref JSON response",
+      "observed_title": "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming",
+      "authors": [
+        "Zeynep G. Saribatur",
+        "Stefan Woltran"
+      ],
+      "doi": "10.1609/aaai.v38i9.28940",
+      "formal_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+      "doi_url": "https://doi.org/10.1609/aaai.v38i9.28940",
+      "official_http_source_ids": [
+        "official-http-3"
+      ],
+      "registry_source_id": "registry-http-2",
+      "browser_evidence_available": false,
+      "original_scholar_card_or_cluster_identity_confirmed": false,
+      "original_scholar_limitation": "The observed response is a Google verification/robot challenge; intended association is from local document context, not revalidated Scholar content.",
+      "publisher_current_access": "requests received HTTP 200 Anubis challenge; paper/resource association confirmed by Crossref, not by protected response body",
+      "citation_count": null,
+      "citation_count_note": "Not read/refreshed in this increment; null is not zero.",
+      "preserved_historical_links": true
+    },
+    {
+      "id": "beliefflow",
+      "expected_title_from_document": "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change",
+      "original_urls": [
+        "https://scholar.google.com/scholar?hl=en&q=%22BeliefFlow%3A%20A%20Framework%20for%20Logic-Based%20Belief%20Diffusion%20via%20Iterated%20Belief%20Change%22",
+        "https://scholar.google.com/scholar?cites=6128591430038773303&as_sdt=2005&sciodt=0,5&hl=en",
+        "https://scholar.google.com/scholar?cluster=6128591430038773303&hl=en&as_sdt=0,5"
+      ],
+      "official_identity_confirmed": true,
+      "verification_basis": "Exact normalized title, author list, DOI and resource.primary.URL in actual Crossref JSON response",
+      "observed_title": "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change",
+      "authors": [
+        "Nicolas Schwind",
+        "Katsumi Inoue",
+        "Sébastien Konieczny",
+        "Pierre Marquis"
+      ],
+      "doi": "10.1609/aaai.v38i9.28941",
+      "formal_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+      "doi_url": "https://doi.org/10.1609/aaai.v38i9.28941",
+      "official_http_source_ids": [
+        "official-http-5"
+      ],
+      "registry_source_id": "registry-http-3",
+      "browser_evidence_available": false,
+      "original_scholar_card_or_cluster_identity_confirmed": false,
+      "original_scholar_limitation": "The observed response is a Google verification/robot challenge; intended association is from local document context, not revalidated Scholar content.",
+      "publisher_current_access": "requests received HTTP 200 Anubis challenge; paper/resource association confirmed by Crossref, not by protected response body",
+      "citation_count": null,
+      "citation_count_note": "Not read/refreshed in this increment; null is not zero.",
+      "preserved_historical_links": true
+    },
+    {
+      "id": "why_provenance",
+      "expected_title_from_document": "Computing the Why-Provenance for Datalog Queries via SAT Solvers",
+      "original_urls": [
+        "https://scholar.google.com/scholar?hl=en&q=%22Computing%20the%20Why-Provenance%20for%20Datalog%20Queries%20via%20SAT%20Solvers%22",
+        "https://scholar.google.com/scholar?cites=17227892215399272979&as_sdt=2005&sciodt=0,5&hl=en",
+        "https://scholar.google.com/scholar?cluster=17227892215399272979&hl=en&as_sdt=0,5"
+      ],
+      "official_identity_confirmed": true,
+      "verification_basis": "Exact normalized title, author list, DOI and resource.primary.URL in actual Crossref JSON response",
+      "observed_title": "Computing the Why-Provenance for Datalog Queries via SAT Solvers",
+      "authors": [
+        "Marco Calautti",
+        "Ester Livshits",
+        "Andreas Pieris",
+        "Markus Schneider"
+      ],
+      "doi": "10.1609/aaai.v38i9.28914",
+      "formal_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+      "doi_url": "https://doi.org/10.1609/aaai.v38i9.28914",
+      "official_http_source_ids": [
+        "official-http-6"
+      ],
+      "registry_source_id": "registry-http-4",
+      "browser_evidence_available": false,
+      "original_scholar_card_or_cluster_identity_confirmed": false,
+      "original_scholar_limitation": "The observed response is a Google verification/robot challenge; intended association is from local document context, not revalidated Scholar content.",
+      "publisher_current_access": "requests received HTTP 200 Anubis challenge; paper/resource association confirmed by Crossref, not by protected response body",
+      "citation_count": null,
+      "citation_count_note": "Not read/refreshed in this increment; null is not zero.",
+      "preserved_historical_links": true
+    },
+    {
+      "id": "relational",
+      "expected_title_from_document": "Relational Programming with Foundational Models",
+      "original_urls": [
+        "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundational%20Models%22",
+        "https://scholar.google.com/scholar?cites=2684434307905260302&as_sdt=2005&sciodt=0,5&hl=en",
+        "https://scholar.google.com/scholar?cluster=2684434307905260302&hl=en&as_sdt=0,5",
+        "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundation%20Models%22"
+      ],
+      "official_identity_confirmed": true,
+      "verification_basis": "Exact normalized title, author list, DOI and resource.primary.URL in actual Crossref JSON response",
+      "observed_title": "Relational Programming with Foundational Models",
+      "authors": [
+        "Ziyang Li",
+        "Jiani Huang",
+        "Jason Liu",
+        "Felix Zhu",
+        "Eric Zhao",
+        "William Dodds",
+        "Neelay Velingker",
+        "Rajeev Alur",
+        "Mayur Naik"
+      ],
+      "doi": "10.1609/aaai.v38i9.28934",
+      "formal_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+      "doi_url": "https://doi.org/10.1609/aaai.v38i9.28934",
+      "official_http_source_ids": [
+        "official-http-7"
+      ],
+      "registry_source_id": "registry-http-5",
+      "browser_evidence_available": false,
+      "original_scholar_card_or_cluster_identity_confirmed": false,
+      "original_scholar_limitation": "The observed response is a Google verification/robot challenge; intended association is from local document context, not revalidated Scholar content.",
+      "publisher_current_access": "requests received HTTP 200 Anubis challenge; paper/resource association confirmed by Crossref, not by protected response body",
+      "citation_count": null,
+      "citation_count_note": "Not read/refreshed in this increment; null is not zero.",
+      "preserved_historical_links": true
+    },
+    {
+      "id": "informedqx",
+      "expected_title_from_document": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+      "original_urls": [
+        "https://scholar.google.com/scholar?hl=en&q=%22INFORMEDQX%3A%20Informed%20Conflict%20Detection%20for%20Over-Constrained%20Problems%22",
+        "https://scholar.google.com/scholar?cites=2691716604355998446&as_sdt=2005&sciodt=0,5&hl=en",
+        "https://scholar.google.com/scholar?cluster=2691716604355998446&hl=en&as_sdt=0,5"
+      ],
+      "official_identity_confirmed": true,
+      "verification_basis": "Actual browser-rendered publisher article heading, author list, DOI and citation_* metadata",
+      "observed_title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+      "authors": [
+        "Viet-Man Le",
+        "Alexander Felfernig",
+        "Thi Ngoc Trang Tran",
+        "Mathias Uta"
+      ],
+      "doi": "10.1609/aaai.v38i9.28932",
+      "formal_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+      "doi_url": "https://doi.org/10.1609/aaai.v38i9.28932",
+      "official_http_source_ids": [
+        "official-http-8"
+      ],
+      "registry_source_id": "registry-http-6",
+      "browser_evidence_available": true,
+      "original_scholar_card_or_cluster_identity_confirmed": false,
+      "original_scholar_limitation": "The observed response is a Google verification/robot challenge; intended association is from local document context, not revalidated Scholar content.",
+      "publisher_current_access": "readable identity-confirmed browser observation; requests received HTTP 200 Anubis challenge, browser HTTP status not exposed",
+      "citation_count": null,
+      "citation_count_note": "Not read/refreshed in this increment; null is not zero.",
+      "preserved_historical_links": true
+    }
+  ],
+  "official_http_observations": [
+    {
+      "role": "official_identity_source",
+      "group": "sieve",
+      "expected_title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+      "url": "https://arxiv.org/abs/2609.35794v1",
+      "url_provenance": "exact URL already present in targeted document context; no inferred article number",
+      "at": "2026-11-18T07:12:36+00:00",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:36+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://arxiv.org/abs/2609.35794v1",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": "41555",
+            "Content-Encoding": null,
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 41555,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "58a54b7830485075f7d8d34e51af362aba1d868a66545446b4e4ee3ce4e0bc9c",
+          "page_title": "[2609.35794v1] Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+          "metadata": {
+            "og:title": [
+              "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            ],
+            "og:url": [
+              "https://arxiv.org/abs/2609.35794v1"
+            ],
+            "citation_title": [
+              "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            ],
+            "citation_author": [
+              "Won, Jongbin",
+              "An, Sung Geun",
+              "Lee, Jay-yoon"
+            ],
+            "citation_pdf_url": [
+              "https://arxiv.org/pdf/2609.35794"
+            ]
+          },
+          "canonical_url": "https://arxiv.org/abs/2609.35794",
+          "headings": [
+            "Computer Science > Computation and Language",
+            "Title: Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+            "Submission history",
+            "Access Paper:",
+            "BibTeX formatted citation",
+            "Bibliographic and Citation Tools",
+            "Code, Data and Media Associated with this Article",
+            "Demos",
+            "Recommenders and Search Tools",
+            "arXivLabs: experimental projects with community collaborators"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 1,
+              "text": "[2609.35794v1] Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            },
+            {
+              "line": 11,
+              "text": "arXiv:2609.35794v1"
+            },
+            {
+              "line": 15,
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            },
+            {
+              "line": 22,
+              "text": "View a PDF of the paper titled Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention, by Jongbin Won and 2 other authors"
+            },
+            {
+              "line": 33,
+              "text": "arXiv:2609.35794"
+            },
+            {
+              "line": 36,
+              "text": "arXiv:2609.35794v1"
+            },
+            {
+              "line": 39,
+              "text": "https://doi.org/10.48550/arXiv.2609.35794"
+            },
+            {
+              "line": 50,
+              "text": "View a PDF of the paper titled Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention, by Jongbin Won and 2 other authors"
+            }
+          ],
+          "text_line_count": 203,
+          "challenge_detected": false,
+          "expected_title_match_candidates": [
+            "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+            "[2609.35794v1] Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+            "Title: Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+          ],
+          "observed_relevant_links": [
+            {
+              "href": "https://arxiv.org/IgnoreMe",
+              "text": ""
+            },
+            {
+              "href": "https://arxiv.org/",
+              "text": ""
+            },
+            {
+              "href": "https://arxiv.org/search",
+              "text": "Search"
+            },
+            {
+              "href": "https://arxiv.org/user/create",
+              "text": "Submit"
+            },
+            {
+              "href": "https://info.arxiv.org/about/donate.html",
+              "text": "Donate"
+            },
+            {
+              "href": "https://arxiv.org/login",
+              "text": "Log in"
+            },
+            {
+              "href": "https://arxiv.org/search/advanced",
+              "text": "Advanced search"
+            },
+            {
+              "href": "https://arxiv.org/search/cs?searchtype=author&query=Won,+J",
+              "text": "Jongbin Won"
+            },
+            {
+              "href": "https://arxiv.org/search/cs?searchtype=author&query=An,+S+G",
+              "text": "Sung Geun An"
+            },
+            {
+              "href": "https://arxiv.org/search/cs?searchtype=author&query=Lee,+J",
+              "text": "Jay-yoon Lee"
+            },
+            {
+              "href": "/pdf/2609.35794v1",
+              "text": "View PDF"
+            },
+            {
+              "href": "https://arxiv.org/html/2609.35794v1",
+              "text": "HTML (experimental)"
+            },
+            {
+              "href": "https://arxiv.org/abs/2609.35794",
+              "text": "arXiv:2609.35794"
+            },
+            {
+              "href": "https://arxiv.org/abs/2609.35794v1",
+              "text": "arXiv:2609.35794v1"
+            },
+            {
+              "href": "https://doi.org/10.48550/arXiv.2609.35794",
+              "text": "https://doi.org/10.48550/arXiv.2609.35794"
+            },
+            {
+              "href": "/pdf/2609.35794v1",
+              "text": "View PDF"
+            },
+            {
+              "href": "https://arxiv.org/html/2609.35794v1",
+              "text": "HTML (experimental)"
+            },
+            {
+              "href": "http://www.bibsonomy.org/BibtexHandler?requTask=upload&url=https://arxiv.org/abs/2609.35794&description=Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+              "text": ""
+            },
+            {
+              "href": "https://reddit.com/submit?url=https://arxiv.org/abs/2609.35794&title=Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+              "text": ""
+            },
+            {
+              "href": "https://info.arxiv.org/labs/showcase.html#arxiv-bibliographic-explorer",
+              "text": "What is the Explorer?"
+            },
+            {
+              "href": "https://info.arxiv.org/labs/index.html",
+              "text": "Learn more about arXivLabs"
+            },
+            {
+              "href": "https://info.arxiv.org/help/mathjax.html",
+              "text": "What is MathJax?"
+            },
+            {
+              "href": "https://info.arxiv.org/about/ourmembers.html",
+              "text": "member institutions"
+            },
+            {
+              "href": "https://info.arxiv.org/about",
+              "text": "About"
+            },
+            {
+              "href": "https://info.arxiv.org/help",
+              "text": "Help"
+            }
+          ],
+          "elapsed_seconds": 8.109,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": null
+        }
+      ],
+      "id": "official-http-1"
+    },
+    {
+      "role": "official_identity_source",
+      "group": "query_answer",
+      "expected_title": "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases",
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+      "url_provenance": "exact URL already present in targeted document context; no inferred article number",
+      "at": "2026-11-18T07:12:50+00:00",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:50+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 7028,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "cc51efbf931187bc4d52efc52c9e74c92380407ccdac3bfef3d886015961f5c1",
+          "page_title": "Making sure you're not a bot!",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Making sure you're not a bot!"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 4,
+              "text": "Anubis could not load its JavaScript. The server may be overloaded. Please reload the page to try again."
+            },
+            {
+              "line": 5,
+              "text": "This is a measure against bots and malicious requests similar to a CAPTCHA. However, instead of having to do work yourself, your browser is given a calculation task that it has to solve to ensure that it is a valid client. This concept is called"
+            },
+            {
+              "line": 8,
+              "text": "Please note that Anubis requires the use of modern JavaScript features that plugins like JShelter will disable. Please disable JShelter or other such plugins for this domain."
+            },
+            {
+              "line": 9,
+              "text": "Sadly, you must enable JavaScript to get past this challenge. This is required because AI companies have changed the social contract around how website hosting works. A no-JS solution is a work-in-progress."
+            }
+          ],
+          "text_line_count": 14,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "observed_relevant_links": [],
+          "elapsed_seconds": 6.969,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "id": "official-http-2"
+    },
+    {
+      "role": "official_identity_source",
+      "group": "forgetting",
+      "expected_title": "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming",
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+      "url_provenance": "exact URL already present in targeted document context; no inferred article number",
+      "at": "2026-11-18T07:13:02+00:00",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:02+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 7028,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "833f5471b49adca990f8422b8121e6c568b3fb4af14adca7d237e85c29945b6d",
+          "page_title": "Making sure you're not a bot!",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Making sure you're not a bot!"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 4,
+              "text": "Anubis could not load its JavaScript. The server may be overloaded. Please reload the page to try again."
+            },
+            {
+              "line": 5,
+              "text": "This is a measure against bots and malicious requests similar to a CAPTCHA. However, instead of having to do work yourself, your browser is given a calculation task that it has to solve to ensure that it is a valid client. This concept is called"
+            },
+            {
+              "line": 8,
+              "text": "Please note that Anubis requires the use of modern JavaScript features that plugins like JShelter will disable. Please disable JShelter or other such plugins for this domain."
+            },
+            {
+              "line": 9,
+              "text": "Sadly, you must enable JavaScript to get past this challenge. This is required because AI companies have changed the social contract around how website hosting works. A no-JS solution is a work-in-progress."
+            }
+          ],
+          "text_line_count": 14,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "observed_relevant_links": [],
+          "elapsed_seconds": 6.563,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "id": "official-http-3"
+    },
+    {
+      "role": "official_identity_source",
+      "group": "sieve",
+      "expected_title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+      "url": "https://doi.org/10.18653/2026.findings-emnlp.2356",
+      "url_provenance": "exact URL already present in targeted document context; no inferred article number",
+      "at": "2026-11-18T07:12:36+00:00",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:36+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "error": "ReadTimeout",
+          "detail": "HTTPSConnectionPool(host='aclanthology.org', port=443): Read timed out. (read timeout=8)",
+          "http_status": null,
+          "elapsed_seconds": 22.157,
+          "initial_generic_challenge_detector": null,
+          "challenge_detected": false,
+          "challenge_review_basis": null
+        },
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:58+00:00",
+          "trust_env": false,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "explicit_direct_after_transport_failure",
+          "http_status": 200,
+          "final_url": "https://aclanthology.org/2026.findings-emnlp.2356/",
+          "redirects": [
+            {
+              "url": "https://doi.org/10.18653/2026.findings-emnlp.2356",
+              "status": 302,
+              "location": "https://aclanthology.org/2026.findings-emnlp.2356"
+            },
+            {
+              "url": "https://aclanthology.org/2026.findings-emnlp.2356",
+              "status": 301,
+              "location": "https://aclanthology.org/2026.findings-emnlp.2356/"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": "42719",
+            "Content-Encoding": null,
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 42719,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "75766b75add8591619445187571d26798c7e227dd77d34117c1d64f7e46a8158",
+          "page_title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention - ACL Anthology",
+          "metadata": {
+            "citation_title": [
+              "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            ],
+            "citation_author": [
+              "Jongbin Won",
+              "SungGeun AN",
+              "Jay-Yoon Lee"
+            ],
+            "citation_conference_title": [
+              "Findings of the Association for Computational Linguistics: EMNLP 2026"
+            ],
+            "citation_publication_date": [
+              "2026/10"
+            ],
+            "citation_pdf_url": [
+              "https://aclanthology.org/2026.findings-emnlp.2356.pdf"
+            ],
+            "citation_doi": [
+              "10.18653/2026.findings-emnlp.2356"
+            ],
+            "og:title": [
+              "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            ],
+            "og:url": [
+              "https://aclanthology.org/2026.findings-emnlp.2356/"
+            ]
+          },
+          "canonical_url": "https://aclanthology.org/2026.findings-emnlp.2356/",
+          "headings": [
+            "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 1,
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention - ACL Anthology"
+            },
+            {
+              "line": 30,
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable"
+            },
+            {
+              "line": 87,
+              "text": ") for grounded generation and abstention. Evaluated across both general and high-stakes expert domains, our Sieve and Sage framework preemptively detects distracting noise, improving system accuracy by up to 69.4%p and Macro-F1 by 55.2%p compared to one-stage baselines. Furthermore, it achieves up to a 1.99"
+            },
+            {
+              "line": 126,
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            },
+            {
+              "line": 131,
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            },
+            {
+              "line": 152,
+              "text": "    title = \"Sieve and Sage: Efficient Distraction Filtering for Reliable {RALM} Abstention\","
+            },
+            {
+              "line": 178,
+              "text": "        <title>Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention</title>"
+            },
+            {
+              "line": 265,
+              "text": "%T Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            }
+          ],
+          "text_line_count": 312,
+          "challenge_detected": false,
+          "expected_title_match_candidates": [
+            "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+            "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention - ACL Anthology",
+            "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+          ],
+          "observed_relevant_links": [
+            {
+              "href": "https://aclanthology.org/",
+              "text": "ACL Anthology"
+            },
+            {
+              "href": "https://aclanthology.org/2026.findings-emnlp.2356.pdf",
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            },
+            {
+              "href": "https://aclanthology.org/info/corrections/",
+              "text": "our corrections\nguidelines"
+            },
+            {
+              "href": "https://aclanthology.org/2026.findings-emnlp.2356/",
+              "text": "https://aclanthology.org/2026.findings-emnlp.2356/"
+            },
+            {
+              "href": "https://doi.org/10.18653/2026.findings-emnlp.2356",
+              "text": "10.18653/2026.findings-emnlp.2356"
+            },
+            {
+              "href": "https://aclanthology.org/2026.findings-emnlp.2356/",
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            },
+            {
+              "href": "https://aclanthology.org/2026.findings-emnlp.2356/",
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            },
+            {
+              "href": "https://aclanthology.org/2026.findings-emnlp.2356.pdf",
+              "text": "https://aclanthology.org/2026.findings-emnlp.2356.pdf"
+            },
+            {
+              "href": "https://aclanthology.org/2026.findings-emnlp.2356.pdf",
+              "text": "PDF"
+            },
+            {
+              "href": "https://aclanthology.org/2026.findings-emnlp.2356/",
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            },
+            {
+              "href": "https://aclanthology.org/2026.findings-emnlp.2356/",
+              "text": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention"
+            }
+          ],
+          "elapsed_seconds": 16.343,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": null
+        }
+      ],
+      "id": "official-http-4"
+    },
+    {
+      "role": "official_identity_source",
+      "group": "beliefflow",
+      "expected_title": "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change",
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+      "url_provenance": "exact URL already present in targeted document context; no inferred article number",
+      "at": "2026-11-18T07:13:14+00:00",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:14+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 7028,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "4df7deafdd190da8584a0236c0a94ca46d268bc274b570f69719d558e715342e",
+          "page_title": "Making sure you're not a bot!",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Making sure you're not a bot!"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 4,
+              "text": "Anubis could not load its JavaScript. The server may be overloaded. Please reload the page to try again."
+            },
+            {
+              "line": 5,
+              "text": "This is a measure against bots and malicious requests similar to a CAPTCHA. However, instead of having to do work yourself, your browser is given a calculation task that it has to solve to ensure that it is a valid client. This concept is called"
+            },
+            {
+              "line": 8,
+              "text": "Please note that Anubis requires the use of modern JavaScript features that plugins like JShelter will disable. Please disable JShelter or other such plugins for this domain."
+            },
+            {
+              "line": 9,
+              "text": "Sadly, you must enable JavaScript to get past this challenge. This is required because AI companies have changed the social contract around how website hosting works. A no-JS solution is a work-in-progress."
+            }
+          ],
+          "text_line_count": 14,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "observed_relevant_links": [],
+          "elapsed_seconds": 7.812,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "id": "official-http-5"
+    },
+    {
+      "role": "official_identity_source",
+      "group": "why_provenance",
+      "expected_title": "Computing the Why-Provenance for Datalog Queries via SAT Solvers",
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+      "url_provenance": "exact URL already present in targeted document context; no inferred article number",
+      "at": "2026-11-18T07:13:20+00:00",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:20+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 7028,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "b77281c248b40edb15a75510112ba1d5e6832ab9308581d856618d74c15925d2",
+          "page_title": "Making sure you're not a bot!",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Making sure you're not a bot!"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 4,
+              "text": "Anubis could not load its JavaScript. The server may be overloaded. Please reload the page to try again."
+            },
+            {
+              "line": 5,
+              "text": "This is a measure against bots and malicious requests similar to a CAPTCHA. However, instead of having to do work yourself, your browser is given a calculation task that it has to solve to ensure that it is a valid client. This concept is called"
+            },
+            {
+              "line": 8,
+              "text": "Please note that Anubis requires the use of modern JavaScript features that plugins like JShelter will disable. Please disable JShelter or other such plugins for this domain."
+            },
+            {
+              "line": 9,
+              "text": "Sadly, you must enable JavaScript to get past this challenge. This is required because AI companies have changed the social contract around how website hosting works. A no-JS solution is a work-in-progress."
+            }
+          ],
+          "text_line_count": 14,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "observed_relevant_links": [],
+          "elapsed_seconds": 6.391,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "id": "official-http-6"
+    },
+    {
+      "role": "official_identity_source",
+      "group": "relational",
+      "expected_title": "Relational Programming with Foundational Models",
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+      "url_provenance": "exact URL already present in targeted document context; no inferred article number",
+      "at": "2026-11-18T07:13:30+00:00",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:30+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 7028,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "039fe4ad2b8b030d7dd22ccd9dcea11e2a8858cab39fe9eaa99b0eb61e6ab147",
+          "page_title": "Making sure you're not a bot!",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Making sure you're not a bot!"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 4,
+              "text": "Anubis could not load its JavaScript. The server may be overloaded. Please reload the page to try again."
+            },
+            {
+              "line": 5,
+              "text": "This is a measure against bots and malicious requests similar to a CAPTCHA. However, instead of having to do work yourself, your browser is given a calculation task that it has to solve to ensure that it is a valid client. This concept is called"
+            },
+            {
+              "line": 8,
+              "text": "Please note that Anubis requires the use of modern JavaScript features that plugins like JShelter will disable. Please disable JShelter or other such plugins for this domain."
+            },
+            {
+              "line": 9,
+              "text": "Sadly, you must enable JavaScript to get past this challenge. This is required because AI companies have changed the social contract around how website hosting works. A no-JS solution is a work-in-progress."
+            }
+          ],
+          "text_line_count": 14,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "observed_relevant_links": [],
+          "elapsed_seconds": 7.469,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "id": "official-http-7"
+    },
+    {
+      "role": "official_identity_source",
+      "group": "informedqx",
+      "expected_title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+      "url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+      "url_provenance": "exact URL already present in targeted document context; no inferred article number",
+      "at": "2026-11-18T07:13:40+00:00",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:40+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 7028,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "dc49bdfefc097386a4c817aebc3929efb6e0f31cfcb55b4110ee324806ed8461",
+          "page_title": "Making sure you're not a bot!",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Making sure you're not a bot!"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 4,
+              "text": "Anubis could not load its JavaScript. The server may be overloaded. Please reload the page to try again."
+            },
+            {
+              "line": 5,
+              "text": "This is a measure against bots and malicious requests similar to a CAPTCHA. However, instead of having to do work yourself, your browser is given a calculation task that it has to solve to ensure that it is a valid client. This concept is called"
+            },
+            {
+              "line": 8,
+              "text": "Please note that Anubis requires the use of modern JavaScript features that plugins like JShelter will disable. Please disable JShelter or other such plugins for this domain."
+            },
+            {
+              "line": 9,
+              "text": "Sadly, you must enable JavaScript to get past this challenge. This is required because AI companies have changed the social contract around how website hosting works. A no-JS solution is a work-in-progress."
+            }
+          ],
+          "text_line_count": 14,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "observed_relevant_links": [],
+          "elapsed_seconds": 8.11,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "id": "official-http-8"
+    }
+  ],
+  "official_registry_observations": [
+    {
+      "group": "query_answer",
+      "expected_title": "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases",
+      "role": "official_registry_title_lookup",
+      "url": "https://api.crossref.org/works?query.title=What+Does+a+Query+Answer+Tell+You%3F+Informativeness+of+Query+Answers+for+Knowledge+Bases&rows=3",
+      "attempts": [
+        {
+          "at": "2026-11-18T07:26:36+00:00",
+          "method": "GET",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "http_status": 200,
+          "final_url": "https://api.crossref.org/works?query.title=What+Does+a+Query+Answer+Tell+You%3F+Informativeness+of+Query+Answers+for+Knowledge+Bases&rows=3",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "application/json",
+            "Content-Length": "3173",
+            "Retry-After": null
+          },
+          "body_bytes_read": 9918,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "73edbedb34b8c30c90b7cd46460ad519cc07d7a49b40c655f07311ed524a59aa",
+          "exact_title_matches": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28912",
+              "title": [
+                "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases"
+              ],
+              "author": [
+                {
+                  "given": "Luca",
+                  "family": "Andolfi",
+                  "sequence": "first",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Gianluca",
+                  "family": "Cima",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Marco",
+                  "family": "Console",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Maurizio",
+                  "family": "Lenzerini",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                }
+              ],
+              "container-title": [
+                "Proceedings of the AAAI Conference on Artificial Intelligence"
+              ],
+              "publisher": "Association for the Advancement of Artificial Intelligence (AAAI)",
+              "type": "journal-article",
+              "published": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "issued": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "volume": "38",
+              "issue": "9",
+              "page": "10442-10449",
+              "URL": "https://doi.org/10.1609/aaai.v38i9.28912",
+              "link": [
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28912/29735",
+                  "content-type": "application/pdf",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28912/29736",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28912/29735",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "similarity-checking"
+                }
+              ],
+              "resource": {
+                "primary": {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/view/28912"
+                }
+              }
+            }
+          ],
+          "elapsed_seconds": 1.547,
+          "candidate_summaries": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28912",
+              "title": [
+                "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases"
+              ]
+            },
+            {
+              "DOI": "10.5753/jidm.2021.1914",
+              "title": [
+                "Query Answer Reformulation over Knowledge Bases"
+              ]
+            },
+            {
+              "DOI": "10.24963/ijcai.2018/254",
+              "title": [
+                "Computing Approximate Query Answers over Inconsistent Knowledge Bases"
+              ]
+            }
+          ]
+        }
+      ],
+      "id": "registry-http-1"
+    },
+    {
+      "group": "forgetting",
+      "expected_title": "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming",
+      "role": "official_registry_title_lookup",
+      "url": "https://api.crossref.org/works?query.title=A+Unified+View+on+Forgetting+and+Strong+Equivalence+Notions+in+Answer+Set+Programming&rows=3",
+      "attempts": [
+        {
+          "at": "2026-11-18T07:26:36+00:00",
+          "method": "GET",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "http_status": 200,
+          "final_url": "https://api.crossref.org/works?query.title=A+Unified+View+on+Forgetting+and+Strong+Equivalence+Notions+in+Answer+Set+Programming&rows=3",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "application/json",
+            "Content-Length": "5438",
+            "Retry-After": null
+          },
+          "body_bytes_read": 18530,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "1d1ae7bfb1740c7839cd0764a20afa3899f21977cf4fdfe30a0af06e3b82bfc8",
+          "exact_title_matches": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28940",
+              "title": [
+                "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming"
+              ],
+              "author": [
+                {
+                  "given": "Zeynep G.",
+                  "family": "Saribatur",
+                  "sequence": "first",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Stefan",
+                  "family": "Woltran",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                }
+              ],
+              "container-title": [
+                "Proceedings of the AAAI Conference on Artificial Intelligence"
+              ],
+              "publisher": "Association for the Advancement of Artificial Intelligence (AAAI)",
+              "type": "journal-article",
+              "published": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "issued": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "volume": "38",
+              "issue": "9",
+              "page": "10687-10695",
+              "URL": "https://doi.org/10.1609/aaai.v38i9.28940",
+              "link": [
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28940/29787",
+                  "content-type": "application/pdf",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28940/29788",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28940/29787",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "similarity-checking"
+                }
+              ],
+              "resource": {
+                "primary": {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/view/28940"
+                }
+              }
+            }
+          ],
+          "elapsed_seconds": 4.031,
+          "candidate_summaries": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28940",
+              "title": [
+                "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming"
+              ]
+            },
+            {
+              "DOI": "10.1017/s1471068407003250",
+              "title": [
+                "A common view on strong, uniform, and other notions of equivalence in answer-set programming"
+              ]
+            },
+            {
+              "DOI": "10.1017/s1471068426100647",
+              "title": [
+                "Strong Equivalence in Answer Set Programming with Constraints"
+              ]
+            }
+          ]
+        }
+      ],
+      "id": "registry-http-2"
+    },
+    {
+      "group": "beliefflow",
+      "expected_title": "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change",
+      "role": "official_registry_title_lookup",
+      "url": "https://api.crossref.org/works?query.title=BeliefFlow%3A+A+Framework+for+Logic-Based+Belief+Diffusion+via+Iterated+Belief+Change&rows=3",
+      "attempts": [
+        {
+          "at": "2026-11-18T07:26:36+00:00",
+          "method": "GET",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "http_status": 200,
+          "final_url": "https://api.crossref.org/works?query.title=BeliefFlow%3A+A+Framework+for+Logic-Based+Belief+Diffusion+via+Iterated+Belief+Change&rows=3",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "application/json",
+            "Content-Length": "5817",
+            "Retry-After": null
+          },
+          "body_bytes_read": 18857,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "b3927f39b0b025e959a7744f54275411aee0962ae0b0bb57d32c19c697388eb1",
+          "exact_title_matches": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28941",
+              "title": [
+                "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change"
+              ],
+              "author": [
+                {
+                  "given": "Nicolas",
+                  "family": "Schwind",
+                  "sequence": "first",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Katsumi",
+                  "family": "Inoue",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Sébastien",
+                  "family": "Konieczny",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Pierre",
+                  "family": "Marquis",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                }
+              ],
+              "container-title": [
+                "Proceedings of the AAAI Conference on Artificial Intelligence"
+              ],
+              "publisher": "Association for the Advancement of Artificial Intelligence (AAAI)",
+              "type": "journal-article",
+              "published": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "issued": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "volume": "38",
+              "issue": "9",
+              "page": "10696-10704",
+              "URL": "https://doi.org/10.1609/aaai.v38i9.28941",
+              "link": [
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28941/29789",
+                  "content-type": "application/pdf",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28941/29790",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28941/29789",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "similarity-checking"
+                }
+              ],
+              "resource": {
+                "primary": {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/view/28941"
+                }
+              }
+            }
+          ],
+          "elapsed_seconds": 2.859,
+          "candidate_summaries": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28941",
+              "title": [
+                "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change"
+              ]
+            },
+            {
+              "DOI": "10.1111/j.0824-7935.2004.t01-1-00229.x",
+              "title": [
+                "Iterated Belief Change"
+              ]
+            },
+            {
+              "DOI": "10.1007/978-3-540-76928-6_52",
+              "title": [
+                "Implementing Iterated Belief Change Via Prime Implicates"
+              ]
+            }
+          ]
+        }
+      ],
+      "id": "registry-http-3"
+    },
+    {
+      "group": "why_provenance",
+      "expected_title": "Computing the Why-Provenance for Datalog Queries via SAT Solvers",
+      "role": "official_registry_title_lookup",
+      "url": "https://api.crossref.org/works?query.title=Computing+the+Why-Provenance+for+Datalog+Queries+via+SAT+Solvers&rows=3",
+      "attempts": [
+        {
+          "at": "2026-11-18T07:26:38+00:00",
+          "method": "GET",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "http_status": 200,
+          "final_url": "https://api.crossref.org/works?query.title=Computing+the+Why-Provenance+for+Datalog+Queries+via+SAT+Solvers&rows=3",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "application/json",
+            "Content-Length": "4552",
+            "Retry-After": null
+          },
+          "body_bytes_read": 19582,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "3d91a651d6e55d824571ea1ea8c61c631c2cb7c3c10e4651ec2ef17c5a791371",
+          "exact_title_matches": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28914",
+              "title": [
+                "Computing the Why-Provenance for Datalog Queries via SAT Solvers"
+              ],
+              "author": [
+                {
+                  "given": "Marco",
+                  "family": "Calautti",
+                  "sequence": "first",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Ester",
+                  "family": "Livshits",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Andreas",
+                  "family": "Pieris",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                },
+                {
+                  "given": "Markus",
+                  "family": "Schneider",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "role": "author",
+                      "vocabulary": "crossref"
+                    }
+                  ]
+                }
+              ],
+              "container-title": [
+                "Proceedings of the AAAI Conference on Artificial Intelligence"
+              ],
+              "publisher": "Association for the Advancement of Artificial Intelligence (AAAI)",
+              "type": "journal-article",
+              "published": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "issued": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "volume": "38",
+              "issue": "9",
+              "page": "10459-10466",
+              "URL": "https://doi.org/10.1609/aaai.v38i9.28914",
+              "link": [
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28914/29739",
+                  "content-type": "application/pdf",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28914/29740",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28914/29739",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "similarity-checking"
+                }
+              ],
+              "resource": {
+                "primary": {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/view/28914"
+                }
+              }
+            }
+          ],
+          "elapsed_seconds": 5.687,
+          "candidate_summaries": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28914",
+              "title": [
+                "Computing the Why-Provenance for Datalog Queries via SAT Solvers"
+              ]
+            },
+            {
+              "DOI": "10.1145/3695829",
+              "title": [
+                "Below and Above Why-Provenance for Datalog Queries"
+              ]
+            },
+            {
+              "DOI": "10.1145/3651146",
+              "title": [
+                "The Complexity of Why-Provenance for Datalog Queries"
+              ]
+            }
+          ]
+        }
+      ],
+      "id": "registry-http-4"
+    },
+    {
+      "group": "relational",
+      "expected_title": "Relational Programming with Foundational Models",
+      "role": "official_registry_title_lookup",
+      "url": "https://api.crossref.org/works?query.title=Relational+Programming+with+Foundational+Models&rows=3",
+      "attempts": [
+        {
+          "at": "2026-11-18T07:26:39+00:00",
+          "method": "GET",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "http_status": 200,
+          "final_url": "https://api.crossref.org/works?query.title=Relational+Programming+with+Foundational+Models&rows=3",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "application/json",
+            "Content-Length": "2867",
+            "Retry-After": null
+          },
+          "body_bytes_read": 8968,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "1a5fa958f2f72e1a34f9a10d208a8ec3e92820bfe93edb405642403bcf8e982f",
+          "exact_title_matches": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28934",
+              "title": [
+                "Relational Programming with Foundational Models"
+              ],
+              "author": [
+                {
+                  "given": "Ziyang",
+                  "family": "Li",
+                  "sequence": "first",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "vocabulary": "crossref",
+                      "role": "author"
+                    }
+                  ]
+                },
+                {
+                  "given": "Jiani",
+                  "family": "Huang",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "vocabulary": "crossref",
+                      "role": "author"
+                    }
+                  ]
+                },
+                {
+                  "given": "Jason",
+                  "family": "Liu",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "vocabulary": "crossref",
+                      "role": "author"
+                    }
+                  ]
+                },
+                {
+                  "given": "Felix",
+                  "family": "Zhu",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "vocabulary": "crossref",
+                      "role": "author"
+                    }
+                  ]
+                },
+                {
+                  "given": "Eric",
+                  "family": "Zhao",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "vocabulary": "crossref",
+                      "role": "author"
+                    }
+                  ]
+                },
+                {
+                  "given": "William",
+                  "family": "Dodds",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "vocabulary": "crossref",
+                      "role": "author"
+                    }
+                  ]
+                },
+                {
+                  "given": "Neelay",
+                  "family": "Velingker",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "vocabulary": "crossref",
+                      "role": "author"
+                    }
+                  ]
+                },
+                {
+                  "given": "Rajeev",
+                  "family": "Alur",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "vocabulary": "crossref",
+                      "role": "author"
+                    }
+                  ]
+                },
+                {
+                  "given": "Mayur",
+                  "family": "Naik",
+                  "sequence": "additional",
+                  "affiliation": [],
+                  "role": [
+                    {
+                      "vocabulary": "crossref",
+                      "role": "author"
+                    }
+                  ]
+                }
+              ],
+              "container-title": [
+                "Proceedings of the AAAI Conference on Artificial Intelligence"
+              ],
+              "publisher": "Association for the Advancement of Artificial Intelligence (AAAI)",
+              "type": "journal-article",
+              "published": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "issued": {
+                "date-parts": [
+                  [
+                    2024,
+                    3,
+                    24
+                  ]
+                ]
+              },
+              "volume": "38",
+              "issue": "9",
+              "page": "10635-10644",
+              "URL": "https://doi.org/10.1609/aaai.v38i9.28934",
+              "link": [
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28934/29776",
+                  "content-type": "application/pdf",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28934/29777",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "text-mining"
+                },
+                {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/download/28934/29776",
+                  "content-type": "unspecified",
+                  "content-version": "vor",
+                  "intended-application": "similarity-checking"
+                }
+              ],
+              "resource": {
+                "primary": {
+                  "URL": "https://ojs.aaai.org/index.php/AAAI/article/view/28934"
+                }
+              }
+            }
+          ],
+          "elapsed_seconds": 3.156,
+          "candidate_summaries": [
+            {
+              "DOI": "10.1609/aaai.v38i9.28934",
+              "title": [
+                "Relational Programming with Foundational Models"
+              ]
+            },
+            {
+              "DOI": "10.5040/9781718225039.ch-009",
+              "title": [
+                "Foundational Programming"
+              ]
+            },
+            {
+              "DOI": "10.1109/hicss.1993.284342",
+              "title": [
+                "A relational calculus and algebra for mathematical programming models"
+              ]
+            }
+          ]
+        }
+      ],
+      "id": "registry-http-5"
+    },
+    {
+      "group": "informedqx",
+      "expected_title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+      "role": "official_registry_title_lookup",
+      "url": "https://api.crossref.org/works?query.title=INFORMEDQX%3A+Informed+Conflict+Detection+for+Over-Constrained+Problems&rows=3",
+      "attempts": [
+        {
+          "at": "2026-11-18T07:26:40+00:00",
+          "method": "GET",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "http_status": 429,
+          "final_url": "https://api.crossref.org/works?query.title=INFORMEDQX%3A+Informed+Conflict+Detection+for+Over-Constrained+Problems&rows=3",
+          "redirects": [],
+          "headers": {
+            "Content-Type": null,
+            "Content-Length": "0",
+            "Retry-After": null
+          },
+          "body_bytes_read": 0,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "elapsed_seconds": 2.516,
+          "candidate_summaries": []
+        }
+      ],
+      "id": "registry-http-6"
+    }
+  ],
+  "browser_observations": [
+    {
+      "group": "informedqx",
+      "role": "official_identity_source_browser",
+      "observation_date": "2026-11-18",
+      "observed_at": null,
+      "observed_at_note": "Tool result does not expose a precise observation timestamp; date retained only.",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+      "final_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+      "http_status": null,
+      "http_status_note": "Browser tool did not expose the navigation HTTP status; not inferred from tool success.",
+      "page_title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems | Proceedings of the AAAI Conference on Artificial Intelligence",
+      "visible_article_title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+      "authors": [
+        "Viet-Man Le",
+        "Alexander Felfernig",
+        "Thi Ngoc Trang Tran",
+        "Mathias Uta"
+      ],
+      "doi": "10.1609/aaai.v38i9.28932",
+      "citation_metadata": {
+        "citation_title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+        "citation_journal_title": "Proceedings of the AAAI Conference on Artificial Intelligence",
+        "citation_date": "2024/03/24",
+        "citation_volume": "38",
+        "citation_issue": "9",
+        "citation_firstpage": "10616",
+        "citation_lastpage": "10623",
+        "citation_doi": "10.1609/aaai.v38i9.28932",
+        "citation_abstract_html_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+        "citation_pdf_url": "https://ojs.aaai.org/index.php/AAAI/article/download/28932/29772"
+      },
+      "browser_session_id": "01a1ed8d-ec80-70aa-ad84-6f61492eb8e8",
+      "scrape_id": "01a1ed8d-bc46-7074-beeb-a5cb519c29c3",
+      "conversation_id": "fc881328-39f4-8057-ace8-ddf0e53a36cd",
+      "tool_exit_code": 0,
+      "evidence_origin": "actual browser tool returned rendered article heading, author list, DOI and citation_* metadata in stdout; compact transcription, not a saved HTTP body",
+      "original_browser_stdout_persisted": false,
+      "exact_http_response_bytes": null,
+      "bytes_or_digest_not_fabricated": true
+    }
+  ],
+  "browser_followup_failure": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Tool 'firecrawl_interact' execution failed: timeout of 65000ms exceeded"
+      }
+    ],
+    "isError": true
+  },
+  "browser_stop_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"conversationId\": \"fc881328-39f4-8057-ace8-ddf0e53a36cd\",\n  \"success\": true,\n  \"status\": \"stopped\",\n  \"sessionDurationMs\": 194000,\n  \"creditsBilled\": 23\n}"
+      }
+    ],
+    "structuredContent": {
+      "success": true,
+      "conversationId": "fc881328-39f4-8057-ace8-ddf0e53a36cd"
+    }
+  },
+  "retry_results": [
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:12:36+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%22Sieve+and+Sage%3A+Efficient+Distraction+Filtering+for+Reliable+RALM+Abstention%22",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 118,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26as_sdt%3D0%2C5%26q%3D%2522Sieve%2Band%2BSage%3A%2BEfficient%2BDistraction%2BFiltering%2Bfor%2BReliable%2BRALM%2BAbstention%2522%26ntpr%3D&sig=1794985963_AUjE6Y7ul7a4O3FyE0M6VIAmcJjnS7m_Occi_3XuT2Fee1L-Og&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:36+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26as_sdt%3D0%2C5%26q%3D%2522Sieve%2Band%2BSage%3A%2BEfficient%2BDistraction%2BFiltering%2Bfor%2BReliable%2BRALM%2BAbstention%2522%26ntpr%3D&sig=1794985963_AUjE6Y7ul7a4O3FyE0M6VIAmcJjnS7m_Occi_3XuT2Fee1L-Og&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%22Sieve+and+Sage%3A+Efficient+Distraction+Filtering+for+Reliable+RALM+Abstention%22",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26as_sdt%3D0%2C5%26q%3D%2522Sieve%2Band%2BSage%3A%2BEfficient%2BDistraction%2BFiltering%2Bfor%2BReliable%2BRALM%2BAbstention%2522%26ntpr%3D&sig=1794985963_AUjE6Y7ul7a4O3FyE0M6VIAmcJjnS7m_Occi_3XuT2Fee1L-Og&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81471,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "d0f448228a77c8d611ee51a91f06bf7193efe82ea7444cec8aac0c1dd2588194",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 14.031,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+      "link_role": "search_query",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.18653/2026.findings-emnlp.2356",
+        "official_target_publisher_url": "https://aclanthology.org/2026.findings-emnlp.2356/",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "sieve",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://aclanthology.org/2026.findings-emnlp.2356/",
+        "action": "Optional official identity entry for readers; preserve this historical Scholar search URL.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 14.031
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:12:36+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cluster=4606056750816841043&hl=en&as_sdt=0%2C5",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 119,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D4606056750816841043%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985962_AUjE6Y5-JdpaZYv7JtWxIjLIeQt0v0lq-8WxGMPxlA6C9ziW3A&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:36+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D4606056750816841043%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985962_AUjE6Y5-JdpaZYv7JtWxIjLIeQt0v0lq-8WxGMPxlA6C9ziW3A&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?cluster=4606056750816841043&hl=en&as_sdt=0%2C5",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D4606056750816841043%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985962_AUjE6Y5-JdpaZYv7JtWxIjLIeQt0v0lq-8WxGMPxlA6C9ziW3A&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81649,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "9b7b46f30cfe75bee41d7a4e61e6c4e753e4041eac4f1e695c2de0736713113e",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 12.343,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+      "link_role": "all_versions_cluster",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.18653/2026.findings-emnlp.2356",
+        "official_target_publisher_url": "https://aclanthology.org/2026.findings-emnlp.2356/",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "sieve",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://aclanthology.org/2026.findings-emnlp.2356/",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 12.343
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:12:36+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%222609.35794%22",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 120,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26as_sdt%3D0%2C5%26q%3D%25222609.35794%2522%26ntpr%3D&sig=1794985962_AUjE6Y5PrKnR2_Qhm2IavlIVH0N1ddu1ThTLfIIw3MpMQnFvEw&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:36+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26as_sdt%3D0%2C5%26q%3D%25222609.35794%2522%26ntpr%3D&sig=1794985962_AUjE6Y5PrKnR2_Qhm2IavlIVH0N1ddu1ThTLfIIw3MpMQnFvEw&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%222609.35794%22",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26as_sdt%3D0%2C5%26q%3D%25222609.35794%2522%26ntpr%3D&sig=1794985962_AUjE6Y5PrKnR2_Qhm2IavlIVH0N1ddu1ThTLfIIw3MpMQnFvEw&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81653,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "c8122dea662229beb7e7e0d81cbbbb724e32e313798631ced9daf66a675dd407",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 13.109,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+      "link_role": "search_query",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.18653/2026.findings-emnlp.2356",
+        "official_target_publisher_url": "https://aclanthology.org/2026.findings-emnlp.2356/",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "sieve",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://aclanthology.org/2026.findings-emnlp.2356/",
+        "action": "Optional official identity entry for readers; preserve this historical Scholar search URL.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 13.109
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:12:44+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?hl=en&q=%22What%20Does%20a%20Query%20Answer%20Tell%20You%3F%20Informativeness%20of%20Query%20Answers%20for%20Knowledge%20Bases%22",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1698,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522What%2BDoes%2Ba%2BQuery%2BAnswer%2BTell%2BYou%253F%2BInformativeness%2Bof%2BQuery%2BAnswers%2Bfor%2BKnowledge%2BBases%2522%26ntpr%3D&sig=1794985972_AUjE6Y6KGu0iHwdKVfU65oBFAs7HOrpSx_5G5xvE3zQGpgaGFw&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:44+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522What%2BDoes%2Ba%2BQuery%2BAnswer%2BTell%2BYou%253F%2BInformativeness%2Bof%2BQuery%2BAnswers%2Bfor%2BKnowledge%2BBases%2522%26ntpr%3D&sig=1794985972_AUjE6Y6KGu0iHwdKVfU65oBFAs7HOrpSx_5G5xvE3zQGpgaGFw&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?hl=en&q=%22What%20Does%20a%20Query%20Answer%20Tell%20You%3F%20Informativeness%20of%20Query%20Answers%20for%20Knowledge%20Bases%22",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522What%2BDoes%2Ba%2BQuery%2BAnswer%2BTell%2BYou%253F%2BInformativeness%2Bof%2BQuery%2BAnswers%2Bfor%2BKnowledge%2BBases%2522%26ntpr%3D&sig=1794985972_AUjE6Y6KGu0iHwdKVfU65oBFAs7HOrpSx_5G5xvE3zQGpgaGFw&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81815,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "94e06df05e6df2acdc8ad1946e689b363d1f2290f2d9e1384320f942bd290e1b",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 15.296,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases",
+      "link_role": "search_query",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28912",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "query_answer",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+        "action": "Optional official identity entry for readers; preserve this historical Scholar search URL.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 15.296
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:12:48+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cites=15238416963640348203&as_sdt=2005&sciodt=0,5&hl=en",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1700,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://scholar.google.com/scholar?cites=15238416963640348203&as_sdt=2005&sciodt=0,5&hl=en",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:48+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://scholar.google.com/scholar?cites=15238416963640348203&as_sdt=2005&sciodt=0,5&hl=en",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 77817,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "270eb6a51d0830782ee4c2abe0243851caa2b623695af90bbb666bd9664fffab",
+          "page_title": "Google Scholar",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Please show you're not a robot"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 14,
+              "text": "Sorry, we can't verify that you're not a robot when JavaScript is turned off."
+            },
+            {
+              "line": 16,
+              "text": "enable JavaScript"
+            }
+          ],
+          "text_line_count": 22,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 6.172,
+          "initial_generic_challenge_detector": true,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_scholar_robot_javascript_challenge",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases",
+      "link_role": "cited_by_list",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28912",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "query_answer",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 6.172
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:12:49+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cluster=15238416963640348203&hl=en&as_sdt=0,5",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1701,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D15238416963640348203%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985975_AUjE6Y6sNK-u0iU9pk2cPDpZO1ZNuPLzOHmVhDrF-JQMIbx7fw&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:49+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D15238416963640348203%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985975_AUjE6Y6sNK-u0iU9pk2cPDpZO1ZNuPLzOHmVhDrF-JQMIbx7fw&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?cluster=15238416963640348203&hl=en&as_sdt=0,5",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D15238416963640348203%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985975_AUjE6Y6sNK-u0iU9pk2cPDpZO1ZNuPLzOHmVhDrF-JQMIbx7fw&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81794,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "51fb35ac73d85d5c13b11b1f897c70e47565b3da0bd4fe3571dd7e3f98b64c4d",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 12.641,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases",
+      "link_role": "all_versions_cluster",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28912",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "query_answer",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 12.641
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:12:54+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?hl=en&q=%22A%20Unified%20View%20on%20Forgetting%20and%20Strong%20Equivalence%20Notions%20in%20Answer%20Set%20Programming%22",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1702,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522A%2BUnified%2BView%2Bon%2BForgetting%2Band%2BStrong%2BEquivalence%2BNotions%2Bin%2BAnswer%2BSet%2BProgramming%2522%26ntpr%3D&sig=1794985980_AUjE6Y6jV217a6JfxeFazRES-mAZ5zYhB2iAkOMb4OKqL1nOQA&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:54+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522A%2BUnified%2BView%2Bon%2BForgetting%2Band%2BStrong%2BEquivalence%2BNotions%2Bin%2BAnswer%2BSet%2BProgramming%2522%26ntpr%3D&sig=1794985980_AUjE6Y6jV217a6JfxeFazRES-mAZ5zYhB2iAkOMb4OKqL1nOQA&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?hl=en&q=%22A%20Unified%20View%20on%20Forgetting%20and%20Strong%20Equivalence%20Notions%20in%20Answer%20Set%20Programming%22",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522A%2BUnified%2BView%2Bon%2BForgetting%2Band%2BStrong%2BEquivalence%2BNotions%2Bin%2BAnswer%2BSet%2BProgramming%2522%26ntpr%3D&sig=1794985980_AUjE6Y6jV217a6JfxeFazRES-mAZ5zYhB2iAkOMb4OKqL1nOQA&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81735,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "631870f09566908075544c32ccc64f662f85a90ec9f6feab3254f4d144d9a7a9",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 12.968,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming",
+      "link_role": "search_query",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28940",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "forgetting",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+        "action": "Optional official identity entry for readers; preserve this historical Scholar search URL.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 12.968
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:12:57+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cites=15009086195049639208&as_sdt=2005&sciodt=0,5&hl=en",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1704,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://scholar.google.com/scholar?cites=15009086195049639208&as_sdt=2005&sciodt=0,5&hl=en",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:57+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://scholar.google.com/scholar?cites=15009086195049639208&as_sdt=2005&sciodt=0,5&hl=en",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 77817,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "b8fbb063e85f97367e375c2d99131e79137add03b07eec74b4782c102e90c00c",
+          "page_title": "Google Scholar",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Please show you're not a robot"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 14,
+              "text": "Sorry, we can't verify that you're not a robot when JavaScript is turned off."
+            },
+            {
+              "line": 16,
+              "text": "enable JavaScript"
+            }
+          ],
+          "text_line_count": 22,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 7.343,
+          "initial_generic_challenge_detector": true,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_scholar_robot_javascript_challenge",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming",
+      "link_role": "cited_by_list",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28940",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "forgetting",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 7.343
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:12:59+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cluster=15009086195049639208&hl=en&as_sdt=0,5",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1705,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D15009086195049639208%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985987_AUjE6Y7m4-m5Betn1Nu5boHHxNtSFNbpKmzn7u5fYvHamD4aLg&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:12:59+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D15009086195049639208%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985987_AUjE6Y7m4-m5Betn1Nu5boHHxNtSFNbpKmzn7u5fYvHamD4aLg&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?cluster=15009086195049639208&hl=en&as_sdt=0,5",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D15009086195049639208%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985987_AUjE6Y7m4-m5Betn1Nu5boHHxNtSFNbpKmzn7u5fYvHamD4aLg&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81927,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "0c98d6c3adde9704241414341a302b27b03e37b1720aec2df7c55e564eabf7c0",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 16,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming",
+      "link_role": "all_versions_cluster",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28940",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "forgetting",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 16
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:04+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?hl=en&q=%22BeliefFlow%3A%20A%20Framework%20for%20Logic-Based%20Belief%20Diffusion%20via%20Iterated%20Belief%20Change%22",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1706,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522BeliefFlow%3A%2BA%2BFramework%2Bfor%2BLogic-Based%2BBelief%2BDiffusion%2Bvia%2BIterated%2BBelief%2BChange%2522%26ntpr%3D&sig=1794985991_AUjE6Y5F6P-2MgiL_CExk3x05af8tuZjZymkGlMvaoi8AP8Xfw&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:04+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522BeliefFlow%3A%2BA%2BFramework%2Bfor%2BLogic-Based%2BBelief%2BDiffusion%2Bvia%2BIterated%2BBelief%2BChange%2522%26ntpr%3D&sig=1794985991_AUjE6Y5F6P-2MgiL_CExk3x05af8tuZjZymkGlMvaoi8AP8Xfw&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?hl=en&q=%22BeliefFlow%3A%20A%20Framework%20for%20Logic-Based%20Belief%20Diffusion%20via%20Iterated%20Belief%20Change%22",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522BeliefFlow%3A%2BA%2BFramework%2Bfor%2BLogic-Based%2BBelief%2BDiffusion%2Bvia%2BIterated%2BBelief%2BChange%2522%26ntpr%3D&sig=1794985991_AUjE6Y5F6P-2MgiL_CExk3x05af8tuZjZymkGlMvaoi8AP8Xfw&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81748,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "d349d93295ccc89854fb6b2e5ec8c6199a61327702ee0d354e1a00b7c62823cd",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 13.422,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change",
+      "link_role": "search_query",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28941",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "beliefflow",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+        "action": "Optional official identity entry for readers; preserve this historical Scholar search URL.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 13.422
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:07+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cites=6128591430038773303&as_sdt=2005&sciodt=0,5&hl=en",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1708,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://scholar.google.com/scholar?cites=6128591430038773303&as_sdt=2005&sciodt=0,5&hl=en",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:07+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://scholar.google.com/scholar?cites=6128591430038773303&as_sdt=2005&sciodt=0,5&hl=en",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 77813,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "4262d4f7c4bcaf69c760f23d5b6deafbcefa0054acf3198606ffa671c1919b98",
+          "page_title": "Google Scholar",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Please show you're not a robot"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 14,
+              "text": "Sorry, we can't verify that you're not a robot when JavaScript is turned off."
+            },
+            {
+              "line": 16,
+              "text": "enable JavaScript"
+            }
+          ],
+          "text_line_count": 22,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 7.219,
+          "initial_generic_challenge_detector": true,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_scholar_robot_javascript_challenge",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change",
+      "link_role": "cited_by_list",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28941",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "beliefflow",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 7.219
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:08+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cluster=6128591430038773303&hl=en&as_sdt=0,5",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1709,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D6128591430038773303%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985994_AUjE6Y5V7PVSk4yqxCEoCr3BWflC3xPr8wg4c7DnO1DfUeUn9w&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:08+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D6128591430038773303%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985994_AUjE6Y5V7PVSk4yqxCEoCr3BWflC3xPr8wg4c7DnO1DfUeUn9w&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?cluster=6128591430038773303&hl=en&as_sdt=0,5",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D6128591430038773303%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794985994_AUjE6Y5V7PVSk4yqxCEoCr3BWflC3xPr8wg4c7DnO1DfUeUn9w&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81829,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "0888352dcabdda387f7e8ea6197f3ef23484963f02321471b96586c55d5134f7",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 12.188,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change",
+      "link_role": "all_versions_cluster",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28941",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "beliefflow",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 12.188
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:15+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?hl=en&q=%22Computing%20the%20Why-Provenance%20for%20Datalog%20Queries%20via%20SAT%20Solvers%22",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1715,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522Computing%2Bthe%2BWhy-Provenance%2Bfor%2BDatalog%2BQueries%2Bvia%2BSAT%2BSolvers%2522%26ntpr%3D&sig=1794986001_AUjE6Y7dSWV-kyR9Ur3ce-BStJOfxFGnMpcd6aA_VsoNtxb1Ww&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:15+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522Computing%2Bthe%2BWhy-Provenance%2Bfor%2BDatalog%2BQueries%2Bvia%2BSAT%2BSolvers%2522%26ntpr%3D&sig=1794986001_AUjE6Y7dSWV-kyR9Ur3ce-BStJOfxFGnMpcd6aA_VsoNtxb1Ww&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?hl=en&q=%22Computing%20the%20Why-Provenance%20for%20Datalog%20Queries%20via%20SAT%20Solvers%22",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522Computing%2Bthe%2BWhy-Provenance%2Bfor%2BDatalog%2BQueries%2Bvia%2BSAT%2BSolvers%2522%26ntpr%3D&sig=1794986001_AUjE6Y7dSWV-kyR9Ur3ce-BStJOfxFGnMpcd6aA_VsoNtxb1Ww&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81694,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "e5432eb15fed1a1218a0d7fceb0609e24a59a7d8045e33486049332be6aa78b4",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 12.562,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Computing the Why-Provenance for Datalog Queries via SAT Solvers",
+      "link_role": "search_query",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28914",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "why_provenance",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+        "action": "Optional official identity entry for readers; preserve this historical Scholar search URL.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 12.562
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:15+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cites=17227892215399272979&as_sdt=2005&sciodt=0,5&hl=en",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1717,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://scholar.google.com/scholar?cites=17227892215399272979&as_sdt=2005&sciodt=0,5&hl=en",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:15+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://scholar.google.com/scholar?cites=17227892215399272979&as_sdt=2005&sciodt=0,5&hl=en",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 77817,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "15350cd4704294079490f94e7cc2e450774f57e7ac720d7ebd10c689e8ea2c3b",
+          "page_title": "Google Scholar",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Please show you're not a robot"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 14,
+              "text": "Sorry, we can't verify that you're not a robot when JavaScript is turned off."
+            },
+            {
+              "line": 16,
+              "text": "enable JavaScript"
+            }
+          ],
+          "text_line_count": 22,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 7.375,
+          "initial_generic_challenge_detector": true,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_scholar_robot_javascript_challenge",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Computing the Why-Provenance for Datalog Queries via SAT Solvers",
+      "link_role": "cited_by_list",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28914",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "why_provenance",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 7.375
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:18+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cluster=17227892215399272979&hl=en&as_sdt=0,5",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1718,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D17227892215399272979%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794986004_AUjE6Y6xo-JbCCPDMMR_4nNMfASryNZ0C9o5h0cnBbRaww_aLA&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:18+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D17227892215399272979%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794986004_AUjE6Y6xo-JbCCPDMMR_4nNMfASryNZ0C9o5h0cnBbRaww_aLA&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?cluster=17227892215399272979&hl=en&as_sdt=0,5",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D17227892215399272979%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794986004_AUjE6Y6xo-JbCCPDMMR_4nNMfASryNZ0C9o5h0cnBbRaww_aLA&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81687,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "ddf36d750364d52033f4ca5b124f8a3220c039c1e3b9fce139003da03317b743",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 12.656,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Computing the Why-Provenance for Datalog Queries via SAT Solvers",
+      "link_role": "all_versions_cluster",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28914",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "why_provenance",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 12.656
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:22+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundational%20Models%22",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1719,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522Relational%2BProgramming%2Bwith%2BFoundational%2BModels%2522%26ntpr%3D&sig=1794986009_AUjE6Y7UYUaUBCd5Qe29HdjvUxrs5RQOOyaYq6Ce8QVX9Nzz3g&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:22+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522Relational%2BProgramming%2Bwith%2BFoundational%2BModels%2522%26ntpr%3D&sig=1794986009_AUjE6Y7UYUaUBCd5Qe29HdjvUxrs5RQOOyaYq6Ce8QVX9Nzz3g&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundational%20Models%22",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522Relational%2BProgramming%2Bwith%2BFoundational%2BModels%2522%26ntpr%3D&sig=1794986009_AUjE6Y7UYUaUBCd5Qe29HdjvUxrs5RQOOyaYq6Ce8QVX9Nzz3g&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81650,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "1e3a56327478fb8c6767a2986ff4e71a27649fca914642fa16c7e9c5c5a28dc8",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 17.281,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Relational Programming with Foundational Models",
+      "link_role": "search_query",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28934",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "relational",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "action": "Optional official identity entry for readers; preserve this historical Scholar search URL.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 17.281
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:23+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cites=2684434307905260302&as_sdt=2005&sciodt=0,5&hl=en",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1721,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://scholar.google.com/scholar?cites=2684434307905260302&as_sdt=2005&sciodt=0,5&hl=en",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:23+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://scholar.google.com/scholar?cites=2684434307905260302&as_sdt=2005&sciodt=0,5&hl=en",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 77813,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "acabb41819cdfd7e20bd6a7c90e98756394d69a8b800439288174503a13d8ba2",
+          "page_title": "Google Scholar",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Please show you're not a robot"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 14,
+              "text": "Sorry, we can't verify that you're not a robot when JavaScript is turned off."
+            },
+            {
+              "line": 16,
+              "text": "enable JavaScript"
+            }
+          ],
+          "text_line_count": 22,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 7.938,
+          "initial_generic_challenge_detector": true,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_scholar_robot_javascript_challenge",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Relational Programming with Foundational Models",
+      "link_role": "cited_by_list",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28934",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "relational",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 7.938
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:27+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cluster=2684434307905260302&hl=en&as_sdt=0,5",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1722,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D2684434307905260302%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794986013_AUjE6Y5FlD4ZfFpKLjRwQdi7NUVIwxs-B0ddnKMoaGxXTt-l_A&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:27+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D2684434307905260302%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794986013_AUjE6Y5FlD4ZfFpKLjRwQdi7NUVIwxs-B0ddnKMoaGxXTt-l_A&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?cluster=2684434307905260302&hl=en&as_sdt=0,5",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D2684434307905260302%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794986013_AUjE6Y5FlD4ZfFpKLjRwQdi7NUVIwxs-B0ddnKMoaGxXTt-l_A&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81707,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "b46447e084fbe0429db2dddeb75e5e2d0478097f438491988c812b4cbb007be8",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 12.64,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Relational Programming with Foundational Models",
+      "link_role": "all_versions_cluster",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28934",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "relational",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 12.64
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:27+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundation%20Models%22",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1723,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522Relational%2BProgramming%2Bwith%2BFoundation%2BModels%2522%26ntpr%3D&sig=1794986013_AUjE6Y75Bl_2Cg6ewE7cjLRiQtuqSZknmj5XxU1XkXZC8LwJPQ&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:27+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522Relational%2BProgramming%2Bwith%2BFoundation%2BModels%2522%26ntpr%3D&sig=1794986013_AUjE6Y75Bl_2Cg6ewE7cjLRiQtuqSZknmj5XxU1XkXZC8LwJPQ&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundation%20Models%22",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522Relational%2BProgramming%2Bwith%2BFoundation%2BModels%2522%26ntpr%3D&sig=1794986013_AUjE6Y75Bl_2Cg6ewE7cjLRiQtuqSZknmj5XxU1XkXZC8LwJPQ&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81622,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "81eb75be14e189117339a693cff1bdde45efa021cac6293df3f34c673619e5fb",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 12.797,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "Relational Programming with Foundational Models",
+      "link_role": "search_query",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28934",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "relational",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "action": "Optional official identity entry for readers; preserve this historical Scholar search URL.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 12.797
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:31+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?hl=en&q=%22INFORMEDQX%3A%20Informed%20Conflict%20Detection%20for%20Over-Constrained%20Problems%22",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1724,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522INFORMEDQX%3A%2BInformed%2BConflict%2BDetection%2Bfor%2BOver-Constrained%2BProblems%2522%26ntpr%3D&sig=1794986020_AUjE6Y7iAlUxtk6N8UXqtUOYrb6vBD0CXnc5L5ZtG2AfwrNRAg&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:31+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522INFORMEDQX%3A%2BInformed%2BConflict%2BDetection%2Bfor%2BOver-Constrained%2BProblems%2522%26ntpr%3D&sig=1794986020_AUjE6Y7iAlUxtk6N8UXqtUOYrb6vBD0CXnc5L5ZtG2AfwrNRAg&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?hl=en&q=%22INFORMEDQX%3A%20Informed%20Conflict%20Detection%20for%20Over-Constrained%20Problems%22",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fhl%3Den%26q%3D%2522INFORMEDQX%3A%2BInformed%2BConflict%2BDetection%2Bfor%2BOver-Constrained%2BProblems%2522%26ntpr%3D&sig=1794986020_AUjE6Y7iAlUxtk6N8UXqtUOYrb6vBD0CXnc5L5ZtG2AfwrNRAg&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81722,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "e860a1b750bd1893f4b1212315344fa2d2da457ca4a7a80486fffb618bff8353",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 18.703,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+      "link_role": "search_query",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28932",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "informedqx",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+        "action": "Optional official identity entry for readers; preserve this historical Scholar search URL.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 18.703
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:38+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cites=2691716604355998446&as_sdt=2005&sciodt=0,5&hl=en",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1726,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://scholar.google.com/scholar?cites=2691716604355998446&as_sdt=2005&sciodt=0,5&hl=en",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:38+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://scholar.google.com/scholar?cites=2691716604355998446&as_sdt=2005&sciodt=0,5&hl=en",
+          "redirects": [],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 77812,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "b26b0feb0e506f19f4d42da384afa123bbc1b4f2593133d98e041443b082b59a",
+          "page_title": "Google Scholar",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Please show you're not a robot"
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [
+            {
+              "line": 14,
+              "text": "Sorry, we can't verify that you're not a robot when JavaScript is turned off."
+            },
+            {
+              "line": 16,
+              "text": "enable JavaScript"
+            }
+          ],
+          "text_line_count": 22,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 6.844,
+          "initial_generic_challenge_detector": true,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_scholar_robot_javascript_challenge",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+      "link_role": "cited_by_list",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28932",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "informedqx",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 6.844
+    },
+    {
+      "kind": "retry_result",
+      "at": "2026-11-18T07:13:40+00:00",
+      "retry_batch": "20261118_deferred22_identity_v1",
+      "url": "https://scholar.google.com/scholar?cluster=2691716604355998446&hl=en&as_sdt=0,5",
+      "source_docs": [
+        "RAG安全文献补查元数据_20261102.md"
+      ],
+      "previous_result_line": 1727,
+      "previous_status": "deferred_citation_or_session",
+      "http_status": 200,
+      "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D2691716604355998446%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794986025_AUjE6Y5H6GXDf07hHimSk0HRSPi_Q8C-fqO6ccz-3VngEP28OQ&sg_fe=scife",
+      "attempts": [
+        {
+          "method": "GET",
+          "at": "2026-11-18T07:13:40+00:00",
+          "trust_env": true,
+          "tls_verification": true,
+          "timeout_seconds": 25,
+          "route": "inherited_environment_proxy",
+          "http_status": 200,
+          "final_url": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D2691716604355998446%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794986025_AUjE6Y5H6GXDf07hHimSk0HRSPi_Q8C-fqO6ccz-3VngEP28OQ&sg_fe=scife",
+          "redirects": [
+            {
+              "url": "https://scholar.google.com/scholar?cluster=2691716604355998446&hl=en&as_sdt=0,5",
+              "status": 302,
+              "location": "https://www.google.com/sgsync?url=https%3A%2F%2Fscholar.google.com%2Fscholar%3Fcluster%3D2691716604355998446%26hl%3Den%26as_sdt%3D0%2C5%26ntpr%3D&sig=1794986025_AUjE6Y5H6GXDf07hHimSk0HRSPi_Q8C-fqO6ccz-3VngEP28OQ&sg_fe=scife"
+            }
+          ],
+          "headers": {
+            "Content-Type": "text/html; charset=UTF-8",
+            "Content-Length": null,
+            "Content-Encoding": "gzip",
+            "Retry-After": null,
+            "Location": null
+          },
+          "body_bytes_read": 81639,
+          "body_limit_reached": false,
+          "sha256_of_read_bytes": "76c5759c5269a22ba6a882095b591990d355a967caaa7d38910bc6d72f3bbc37",
+          "page_title": "Verifying...",
+          "metadata": {},
+          "canonical_url": null,
+          "headings": [
+            "Verifying your request..."
+          ],
+          "scholar_result_titles": [],
+          "matched_text_lines": [],
+          "text_line_count": 3,
+          "challenge_detected": true,
+          "expected_title_match_candidates": [],
+          "elapsed_seconds": 10.953,
+          "initial_generic_challenge_detector": false,
+          "challenge_review_basis": "Reviewed actual page title/headings/final URL and retained challenge text; HTTP 200 challenge does not verify paper identity."
+        }
+      ],
+      "status": "access_restricted",
+      "access_limitations": [
+        "google_sgsync_verification_interstitial",
+        "HTTP_200_is_challenge_not_article_identity",
+        "not_a_dead_link_finding"
+      ],
+      "intended_work_title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+      "link_role": "all_versions_cluster",
+      "identity_verification": {
+        "level": "original_scholar_content_unverified_official_work_confirmed",
+        "confirmed": false,
+        "official_target_work_confirmed": true,
+        "official_target_doi": "10.1609/aaai.v38i9.28932",
+        "official_target_publisher_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+        "official_evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+        "official_evidence_group": "informedqx",
+        "source_association_basis": "Local metadata document context and independently fetched official paper/registry metadata; does not establish the inaccessible Scholar cluster/cites association.",
+        "limitation": "Original query/cluster/cites endpoint identity remains unverified; do not inherit identity confirmation from official alternate or HTTP 200."
+      },
+      "citation_count": null,
+      "citation_count_refreshed": false,
+      "replacement_decision": {
+        "confirmed_wrong_or_dead": false,
+        "mandatory_replacement": false,
+        "official_identity_link": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+        "action": "Preserve historical cited-by/versions evidence; an official paper page is not a semantically equivalent replacement.",
+        "historical_count_overwritten": false
+      },
+      "elapsed_seconds": 10.953
+    }
+  ],
+  "append_summary_template": {
+    "kind": "summary",
+    "retry_batch": "20261118_deferred22_identity_v1",
+    "summary_phase": "deferred22_official_identity_increment",
+    "base_summary_line": 6838,
+    "append_only_prefix_bytes": 2489600,
+    "append_only_prefix_sha256": "d88979bafb02ff7541b81abb76c8e373fcad98a8f66dbbd7ab8e75fd30e864e5",
+    "retried": 22,
+    "retry_status_counts": {
+      "access_restricted": 22
+    },
+    "retry_http_status_counts": {
+      "200": 22
+    },
+    "original_scholar_identity_confirmed": 0,
+    "original_scholar_identity_unresolved": 22,
+    "original_url_dead_or_wrong_confirmed": 0,
+    "mandatory_replacement_pair_count": 0,
+    "official_distinct_work_count": 7,
+    "official_work_identities_confirmed": 7,
+    "deferred_in_this_batch_remaining": 0,
+    "supporting_requests_unique_urls": 36,
+    "supporting_requests_attempts": 37,
+    "supporting_official_registry_results": {
+      "http_200_exact_matches": 5,
+      "http_429": 1
+    },
+    "browser_results": {
+      "official_work_identities_confirmed": 1,
+      "http_status_not_exposed": 1,
+      "followup_batch": "timeout without returned observations; not credited as successful; session stopped"
+    },
+    "confirmed_replacement_pairs": [],
+    "conditional_reader_identity_entry_pairs": [
+      {
+        "old_url": "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%22Sieve+and+Sage%3A+Efficient+Distraction+Filtering+for+Reliable+RALM+Abstention%22",
+        "new_url": "https://aclanthology.org/2026.findings-emnlp.2356/",
+        "title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+        "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+        "basis": "sieve"
+      },
+      {
+        "old_url": "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%222609.35794%22",
+        "new_url": "https://arxiv.org/abs/2609.35794v1",
+        "title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+        "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+        "basis": "sieve"
+      },
+      {
+        "old_url": "https://scholar.google.com/scholar?hl=en&q=%22What%20Does%20a%20Query%20Answer%20Tell%20You%3F%20Informativeness%20of%20Query%20Answers%20for%20Knowledge%20Bases%22",
+        "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+        "title": "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases",
+        "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+        "basis": "query_answer"
+      },
+      {
+        "old_url": "https://scholar.google.com/scholar?hl=en&q=%22A%20Unified%20View%20on%20Forgetting%20and%20Strong%20Equivalence%20Notions%20in%20Answer%20Set%20Programming%22",
+        "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+        "title": "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming",
+        "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+        "basis": "forgetting"
+      },
+      {
+        "old_url": "https://scholar.google.com/scholar?hl=en&q=%22BeliefFlow%3A%20A%20Framework%20for%20Logic-Based%20Belief%20Diffusion%20via%20Iterated%20Belief%20Change%22",
+        "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+        "title": "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change",
+        "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+        "basis": "beliefflow"
+      },
+      {
+        "old_url": "https://scholar.google.com/scholar?hl=en&q=%22Computing%20the%20Why-Provenance%20for%20Datalog%20Queries%20via%20SAT%20Solvers%22",
+        "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+        "title": "Computing the Why-Provenance for Datalog Queries via SAT Solvers",
+        "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+        "basis": "why_provenance"
+      },
+      {
+        "old_url": "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundational%20Models%22",
+        "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "title": "Relational Programming with Foundational Models",
+        "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+        "basis": "relational"
+      },
+      {
+        "old_url": "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundation%20Models%22",
+        "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+        "title": "Relational Programming with Foundational Models",
+        "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+        "basis": "relational"
+      },
+      {
+        "old_url": "https://scholar.google.com/scholar?hl=en&q=%22INFORMEDQX%3A%20Informed%20Conflict%20Detection%20for%20Over-Constrained%20Problems%22",
+        "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+        "title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+        "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+        "basis": "informedqx"
+      }
+    ],
+    "evidence_file": "research_data/RAG安全文献调研/原始证据/audit/RAG三份主文档_待核22项_官方身份证据_20261118.json",
+    "remaining_original_scholar_identity_unverified_urls": [
+      "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%22Sieve+and+Sage%3A+Efficient+Distraction+Filtering+for+Reliable+RALM+Abstention%22",
+      "https://scholar.google.com/scholar?cluster=4606056750816841043&hl=en&as_sdt=0%2C5",
+      "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%222609.35794%22",
+      "https://scholar.google.com/scholar?hl=en&q=%22What%20Does%20a%20Query%20Answer%20Tell%20You%3F%20Informativeness%20of%20Query%20Answers%20for%20Knowledge%20Bases%22",
+      "https://scholar.google.com/scholar?cites=15238416963640348203&as_sdt=2005&sciodt=0,5&hl=en",
+      "https://scholar.google.com/scholar?cluster=15238416963640348203&hl=en&as_sdt=0,5",
+      "https://scholar.google.com/scholar?hl=en&q=%22A%20Unified%20View%20on%20Forgetting%20and%20Strong%20Equivalence%20Notions%20in%20Answer%20Set%20Programming%22",
+      "https://scholar.google.com/scholar?cites=15009086195049639208&as_sdt=2005&sciodt=0,5&hl=en",
+      "https://scholar.google.com/scholar?cluster=15009086195049639208&hl=en&as_sdt=0,5",
+      "https://scholar.google.com/scholar?hl=en&q=%22BeliefFlow%3A%20A%20Framework%20for%20Logic-Based%20Belief%20Diffusion%20via%20Iterated%20Belief%20Change%22",
+      "https://scholar.google.com/scholar?cites=6128591430038773303&as_sdt=2005&sciodt=0,5&hl=en",
+      "https://scholar.google.com/scholar?cluster=6128591430038773303&hl=en&as_sdt=0,5",
+      "https://scholar.google.com/scholar?hl=en&q=%22Computing%20the%20Why-Provenance%20for%20Datalog%20Queries%20via%20SAT%20Solvers%22",
+      "https://scholar.google.com/scholar?cites=17227892215399272979&as_sdt=2005&sciodt=0,5&hl=en",
+      "https://scholar.google.com/scholar?cluster=17227892215399272979&hl=en&as_sdt=0,5",
+      "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundational%20Models%22",
+      "https://scholar.google.com/scholar?cites=2684434307905260302&as_sdt=2005&sciodt=0,5&hl=en",
+      "https://scholar.google.com/scholar?cluster=2684434307905260302&hl=en&as_sdt=0,5",
+      "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundation%20Models%22",
+      "https://scholar.google.com/scholar?hl=en&q=%22INFORMEDQX%3A%20Informed%20Conflict%20Detection%20for%20Over-Constrained%20Problems%22",
+      "https://scholar.google.com/scholar?cites=2691716604355998446&as_sdt=2005&sciodt=0,5&hl=en",
+      "https://scholar.google.com/scholar?cluster=2691716604355998446&hl=en&as_sdt=0,5"
+    ],
+    "method": {
+      "client": "requests plus one successful isolated browser observation",
+      "python_utf8": "PYTHONUTF8=1 and python -B -u -X utf8",
+      "maximum_requests_workers": 5,
+      "registry_query_workers": 3,
+      "requests_timeout_tuple_seconds": [
+        8,
+        17
+      ],
+      "requests_timeout_note": "Connect/read socket timeouts, not a guaranteed combined wall-clock deadline across redirects.",
+      "original_url_trust_env": true,
+      "direct_fallback": "Only a transport failure of the official ACL DOI route triggered one TLS-verified direct attempt; no challenge bypass or CAPTCHA solving.",
+      "bounded_response_bytes_original_http": 262144,
+      "identity_policy": "Actual title+authors+identifier/publisher resource metadata or browser-rendered official article; 200 and DOI redirect alone do not establish identity.",
+      "citation_count_policy": "No counts refreshed; null remains unknown, never zero."
+    },
+    "limitations": [
+      "All 22 original Scholar URLs executed, but their query/cluster/cites target identity is still blocked; independent official identity confirmation is not a successful Scholar-content audit.",
+      "Five AAAI papers have exact Crossref title/DOI/authors/resource matches, but their requests page bodies were Anubis challenges. INFORMEDQX was read in browser; the browser did not expose an HTTP status.",
+      "The six-page browser follow-up timed out with no returned observations; do not infer any per-URL outcome from it.",
+      "Previously recorded 46 request_unresolved URLs were outside this batch and were not retried; TLS/access failures are not dead-link findings.",
+      "No confirmed wrong/dead link in these 22; no mandatory URL replacement. Optional official identity links must not replace historical cited-by/all-versions evidence."
+    ],
+    "write_scope": "Append-only existing audit ledger plus one small supporting evidence JSON under 原始证据/audit. No edits to main MDs, bibliography, index, .gitignore, tools or commits; no repeat RobustRAG audit."
+  },
+  "confirmed_replacement_pairs": [],
+  "conditional_reader_identity_entry_pairs": [
+    {
+      "old_url": "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%22Sieve+and+Sage%3A+Efficient+Distraction+Filtering+for+Reliable+RALM+Abstention%22",
+      "new_url": "https://aclanthology.org/2026.findings-emnlp.2356/",
+      "title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+      "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+      "basis": "sieve"
+    },
+    {
+      "old_url": "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%222609.35794%22",
+      "new_url": "https://arxiv.org/abs/2609.35794v1",
+      "title": "Sieve and Sage: Efficient Distraction Filtering for Reliable RALM Abstention",
+      "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+      "basis": "sieve"
+    },
+    {
+      "old_url": "https://scholar.google.com/scholar?hl=en&q=%22What%20Does%20a%20Query%20Answer%20Tell%20You%3F%20Informativeness%20of%20Query%20Answers%20for%20Knowledge%20Bases%22",
+      "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28912",
+      "title": "What Does a Query Answer Tell You? Informativeness of Query Answers for Knowledge Bases",
+      "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+      "basis": "query_answer"
+    },
+    {
+      "old_url": "https://scholar.google.com/scholar?hl=en&q=%22A%20Unified%20View%20on%20Forgetting%20and%20Strong%20Equivalence%20Notions%20in%20Answer%20Set%20Programming%22",
+      "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28940",
+      "title": "A Unified View on Forgetting and Strong Equivalence Notions in Answer Set Programming",
+      "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+      "basis": "forgetting"
+    },
+    {
+      "old_url": "https://scholar.google.com/scholar?hl=en&q=%22BeliefFlow%3A%20A%20Framework%20for%20Logic-Based%20Belief%20Diffusion%20via%20Iterated%20Belief%20Change%22",
+      "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28941",
+      "title": "BeliefFlow: A Framework for Logic-Based Belief Diffusion via Iterated Belief Change",
+      "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+      "basis": "beliefflow"
+    },
+    {
+      "old_url": "https://scholar.google.com/scholar?hl=en&q=%22Computing%20the%20Why-Provenance%20for%20Datalog%20Queries%20via%20SAT%20Solvers%22",
+      "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28914",
+      "title": "Computing the Why-Provenance for Datalog Queries via SAT Solvers",
+      "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+      "basis": "why_provenance"
+    },
+    {
+      "old_url": "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundational%20Models%22",
+      "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+      "title": "Relational Programming with Foundational Models",
+      "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+      "basis": "relational"
+    },
+    {
+      "old_url": "https://scholar.google.com/scholar?hl=en&q=%22Relational%20Programming%20with%20Foundation%20Models%22",
+      "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28934",
+      "title": "Relational Programming with Foundational Models",
+      "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+      "basis": "relational"
+    },
+    {
+      "old_url": "https://scholar.google.com/scholar?hl=en&q=%22INFORMEDQX%3A%20Informed%20Conflict%20Detection%20for%20Over-Constrained%20Problems%22",
+      "new_url": "https://ojs.aaai.org/index.php/AAAI/article/view/28932",
+      "title": "INFORMEDQX: Informed Conflict Detection for Over-Constrained Problems",
+      "condition": "Only if the link is being used as a paper identity/reading entry; not a dead-link repair. Preserve historical search/cluster/citation evidence and dates.",
+      "basis": "informedqx"
+    }
+  ],
+  "caveat": "A DOI/Crossref/publisher identity entry is not a replacement for a Scholar cited-by list or versions cluster. Preserve historical evidence; this batch does not invalidate it."
+}
