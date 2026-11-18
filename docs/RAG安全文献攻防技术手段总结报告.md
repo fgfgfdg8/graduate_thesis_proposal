@@ -1928,7 +1928,7 @@ $$
 |------|------|----------|------------------|
 | **RAGShield** | arXiv:2604.00387 | **密码学来源证明（provenance attestation）**：为文档签发密码学签名清单，阻断未签名/伪造文档；叠加摄入期校验与检索异常过滤（三层纵深） | **ASR 0.0%**（95% CI [0.0%, 1.9%]），**FPR 0.0%**；对比无防御 8–13%、**RAGDefender 7.5–12.5%**、**RobustRAG 0–0.5%**；仅 L1 层对"内部人就地替换"无效（**17.5% ASR**）；预投毒 >5% 时 ASR 升至 5.7% |
 | **RAGForensics** | WWW'25，arXiv:2504.21668（本地 PDF 解读见 §6.2） | **追溯**：不依赖梯度（RAG 中离散检索函数使梯度归因不适用），**迭代**执行"检索 top-K 候选 → 专门提示引导 LLM 逐条判定 → 剔除已判毒文本"，直到剩余已确认良性文本数达到 K | **DACC 97.4–99.6%**、**FPR 0.4–2.7%**、**FNR 0–3.2%**（NQ / HotpotQA / MS-MARCO × PoisonedRAG-B/W / 指令注入）；跨运行波动 DACC ≤**0.4%**、FPR ≤**1.2%**；对照 6 个追溯基线（PPL-100、PPL-90、ExpGen、RKM、TKM、PoiFor）全面领先——最优基线 ExpGen 在 NQ 上 DACC 仅 90.3%，TKM 的 FPR 高达 49.2% |
-| **CleanBase** | arXiv:2605.00460 | 三步：① 构建 **kNN 相似图**；② 统计阈值剪枝（保留异常大权重边）；③ 检测**团（clique，≥3 互连节点）**判为恶意 | HotpotQA + PoisonedRAG 下 ASR **97%→6%**；平均 **FPR <2%**；自适应攻击降低毒文档间相似度以规避，但**代价是攻击成功率下降** |
+| [**CleanBase**](<RAG安全证据地图_20261102.md#src-4d0fa659c00e0048>) | arXiv:2605.00460v1 | 三步：① 用审计嵌入器构 **kNN 相似图**（默认OR-kNN）；② 以μ+2.5σ保留异常大权重边；③ 以**≥3节点 clique**判恶意并在入库前删除 | 检测平均FPR约1.9%，但FNR跨攻击异质：PoisonedRAG-PW约34.2%、Phantom约16.5%、PB约4.5%、GL约0.0%；HotpotQA/PB的“ASR 97%→6%”只是一个配置。黑盒/白盒自适应平均FNR升至20.3%/96.1%；每目标≤2篇毒文档时按定义无法检测。原始问题平均Hit/Recall/ACC为65.7/53.6/75.1（No Defense 66.0/53.9/74.7）。 |
 
 <a id="src-fb1682dc8e7f28a5-h103"></a>
 #### L2｜检索期访问加固
@@ -2542,7 +2542,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 |[ProvenanceGuard: Source-Aware Factuality Verification for MCP-Based LLM Agents](<RAG安全证据地图_20261102.md#src-78fc11915a73c9be>)|B；预印本，新近邻；L2|作者v3 p4–6；draft后原子事实、source路由、NLI/词面/值检查与RF已有，另查归属/混淆；不能再把RF加来源关系笼统称首次。因需draft，与B生成前接口不同。|
 |[RAGShield: Detecting Numerical Claim Manipulation in Government RAG Systems](<RAG安全证据地图_20261102.md#src-25bea396eebc6a44>)|B；预印本，旧报告已有补核；L2|作者v2 p3–6/9；来源凭据、实体/条件属性/数值/单位/年份与跨源registry已有。有效凭据不保证内容真实；政府数值小域与8例端到端结果，不外推开放域低误报。|
 |[A Sentence Relation-Based Approach to Sanitizing Malicious Instructions](<RAG安全证据地图_20261102.md#src-1dc1bb89d2a7a4c4>)|B；预印本，新近邻；L2|作者v1 p5–7；固定NLI、句子关系图与生成前净化已有；针对指令、样本内z-score阈值，与事实污染及clean-query共形对象不同。方法无种子时仍选最可疑句，正常证据保留需另核。|
-|[CleanBase: Detecting Malicious Documents in RAG Knowledge Databases](<RAG安全证据地图_20261102.md#src-4d0fa659c00e0048>)|B；预印本，方法和理论开头已读；L2|作者v1 p5–8；入库前几何图与群组异常已有，不能再笼统声称首次跨块关系。至少三节点与A双块不同；只读方法/理论开头，未读实验不支持通用低FPR。|
+|[CleanBase: Detecting Malicious Documents in RAG Knowledge Databases](<RAG安全证据地图_20261102.md#src-4d0fa659c00e0048>)|B；2026 arXiv预印本；L3，原文v1 pp.1–32及Appendix A–E已读|入库前相似图、统计剪枝和≥3节点clique检测直接占据跨文档群组几何的先例；默认OR-kNN，但FPR/FNR理论上界只对mutual-kNN证明。平均FPR约1.9%，FNR从0到34.2%异质；白盒自适应后FNR约96.1%。每目标≤2篇毒文档无法形成clique，故不覆盖A的同源双块。B是query-conditioned Top-K逐块检测，必须证明相对这一入库前基线的增量。代码固定提交可用、Apache-2.0，未运行。|
 |[CoFact: Conformal Factuality Guarantees for Language Models under Covariate Shift](<RAG安全证据地图_20261102.md#src-14a29593132115db>)|B模块；ICLR2026主会A；L2|正式PDF p3–10；协变量漂移下事实性保证须按权重、交换性和控制事件解释，不自动转移为B关系OR后的query误报或最终删块界。|
 |[Beyond In-Domain Detection: SpikeScore for Cross-Domain Hallucination Detection](<RAG安全证据地图_20261102.md#src-55838f4e60b14f3a>)|B模块；ICLR2026身份与作者v5分开；L2|作者v5 p3–10；跨域幻觉评分的矩阵/样本对象与clean检索块尾谱不同，不能因“SVD/谱”词面相同合并；生成答案真实性不是块级污染标签。|
 |[From Out-of-Distribution Detection to Hallucination Detection: A Geometric View](<RAG安全证据地图_20261102.md#src-9a1040dabe39aa50>)|B模块；ICML2026主会A；L2|几何视角的OOD/幻觉检测已有，精确表征、访问权限、训练与统计单位见[逐篇笔记](<RAG安全证据地图_20261102.md#src-9a1040dabe39aa50>)；不据名称把它等同四统计或源关系核验。|
