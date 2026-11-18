@@ -275,7 +275,7 @@ A1–A20 把威胁模型推向两个极端：**白盒**（可拿梯度与参数�
 
 这是**理论性最强**、最受顶会青睐的方向：
 
-- **RobustRAG（v2，2026-04-01）**：isolate-then-aggregate将检索段落划为互不相交的文档组，**组内联合生成**，再作安全关键词/解码聚合。认证量针对指定query、污染预算、质量函数和参考答案；可为0，离线认证依赖参考答案不等于线上预先知道真值。允许自适应攻击者，不应写成缺少任何自适应理论。已核读方法与定理陈述，未独立验证实验和证明。
+- **RobustRAG（v2，2026-04-01）**：isolate-then-aggregate将检索段落划为互不相交的文档组，**组内联合生成**，再作安全关键词/解码聚合。认证量针对指定query、污染预算、质量函数和参考答案；可为0，离线认证依赖参考答案不等于线上预先知道真值。允许自适应攻击者，不应写成缺少任何自适应理论。所读arXiv v2作者稿正文及附录A–D为L3，未复现实验或独立形式验证；带‡的结果按p9为100响应采样近似。公开旧代码仅核到ω=1，不能代表v2大组认证。
 - **PRA-RAG**：采样检索文本的**多种组合**，利用**嵌入空间几何结构**识别鲁棒子集并推导PAD上界；严格多数由组合计数提供，但附录A.5还要求干净/含毒组合存在正几何间隔，Monte Carlo只给出单向采样界。正式表2的MS-MARCO/Mistral设置为攻击ACC63%/ASR1%，clean ACC57%；摘要71%/1%未对齐到同一主表配置。表9 K20、20%投毒、n3–5超出严格多数前提，不能用经验PAD替代条件认证。
 
 > **共性边界**：须逐项说明污染预算、分组与质量函数。污染增加可能使下界退化，但超预算经验攻击不构成定理反例；协同或分布式这一标签本身也不推出所有认证失效。
@@ -584,7 +584,7 @@ timeline
 
 | # | 文献 | Venue | 年份 | 技术标签 | 方法论类别（原文依据见 §6.6 判定标准） | 核心解读 | 实验设计要点（威胁模型 / 语料 / 指标） |
 |---|------|---|---|----------|------------------------------------------|----------|------------------------------------------|
-| 38 | **RobustRAG（Certifiably Robust RAG against Retrieval Corruption）** | SaTML2026官方接收已核；所给CCF目录未列 | 2026 | D10 可证明鲁棒 | v2不相交文档组内联合生成后安全聚合 | 指定query、污染预算、质量函数和参考答案下的最坏质量下界，可为0 | 已按L2核读v2方法/认证陈述，未独立验证实验/证明；旧性能数值未独立复测，不以超预算协同结果宣称推翻定理；正式出版DOI/页码仍待核 |
+| 38 | **RobustRAG（Certifiably Robust RAG against Retrieval Corruption）** | SaTML2026官方接收已核；所给CCF目录未列 | 2026 | D10 可证明鲁棒 | v2不相交文档组内联合生成后安全聚合 | 指定query、污染预算、质量函数和参考答案下的最坏质量下界，可为0 | arXiv v2正文及附录A–D已读L3；SaTML出版元数据392–410页已核，未核作者稿与IEEE版等同性。带‡认证为采样近似；旧代码仅ω=1，未复现。详见[逐篇笔记](<../research_data/RAG安全文献调研/原始证据/notes/Certifiably_Robust_RAG_against_Retrieval_Corruption__arxiv-2405.15556.md>) |
 | 39 | **RAGOrigin（Who Taught the Lie）** | S&P | 2026 | D12 责任归因 | **混合** — 归因框架（缩小归因域→打分→聚类）+ **责任评分算法**（检索排名 + 语义相关 + 响应影响） | 黑盒归因：按检索排名+语义相关性+响应影响力打分，无监督聚类隔离 | 白盒/黑盒；**7 数据集**（NQ/HotpotQA/MS MARCO/BoolQ/SQuAD 等）；DACC、FPR、FNR、ASR；**DACC >97.4%**。**详见 §9.3** |
 | 40 | **RADAR** | ICML | 2026 | D20 图能量最小化（动态 RAG） | 为每篇文档生成原子答案，以 NLI 蕴含／矛盾关系和检索排名建图，通过最大流最小割精确求解所定义能量；动态版用贝叶斯记忆节点递归更新 | 命题关系、冲突感知筛选与开题防御直接相邻；精确优化不保证原子答案或结论为真 | 静态 RQA／NQ／TriviaQA／Bio，动态500个时变问题；在指定位置测试提示注入和投毒。不同指标、基线和攻击位置需分别比较：轻量历史无攻击时 InstructRAG 准确率83.10%，RADAR为74.02%；RQA、DeepSeek、位置1下 top-10／50 耗时21／87秒。详见[逐篇笔记](<../research_data/RAG安全文献调研/原始证据/notes/RADAR_Defending_RAG_Dynamically_against_Retrieval_Corruption__work-fe56a9562d79.md>) |
 | 41 | **RAGForensics** | WWW | 2025 | D12 投毒追溯 | **系统机制** — 贡献是**迭代式"检索—判定—剔除"取证流程**（外加"真投毒 vs 模型噪声"判别与良性文本增强两个补充机制）；判定交由通用 LLM 与专门提示，无自有学习目标 | **首个面向 RAG 的投毒追溯系统**：回答"**毒文本在哪**"而非"怎么挡"，逐条定位知识库中的毒文本并交由服务方处置 | 服务方视角（已收到一次误答反馈）；NQ / HotpotQA / MS-MARCO × 3 种攻击（PoisonedRAG-B、PoisonedRAG-W、指令注入）；对照 **6 个追溯基线**（PPL-100、PPL-90、ExpGen、RKM、TKM、PoiFor）；指标 DACC、FPR、FNR、ASR、ACC；DACC **97.4–99.6%**、FPR **0.4–2.7%**、FNR **0–3.2%**（最优基线 ExpGen 在 NQ 上 DACC 仅 **90.3%**，TKM 的 FPR 高达 **34.1–49.2%**）；跨运行 DACC 波动 ≤**0.4%**、FPR ≤**1.2%**；对**两种自适应攻击**仍稳健 |
@@ -1739,8 +1739,8 @@ $$
 
 | 情形 | 例证 | $O_i^{\text{raw}}$ | $O_i$ |
 |---|---|---|---|
-| 自有公开仓库（含 README） | `sleeepeer/PoisonedRAG`、`inspire-group/RobustRAG`、`zhangbl6618/RAG-Responsibility-Attribution`（RAGForensics / RAGOrigin 共用） | 0.50 | 1.00 |
-| 上述 + 社区活跃（知名高星） | PoisonedRAG、RobustRAG、TrustRAG、Topic-FlipRAG | 0.55 | 1.05 |
+| 自有公开仓库（含 README） | `sleeepeer/PoisonedRAG`、`inspire-group/RobustRAG`（作者关联、v2之前的快照）、`zhangbl6618/RAG-Responsibility-Attribution`（RAGForensics / RAGOrigin 共用） | 0.50 | 1.00 |
+| 上述 + 社区活跃（知名高星） | PoisonedRAG、TrustRAG、Topic-FlipRAG；RobustRAG旧评分亦曾按此档，活跃度及版本覆盖须另核 | 0.55 | 1.05 |
 | Zenodo / 代码+数据联合制品 | GASLITE、Overcoming the Retrieval Barrier | 0.75 | 1.25 |
 | 代码 + 数据 / 基准一并公开 | Poison-RAG、ReGENT、SafeRAG、FEVER、MedMisBench、**FlippedRAG**、**MIRAGE** | 0.75 | 1.25 |
 | 基准 / 数据集托管站点 | BEIR（0.80）；HotpotQA / NQ / MS MARCO（0.30） | 0.30–0.80 | 0.80–1.30 |
@@ -1803,7 +1803,7 @@ $$
 
 | 排名 | 文献 | Venue | 年份 | 引用 | ā(月) | r̃ᵢ | Rᵢ | Tᵢ | Vᵢ | **Oᵢ** | 权重 | **Pᵢ** | 级别 | 开源证据 / 备注 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | RobustRAG (Certifiably) | SaTML | 2026 | 197 | 4.7 | 20.11 | 1.000 | 0.783 | 0.80 | **1.05** | 0.45/0.40/0.15 | **0.890** | S | 自有仓库 `inspire-group/RobustRAG`；最高引用防御基线 |
+| 1 | RobustRAG (Certifiably) | SaTML | 2026 | 197 | 4.7 | 20.11 | 1.000 | 0.783 | 0.80 | **1.05** | 0.45/0.40/0.15 | **0.890** | S | 作者关联旧快照 `inspire-group/RobustRAG`（仅ω=1路径）；此行引用、开源因子和排序为历史值，待统一核验 |
 | 2 | RAGOrigin (Who Taught the Lie) | S&P | 2026 | 27 | 3.7 | 4.67 | 0.467 | 0.826 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.724** | S | 自有仓库 `zhangbl6618/RAG-Responsibility-Attribution` |
 | 3 | Can IPI Be Detected/Removed | ACL | 2025 | 83 | 14.8 | 4.86 | 0.480 | 0.462 | 1.00 | **1.00** | 0.45/0.40/0.15 | **0.672** | S | 自有仓库 `LukeChen-go/indirect-pia-detection`；IPI 检测与移除 |
 | 4 | RADAR | ICML | 2026 | 2 | 2.7 | 2.33 | 0.250 | 0.870 | 1.00 | **1.25** | 0.45/0.40/0.15 | **0.612** | A | 正式版所列代码 `Etherealllllll/RADAR_code` + HF 数据集 `Etherealll/RADAR_data`（代码未运行；数据查看器当次未正常展示）；动态 RAG 防御：图能量最小化 + Max-Flow Min-Cut + 贝叶斯记忆节点 |
@@ -2140,7 +2140,7 @@ flowchart TB
 | AI-09，*Semantic Chameleon: Corpus-Dependent Poisoning Attacks and Defenses in RAG Systems* | §3.1、Table5中38%=19/50共同检索，overall=共同检索且隐蔽，仅6%=3/50；Table8生成实验每模型15场景。混合检索零结果不代表普适消除，Table7自适应条件仍有20–44%的原口径结果。§6.3 sleeper-only零输出仅支持trigger必要，不能证明双向共同必要性。 | L3，作者v1完整正文物理p1–8（实际PDF共9页，p8至References前）；参考文献未逐条审计，无独立附录。AISec2026页眉待官方身份核验，尚不能认定为CCS主会A类论文。 |
 | AI-01，*When Poison Fails After Retrieval: Revisiting Corpus Poisoning under Chunking and Reranking Pipelines*（CRCP） | §V.A尺寸为128/256/512 **characters**。TableII NQ/GPT-4o ASR92.19%；TableIV去reranker/coherence/boundary为55.8/43.4/61.3%，p9却称后两者只降19/11点且reranker降幅最大。保留正文/表冲突，不自行选一个解释，也不再授予确定的损失项贡献排序。 | L3，arXiv v1主文物理p1–10；参考文献未逐条追溯，正式venue未知。局部自包含不同于严格互补块。 |
 | D03，*TRIS: A Tri-Layer Retrieval Integrity Sieve Against Knowledge Poisoning* | 正式 **Findings of EMNLP 2026**，45250–45264，DOI `10.18653/2026.findings-emnlp.2122`。EMNLP整体列于CCF第七版B类，Findings为独立track且未单独评级。正式§6.2撤回公平TrustRAG配置下的自适应ASR优势；Appendix B.3中独立几何替换无显著差异（NQ p=.88、HotpotQA p=.20）。Table 5 live retrieval改善ASR/CleanAcc，但Appendix B.5在k=5时显著失稳；Appendix C显示两跳仿真型毒文档可绕过前两层，且Layer 3信号弱。 | L3，正式PDF pp1–15完整阅读；HotpotQA多跳证据仍会损失，Layer 3约2.9秒/查询、live-retrieval附加成本约16–19秒；无形式化鲁棒保证，测试集为子集，较弱自适应攻击覆盖与单次小样本基线限制外推。 |
-| D17，*Certifiably Robust RAG against Retrieval Corruption*（RobustRAG） | arXiv2405.15556v2 pp3–8明确允许不相交文档**组内联合生成**后聚合。证书针对指定query、污染预算、质量函数和参考答案，可为0；超预算协同攻击不是定理反例，离线参考答案也不是线上先验真值。 | L2方法/认证陈述；实验、证明与附录未独立验证。SaTML2026官方接收已核，所给CCF目录未列；正式出版DOI/页码待核。 |
+| D17，*Certifiably Robust RAG against Retrieval Corruption*（RobustRAG） | arXiv v2正文及附录A–D L3，允许不相交文档**组内联合生成**后聚合；证书针对给定query、污染预算、质量函数及参考答案，不保证来源真实性、正常多跳保留或最终删块误报。 | SaTML2026 pp392–410，CCF第七版未列。p9带‡结果为100响应近似；打印Alg3新词集合疑点由公开旧代码的保守拒绝条件保护，不能判实现漏洞；旧快照未实现v2大组路径。详见[证据地图](<RAG安全证据地图_20261102.md#src-425254f13523b619>)。 |
 | D01，*Defending RAG Against Knowledge Poisoning Using Cross-Encoder Activation Signals*（CEG-RAG） | §2.1–2.3为重排表示→共享投影与**Set Transformer同组chunk交互**→attention MIL/定位→过滤补齐；非通用梯度或仅单块检测。Table1 HotpotQA ASR16.28%伴随ACC13.95%，p5 MS-MARCO块FPR .1125，不据低ASR称效用保留。 | 已补L3正式PDF物理p1–9完整正文，无附录；Canadian AI2026，PMLR318:366–376；目录未列，不借用AAAI等级。 |
 
 <a id="src-fb1682dc8e7f28a5-h114"></a>
