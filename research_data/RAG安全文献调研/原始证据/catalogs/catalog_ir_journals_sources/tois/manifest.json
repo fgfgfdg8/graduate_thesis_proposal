@@ -1,0 +1,112 @@
+{
+  "journal": "tois",
+  "issn": "1046-8188",
+  "checked_at_utc": "2026-11-02T10:00:37.404362+00:00",
+  "expected_total_first_page": 1674,
+  "retrieved_total": 1674,
+  "unique_dois": 1674,
+  "pagination_closed": true,
+  "selected_records": 546,
+  "target_volume_counts": {
+    "42 / 1": 32,
+    "42 / 2": 30,
+    "42 / 3": 25,
+    "42 / 5": 28,
+    "42 / 4": 25,
+    "42 / 6": 27,
+    "43 / 2": 29,
+    "43 / 1": 26,
+    "43 / 5": 31,
+    "43 / 3": 28,
+    "43 / 6": 27,
+    "43 / 4": 27,
+    "44 / 1": 29,
+    "44 / 2": 26,
+    "44 / 6": 24,
+    "44 / 3": 24,
+    "44 / 4": 26,
+    "44 / 5": 25,
+    "44 / 7": 21,
+    "44 / 8": 10
+  },
+  "early_access_or_unassigned_target_date": 26,
+  "coverage_limit": "Crossref full ISSN enumeration is not proof of publisher TOC completeness; independent issue/title comparison required.",
+  "pages": [
+    {
+      "page": 1,
+      "total_results_at_page": 1674,
+      "items": 1000,
+      "sha256": "ada23f6d34a1486e8ee4eea59ef5f2cb3d77eed92040b232038250436e11fb42",
+      "file": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_gap_20261102\\catalog_ir_journals_sources\\tois\\crossref_page_001.json",
+      "endpoint": "https://api.crossref.org/journals/1046-8188/works",
+      "parameters": {
+        "rows": 1000,
+        "cursor": "*",
+        "select": "DOI,title,author,volume,issue,page,article-number,published,published-print,published-online,issued,created,container-title,type,URL,abstract,link,resource"
+      }
+    },
+    {
+      "page": 2,
+      "total_results_at_page": 1674,
+      "items": 674,
+      "sha256": "eb7672b4d1b5543aa423833e792a466ff340b8e8db889b5bf6e94959ae68ed6b",
+      "file": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_gap_20261102\\catalog_ir_journals_sources\\tois\\crossref_page_002.json",
+      "endpoint": "https://api.crossref.org/journals/1046-8188/works",
+      "parameters": {
+        "rows": 1000,
+        "cursor": "[previous next-cursor]",
+        "select": "DOI,title,author,volume,issue,page,article-number,published,published-print,published-online,issued,created,container-title,type,URL,abstract,link,resource"
+      }
+    }
+  ],
+  "official_toc_closure": {
+    "checked_at_utc": "2026-11-18T16:04:00.110Z",
+    "scope": "publisher issue-page DOI identities at the cited observation dates versus the Crossref 2026-11-10 baseline; 42 and 43 are complete six-issue volumes, while 44 is the current 1-8 snapshot and issue 8 was Current/In-Progress on 2026-11-02. This is not abstract or full-text coverage.",
+    "volume_doi_counts": {
+      "42": 167,
+      "43": 168,
+      "44": 185
+    },
+    "issue_doi_counts": {
+      "42": {
+        "1": 32,
+        "2": 30,
+        "3": 25,
+        "4": 25,
+        "5": 28,
+        "6": 27
+      },
+      "43": {
+        "1": 26,
+        "2": 29,
+        "3": 28,
+        "4": 27,
+        "5": 31,
+        "6": 27
+      },
+      "44": {
+        "1": 29,
+        "2": 26,
+        "3": 24,
+        "4": 26,
+        "5": 25,
+        "6": 24,
+        "7": 21,
+        "8": 10
+      }
+    },
+    "total_issue_assigned_dois": 520,
+    "total_unique_issue_assigned_dois": 520,
+    "unassigned_or_early_access_records_excluded": 26,
+    "all_issue_sets_match_crossref": true,
+    "new_studies_from_toc_reconciliation": 0,
+    "reading_credit_added": 0,
+    "evidence": {
+      "42_1": "local_catalog225_parent_sources/tois42_1/doi_comparison.json",
+      "42_2_to_43_5": "local_catalog228_parent_sources/issues/TOIS{volume}_{issue}.json",
+      "43_6": "local_catalog228_parent_sources/issues/TOIS43_6.json",
+      "44_1_to_8": "catalog_tois_browser_sources/raw_observation/tois44_browser_observations.json and catalog_tois_browser_sources/sets/TOIS44_all8_reconciled_union.dois.txt"
+    },
+    "limits": "The 520 issue-assigned DOI identities match their cited publisher TOC snapshots. Volume 42 (167) and volume 43 (168) are six-issue identity closures. Volume 44 (185) is a current snapshot of issues 1-8, with issue 8 in progress; it is not a final 2026 year/volume closure. The 26 unassigned/early-access records remain separate. Abstract and full-text status remain those recorded in the TOIS_2024/2025/2026 audit files; no new reading credit is claimed."
+  }
+}
