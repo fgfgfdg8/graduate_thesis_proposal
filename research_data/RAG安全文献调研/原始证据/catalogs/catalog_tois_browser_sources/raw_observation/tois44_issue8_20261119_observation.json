@@ -1,0 +1,131 @@
+{
+  "date": "2026-11-19",
+  "timezone": "Asia/Shanghai",
+  "source": "main-thread Edge DOM observation of official ACM issue page",
+  "url": "https://dl.acm.org/toc/tois/2026/44/8",
+  "heading": "Volume 44, Issue 8November 2026Current IssueIssue-in-Progress",
+  "status": "Current Issue; Issue-in-Progress",
+  "issue_doi_count": 20,
+  "article_numbers": "169–188",
+  "dois": [
+    "10.1145/3831688",
+    "10.1145/3833415",
+    "10.1145/3831685",
+    "10.1145/3841477",
+    "10.1145/3840384",
+    "10.1145/3839230",
+    "10.1145/3841470",
+    "10.1145/3843228",
+    "10.1145/3846382",
+    "10.1145/3845987",
+    "10.1145/3847657",
+    "10.1145/3847658",
+    "10.1145/3844506",
+    "10.1145/3849382",
+    "10.1145/3848125",
+    "10.1145/3847674",
+    "10.1145/3849380",
+    "10.1145/3848638",
+    "10.1145/3849811",
+    "10.1145/3856798"
+  ],
+  "titles": [
+    {
+      "doi": "10.1145/3831688",
+      "title": "ScoreRec: Reallocating Probability Mass in Sequential Recommendation via Score-based Diffusion Modeling"
+    },
+    {
+      "doi": "10.1145/3833415",
+      "title": "A Survey on Knowledge-Oriented Retrieval-Augmented Generation"
+    },
+    {
+      "doi": "10.1145/3831685",
+      "title": "Prompt-Guided Graph Contrastive Learning with Controllable Augmentation and Fine-Grained Preference Modeling for Recommendation"
+    },
+    {
+      "doi": "10.1145/3841477",
+      "title": "The Unfairness of Multifactorial Bias in Recommendation"
+    },
+    {
+      "doi": "10.1145/3840384",
+      "title": "DiffCDSR: Diffusion-Guided Contrastive Learning and Position Re-Weighting for Cross-Domain Sequential Recommendation"
+    },
+    {
+      "doi": "10.1145/3839230",
+      "title": "Exploring the Synergetic and Divergent Potentials of Multimodal Semantics for Feature Fusion-based Video Recommendation"
+    },
+    {
+      "doi": "10.1145/3841470",
+      "title": "Unifying Search and Recommendation with Dual-View Representation Learning in a Generative Paradigm"
+    },
+    {
+      "doi": "10.1145/3843228",
+      "title": "MDiffFR: Modality-Guided Diffusion Generation for Cold-start Items in Federated Recommendation"
+    },
+    {
+      "doi": "10.1145/3846382",
+      "title": "RecGPT: A User Intent-Centric Next-Generation LLM-Powered Recommender System in Industrial Practice"
+    },
+    {
+      "doi": "10.1145/3845987",
+      "title": "Information-Bottlenecked Variational Autoencoder for Top-N Recommendation via Gating Mechanism"
+    },
+    {
+      "doi": "10.1145/3847657",
+      "title": "Lightweight Denoising and Aligning for Multi-modal Recommender System"
+    },
+    {
+      "doi": "10.1145/3847658",
+      "title": "MoC-KT: Mixture of Convolutions for Knowledge Tracing"
+    },
+    {
+      "doi": "10.1145/3844506",
+      "title": "MDCD: Meta-Learning Driven Conditional Diffusion for User Cold-Start in Conversational Recommendation"
+    },
+    {
+      "doi": "10.1145/3849382",
+      "title": "A Survey of Long-Document Retrieval in the PLM and LLM Era"
+    },
+    {
+      "doi": "10.1145/3848125",
+      "title": "Focus on Evidence: Relational Structure Enhances LLM Effectiveness in TableQA"
+    },
+    {
+      "doi": "10.1145/3847674",
+      "title": "Prompting Large Language Models with Partial Knowledge for Answering Questions with Unseen Entities"
+    },
+    {
+      "doi": "10.1145/3849380",
+      "title": "FAESRec: Frequency Adaptive Encoder for Sequential Recommendation"
+    },
+    {
+      "doi": "10.1145/3848638",
+      "title": "Turning Cold Entities Warm: LLM-Based User and Item Interaction Simulation for Recommendations"
+    },
+    {
+      "doi": "10.1145/3849811",
+      "title": "Secure Recommender Systems: A Co-evolutionary Survey of Vulnerabilities, Attacks, and Defenses"
+    },
+    {
+      "doi": "10.1145/3856798",
+      "title": "Mitigating Popularity Bias in Recommendation with Global Listwise Learning and Progressive Bi-Weighting"
+    }
+  ],
+  "previous_20261102_issue_doi_count": 10,
+  "new_vs_20261102": [
+    "10.1145/3844506",
+    "10.1145/3847657",
+    "10.1145/3847658",
+    "10.1145/3847674",
+    "10.1145/3848125",
+    "10.1145/3848638",
+    "10.1145/3849380",
+    "10.1145/3849382",
+    "10.1145/3849811",
+    "10.1145/3856798"
+  ],
+  "removed_vs_20261102": [],
+  "relation_to_20261115_crossref_195": "The 20 official issue-page DOIs equal the union of the 10 old DOM DOIs and the 10 Crossref delta DOIs already screened on 2026-11-15.",
+  "reading_credit": "none; all 20 abstract judgments already exist in TOIS_2026_逐篇摘要核查_20261115.md; this observation adds directory identity only",
+  "observed_at_utc": "2026-11-18T17:39:46.304Z"
+}

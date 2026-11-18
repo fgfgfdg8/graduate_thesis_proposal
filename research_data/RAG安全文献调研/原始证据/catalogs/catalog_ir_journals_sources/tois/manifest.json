@@ -60,12 +60,12 @@
     }
   ],
   "official_toc_closure": {
-    "checked_at_utc": "2026-11-18T16:04:00.110Z",
-    "scope": "publisher issue-page DOI identities at the cited observation dates versus the Crossref 2026-11-10 baseline; 42 and 43 are complete six-issue volumes, while 44 is the current 1-8 snapshot and issue 8 was Current/In-Progress on 2026-11-02. This is not abstract or full-text coverage.",
+    "checked_at_utc": "2026-11-18T17:39:46.304Z",
+    "scope": "publisher issue-page DOI identities at the cited observation dates versus the Crossref baseline; 42 and 43 are complete six-issue volumes, while 44 is the current 1-8 snapshot and issue 8 was Current/In-Progress on 2026-11-19. This is not abstract or full-text coverage.",
     "volume_doi_counts": {
       "42": 167,
       "43": 168,
-      "44": 185
+      "44": 195
     },
     "issue_doi_counts": {
       "42": {
@@ -92,11 +92,11 @@
         "5": 25,
         "6": 24,
         "7": 21,
-        "8": 10
+        "8": 20
       }
     },
-    "total_issue_assigned_dois": 520,
-    "total_unique_issue_assigned_dois": 520,
+    "total_issue_assigned_dois": 530,
+    "total_unique_issue_assigned_dois": 530,
     "unassigned_or_early_access_records_excluded": 26,
     "all_issue_sets_match_crossref": true,
     "new_studies_from_toc_reconciliation": 0,
@@ -105,8 +105,10 @@
       "42_1": "local_catalog225_parent_sources/tois42_1/doi_comparison.json",
       "42_2_to_43_5": "local_catalog228_parent_sources/issues/TOIS{volume}_{issue}.json",
       "43_6": "local_catalog228_parent_sources/issues/TOIS43_6.json",
-      "44_1_to_8": "catalog_tois_browser_sources/raw_observation/tois44_browser_observations.json and catalog_tois_browser_sources/sets/TOIS44_all8_reconciled_union.dois.txt"
+      "44_1_to_8": "catalog_tois_browser_sources/raw_observation/tois44_browser_observations.json and catalog_tois_browser_sources/sets/TOIS44_all8_reconciled_union.dois.txt",
+      "44_8_20261119": "catalog_tois_browser_sources/raw_observation/tois44_issue8_20261119_observation.json and catalog_tois_browser_sources/sets/TOIS44_8_DOM_20261119.dois.txt",
+      "44_all8_20261119": "catalog_tois_browser_sources/sets/TOIS44_all8_DOM_20261119.dois.txt"
     },
-    "limits": "The 520 issue-assigned DOI identities match their cited publisher TOC snapshots. Volume 42 (167) and volume 43 (168) are six-issue identity closures. Volume 44 (185) is a current snapshot of issues 1-8, with issue 8 in progress; it is not a final 2026 year/volume closure. The 26 unassigned/early-access records remain separate. Abstract and full-text status remain those recorded in the TOIS_2024/2025/2026 audit files; no new reading credit is claimed."
+    "limits": "The 530 issue-assigned DOI identities match their cited publisher TOC snapshots. Volume 42 (167) and volume 43 (168) are six-issue identity closures. Volume 44 (195) is a current snapshot of issues 1-8, with issue 8 in progress; it is not a final 2026 year/volume closure. The 26 unassigned/early-access records remain separate. Abstract and full-text status remain those recorded in the TOIS_2024/2025/2026 audit files; no new reading credit is claimed."
   }
 }
