@@ -2299,6 +2299,7 @@ A/B比较以明确版本、分母、正式track和实际阅读范围为依据；
 |[Exploring Inference Patterns of LLMs as Symbolic Interactions](<RAG安全证据地图_20261102.md#src-3faf3b748db3c404>)|A/B交互解释；JMLR2026 A，正式主文/附录文本L3；L3|确有无关事实、实体混淆及SemRel分析，不能称这些方向首次。n10词与固定背景、概率/部分embedding权限、方向覆盖率和同token筛样保留；真实未知chunker块共同必要仍需同协议对照，正常多跳不能因高阶直接删除。|
 |[Adaptive Query Performance Prediction for Retrieval-Augmented Generation: Bridging Retrieval Quality and Generation Relevance](<RAG安全证据地图_20261102.md#src-51252339b8f3470f>)|RAG-QPP：TOIS正式A类工程近邻，正文L3|同一正式PDF正文L3；图内/图注冲突、端到端未完整实现、深度因果和特征重要性边界保存，无新研究/PDF。|
 |[Five Queries Are Enough: Query-Efficient and Surrogate-Free Membership Inference Attacks on RAG via Entailment](<RAG安全证据地图_20261102.md#src-f5b6eedf4e85c3d2>)|Five Queries Are Enough：RAG成员推断的蕴含与误报评价近邻；L3|USENIX2026-A正式21物理页主文叙述与评价附录读；6数值表保存，NP条件/阈值协议/成本预算/检测器身份/表文冲突分列，不混入语义投毒或块RF。|
+|[Connect the Dots: Knowledge Graph–Guided Crawler Attack on Retrieval-Augmented Generation Systems](<RAG安全证据地图_20261102.md#src-dc581b2f93c829ce>)|Connect the Dots：RAG知识库窃取与累计查询侧信道；L3|USENIX2026-A正式主文pp.6465–6484读；1,000查询平均覆盖66.8%、最高84.4%，替代RAG相似度0.699；不是投毒、单源未知分块或恶意块检测。|
 |[AttriGuard: Defeating Indirect Prompt Injection in LLM Agents via Causal Attribution of Tool Invocations](<RAG安全证据地图_20261102.md#src-843cb3fccac49da3>)|AttriGuard：行动层影子归因防御与适用边界；L3|正式USENIX2026-A21物理页主文和评价附录读；8表保存，ASB残余/静态适应配置/BU冲突/辅助费用边界分列；纯RAG问答为非目标。|
 |[ToxicRAG: Compromising Retrieval-Augmented Generation Systems via Single-Shot Knowledge Poisoning Attacks](<RAG安全证据地图_20261102.md#src-2525a329bf5bc196>)|ToxicRAG：单文档语义投毒与any-poison评价边界；L3|21页arXiv v1主文和评价附录已读，未核正式会议；采样库/方法目标不固定/any-poison/主敏感性表差异/缺失轨迹均分列，尚未核验实现。|
 |[NoLiMa: Long-Context Evaluation Beyond Literal Matching](<RAG安全证据地图_20261102.md#src-0d7f6f4b66fcce2c>)|NoLiMa：低词面相关支持与潜在知识多跳的ICML-A近邻；L3|正式17页主文/实质附录完整读，8印刷结果表保存；低词面不等恶意、潜在知识两跳不等双块必要、指标/位置/预算与机制边界分列。|
@@ -2819,7 +2820,7 @@ TOIS 44(1)冻结目录的29项摘要已逐条筛查；ACM当前页403，故这�
 
 <a id="src-fb1682dc8e7f28a5-h121"></a>
 
-**TDSC 2026 23(1–4)的跨域参照。** 除上表的四篇优先近邻外，本轮还筛出十一篇跨域方法参照：向量数据库特征反演、无干净数据的毒样本检测、动态数据源可信度、网页篡改检测、高污染率联邦学习防御、Trap毒样本检测、TRAIT对抗样本检测、LoRA模型遗忘、LLM后门并发症、系统级可搜索加密和嵌入反演。它们分别约束B的来源可信/误报控制/正常效用，或约束A的向量库与检索隐私边界；均只读官方摘要L1，不能把跨域指标直接写成RAG块检测或最终删块保证。逐篇作者、页码、DOI、摘要边界和631/631复核记录见[TDSC 23(1–4)审计](<../research_data/RAG安全文献调研/原始证据/audit/20261119_TDSC2026_remaining_issues_abstract_audit.md>)。
+**TDSC 2026 23(1–4)的跨域参照。** 除上表的四篇优先近邻外，本轮还筛出十一篇跨域方法参照：向量数据库特征反演、无干净数据的毒样本检测、动态数据源可信度、网页篡改检测、高污染率联邦学习防御、Trap毒样本检测、TRAIT对抗样本检测、LoRA模型遗忘、LLM后门并发症、系统级可搜索加密和嵌入反演。它们分别约束B的来源可信/误报控制/正常效用，或约束A的向量库与检索隐私边界；均只读官方摘要L1，不能把跨域指标直接写成RAG块检测或最终删块保证。逐篇作者、页码、DOI、摘要边界和631/631复核记录见[TDSC 23(1–4)审计](<../research_data/RAG安全文献调研/原始证据/audit/20261119_TDSC2026_remaining_issues_abstract_audit.md>)。 USENIX Security 2026另有LogInject（被动日志注入）、MUZZLE（Agentic IPI红队）和Resume Screening（约20万简历的现实IPI测量）三篇次级候选；均为L1摘要级，用于扩展被动注入、agent和真实部署威胁，不进入RAG直接方法主表，也不能把其测量/防御数字写成RAG块检测率。
 
 ### 11.10 对开题定位的综合结论
 
