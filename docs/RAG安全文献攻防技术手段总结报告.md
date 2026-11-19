@@ -2121,7 +2121,7 @@ ACL/EMNLP 2024–2026目录同日刷新：15个主会/Findings卷研究记录20,
 
 NeurIPS/ECCV 2026 track复核：OpenReview仅对Con-RAG（hCpmScyCoy）与ADMIT（4sP52RCwde）确认 NeurIPS.cc/2026/Conference Main Poster；其它已有poster页不单列track，不能推定Main。ADMIT只到摘要级；Con-RAG本地L3是2025 workshop版，2026会议终稿未读。ECCV的MMAgent-R²有Springer DOI与L3，#3411/#4874仅到Accepted/CCF-B。详见[track复核](<../research_data/RAG安全文献调研/原始证据/audit/20261119_NeurIPS_ECCV_2026_track_status.md>)。
 
-安全会议2024–2026官方program边界：USENIX Security technical-sessions页唯一presentation链接为418/455/378；IEEE S&P 2025/2026 collapse候选255/254、2024未统一解析；NDSS accepted-papers item卡为140/211/265，2026页面正文194与265 item冲突保留；ACM CCS页面200但反自动化脚本，未形成可解析全量程序表。以上不是逐篇摘要/DOI/全文闭合台账，不能写成安全会议已完成全量遍历；详见[security conference program复核](<../research_data/RAG安全文献调研/原始证据/audit/20261119_SecurityConferences_program_status.md>)。
+安全会议2024–2026官方program边界：USENIX Security 2024/2025已建立418+455=873条title/摘要manifest并完成RAG/检索/注入高召回筛查，2026页面378条且未年终封卷；IEEE S&P 2024/2025/2026 accepted-papers页已解析261/255/254条title/author manifest，但accepted页无统一摘要/DOI/track；NDSS accepted-papers item卡为140/211/265，2026正文194与265冲突保留；ACM CCS页面200但反自动化脚本，未形成可解析全量程序表。以上是目录/元数据边界，不是逐篇摘要/DOI/全文已闭合，不能写成安全会议已完成全量全读；详见[security conference program复核](<../research_data/RAG安全文献调研/原始证据/audit/20261119_SecurityConferences_program_status.md>)、[USENIX screening](<../research_data/RAG安全文献调研/原始证据/audit/20261120_USENIXSecurity_2024-2025_screening.md>)与[S&P manifest](<../research_data/RAG安全文献调研/原始证据/audit/20261120_IEEESP_2024-2026_manifest.jsonl>)。
 
 下列文件是可选的外部核验入口，不是本章结论的前置材料。链接均指向仓库内的相对路径；论文PDF另按论文库的持久化路径保存。
 
