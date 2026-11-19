@@ -2820,7 +2820,7 @@ TOIS 44(1)冻结目录的29项摘要已逐条筛查；ACM当前页403，故这�
 
 <a id="src-fb1682dc8e7f28a5-h121"></a>
 
-**TDSC 2026 23(1–4)的跨域参照。** 除上表的四篇优先近邻外，本轮还筛出十一篇跨域方法参照：向量数据库特征反演、无干净数据的毒样本检测、动态数据源可信度、网页篡改检测、高污染率联邦学习防御、Trap毒样本检测、TRAIT对抗样本检测、LoRA模型遗忘、LLM后门并发症、系统级可搜索加密和嵌入反演。它们分别约束B的来源可信/误报控制/正常效用，或约束A的向量库与检索隐私边界；均只读官方摘要L1，不能把跨域指标直接写成RAG块检测或最终删块保证。逐篇作者、页码、DOI、摘要边界和631/631复核记录见[TDSC 23(1–4)审计](<../research_data/RAG安全文献调研/原始证据/audit/20261119_TDSC2026_remaining_issues_abstract_audit.md>)。 USENIX Security 2026另有LogInject（被动日志注入）、MUZZLE（Agentic IPI红队）和Resume Screening（约20万简历的现实IPI测量）三篇次级候选；均为L1摘要级，用于扩展被动注入、agent和真实部署威胁，不进入RAG直接方法主表，也不能把其测量/防御数字写成RAG块检测率。
+**TDSC 2026 23(1–4)的跨域参照。** 除上表的四篇优先近邻外，本轮还筛出十一篇跨域方法参照：向量数据库特征反演、无干净数据的毒样本检测、动态数据源可信度、网页篡改检测、高污染率联邦学习防御、Trap毒样本检测、TRAIT对抗样本检测、LoRA模型遗忘、LLM后门并发症、系统级可搜索加密和嵌入反演。它们分别约束B的来源可信/误报控制/正常效用，或约束A的向量库与检索隐私边界；均只读官方摘要L1，不能把跨域指标直接写成RAG块检测或最终删块保证。逐篇作者、页码、DOI、摘要边界和631/631复核记录见[TDSC 23(1–4)审计](<../research_data/RAG安全文献调研/原始证据/audit/20261119_TDSC2026_remaining_issues_abstract_audit.md>)。 USENIX Security 2026另有LogInject（被动日志注入）、MUZZLE（Agentic IPI红队）和Resume Screening（约20万简历的现实IPI测量）三篇次级候选；均为L1摘要级，用于扩展被动注入、agent和真实部署威胁，不进入RAG直接方法主表，也不能把其测量/防御数字写成RAG块检测率。 USENIX Security 2024/2025另有Unsafe LLM-Based Search、EmbedX、Instruction Backdoor、Open-Prompt-Injection benchmark、Document-level MIA五篇次级候选；分别约束AI搜索来源/URL安全、embedding后门、指令定制后门、提示注入评测和文档成员推断，均为摘要级L1，不写成RAG块投毒直接撞车。
 
 ### 11.10 对开题定位的综合结论
 
