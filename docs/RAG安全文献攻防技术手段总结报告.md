@@ -2121,6 +2121,8 @@ ACL/EMNLP 2024–2026目录同日刷新：15个主会/Findings卷研究记录20,
 
 NeurIPS/ECCV 2026 track复核：OpenReview仅对Con-RAG（hCpmScyCoy）与ADMIT（4sP52RCwde）确认 NeurIPS.cc/2026/Conference Main Poster；其它已有poster页不单列track，不能推定Main。ADMIT只到摘要级；Con-RAG本地L3是2025 workshop版，2026会议终稿未读。ECCV的MMAgent-R²有Springer DOI与L3，#3411/#4874仅到Accepted/CCF-B。详见[track复核](<../research_data/RAG安全文献调研/原始证据/audit/20261119_NeurIPS_ECCV_2026_track_status.md>)。
 
+安全会议2024–2026官方program边界：USENIX Security technical-sessions页唯一presentation链接为418/455/378；IEEE S&P 2025/2026 collapse候选255/254、2024未统一解析；NDSS accepted-papers item卡为140/211/265，2026页面正文194与265 item冲突保留；ACM CCS页面200但反自动化脚本，未形成可解析全量程序表。以上不是逐篇摘要/DOI/全文闭合台账，不能写成安全会议已完成全量遍历；详见[security conference program复核](<../research_data/RAG安全文献调研/原始证据/audit/20261119_SecurityConferences_program_status.md>)。
+
 下列文件是可选的外部核验入口，不是本章结论的前置材料。链接均指向仓库内的相对路径；论文PDF另按论文库的持久化路径保存。
 
 - [证据地图](<RAG安全证据地图_20261102.md#src-8775d7fbe029251e>)：核对逐篇机制、结果、原文页码及与开题方向的关系。
