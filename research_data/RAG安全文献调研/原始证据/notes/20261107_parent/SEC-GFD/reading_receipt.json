@@ -1,0 +1,183 @@
+{
+  "state": "PARENT_FORMAL_BODY_AND_AUTHOR_APPENDIX_READ_NOT_CENTRAL",
+  "at_utc": "2026-11-06T18:31:51.914494+00:00",
+  "article_id": "28773",
+  "DOI": "10.1609/aaai.v38i8.28773",
+  "formal_title": "Revisiting Graph-Based Fraud Detection in Sight of Heterophily and Spectrum",
+  "authors": [
+    "Fan Xu",
+    "Nan Wang",
+    "Hao Wu",
+    "Xuezhi Wen",
+    "Xibin Zhao",
+    "Hai Wan"
+  ],
+  "formal_pdf": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\papers\\28773_SEC_GFD_official_VOR.pdf",
+    "bytes": 1941777,
+    "sha256": "65aefe56b18207252e0f1747eec7df343f0a2a0a6a06ce30b5bb36d746cd3f54"
+  },
+  "formal_body_read_pages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "formal_references_browsed_pages": [
+    8,
+    9
+  ],
+  "formal_visually_checked_pages": [
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "formal_body_complete": true,
+  "author_pdf": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\papers\\28773_SEC_GFD_arxiv2312.06441v3.pdf",
+    "bytes": 2097412,
+    "sha256": "9125f6dbc488e4880c2abec7973cf17a1776ce66024ac31872771ef29cb950f3"
+  },
+  "author_read_pages": [
+    4,
+    5,
+    10
+  ],
+  "author_appendix_read_pages": [
+    10
+  ],
+  "author_visually_checked_pages": [
+    10
+  ],
+  "author_full_body_read": false,
+  "official_separate_supplement": null,
+  "scientific_fulltext_equivalence": null,
+  "publisher_binary_equal": false,
+  "note": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_SEC_GFD_parent_body_20261107_sources\\PARENT_BODY.md",
+    "bytes": 7104,
+    "sha256": "0e2f6e773d2ebcd3e2725ff0b87262cd5d2919063e730c6072b042352e7b9a8c"
+  },
+  "existing_canonical_bounded_matches": [],
+  "existing_study_id": null,
+  "independent_new_studies": null,
+  "implementation_reading_credit": 0,
+  "execution_credit": 0,
+  "replication_credit": 0,
+  "central_registration_credit": 0,
+  "library_registration_pending": true,
+  "acquisition_manifest": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\MANIFEST.json",
+    "bytes": 17588,
+    "sha256": "7fc4516dbec1edd380c78400fea385c0b724bf894d438f63d4ef6d1af81b1353"
+  },
+  "acquisition_seal": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\SEAL.json",
+    "bytes": 593,
+    "sha256": "f2038e8f20281753704c1621e81905faa447ec982b45e74f6682697208cb6efc"
+  },
+  "appendix_locator": {
+    "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\28773_SEC_GFD_appendix_locator.json",
+    "bytes": 1198,
+    "sha256": "07f988f3885f9b64147811e56c06dce8fac19d20cfd0a94c7ca69fb89ee3e95e"
+  },
+  "page_texts": [
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page001.txt",
+      "bytes": 7123,
+      "sha256": "6b2ca575f0b7619f8f338cbcc3380b0a1f59392378acb5da9c2f32d8ae564b76"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page002.txt",
+      "bytes": 8122,
+      "sha256": "c67abb142c583526b0d1b477ef9c64a5b9b2a4fbf4743afb2c7698f56a717348"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page003.txt",
+      "bytes": 6668,
+      "sha256": "f4e398545a622a2cc8c2eef475fee2a362f9d1d09018492b3f44ba1046e2ba90"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page004.txt",
+      "bytes": 6986,
+      "sha256": "3c940b3d2982eb1f9e8d1f139b396d780c692fbf894f429060e13919101e049d"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page005.txt",
+      "bytes": 7794,
+      "sha256": "ecc0cf5f2785643b0eb9ebf2ad1efcfe4b1e388b3a5d59d79fa743add2d9027e"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page006.txt",
+      "bytes": 6509,
+      "sha256": "3f8a9f6cda5b06bfcf593bfb1339ddb9bde2488d4d2a8aa4e76b45a95131d5d3"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page007.txt",
+      "bytes": 5856,
+      "sha256": "9df2ae2ed2f3266e1fa207fcd00614cd78ac47bbe61b2aa84cdf450ae9d9f61a"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page008.txt",
+      "bytes": 6691,
+      "sha256": "031e3f1316e14054397be403c6b521914afbd6ae8b91548e971b7e32a406383e"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page009.txt",
+      "bytes": 3491,
+      "sha256": "84660c8b951335733542c541636016deb324275a6257ec2152959cee864351e8"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_arxiv_v3\\page004.txt",
+      "bytes": 6814,
+      "sha256": "5bb0d0a492b63cf918e3a6b5ff01e7ee2c5ddbdae54d1765ee55b2dd5072a42c"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_arxiv_v3\\page005.txt",
+      "bytes": 7623,
+      "sha256": "a9fe9f1e28c8a9850e40749bd0a95f0b018a6499d206f0b06f39b97231b37a2b"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_arxiv_v3\\page010.txt",
+      "bytes": 6225,
+      "sha256": "b888be04f9481cd69716d18dab64807321f554fc6e637d642a0ea8f81c9f68f7"
+    }
+  ],
+  "page_images": [
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page003.png",
+      "bytes": 390757,
+      "sha256": "142996a036ba140986f9aa87a4ad9e984885a1cc0a6398789e62d57d2072ec99"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page004.png",
+      "bytes": 429580,
+      "sha256": "66b59380c0c5ad2ec9be9bcdd8c19c550b11bcb34153ff9c91ac51bf03b000aa"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page005.png",
+      "bytes": 466667,
+      "sha256": "e5e825395c150b76992d0bbc980348eb2bbdc128d570f87e89a156c65d252d81"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page006.png",
+      "bytes": 449212,
+      "sha256": "865d56325363817e4d75be01fe28c0fce9d5954dcdea50123220cca79a76e208"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_official_VOR\\page007.png",
+      "bytes": 448372,
+      "sha256": "c56c4ea6ad67f38e75825590c4d5fa7d8ed766a5b2c40b99e8965030b2cc54bf"
+    },
+    {
+      "path": "D:\\学在东南\\毕业论文\\开题\\硕论开题报告\\tmp\\rag_reference_AAAI_SEC_GFD_DiG_In_GNN_20261107_sources\\mechanical\\28773_SEC_GFD_arxiv_v3\\appendix_page010.png",
+      "bytes": 355042,
+      "sha256": "ccf70361acad4d4afa93762e2db016feca635cdcc9ca8cc1a37e373eba040b92"
+    }
+  ]
+}

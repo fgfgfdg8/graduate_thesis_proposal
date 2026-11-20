@@ -1,0 +1,37 @@
+{
+  "at_utc": "2026-11-07T07:44:04.598746+00:00",
+  "scope": "parent finite arithmetic only; not author implementation or reproduction",
+  "source": "fixed ICLR2026 PDF fd6a666a89b0, Appendix L p29, table4 p9",
+  "unit": "bits",
+  "zero_mass_convention": "0 log2 0 = 0",
+  "P": [
+    0.52,
+    0.43,
+    0.05
+  ],
+  "Qtail": [
+    0.52,
+    0.48,
+    0.0
+  ],
+  "Qtop": [
+    0.47,
+    0.48,
+    0.05
+  ],
+  "TV_tail": 0.049999999999999996,
+  "TV_top": 0.05000000000000002,
+  "JSD_tail": 0.025991361143621775,
+  "JSD_top": 0.0019025410651437973,
+  "argmax_P": 0,
+  "argmax_tail": 0,
+  "argmax_top": 1,
+  "mask_G_minus2": 0.7357608766066353,
+  "mask_G_0": 0.85,
+  "mask_G_plus2": 0.9642391233933647,
+  "relative_hallucination_drop_vs_base": 0.3880597014925374,
+  "relative_hallucination_drop_vs_random": 0.35433070866141736,
+  "author_code_read": false,
+  "author_execution": false,
+  "reproduction": false
+}

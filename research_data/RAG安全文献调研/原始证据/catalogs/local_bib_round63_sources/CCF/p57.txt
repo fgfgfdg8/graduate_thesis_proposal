@@ -1,0 +1,45 @@
+中国计算机学会推荐国际学术会议
+（人工智能）
+一、A 类
+序号
+会议简称
+会议全称
+出版社
+网址
+1
+AAAI
+AAAI Conference on Artificial Intelligence
+AAAI
+http://dblp.uni-trier.de/db/conf/aaai/
+2
+NeurIPS
+Conference on Neural Information Processing Systems
+MIT Press
+http://dblp.uni-trier.de/db/conf/nips/
+3
+ACL
+Annual Meeting of the Association for Computational
+Linguistics
+ACL
+http://dblp.uni-trier.de/db/conf/acl/
+4
+CVPR
+IEEE/CVF Computer Vision and Pattern Recognition
+Conference
+IEEE
+http://dblp.uni-trier.de/db/conf/cvpr/
+5
+ICCV
+International Conference on Computer Vision
+IEEE
+http://dblp.uni-trier.de/db/conf/iccv/
+6
+ICML
+International Conference on Machine Learning
+ACM
+http://dblp.uni-trier.de/db/conf/icml/
+7
+ICLR
+International Conference on Learning Representations
+OpenReview
+https://dblp.uni-trier.de/db/conf/iclr/index.html
