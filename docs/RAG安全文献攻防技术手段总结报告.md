@@ -2127,6 +2127,8 @@ NeurIPS/ECCV 2026 track复核：OpenReview仅对Con-RAG（hCpmScyCoy）与ADMIT�
 
 P1共34项也已逐DOI摘要筛查：MetaMancer只覆盖工具元数据选择，Comment and Control/MirrorGuard/AgentSentinel/SkillScope只覆盖Agent上下文、运行时或权限边界，其余为隐私、水印、模型安全、VLM或代码模型安全；没有新的直接RAG检索块/同源chunker候选。逐项表见[P1 triage](<../research_data/RAG安全文献调研/原始证据/audit/20261120_CCS_P1_triage.md>)，个人健康信息条目的摘要缺失保留未知。
 
+P2共4项也完成摘要级排除：Password-Protected Key Retrieval、FilterFL、PiMRef、TENNOR分别属于密码/HSM、联邦学习后门防御、钓鱼邮件知识库不变式和隐私训练LSH访问，不是RAG证据块检索。逐项见[CCS P2 triage](<../research_data/RAG安全文献调研/原始证据/audit/20261120_CCS_P2_triage.md>)。
+
 下列文件是可选的外部核验入口，不是本章结论的前置材料。链接均指向仓库内的相对路径；论文PDF另按论文库的持久化路径保存。
 
 - [证据地图](<RAG安全证据地图_20261102.md#src-8775d7fbe029251e>)：核对逐篇机制、结果、原文页码及与开题方向的关系。
